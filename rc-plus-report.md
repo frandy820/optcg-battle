@@ -113,3 +113,33 @@ headless Chrome 的 `--window-size` 不落到布局视口（实测 390 物理 �
 - `node tests/e2e/run.mjs` → main E2E-PASS-37 / rounds E2E-PASS-28 / edge E2E-PASS-9 / layout LAYOUT-PASS-13（连续 4 次全绿）
 - `npm run verify`（终版复跑）→ **VERIFY-ALL-PASS**：syntax 0.4s(7 JS) / engine 4.6s(90) / build 0.1s / selftest 26.3s(42 断言) / e2e 26.7s(四模式) / offline 5.7s(file:// 完整对局)；总 1.1 min，EXIT=0
 - 真 390 布局修复验证（iframe 探针）：手牌 11 张 sw 514/cw 382 行内滚动 + fadeR 亮 + 顶栏三钮回屏；help 关闭钮 651-694 常驻可见（修前 1024-1067 折叠线下）；满战场 7+7 单位换行 382/382 无页面横滚
+
+## 10. 合并前最终验收（2026-09-16 晚，用户人工试玩准备轮）
+
+### 一致性审计
+分支 `feature/rc-plus-polish`，工作区干净；HEAD 链 = `e68b1ec`（基线）→ `fcb0f1f`（RC+ 收口）→ `6c5c31c`（报告回填哈希，纯文档）→ `7e1f1c2`（本轮审计修复）。报告所列 12 项测试资产全部在库；`web/index.html` 与 `app.bundle.js` 零测试引用；临时探针（`__shot_*`/`__probe_*`/`__r5h`/截图/dump/profile）已全部清除；79 张卡图+字体全本地、零 CDN/远程字体/外链；唯一网络点 `modes.js` `/api` 云探测（超时+catch，失败静默离线）。
+
+**审计发现并修复（P1，commit `7e1f1c2`）**：`game.js` 尾部遗留 `?autostart/?open=help/?level/?autoplay` URL 调试参数钩子（截图/回归期残留，正式页可被 URL 直接自动开局）。全仓零使用方（E2E 走真实点击流、selftest 走 API），移除。修复后 `npm run verify` 六阶段全绿复核。
+另：用户指令提及的 `playability-report.md` 在全仓与 git 历史中均不存在（RC 可玩性专项结论已并入本报告 §1 与 backlog），如实记录。
+
+### 质量门禁（本轮实际运行）
+`npm run verify` 首跑 selftest 阶段一次偶发「无结果」（虚拟时钟早耗尽、页面静默；同命令手动复跑 SELFTEST-PASS-42），完整重跑：**VERIFY-ALL-PASS**——syntax 0.5s(7 JS) / engine 5.2s(90 pass) / build 重打包+新鲜度 / selftest 8.2s(42 断言) / e2e 17.6s(四模式 37+28+9+13) / offline 6.6s(file:// 完整对局)，EXIT=0。
+
+### 真人路径两局模拟（CDP 真实点击流，正式 index.html 零测试参数）
+**RCP-PASS-52/52**，P0/P1 = 0：
+- 局1（默认新玩家）：引导出现→跳过→大厅→不选船长直接出航（默认船长兜底）→出牌生效→费用不足有原因提示（「费用不足：还需 3 颗 DON!!」）→攻击者选择/目标高亮/再点取消/重选/点击敌方领袖攻击并结算→终局（胜利，turn 6，出牌 13/攻击 13）→再战直接开新局
+- 局2（连续状态）：帮助开/关双路径（按钮+Escape，关闭钮 698-741 常驻可见）→AI 回合点无效区 errors=0→「结束回合」快速连点×5 无异常且对局可继续→刷新页面→断档续战入口出现（hasUnfinished=true）→续战恢复 turn=3（非新局）→打完（turn 6）→返回港口→换第二位船长（.pick 选中态）→出航开局成功
+- 全程原生弹窗 0、JS 错误 0
+
+### 视口与断网抽验
+- 390×748（固化方法 `tests/e2e/layout.html`）：**LAYOUT-PASS-13**（含 14 张手牌行内横滚+渐隐、满战场 7+7 换行、页面零横滚）
+- 430×748（iframe 真视口探针）：**VP-PASS-11**（15 张手牌 sw726/cw422 收敛进行内、顶栏 3/3、满战场 422/422、页面 0 横滚）
+- 桌面 1200×800：**VP-PASS-10**（12 张手牌未溢出、满战场 1080/1080、0 横滚）
+- 断网：verify offline 阶段 file:// 完整对局 PASS（6.6s）+ 本轮两局 CDP 模拟亦全程 file://（云探测走 catch、存档图片本地）= 双证据
+
+### 本轮新增 commit 与文件
+- `7e1f1c2`：`web/game.js` 移除 URL 调试参数（-10/+2）
+- 随后文档 commit：`docs/player-acceptance.md`（新增，面向试玩者：启动方式/10 分钟任务清单/12 观察点/反馈模板/已知限制）+ 本节增补
+
+### 结论
+**可以进入用户人工试玩验收，暂不建议合并 master**（候选代码 commit `7e1f1c2`）。
