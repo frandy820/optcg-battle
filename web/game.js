@@ -1058,14 +1058,6 @@
     }, stepMs || 420); // stepMs 仅测试加速用（虚拟时间快进），玩家路径不传
   }
 
-  const qs = new URLSearchParams(location.search);
-  if (qs.get('open') === 'help') openHelp(); // 截图/回归用
-  if (qs.get('autostart')) {
-    const level = qs.get('level') || 'normal';
-    myLeaderColor = qs.get('autostart');
-    $('aiLevel').value = level;
-    startGame({ leaderColor: myLeaderColor, level });
-    const n = +(qs.get('autoplay') || 0);
-    if (n > 0) autoplay(n);
-  }
+  // 无 URL 调试参数：正式页不响应 ?autostart/?open=help/?autoplay（RC+ 验收审计移除，
+  // 测试一律走真实点击流=tests/e2e 或 selftest 页的 OPTCG_GAME API）
 })();
