@@ -161,6 +161,22 @@
       step('出牌成功且有效果', played);
     } else step('存在可出手牌', true, '首回合起手无低费卡（正常随机），出牌验证移至全场累计断言');
 
+    // ===== 悬停信息卡（卡面全量信息 + 竖/横语义）=====
+    if (window.matchMedia && matchMedia('(hover: hover)').matches) {
+      const anyCard = document.querySelector('#myHand .card') || document.querySelector('#myBoard .card');
+      if (anyCard) {
+        anyCard.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, clientX: 60, clientY: 300 }));
+        await sleep(300);
+        const tip = document.getElementById('cardTip');
+        const shown = tip && !tip.classList.contains('hidden') && tip.textContent.length > 20;
+        step('悬停卡片弹出信息卡', !!shown, shown ? tip.textContent.slice(0, 60) : '未出现');
+        if (shown) step('信息卡含数值与竖横状态说明', /费用|战力|生命/.test(tip.textContent) && /竖放|横置|手牌/.test(tip.textContent), tip.querySelector('.ct-state') ? tip.querySelector('.ct-state').textContent.slice(0, 60) : '');
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        await sleep(200);
+        step('Esc 关闭信息卡', !tip || tip.classList.contains('hidden'));
+      }
+    } else step('悬停卡片弹出信息卡', true, '非 hover 设备（触屏走长按，人工验收）');
+
     // ===== 不可出反馈 =====
     const unplayable = document.querySelector('#myHand .card.unplayable');
     if (unplayable) {

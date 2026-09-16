@@ -161,7 +161,8 @@
       ${def.power ? `<div class="power">${def.power / 1000}K</div>` : ''}
       ${def.counter ? `<div class="counter-badge">C ${def.counter / 1000}K</div>` : ''}
     `;
-    el.title = opts.tip || `${def.name}${def.power ? ` · ${def.power / 1000}K` : ''}${(def.keywords || []).length ? ' · ' + def.keywords.map((k) => KW_LABEL[k] || k).join('/') : ''}`;
+    // 悬停详情交给 #cardTip（initCardTip）；原生 title 移除避免与富信息卡双弹
+    if ((def.keywords || []).length) el.setAttribute('aria-label', el.getAttribute('aria-label') + '，' + def.keywords.map((k) => KW_LABEL[k] || k).join('/'));
     return el;
   }
 
@@ -175,6 +176,7 @@
     wrap.setAttribute('role', 'button');
     wrap.setAttribute('aria-label', pl.leader.name + '（我方船长）');
     wrap.appendChild(el);
+    el.dataset.dons = pl.leader.dons || 0; // 悬停信息卡读（船长附着 DON 数）
     const pipRow = document.createElement('div');
     pipRow.className = 'life-pips';
     pipRow.innerHTML = pips;
@@ -205,6 +207,7 @@
   // ===== 主渲染 =====
   function renderAll() {
     if (!G) return;
+    if (cardTipHide) cardTipHide(); // 重渲染会替换卡元素：悬停信息卡先收起，鼠标微动即按新场面重出
     const me = G.players[MY], foe = G.players[FOE];
     $('turnNo').textContent = `回合 ${G.turn}`;
     const myTurn = G.active === MY && !G.pending;
@@ -222,6 +225,7 @@
     foe.board.forEach((u, i) => {
       const el = cardEl(u, { cls: (u.rest ? 'rest ' : '') });
       el.dataset.foeIdx = i;
+      el.dataset.dons = u.dons || 0; // 悬停信息卡读（附着 DON 数）
       $('enemyBoard').appendChild(el);
     });
     $('enemyStage').innerHTML = '';
@@ -241,6 +245,7 @@
       const canAtk = myTurn && !u.rest && (u.playedTurn < G.turn || (u.keywords || []).includes('rush'));
       const el = cardEl(u, { cls: (u.rest ? 'rest ' : '') + (canAtk ? 'playable' : '') });
       el.dataset.myIdx = i;
+      el.dataset.dons = u.dons || 0; // 悬停信息卡读（附着 DON 数）
       $('myBoard').appendChild(el);
     });
     $('myStage').innerHTML = '';
@@ -985,6 +990,7 @@
       { ic: 'layers', t: '回合流程', p: '你的回合：<b>补 2 颗 DON!!</b>（费用豆）→ 抽 1 张牌 → 出牌 / 攻击 / 附着 → 点「结束回合」。DON!! 每回合自动补满，附着的算已消耗。' },
       { ic: 'map', t: '出牌', p: '手牌左上角圆标是<b>费用</b>，消耗对应数量 DON!! 即可打出：角色进场（场上最多 5 名）、事件立即生效、舞台持续支援。' },
       { ic: 'swords', t: '攻击', p: '点己方未行动的角色或船长 → 再点<b>对方船长</b>或<b>已横置的角色</b>发起攻击。我方战力 ≥ 对方战力即击沉（KO）对方角色；攻击船长则扣 1 张生命。刚出场的角色下回合才能攻击。' },
+      { ic: 'refresh', t: '竖放与横放', p: '场上卡片<b>竖放＝就绪</b>（本回合还能攻击 / 阻挡），<b>横放（转 90°）＝已休息</b>（本回合已行动或被效果横置，不能再攻击也不能再阻挡），到拥有者的回合开始时自动转回竖放。攻击和阻挡都会把卡横置；<b>对方卡片全横着时就是安全进攻窗口</b>。鼠标悬停任意卡片（手机长按）可看它的完整信息和当前状态。' },
       { ic: 'heart', t: '生命与反击', p: '生命被扣时翻入手牌。手牌右下角带 <b>C 标记</b>的可作反击牌：在「反击窗口」打出，为本回合防守 <b>+战力</b>，可能反杀攻方。' },
       { ic: 'shield', t: '阻挡', p: '带<span class="kw">阻挡</span>词条的未横置角色可在响应面板选择挡刀：攻击转由它承受，战力不足则它被击沉、船长无伤。' },
       { ic: 'anchor', t: 'DON!! 附着', p: '点左下费用区 → 点己方角色或船长，附着 1 颗 DON!! <b>+1000 战力</b>，攻防皆受益。附着后的 DON 本回合不可再用，规划好节奏。' },
@@ -1058,6 +1064,129 @@
     }, stepMs || 420); // stepMs 仅测试加速用（虚拟时间快进），玩家路径不传
   }
 
+  // ===== 卡片悬停信息卡（试玩反馈：卡面信息不全、竖/横语义不明）=====
+  // 桌面 hover / 触屏长按 550ms → 显示全量卡信息（类型·费用·战力·反击·关键词解释·效果·竖横状态·附着 DON）
+  const KW_TIP = {
+    rush: '登场当回合即可攻击（其他角色要等下回合）',
+    blocker: '未横置时可替船长承受攻击——对方攻击时响应面板会出现阻挡选项',
+    doubleAttack: '攻击对方船长时扣 2 张生命（普通攻击扣 1）',
+    banish: '它造成的生命伤害直接进墓场，不进对方手牌',
+  };
+  const TYPE_NAME = { leader: '船长卡', char: '角色卡', event: '事件卡', stage: '舞台卡' };
+  function effectText(def) {
+    const e = def.effect;
+    if (!e) return '';
+    const op = e.op || {};
+    const M = {
+      'whenAttacking:powerSelf': `攻击时：本次战斗战力 +${(op.x || 0) / 1000}K`,
+      'onPlay:powerLeader': `打出时：船长战力 +${(op.x || 0) / 1000}K（到本次战斗结束）`,
+      'onPlay:koWeakest': '打出时：击沉敌方场上战力最低的角色',
+      'onPlay:restEnemy': '打出时：横置敌方一名角色（其本回合不能再攻击或阻挡）',
+      'onPlay:draw': `打出时：抽 ${op.n || 1} 张牌`,
+      'onPlay:gainDon': `打出时：从 DON!! 牌库翻 ${op.n || 1} 颗进费用区（本回合可用）`,
+    };
+    return M[e.hook + ':' + op.k] || null;
+  }
+  let cardTipHide = null; // renderAll 重渲染后强制隐藏（悬停中的卡元素已被替换）
+  function tipHtml(el) {
+    const id = el.dataset.cardId;
+    if (!id) return null;
+    const def = O.POOL.cards.find((c) => c.id === id) || O.POOL.leaders.find((l) => l.id === id);
+    if (!def) return null;
+    const parts = [];
+    parts.push(`<div class="ct-head"><b>${def.name}</b><span>${def.sub || ''}</span></div>`);
+    parts.push(`<div class="ct-meta">${TYPE_NAME[def.type] || def.type} · ${COLOR_NAME[def.color] || def.color}${def.type === 'leader' ? ` · 生命 ${def.life}` : ''}</div>`);
+    const nums = [];
+    if (def.type !== 'leader' && def.cost != null) nums.push(`费用 ${def.cost}`);
+    if (def.power) nums.push(`战力 ${def.power / 1000}K`);
+    if (def.counter) nums.push(`反击 +${def.counter / 1000}K`);
+    if (nums.length) parts.push(`<div class="ct-nums">${nums.join(' · ')}</div>`);
+    for (const k of def.keywords || []) parts.push(`<div class="ct-kw"><span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span><span>${KW_TIP[k] || ''}</span></div>`);
+    const et = effectText(def);
+    if (et) parts.push(`<div class="ct-eff">${et}</div>`);
+    else if (def.type === 'char') parts.push('<div class="ct-eff ct-none">无特殊效果的白板角色，靠战力和费用取胜</div>');
+    // 状态行：竖/横是本游戏核心语义（竖=就绪，横=已休息），每次悬停都解释
+    const rested = el.classList.contains('rest');
+    const inHand = !!el.closest('#myHand');
+    const isEnemy = !!el.closest('#enemyBoard,#enemyStage,#enemyLeaderSlot');
+    const who = isEnemy ? '对方' : '我方';
+    const ownerTurn = isEnemy ? '对方回合' : '你的回合';
+    const dons = +(el.dataset.dons || 0) || 0;
+    const st = [];
+    if (inHand) st.push('<b>在手牌</b>：点击打出（费用须 ≤ 可用 DON!!）；带 C 标记的还可在对方攻击时打出作反击');
+    else if (def.type === 'stage') st.push(`<b>${who}舞台</b>：打出后持续在场生效，不参与战斗`);
+    else if (rested) st.push(`<b>横放（已休息）</b>：${who}${def.type === 'leader' ? '船长' : '角色'}本回合已行动——不能攻击${def.keywords && def.keywords.includes('blocker') ? '、不能阻挡' : ''}；${ownerTurn}开始时转回竖放`);
+    else st.push(`<b>竖放（就绪）</b>：${who}${def.type === 'leader' ? '船长可以发起攻击' : '角色仍可行动（攻击' + ((def.keywords || []).includes('blocker') ? '/阻挡' : '') + '）'}`);
+    if (dons > 0) st.push(`<b>已附着 ${dons} 颗 DON!!</b>：战力 +${dons}K，攻防都算；${ownerTurn}开始时自动脱落回费用区`);
+    parts.push(`<div class="ct-state">${st.map((s) => `<div>${s}</div>`).join('')}</div>`);
+    return parts.join('');
+  }
+  function initCardTip() {
+    const tip = document.createElement('div');
+    tip.id = 'cardTip';
+    tip.className = 'hidden';
+    tip.setAttribute('role', 'tooltip');
+    document.body.appendChild(tip);
+    const canHover = window.matchMedia && matchMedia('(hover: hover)').matches;
+    let longTimer = null, longPressed = false, touchXY = null;
+    const hide = () => { tip.classList.add('hidden'); tip.innerHTML = ''; };
+    cardTipHide = hide;
+    const place = (x, y) => {
+      const r = tip.getBoundingClientRect();
+      let L = x + 16, T = y + 16;
+      if (L + r.width > innerWidth - 8) L = Math.max(8, x - r.width - 16);
+      if (T + r.height > innerHeight - 8) T = Math.max(8, y - r.height - 16);
+      tip.style.left = L + 'px';
+      tip.style.top = T + 'px';
+    };
+    const show = (el, x, y) => {
+      const html = tipHtml(el);
+      if (!html) return hide();
+      tip.innerHTML = html;
+      tip.classList.remove('hidden');
+      place(x, y);
+    };
+    if (canHover) {
+      document.addEventListener('mouseover', (e) => {
+        const el = e.target.closest && e.target.closest('.card');
+        if (el && !el.classList.contains('card-back')) show(el, e.clientX, e.clientY);
+        else hide();
+      });
+      document.addEventListener('mousemove', (e) => {
+        if (tip.classList.contains('hidden')) return;
+        const el = e.target.closest && e.target.closest('.card');
+        if (!el || el.classList.contains('card-back')) return hide();
+        show(el, e.clientX, e.clientY); // 场面重渲染后也随移动刷新内容
+      });
+    }
+    // 触屏：长按 550ms 看牌；长按后的那次 click 吞掉防误出牌
+    document.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'touch') return;
+      const el = e.target.closest && e.target.closest('.card');
+      if (!el || el.classList.contains('card-back')) return;
+      longPressed = false;
+      touchXY = [e.clientX, e.clientY];
+      longTimer = setTimeout(() => {
+        longPressed = true;
+        show(el, e.clientX, e.clientY);
+        if (navigator.vibrate) { try { navigator.vibrate(15); } catch (err) { /* 无振动权限忽略 */ } }
+      }, 550);
+    });
+    document.addEventListener('pointermove', (e) => {
+      if (longTimer && touchXY && (Math.abs(e.clientX - touchXY[0]) > 10 || Math.abs(e.clientY - touchXY[1]) > 10)) { clearTimeout(longTimer); longTimer = null; }
+    });
+    const cancelTouch = () => { if (longTimer) { clearTimeout(longTimer); longTimer = null; } };
+    document.addEventListener('pointerup', cancelTouch);
+    document.addEventListener('pointercancel', cancelTouch);
+    document.addEventListener('click', (e) => {
+      if (longPressed) { e.stopPropagation(); e.preventDefault(); longPressed = false; hide(); }
+    }, true);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hide(); });
+    addEventListener('scroll', hide, true);
+    addEventListener('blur', hide);
+  }
+
   // 无 URL 调试参数：正式页不响应 ?autostart/?open=help/?autoplay（RC+ 验收审计移除，
   // 测试一律走真实点击流=tests/e2e 或 selftest 页的 OPTCG_GAME API）
+  initCardTip();
 })();
