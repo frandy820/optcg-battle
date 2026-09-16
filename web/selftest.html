@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>航海王 · 卡牌对战</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 动态背景：深海 + 流光 + 星尘 -->
+  <div id="bg">
+    <div class="bg-gradient"></div>
+    <div class="bg-waves"></div>
+    <div class="bg-stars"></div>
+    <div class="bg-glow"></div>
+  </div>
+  <canvas id="fx"></canvas>
+
+  <!-- 主牌桌（与 index.html 同构：game.js setupUI 依赖全部按钮 id）-->
+  <div id="app">
+    <header id="topbar">
+      <div class="turn-info">
+        <span id="turnNo">回合 1</span>
+        <span id="phaseBadge" class="phase-badge">MAIN</span>
+      </div>
+      <div class="match-title">航海王卡牌对战</div>
+      <div class="top-actions">
+        <button id="btnHelp" class="btn-ghost top-btn">说明</button>
+        <button id="btnRestart" class="btn-ghost top-btn">重新开局</button>
+        <button id="btnMenu" class="btn-ghost top-btn">返回港口</button>
+      </div>
+    </header>
+
+    <section id="enemyZone" class="zone">
+      <div class="row top-row">
+        <div class="slot leader-slot" id="enemyLeaderSlot"></div>
+        <div class="life-row" id="enemyLife"></div>
+        <div class="don-zone" id="enemyDon" title="对手 DON!! 费用区"></div>
+        <div class="grave" id="enemyGrave" title="对手垃圾场">墓 <b>0</b></div>
+      </div>
+      <div class="row board-row" id="enemyBoard"></div>
+      <div class="row sub-row">
+        <div class="enemy-hand" id="enemyHand"></div>
+        <div class="slot stage-slot" id="enemyStage"></div>
+      </div>
+    </section>
+
+    <div id="battleLine">
+      <div class="line-glow"></div>
+    </div>
+
+    <section id="myZone" class="zone">
+      <div class="row sub-row">
+        <div class="slot stage-slot" id="myStage"></div>
+        <div class="don-zone mine" id="myDon" title="DON!! 费用区（点击附着）"></div>
+      </div>
+      <div class="row board-row" id="myBoard"></div>
+      <div class="row top-row">
+        <div class="slot leader-slot" id="myLeaderSlot"></div>
+        <div class="life-row" id="myLife"></div>
+        <div class="grave" id="myGrave" title="我的垃圾场">墓 <b>0</b></div>
+        <button id="btnEnd" class="btn-end">结束回合</button>
+      </div>
+      <div class="hand-wrap">
+        <div class="hand-row" id="myHand"></div>
+        <div class="hand-fade hand-fade-l" aria-hidden="true"></div>
+        <div class="hand-fade hand-fade-r" aria-hidden="true"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 响应面板（Blocker / Counter） -->
+  <div id="responsePanel" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="responseTitle">对方攻击！</h3>
+      <p id="responseDesc" class="muted"></p>
+      <div id="responseOptions"></div>
+      <button id="btnPass" class="btn-ghost">放弃响应</button>
+    </div>
+  </div>
+
+  <!-- 阶段演出横幅 -->
+  <div id="banner" class="hidden"></div>
+
+  <!-- 事件日志 -->
+  <aside id="logPanel">
+    <div class="log-head">战报</div>
+    <div id="logBody"></div>
+  </aside>
+
+  <!-- 出航准备（船长大厅） -->
+  <div id="setupPanel" class="modal">
+    <div class="modal-card setup hall">
+      <header class="hall-head">
+        <span class="hall-crest"></span>
+        <h3>选择你的船长</h3>
+        <p class="hall-sub">命运的潮汐正在召唤新的指挥官</p>
+        <div class="hall-rule"></div>
+        <div class="hall-help-row">
+          <button id="btnHallHelp" class="btn-ghost hall-help-btn">新手指南 · 玩法说明</button>
+        </div>
+      </header>
+      <div id="leaderChoices" class="leader-grid"></div>
+      <div class="setup-row deck-row">
+        <label class="sel-label">
+          <span class="sel-title">我的卡组</span>
+          <select id="deckSel"></select>
+          <span class="deck-hint" id="deckHint"></span>
+        </label>
+        <button id="btnBuilder" class="btn-ghost">构筑卡组</button>
+      </div>
+      <div class="setup-row" id="setupVoyageRow">
+        <label class="sel-label">
+          <span class="sel-title">AI 难度</span>
+          <select id="aiLevel">
+            <option value="easy">新手水手（易）</option>
+            <option value="normal" selected>精英船员（中）</option>
+            <option value="hard">风暴领主（难）</option>
+          </select>
+        </label>
+        <button id="btnStart" class="btn-primary btn-voyage">出航！</button>
+      </div>
+      <button id="btnResume" class="btn-ghost btn-resume hidden">继续上次对局</button>
+      <div class="mode-row">
+        <button id="btnLadder" class="mode-card ladder">
+          <span class="mc-body"><span class="mc-name">天梯排位</span><span class="mode-sub" id="ladderBadge"></span></span>
+        </button>
+        <button id="btnSurvival" class="mode-card survival">
+          <span class="mc-body"><span class="mc-name">生存挑战</span><span class="mode-sub" id="survivalBadge"></span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 玩法说明 -->
+  <div id="helpPanel" class="modal hidden">
+    <div class="modal-card help-card">
+      <h3>玩法说明</h3>
+      <div id="helpBody" class="help-body"></div>
+      <div class="end-actions">
+        <button id="btnHelpClose" class="btn-primary">明白了，出航！</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 卡组构筑器 -->
+  <div id="builderPanel" class="modal hidden">
+    <div class="modal-card builder-card">
+      <h3>卡组构筑 <span class="builder-tip">点卡 +1 · 点右上角 ×N 减 1</span></h3>
+      <div class="builder-top">
+        <div id="builderLeaders" class="builder-leaders"></div>
+        <input id="builderName" placeholder="卡组名称" maxlength="12">
+        <button id="btnBuilderSave" class="btn-ghost">保存</button>
+        <button id="btnBuilderDelete" class="btn-ghost">删除</button>
+      </div>
+      <div class="builder-count" id="builderCount">已选 0 / 50</div>
+      <div id="builderPool" class="builder-pool"></div>
+      <div class="builder-actions">
+        <button id="btnBuilderFill" class="btn-ghost">快速填充</button>
+        <button id="btnBuilderClear" class="btn-ghost">清空</button>
+        <button id="btnBuilderBattle" class="btn-primary">用此卡组出航</button>
+        <button id="btnBuilderClose" class="btn-ghost">返回</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 对局结算 -->
+  <div id="endPanel" class="modal hidden">
+    <div class="modal-card end-card">
+      <div id="endTitle" class="end-title">胜利！</div>
+      <div id="endDetail" class="end-detail"></div>
+      <div class="end-actions">
+        <button id="btnRematch" class="btn-primary">再战一局</button>
+        <button id="btnBackMenu" class="btn-ghost">返回港口</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 加载链与 index.html 一致（不载 onboarding.js：测试会清 localStorage，避免首访引导层干扰断言）-->
+  <script src="app.bundle.js"></script>
+  <script src="captains-data.js"></script>
+  <script src="save.js"></script>
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+  <script src="modes.js"></script>
+<div id="r" style="position:fixed;left:0;top:0;z-index:999;color:#0f0;background:#000;font:13px monospace;white-space:pre-wrap;padding:14px;max-width:100vw">running…</div>
+<script>
+(async function () {
+  const out = [];
+  const ok = (c, m) => out.push((c ? 'PASS ' : 'FAIL ') + m);
+  const $ = (id) => document.getElementById(id);
+  const ls = (k) => JSON.parse(localStorage.getItem(k) || 'null');
+  function waitEnd() {
+    return new Promise((res) => {
+      const t = setInterval(() => {
+        const s = OPTCG_GAME.state();
+        if (s && s.winner !== null) { clearInterval(t); res(s); }
+      }, 200);
+    });
+  }
+  // 结算面板等待：winner 置位后还要走完终局演出（playEvents ≤ FX_TIMEOUT 4s）+700ms 才弹面板。
+  // 固定 sleep 是竞态（演出链长短随 seed 变化），必须轮询条件本身。
+  function waitEndPanel(timeout = 9000) {
+    return new Promise((res) => {
+      const t0 = Date.now();
+      const t = setInterval(() => {
+        if (!$('endPanel').classList.contains('hidden')) { clearInterval(t); res(true); }
+        else if (Date.now() - t0 > timeout) { clearInterval(t); res(false); }
+      }, 150);
+    });
+  }
+  const emojiRe = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{2190}-\u{21FF}\u{25A0}-\u{25FF}]/u;
+  try {
+    ok(!!(window.OPTCG && window.OPTCG_GAME && window.OPTCG_MODES), 'globals mounted');
+
+    // -- 0 契约与快照 API（空局/坏数据不抛）--
+    ok(!!(window.OPTCG_SAVE && window.OPTCG_AUDIO), 'SAVE/AUDIO 契约存在');
+    ok(typeof OPTCG_SAVE.autosave === 'function' && typeof OPTCG_SAVE.hasUnfinished === 'function'
+      && typeof OPTCG_SAVE.resume === 'function' && typeof OPTCG_AUDIO.play === 'function', 'SAVE/AUDIO 方法齐');
+    ok(typeof OPTCG_GAME.snapshot === 'function' && typeof OPTCG_GAME.restoreFromSnapshot === 'function', '快照 API 存在');
+    ok(OPTCG_GAME.snapshot() === null, '空局 snapshot=null');
+    let badOk = true;
+    try {
+      badOk = OPTCG_GAME.restoreFromSnapshot(null) === false
+        && OPTCG_GAME.restoreFromSnapshot({}) === false
+        && OPTCG_GAME.restoreFromSnapshot({ g: {} }) === false
+        && OPTCG_GAME.restoreFromSnapshot({ g: { players: [], turn: 1, winner: null } }) === false;
+    } catch (e) { badOk = false; }
+    ok(badOk, '坏快照 restore=false 不抛');
+
+    // -- 1 菜单徽标/下拉 --
+    localStorage.clear();
+    OPTCG_MODES.refreshMenu();
+    ok($('ladderBadge').textContent.indexOf('见习') >= 0, 'ladder badge 见习@0分');
+    ok($('survivalBadge').textContent.indexOf('最佳') >= 0, 'survival badge 初始');
+    ok($('deckSel').options.length === 1, 'deckSel 初始仅默认项');
+
+    // -- 2 构筑器：填充→保存→选中 --
+    OPTCG_GAME.setLeaderColor('red');
+    OPTCG_MODES.openBuilder();
+    ok(!$('builderPanel').classList.contains('hidden'), 'builder 打开');
+    $('btnBuilderFill').click();
+    ok($('builderCount').textContent.indexOf('50') >= 0, '快速填充=50');
+    $('builderName').value = '自测红组';
+    $('btnBuilderSave').click();
+    const ds = ls('optcg_decks');
+    const total = ds && ds[0] && Object.values(ds[0].counts).reduce((a, b) => a + b, 0);
+    ok(ds && ds.length === 1 && total === 50, '卡组已存 50 张');
+    ok(String(ls('optcg_deck_sel')) === String(ds[0].id), '卡组已选中');
+    $('btnBuilderClose').click();
+    ok($('builderPanel').classList.contains('hidden'), 'builder 关闭');
+
+    // -- 3 天梯：开局(0分→easy)→打完→结算 --
+    OPTCG_MODES.startLadderGame();
+    ok($('setupPanel').classList.contains('hidden'), '天梯开局 setup 已隐');
+    OPTCG_GAME.autoplay(500);
+    const st1 = await waitEnd();
+    const ep1 = await waitEndPanel(); // 等 showEndPanel（终局演出+700ms）→ settle 已落盘
+    ok(st1.winner !== null, '天梯局终局 (winner=' + st1.winner + ')');
+    const L = ls('optcg_ladder');
+    const expScore = st1.winner === 0 ? 25 : 0;
+    ok(ep1 && L && L.score === expScore && L.wins + L.losses === 1, '天梯落盘 score=' + L.score + ' W' + L.wins + 'L' + L.losses);
+    ok(ep1, '结算面板弹出');
+    ok($('endDetail').textContent.indexOf('排位') >= 0, '结算含排位行');
+    $('btnBackMenu').click();
+    ok(!$('setupPanel').classList.contains('hidden'), '返回菜单');
+    ok(OPTCG_SAVE.hasUnfinished() === false, '终局+返回后断档已清');
+
+    // -- 4 生存：开局→打完→streak 落盘 --
+    OPTCG_MODES.startSurvivalGame();
+    OPTCG_GAME.autoplay(500);
+    const st2 = await waitEnd();
+    const ep2 = await waitEndPanel(); // settle 落盘同样在 showEndPanel 内，轮询而非固定 sleep
+    ok(st2.winner !== null, '生存局终局 (winner=' + st2.winner + ')');
+    const S = ls('optcg_survival');
+    if (st2.winner === 0) ok(ep2 && S.streak === 1 && S.best === 1 && S.level === 'easy', '生存胜 streak=1');
+    else ok(ep2 && S.streak === 0 && S.best === 0 && S.level === 'easy', '生存败 reset');
+    ok($('survivalBadge').textContent.length > 0, '生存徽标已刷新');
+
+    // -- 5 再战（restart 链路）--
+    $('btnRematch').click();
+    ok($('setupPanel').classList.contains('hidden'), '再战已开局');
+    ok(OPTCG_GAME.state() && OPTCG_GAME.state().winner === null, '新局进行中');
+
+    // -- 6 快照保存/恢复 + 断档续战按钮 --
+    await new Promise((r) => setTimeout(r, 400)); // 等新局渲染稳定
+    const snap = OPTCG_GAME.snapshot();
+    ok(!!(snap && snap.g && Array.isArray(snap.g.players) && snap.g.players.length === 2 && snap.level), '对局中 snapshot 非空含 level');
+    OPTCG_GAME.backToMenu();
+    ok($('setupPanel').classList.contains('hidden') === false, '快照测试前回大厅');
+    ok(OPTCG_GAME.restoreFromSnapshot(snap) === true, '快照恢复成功');
+    ok($('setupPanel').classList.contains('hidden'), '恢复后大厅已隐');
+    const st3 = OPTCG_GAME.state();
+    ok(st3 && st3.winner === null, '恢复后对局进行中');
+    ok(OPTCG_SAVE.hasUnfinished() === true, '恢复即重新留档');
+
+    // 断档续战按钮：大厅可见性 + 点击恢复
+    OPTCG_GAME.backToMenu();
+    OPTCG_SAVE.autosave(snap);
+    $('setupPanel').classList.add('hidden');
+    $('setupPanel').classList.remove('hidden'); // 触发大厅可见钩子 → 刷新 btnResume
+    await new Promise((r) => setTimeout(r, 100));
+    ok(!$('btnResume').classList.contains('hidden'), '有断档时显示继续按钮');
+    $('btnResume').click();
+    await new Promise((r) => setTimeout(r, 100));
+    ok($('setupPanel').classList.contains('hidden'), '继续按钮触发恢复进局');
+    ok(OPTCG_GAME.state() && OPTCG_GAME.state().winner === null, '断档恢复后对局进行中');
+
+    // -- 7 定时器卫生：backToMenu 后无跨局幽灵驱动 --
+    OPTCG_GAME.autoplay(50);
+    await new Promise((r) => setTimeout(r, 900));
+    OPTCG_GAME.backToMenu();
+    OPTCG_GAME.startGame({ leaderColor: 'red', level: 'easy' });
+    await new Promise((r) => setTimeout(r, 1600));
+    const stA = OPTCG_GAME.state();
+    ok(stA && stA.turn === 1 && stA.winner === null, '无跨局幽灵驱动（新局停在回合1）');
+
+    // -- 8 Escape 关 helpPanel；提示条无 Emoji --
+    OPTCG_GAME.backToMenu();
+    $('btnHallHelp').click();
+    ok(!$('helpPanel').classList.contains('hidden'), '帮助面板打开');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    ok($('helpPanel').classList.contains('hidden'), 'Escape 关闭帮助面板');
+    const hintEl = document.getElementById('hint');
+    ok(!!hintEl, '#hint 已创建');
+    OPTCG_GAME.startGame({ leaderColor: 'red', level: 'easy' });
+    await new Promise((r) => setTimeout(r, 400));
+    ok(hintEl.textContent.length > 0 && !emojiRe.test(hintEl.textContent), '提示条无 Emoji');
+    ok(document.querySelectorAll('#myHand .card').length > 0, '手牌已渲染');
+    const endT = $('endTitle');
+    ok(!emojiRe.test(endT.textContent), '终局标题无 Emoji');
+  } catch (e) {
+    ok(false, 'EXCEPTION ' + (e && e.message));
+  }
+  const fails = out.filter((l) => l[0] === 'F');
+  $('r').textContent = out.join('\n');
+  document.title = fails.length ? 'SELFTEST-FAIL(' + fails.length + ')' : 'SELFTEST-PASS-' + out.length;
+})();
+</script>
+</body>
+</html>

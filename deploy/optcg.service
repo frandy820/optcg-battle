@@ -1,0 +1,16 @@
+[Unit]
+Description=OPTCG-Battle card game (static + REST, LAN only)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/data/optcg
+ExecStart=/usr/bin/node /data/optcg/server/server.js --port 8180 --root /data/optcg
+Restart=on-failure
+RestartSec=3
+MemoryMax=300M
+Nice=10
+# 数据落 /data（203 惯例）；SQLite/JSON 存档与每日快照均在 /data/optcg/data/
+
+[Install]
+WantedBy=multi-user.target

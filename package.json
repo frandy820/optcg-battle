@@ -1,0 +1,13 @@
+{
+  "name": "optcg-battle",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "OP-TCG style card battle game, isomorphic JS engine + web frontend + node backend",
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/check.js",
+    "bundle": "node scripts/bundle.js",
+    "balance": "node scripts/balance-sim.js"
+  }
+}

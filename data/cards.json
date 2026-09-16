@@ -1,0 +1,1316 @@
+{
+  "meta": {
+    "version": "0.1.0",
+    "note": "OPTCG-Battle 自创卡池：仅借 OP-TCG 规则机制，数值与卡面全部自设计；海贼王角色命名仅内网自玩用途，不公开分发",
+    "colors": {
+      "red": "速攻连打：低费速攻、攻击增益、直伤去除",
+      "blue": "资源循环：抽牌、高 Counter 值、费用支援",
+      "green": "巨兽大怪：高费高战力、DON 加速",
+      "yellow": "壁垒生存：Blocker 密集、领袖强化",
+      "purple": "节奏掌控：DON!! 加速、横置干扰",
+      "black": "暗黑去除：击倒、Banish 直伤"
+    }
+  },
+  "leaders": [
+    {
+      "id": "LEADER-RED",
+      "name": "蒙奇·D·路飞",
+      "sub": "草帽盟主",
+      "type": "leader",
+      "color": "red",
+      "power": 5000,
+      "life": 5,
+      "keywords": [],
+      "effect": null,
+      "art": "captains/luffy"
+    },
+    {
+      "id": "LEADER-BLUE",
+      "name": "娜美",
+      "sub": "天候航海士",
+      "type": "leader",
+      "color": "blue",
+      "power": 5000,
+      "life": 4,
+      "keywords": [],
+      "effect": null,
+      "art": "captains/nami"
+    },
+    {
+      "id": "LEADER-GREEN",
+      "name": "罗罗诺亚·索隆",
+      "sub": "海贼猎人",
+      "type": "leader",
+      "color": "green",
+      "power": 5000,
+      "life": 5,
+      "keywords": [],
+      "effect": null,
+      "art": "captains/zoro"
+    },
+    {
+      "id": "LEADER-YELLOW",
+      "name": "山治",
+      "sub": "黑足主厨",
+      "type": "leader",
+      "color": "yellow",
+      "power": 5000,
+      "life": 5,
+      "keywords": [],
+      "effect": null,
+      "art": "captains/sanji"
+    },
+    {
+      "id": "LEADER-PURPLE",
+      "name": "特拉法尔加·罗",
+      "sub": "死亡外科医生",
+      "type": "leader",
+      "color": "purple",
+      "power": 5000,
+      "life": 5,
+      "keywords": [],
+      "effect": null,
+      "art": "captains/law"
+    },
+    {
+      "id": "LEADER-BLACK",
+      "name": "香克斯",
+      "sub": "红发船长",
+      "type": "leader",
+      "color": "black",
+      "power": 5000,
+      "life": 4,
+      "keywords": [],
+      "effect": null,
+      "art": "captains/shanks"
+    }
+  ],
+  "cards": [
+    {
+      "id": "RED-01",
+      "name": "乌索普",
+      "sub": " 狙击之王 ",
+      "type": "char",
+      "color": "red",
+      "cost": 1,
+      "power": 2000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "RED-01"
+    },
+    {
+      "id": "RED-02",
+      "name": "克比",
+      "sub": " 海军本部少将 ",
+      "type": "char",
+      "color": "red",
+      "cost": 1,
+      "power": 3000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "RED-02"
+    },
+    {
+      "id": "RED-03",
+      "name": "山治",
+      "sub": " 黑脚 ",
+      "type": "char",
+      "color": "red",
+      "cost": 2,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "art": "RED-03"
+    },
+    {
+      "id": "RED-04",
+      "name": "贝拉米",
+      "sub": " 鬣狗 ",
+      "type": "char",
+      "color": "red",
+      "cost": 2,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "RED-04"
+    },
+    {
+      "id": "RED-05",
+      "name": "冯克雷",
+      "sub": " Mr.2 人妖之王 ",
+      "type": "char",
+      "color": "red",
+      "cost": 3,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "RED-05"
+    },
+    {
+      "id": "RED-06",
+      "name": "萨博",
+      "sub": " 革命军参谋总长 ",
+      "type": "char",
+      "color": "red",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "art": "RED-06"
+    },
+    {
+      "id": "RED-07",
+      "name": "巴托洛米奥",
+      "sub": " 屏障果实 ",
+      "type": "char",
+      "color": "red",
+      "cost": 6,
+      "power": 6000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "RED-07"
+    },
+    {
+      "id": "RED-08",
+      "name": "艾斯",
+      "sub": " 火拳 ",
+      "type": "char",
+      "color": "red",
+      "cost": 4,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "whenAttacking",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
+      "art": "RED-08"
+    },
+    {
+      "id": "RED-09",
+      "name": "卡文迪许",
+      "sub": " 海贼贵公子 ",
+      "type": "char",
+      "color": "red",
+      "cost": 5,
+      "power": 7000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "art": "RED-09"
+    },
+    {
+      "id": "RED-10",
+      "name": "青椒",
+      "sub": " 锥龙钉钉头 ",
+      "type": "char",
+      "color": "red",
+      "cost": 7,
+      "power": 8000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "whenAttacking",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
+      "art": "RED-10"
+    },
+    {
+      "id": "RED-E1",
+      "name": "火拳",
+      "sub": " 大炎戒 ",
+      "type": "event",
+      "color": "red",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "koWeakest"
+        }
+      },
+      "art": "RED-E1"
+    },
+    {
+      "id": "RED-E2",
+      "name": "霸王色霸气",
+      "sub": " 王者威压 ",
+      "type": "event",
+      "color": "red",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "restEnemy"
+        }
+      },
+      "art": "RED-E2"
+    },
+    {
+      "id": "RED-S1",
+      "name": "前进梅利号",
+      "sub": " 黄金梅利号 ",
+      "type": "stage",
+      "color": "red",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "art": "RED-S1"
+    },
+    {
+      "id": "BLUE-01",
+      "name": "哈库",
+      "sub": " 鱼人空手道 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 1,
+      "power": 3000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "BLUE-01"
+    },
+    {
+      "id": "BLUE-02",
+      "name": "达斯琪",
+      "sub": " 海军上校 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 1,
+      "power": 2000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "art": "BLUE-02"
+    },
+    {
+      "id": "BLUE-03",
+      "name": "佩德罗",
+      "sub": " 骑士团团长 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 2,
+      "power": 3000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "art": "BLUE-03"
+    },
+    {
+      "id": "BLUE-04",
+      "name": "罗宾",
+      "sub": " 恶魔之子 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 2,
+      "power": 4000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "art": "BLUE-04"
+    },
+    {
+      "id": "BLUE-05",
+      "name": "猫蝮蛇",
+      "sub": " 摩科莫公国 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 3,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "BLUE-05"
+    },
+    {
+      "id": "BLUE-06",
+      "name": "犬岚公爵",
+      "sub": " 摩科莫公国 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 3,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "BLUE-06"
+    },
+    {
+      "id": "BLUE-07",
+      "name": "斯摩格",
+      "sub": " 白猎人 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 4,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "BLUE-07"
+    },
+    {
+      "id": "BLUE-08",
+      "name": "弗兰奇",
+      "sub": " 铁人 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "gainDon",
+          "n": 1
+        }
+      },
+      "art": "BLUE-08"
+    },
+    {
+      "id": "BLUE-09",
+      "name": "甚平",
+      "sub": " 海侠 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 6,
+      "power": 7000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "BLUE-09"
+    },
+    {
+      "id": "BLUE-10",
+      "name": "青雉",
+      "sub": " 库赞 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 7,
+      "power": 8000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "restEnemy"
+        }
+      },
+      "art": "BLUE-10"
+    },
+    {
+      "id": "BLUE-E1",
+      "name": "航海图",
+      "sub": " 伟大航路 ",
+      "type": "event",
+      "color": "blue",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "art": "BLUE-E1"
+    },
+    {
+      "id": "BLUE-E2",
+      "name": "天候蛋",
+      "sub": " 雷云密布 ",
+      "type": "event",
+      "color": "blue",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 2
+        }
+      },
+      "art": "BLUE-E2"
+    },
+    {
+      "id": "BLUE-S1",
+      "name": "可可亚村",
+      "sub": " 风车与橘子园 ",
+      "type": "stage",
+      "color": "blue",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "art": "BLUE-S1"
+    },
+    {
+      "id": "GREEN-01",
+      "name": "乔巴",
+      "sub": " 妹尾的驯鹿 ",
+      "type": "char",
+      "color": "green",
+      "cost": 1,
+      "power": 3000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "GREEN-01"
+    },
+    {
+      "id": "GREEN-02",
+      "name": "雷藏",
+      "sub": " 忍者 ",
+      "type": "char",
+      "color": "green",
+      "cost": 2,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "GREEN-02"
+    },
+    {
+      "id": "GREEN-03",
+      "name": "以藏",
+      "sub": " 白胡子海贼团 ",
+      "type": "char",
+      "color": "green",
+      "cost": 3,
+      "power": 5000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "art": "GREEN-03"
+    },
+    {
+      "id": "GREEN-04",
+      "name": "传次郎",
+      "sub": " 赤鞘九侠 ",
+      "type": "char",
+      "color": "green",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "art": "GREEN-04"
+    },
+    {
+      "id": "GREEN-05",
+      "name": "杰克",
+      "sub": " 猛火 ",
+      "type": "char",
+      "color": "green",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "art": "GREEN-05"
+    },
+    {
+      "id": "GREEN-06",
+      "name": "马尔科",
+      "sub": " 不死鸟 ",
+      "type": "char",
+      "color": "green",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "GREEN-06"
+    },
+    {
+      "id": "GREEN-07",
+      "name": "奎因",
+      "sub": " 疫灾 ",
+      "type": "char",
+      "color": "green",
+      "cost": 6,
+      "power": 7000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "art": "GREEN-07"
+    },
+    {
+      "id": "GREEN-08",
+      "name": "金",
+      "sub": " 灾火 ",
+      "type": "char",
+      "color": "green",
+      "cost": 7,
+      "power": 8000,
+      "counter": null,
+      "keywords": [
+        "doubleAttack"
+      ],
+      "effect": null,
+      "art": "GREEN-08"
+    },
+    {
+      "id": "GREEN-09",
+      "name": "大和",
+      "sub": " 鬼之女 ",
+      "type": "char",
+      "color": "green",
+      "cost": 8,
+      "power": 8000,
+      "counter": null,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "art": "GREEN-09"
+    },
+    {
+      "id": "GREEN-10",
+      "name": "白胡子",
+      "sub": " 爱德华·纽盖特 ",
+      "type": "char",
+      "color": "green",
+      "cost": 8,
+      "power": 9000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "whenAttacking",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
+      "art": "GREEN-10"
+    },
+    {
+      "id": "GREEN-E1",
+      "name": "雷鸣八卦",
+      "sub": " 雷鸣 ",
+      "type": "event",
+      "color": "green",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "koWeakest"
+        }
+      },
+      "art": "GREEN-E1"
+    },
+    {
+      "id": "GREEN-E2",
+      "name": "百兽军团",
+      "sub": " 给赋者集结 ",
+      "type": "event",
+      "color": "green",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "gainDon",
+          "n": 1
+        }
+      },
+      "art": "GREEN-E2"
+    },
+    {
+      "id": "GREEN-S1",
+      "name": "鬼岛",
+      "sub": " 和之国·凯多居城 ",
+      "type": "stage",
+      "color": "green",
+      "cost": 4,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "gainDon",
+          "n": 2
+        }
+      },
+      "art": "GREEN-S1"
+    },
+    {
+      "id": "YELLOW-01",
+      "name": "佩罗娜",
+      "sub": " 幽灵公主 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 1,
+      "power": 2000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "art": "YELLOW-01"
+    },
+    {
+      "id": "YELLOW-02",
+      "name": "桑达索尼亚",
+      "sub": " 蛇蛇果实 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 2,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "YELLOW-02"
+    },
+    {
+      "id": "YELLOW-03",
+      "name": "玛丽哥德",
+      "sub": " 蛇蛇果实 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 2,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "YELLOW-03"
+    },
+    {
+      "id": "YELLOW-04",
+      "name": "莫利亚",
+      "sub": " 影子大王 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 3,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "YELLOW-04"
+    },
+    {
+      "id": "YELLOW-05",
+      "name": "比斯塔",
+      "sub": " 花剑 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 4,
+      "power": 5000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "art": "YELLOW-05"
+    },
+    {
+      "id": "YELLOW-06",
+      "name": "乔兹",
+      "sub": " 钻石 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "YELLOW-06"
+    },
+    {
+      "id": "YELLOW-07",
+      "name": "克洛克达尔",
+      "sub": " 沙鳄鱼 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "art": "YELLOW-07"
+    },
+    {
+      "id": "YELLOW-08",
+      "name": "巴索罗缪·熊",
+      "sub": " 暴君 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "YELLOW-08"
+    },
+    {
+      "id": "YELLOW-09",
+      "name": "多弗朗明戈",
+      "sub": " 天夜叉 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 6,
+      "power": 7000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "whenAttacking",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
+      "art": "YELLOW-09"
+    },
+    {
+      "id": "YELLOW-10",
+      "name": "艾涅尔",
+      "sub": " 神 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 7,
+      "power": 8000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "restEnemy"
+        }
+      },
+      "art": "YELLOW-10"
+    },
+    {
+      "id": "YELLOW-E1",
+      "name": "俘虏之箭",
+      "sub": " 铁钩一闪 ",
+      "type": "event",
+      "color": "yellow",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "powerLeader",
+          "x": 2000,
+          "until": "battle"
+        }
+      },
+      "art": "YELLOW-E1"
+    },
+    {
+      "id": "YELLOW-E2",
+      "name": "甜甜甘风",
+      "sub": " 密玛·甜心 ",
+      "type": "event",
+      "color": "yellow",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "restEnemy"
+        }
+      },
+      "art": "YELLOW-E2"
+    },
+    {
+      "id": "YELLOW-S1",
+      "name": "九蛇女儿岛",
+      "sub": " 亚马逊·百合 ",
+      "type": "stage",
+      "color": "yellow",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "art": "YELLOW-S1"
+    },
+    {
+      "id": "PURPLE-01",
+      "name": "贝波",
+      "sub": " 北极熊 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 1,
+      "power": 3000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "PURPLE-01"
+    },
+    {
+      "id": "PURPLE-02",
+      "name": "夏奇",
+      "sub": " 流氓店店主 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 2,
+      "power": 3000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "art": "PURPLE-02"
+    },
+    {
+      "id": "PURPLE-03",
+      "name": "佩金",
+      "sub": " 企鹅帽 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 2,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "PURPLE-03"
+    },
+    {
+      "id": "PURPLE-04",
+      "name": "霍金斯",
+      "sub": " 稻草人 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 3,
+      "power": 4000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "gainDon",
+          "n": 1
+        }
+      },
+      "art": "PURPLE-04"
+    },
+    {
+      "id": "PURPLE-05",
+      "name": "阿普",
+      "sub": " Scratchmen Apoo ",
+      "type": "char",
+      "color": "purple",
+      "cost": 3,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "PURPLE-05"
+    },
+    {
+      "id": "PURPLE-06",
+      "name": "基拉",
+      "sub": " 杀戮武人 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "art": "PURPLE-06"
+    },
+    {
+      "id": "PURPLE-07",
+      "name": "凯撒·克朗",
+      "sub": " 毒气 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "restEnemy"
+        }
+      },
+      "art": "PURPLE-07"
+    },
+    {
+      "id": "PURPLE-08",
+      "name": "X·德雷克",
+      "sub": " 异特龙 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "art": "PURPLE-08"
+    },
+    {
+      "id": "PURPLE-09",
+      "name": "尤斯塔斯·基德",
+      "sub": " 磁磁果实 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 6,
+      "power": 7000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "whenAttacking",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
+      "art": "PURPLE-09"
+    },
+    {
+      "id": "PURPLE-10",
+      "name": "乔拉可尔·米霍克",
+      "sub": " 鹰眼 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 7,
+      "power": 8000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "PURPLE-10"
+    },
+    {
+      "id": "PURPLE-E1",
+      "name": "ROOM·手术刀",
+      "sub": " 手术果实 ",
+      "type": "event",
+      "color": "purple",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "koWeakest"
+        }
+      },
+      "art": "PURPLE-E1"
+    },
+    {
+      "id": "PURPLE-E2",
+      "name": "心脉分享",
+      "sub": " 医生之道 ",
+      "type": "event",
+      "color": "purple",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "gainDon",
+          "n": 1
+        }
+      },
+      "art": "PURPLE-E2"
+    },
+    {
+      "id": "PURPLE-S1",
+      "name": "极地汤号",
+      "sub": " 心脏海贼团潜水艇 ",
+      "type": "stage",
+      "color": "purple",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "gainDon",
+          "n": 1
+        }
+      },
+      "art": "PURPLE-S1"
+    },
+    {
+      "id": "BLACK-01",
+      "name": "毒Q",
+      "sub": " 死神 ",
+      "type": "char",
+      "color": "black",
+      "cost": 1,
+      "power": 2000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "BLACK-01"
+    },
+    {
+      "id": "BLACK-02",
+      "name": "拉菲特",
+      "sub": " 五号船船长 ",
+      "type": "char",
+      "color": "black",
+      "cost": 2,
+      "power": 3000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "art": "BLACK-02"
+    },
+    {
+      "id": "BLACK-03",
+      "name": "范·奥卡",
+      "sub": " 超音速 ",
+      "type": "char",
+      "color": "black",
+      "cost": 3,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "BLACK-03"
+    },
+    {
+      "id": "BLACK-04",
+      "name": "巴加斯",
+      "sub": " 冠军 ",
+      "type": "char",
+      "color": "black",
+      "cost": 4,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "BLACK-04"
+    },
+    {
+      "id": "BLACK-05",
+      "name": "瓦斯卡多",
+      "sub": " 恶政王 ",
+      "type": "char",
+      "color": "black",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "koWeakest"
+        }
+      },
+      "art": "BLACK-05"
+    },
+    {
+      "id": "BLACK-06",
+      "name": "阿巴罗·比萨罗",
+      "sub": " 晴岚之王 ",
+      "type": "char",
+      "color": "black",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "art": "BLACK-06"
+    },
+    {
+      "id": "BLACK-07",
+      "name": "卡特琳娜·蝶美",
+      "sub": " 月牙猎人 ",
+      "type": "char",
+      "color": "black",
+      "cost": 6,
+      "power": 6000,
+      "counter": 2000,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "BLACK-07"
+    },
+    {
+      "id": "BLACK-08",
+      "name": "雨之希留",
+      "sub": " 雨 ",
+      "type": "char",
+      "color": "black",
+      "cost": 6,
+      "power": 7000,
+      "counter": null,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "art": "BLACK-08"
+    },
+    {
+      "id": "BLACK-09",
+      "name": "圣胡安·恶狼",
+      "sub": " 巨大战舰 ",
+      "type": "char",
+      "color": "black",
+      "cost": 7,
+      "power": 8000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "BLACK-09"
+    },
+    {
+      "id": "BLACK-10",
+      "name": "麦哲伦",
+      "sub": " 监狱署长 ",
+      "type": "char",
+      "color": "black",
+      "cost": 8,
+      "power": 8000,
+      "counter": null,
+      "keywords": [
+        "banish"
+      ],
+      "effect": null,
+      "art": "BLACK-10"
+    },
+    {
+      "id": "BLACK-E1",
+      "name": "黑洞",
+      "sub": " 暗暗果实 ",
+      "type": "event",
+      "color": "black",
+      "cost": 5,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "koWeakest"
+        }
+      },
+      "art": "BLACK-E1"
+    },
+    {
+      "id": "BLACK-E2",
+      "name": "暗水",
+      "sub": " 引力牵引 ",
+      "type": "event",
+      "color": "black",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "restEnemy"
+        }
+      },
+      "art": "BLACK-E2"
+    },
+    {
+      "id": "BLACK-S1",
+      "name": "因佩尔 LV6",
+      "sub": " 无限地狱 ",
+      "type": "stage",
+      "color": "black",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "koWeakest"
+        }
+      },
+      "art": "BLACK-S1"
+    }
+  ]
+}

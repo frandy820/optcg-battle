@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>航海王 · 卡牌对战</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 动态背景：深海 + 流光 + 星尘 -->
+  <div id="bg">
+    <div class="bg-gradient"></div>
+    <div class="bg-waves"></div>
+    <div class="bg-stars"></div>
+    <div class="bg-glow"></div>
+  </div>
+  <canvas id="fx"></canvas>
+
+  <!-- 主牌桌 -->
+  <div id="app">
+    <!-- 顶栏 -->
+    <header id="topbar">
+      <div class="turn-info">
+        <span id="turnNo">回合 1</span>
+        <span id="phaseBadge" class="phase-badge">MAIN</span>
+      </div>
+      <div class="match-title">航海王卡牌对战</div>
+      <div class="top-actions">
+        <button id="btnHelp" class="btn-ghost top-btn">说明</button>
+        <button id="btnRestart" class="btn-ghost top-btn">重新开局</button>
+        <button id="btnMenu" class="btn-ghost top-btn">返回港口</button>
+      </div>
+    </header>
+
+    <!-- 对手区 -->
+    <section id="enemyZone" class="zone">
+      <div class="row top-row">
+        <div class="slot leader-slot" id="enemyLeaderSlot"></div>
+        <div class="life-row" id="enemyLife"></div>
+        <div class="don-zone" id="enemyDon" title="对手 DON!! 费用区"></div>
+        <div class="grave" id="enemyGrave" title="对手垃圾场">墓 <b>0</b></div>
+      </div>
+      <div class="row board-row" id="enemyBoard"></div>
+      <div class="row sub-row">
+        <div class="enemy-hand" id="enemyHand"></div>
+        <div class="slot stage-slot" id="enemyStage"></div>
+      </div>
+    </section>
+
+    <!-- 中线：战场分隔 -->
+    <div id="battleLine">
+      <div class="line-glow"></div>
+    </div>
+
+    <!-- 己方区 -->
+    <section id="myZone" class="zone">
+      <div class="row sub-row">
+        <div class="slot stage-slot" id="myStage"></div>
+        <div class="don-zone mine" id="myDon" title="DON!! 费用区（点击附着）"></div>
+      </div>
+      <div class="row board-row" id="myBoard"></div>
+      <div class="row top-row">
+        <div class="slot leader-slot" id="myLeaderSlot"></div>
+        <div class="life-row" id="myLife"></div>
+        <div class="grave" id="myGrave" title="我的垃圾场">墓 <b>0</b></div>
+        <button id="btnEnd" class="btn-end">结束回合<svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+      <div class="hand-wrap">
+        <div class="hand-row" id="myHand"></div>
+        <div class="hand-fade hand-fade-l" aria-hidden="true"></div>
+        <div class="hand-fade hand-fade-r" aria-hidden="true"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 响应面板（Blocker / Counter） -->
+  <div id="responsePanel" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="responseTitle">对方攻击！</h3>
+      <p id="responseDesc" class="muted"></p>
+      <div id="responseOptions"></div>
+      <button id="btnPass" class="btn-ghost">放弃响应</button>
+    </div>
+  </div>
+
+  <!-- 阶段演出横幅 -->
+  <div id="banner" class="hidden"></div>
+
+  <!-- 事件日志 -->
+  <aside id="logPanel">
+    <div class="log-head"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg>战报</div>
+    <div id="logBody"></div>
+  </aside>
+
+  <!-- 出航准备（船长大厅） -->
+  <div id="setupPanel" class="modal">
+    <div class="modal-card setup hall">
+      <header class="hall-head">
+        <span class="hall-crest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
+        <h3>选择你的船长</h3>
+        <p class="hall-sub">命运的潮汐正在召唤新的指挥官</p>
+        <div class="hall-rule"></div>
+        <div class="hall-help-row">
+          <button id="btnHallHelp" class="btn-ghost hall-help-btn">新手指南 · 玩法说明</button>
+          <button id="btnOnboarding" class="btn-ghost hall-help-btn">分步教程</button>
+        </div>
+      </header>
+      <div id="leaderChoices" class="leader-grid"></div>
+      <div class="setup-row deck-row">
+        <label class="sel-label">
+          <span class="sel-title"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>我的卡组</span>
+          <select id="deckSel"></select>
+          <span class="deck-hint" id="deckHint"></span>
+        </label>
+        <button id="btnBuilder" class="btn-ghost"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9"/><path d="m18 15 4-4"/><path d="m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172V7l-2.26-2.26a6 6 0 0 0-4.202-1.756L9 2.96l.92.82A6.18 6.18 0 0 1 12 8.4V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5"/></svg>构筑卡组</button>
+      </div>
+      <div class="sticky-cta">
+        <div class="setup-row" id="setupVoyageRow">
+          <label class="sel-label">
+            <span class="sel-title"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>AI 难度</span>
+            <select id="aiLevel">
+              <option value="easy">新手水手（易）</option>
+              <option value="normal" selected>精英船员（中）</option>
+              <option value="hard">风暴领主（难）</option>
+            </select>
+          </label>
+          <button id="btnStart" class="btn-primary btn-voyage"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>出航！</button>
+        </div>
+        <button id="btnResume" class="btn-ghost btn-resume hidden"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>继续上次对局</button>
+      </div>
+      <div class="mode-row">
+        <button id="btnLadder" class="mode-card ladder">
+          <span class="mc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>
+          <span class="mc-body"><span class="mc-name">天梯排位</span><span class="mc-desc">段位晋级 · 敌将随分数变强</span><span class="mode-sub" id="ladderBadge"></span></span>
+        </button>
+        <button id="btnSurvival" class="mode-card survival">
+          <span class="mc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 10"/><line x1="5" y1="14" x2="9" y2="18"/><line x1="7" y1="17" x2="4" y2="20"/><line x1="3" y1="19" x2="5" y2="21"/></svg></span>
+          <span class="mc-body"><span class="mc-name">生存挑战</span><span class="mc-desc">连胜不断升档 · 一败归零</span><span class="mode-sub" id="survivalBadge"></span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 玩法说明 -->
+  <div id="helpPanel" class="modal hidden">
+    <div class="modal-card help-card">
+      <h3>玩法说明</h3>
+      <div id="helpBody" class="help-body"></div>
+      <div class="end-actions">
+        <button id="btnHelpClose" class="btn-primary">明白了，出航！</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 卡组构筑器 -->
+  <div id="builderPanel" class="modal hidden">
+    <div class="modal-card builder-card">
+      <h3>卡组构筑 <span class="builder-tip">点卡 +1 · 点右上角 ×N 减 1</span></h3>
+      <div class="builder-top">
+        <div id="builderLeaders" class="builder-leaders"></div>
+        <input id="builderName" placeholder="卡组名称" maxlength="12">
+        <button id="btnBuilderSave" class="btn-ghost"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>保存</button>
+        <button id="btnBuilderDelete" class="btn-ghost"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>删除</button>
+      </div>
+      <div class="builder-count" id="builderCount">已选 0 / 50</div>
+      <div id="builderPool" class="builder-pool"></div>
+      <div class="builder-actions">
+        <button id="btnBuilderFill" class="btn-ghost"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>快速填充</button>
+        <button id="btnBuilderClear" class="btn-ghost"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>清空</button>
+        <button id="btnBuilderBattle" class="btn-primary"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>用此卡组出航</button>
+        <button id="btnBuilderClose" class="btn-ghost">返回</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 对局结算 -->
+  <div id="endPanel" class="modal hidden">
+    <div class="modal-card end-card">
+      <div id="endTitle" class="end-title">胜利！</div>
+      <div id="endDetail" class="end-detail"></div>
+      <div class="end-actions">
+        <button id="btnRematch" class="btn-primary"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>再战一局</button>
+        <button id="btnBackMenu" class="btn-ghost"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>返回港口</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.bundle.js"></script>
+  <script src="captains-data.js"></script>
+  <script src="save.js"></script>
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+  <script src="modes.js"></script>
+  <script src="onboarding.js"></script>
+</body>
+</html>
