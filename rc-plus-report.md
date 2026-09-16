@@ -9,7 +9,7 @@
 |---|---|
 | 基线 | `e68b1ec`（master，RC 交付态；30 个 JS / 89 测试 / bundle 10 项全过） |
 | 分支 | `feature/rc-plus-polish` |
-| 最终 commit | `<本报告定稿 commit，见 git log -1>` |
+| 最终 commit | `fcb0f1f`（feature/rc-plus-polish；未合 master、未部署未发布） |
 | 改动文件 | 代码 4：`web/game.js`（R1 响应面板机制文案）、`web/style.css`（R5 三处小屏修复）、`web/index.html`/`web/selftest.html`（E2E 宿主同构与 selftest 加速档）；工具 3：`scripts/balance-sim.js`（60 局扩展/峰值观测）、`scripts/verify-all.mjs`（新增一键验证）、`package.json`（verify 脚本）；测试 5：`tests/balance.test.js`（新增）、`tests/e2e/{player-flow.js, run.mjs, layout.html, README.md}`（新增）、`web/e2e.html`（新增 TEST-ONLY 宿主）；数据 3：`docs/balance-report.{md,json}`（60 局再生）+ `before-60.json`（基线副本） |
 
 ## 1. R1 三轮真实试玩审计
