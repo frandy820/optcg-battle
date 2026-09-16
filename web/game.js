@@ -116,9 +116,14 @@
       });
     }
   }
+  let fxDirty = false; // 画布脏标记：上次已清空且无粒子时跳过 clearRect（空闲帧零成本）
   (function fxLoop() {
     requestAnimationFrame(fxLoop);
-    if (!particles.length) { fctx.clearRect(0, 0, fxCanvas.width, fxCanvas.height); return; }
+    if (!particles.length) {
+      if (fxDirty) { fctx.clearRect(0, 0, fxCanvas.width, fxCanvas.height); fxDirty = false; }
+      return;
+    }
+    fxDirty = true;
     fctx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
     particles = particles.filter((p) => p.life > 0);
     for (const p of particles) {
@@ -537,7 +542,11 @@
     const atkP = p.attacker.type === 'leader' ? O.leaderPower(foe) : O.powerOfUnit(atkUnit);
     const defP = (p.target.type === 'leader' ? O.leaderPower(G.players[MY]) : O.powerOfUnit(defUnit)) + p.counterBoost;
     $('responseTitle').textContent = p.kind === 'block' ? '对方攻击！要阻挡吗？' : '反击窗口';
-    $('responseDesc').textContent = `${atkUnit.name} ${atkP} → ${defUnit.name} ${defP}${p.kind === 'counter' ? '（可用反击牌累积战力）' : ''}`;
+    // 机制说明随文案给出：新玩家不需试错即可懂「阻挡=替船长承受」「反击=加战力可反杀」
+    $('responseDesc').textContent = `${atkUnit.name} ${atkP} → ${defUnit.name} ${defP}`
+      + (p.kind === 'counter'
+        ? '（打出反击牌累积防守战力，防守战力 ≥ 攻击战力即可击沉攻方）'
+        : '（阻挡者代替船长承受攻击：战力不足则阻挡者被击沉、船长无伤）');
     const box = $('responseOptions');
     box.innerHTML = '';
     const me = G.players[MY];
@@ -1034,7 +1043,7 @@
   function stopAutoplayTimer() {
     if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
   }
-  function autoplay(n) {
+  function autoplay(n, stepMs) {
     stopAutoplayTimer(); // 并发调用只保留最新一个
     let i = 0;
     autoTimer = setInterval(() => {
@@ -1046,7 +1055,7 @@
       if (!acts.length) return;
       doAction(acts[i % acts.length]);
       if (++i >= n) stopAutoplayTimer();
-    }, 420);
+    }, stepMs || 420); // stepMs 仅测试加速用（虚拟时间快进），玩家路径不传
   }
 
   const qs = new URLSearchParams(location.search);

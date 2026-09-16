@@ -8,6 +8,7 @@
     "test": "node --test",
     "check": "node scripts/check.js",
     "bundle": "node scripts/bundle.js",
-    "balance": "node scripts/balance-sim.js"
+    "balance": "node scripts/balance-sim.js",
+    "verify": "node scripts/verify-all.mjs"
   }
 }

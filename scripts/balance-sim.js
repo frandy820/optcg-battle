@@ -63,6 +63,7 @@ function deckOf(color) {
 }
 
 // 单局驱动：双 AI 轮流决策（含 pending 响应窗口）。异常不炸批：记 error 后终止该局。
+// 附加观测：手牌峰值（满手牌压力）、双方牌库耗尽时刻（空牌库压力）——驱动层采样，不改引擎。
 function playGame({ color0, color1, lvl0, lvl1, seed }) {
   const leader0 = O.POOL.leaders.find((l) => l.color === color0);
   const leader1 = O.POOL.leaders.find((l) => l.color === color1);
@@ -70,22 +71,31 @@ function playGame({ color0, color1, lvl0, lvl1, seed }) {
   const ai0 = O.createAI(lvl0, O.makeRng(seed * 2 + 1));
   const ai1 = O.createAI(lvl1, O.makeRng(seed * 2 + 2));
   let steps = 0;
+  let maxHand = 0, deckEmptyTurns = 0; // 满手牌峰值 / 牌库空后仍在打的回合数
+  const sample = () => {
+    for (const p of s.players) {
+      if (p.hand.length > maxHand) maxHand = p.hand.length;
+      if (p.deck.length === 0) deckEmptyTurns++;
+    }
+  };
   while (s.winner === null && s.turn <= MAX_TURNS && steps < STALL_ACTIONS) {
     const acts = O.listActions(s);
-    if (!acts.length) return { winner: null, reason: 'noActions', steps, turns: s.turn, stalled: true };
+    if (!acts.length) return { winner: null, reason: 'noActions', steps, turns: s.turn, stalled: true, maxHand, deckEmptyTurns };
     const ai = s.pending ? (s.pending.target.side === 0 ? ai0 : ai1) : (s.active === 0 ? ai0 : ai1);
     try {
       const a = ai.choose(s, acts);
-      if (!a) return { winner: null, reason: 'aiNoChoice', steps, turns: s.turn, stalled: true };
+      if (!a) return { winner: null, reason: 'aiNoChoice', steps, turns: s.turn, stalled: true, maxHand, deckEmptyTurns };
       O.applyAction(s, a);
     } catch (e) {
-      return { winner: null, reason: `error:${e.message}`, steps, turns: s.turn, stalled: true, error: e.message };
+      return { winner: null, reason: `error:${e.message}`, steps, turns: s.turn, stalled: true, error: e.message, maxHand, deckEmptyTurns };
     }
     steps++;
+    if (steps % 5 === 0) sample();
   }
+  sample();
   return {
     winner: s.winner, reason: s.winReason, steps, turns: s.turn,
-    stalled: s.winner === null,
+    stalled: s.winner === null, maxHand, deckEmptyTurns,
   };
 }
 
@@ -104,6 +114,7 @@ function runMatchup(colorA, colorB, level, games, tag) {
     firstSideWins: 0, secondSideWins: 0,
     reasons: {},
     turnsAll: [], stepsAll: [],
+    maxHandAll: [], deckEmptyAll: [],
     errorDetails: [],
   };
   for (let g = 0; g < games; g++) {
@@ -126,12 +137,17 @@ function runMatchup(colorA, colorB, level, games, tag) {
     agg.reasons[r.reason] = (agg.reasons[r.reason] || 0) + 1;
     agg.turnsAll.push(r.turns);
     agg.stepsAll.push(r.steps);
+    agg.maxHandAll.push(r.maxHand || 0);
+    agg.deckEmptyAll.push(r.deckEmptyTurns || 0);
   }
   const finished = agg.winsA + agg.winsB;
   const turnsSorted = [...agg.turnsAll].sort((x, y) => x - y);
   const stepsSorted = [...agg.stepsAll].sort((x, y) => x - y);
   agg.turnsAvg = finished ? +(agg.turnsAll.reduce((n, t) => n + t, 0) / finished).toFixed(1) : null;
+  agg.turnsMin = turnsSorted.length ? turnsSorted[0] : null;
   agg.turnsMax = turnsSorted.length ? turnsSorted[turnsSorted.length - 1] : null;
+  agg.maxHandPeak = agg.maxHandAll.length ? Math.max(...agg.maxHandAll) : null;       // 手牌峰值（满手牌压力观测）
+  agg.deckEmptyGames = agg.deckEmptyAll.filter((n) => n > 0).length;                   // 出现过空牌库的对局数
   agg.steps = {
     avg: stepsSorted.length ? Math.round(stepsSorted.reduce((n, x) => n + x, 0) / stepsSorted.length) : null,
     p50: quantile(stepsSorted, 0.5),
@@ -171,7 +187,7 @@ async function runMatrix(level, games, tag) {
 
 // ---- 报告 ----
 function mdTable(matrixRows) {
-  const head = '| 对阵 | 胜率(A) | 战绩 A-B-平 | 平均回合 | 最长回合 | 动作 p50/p90/max | 终局方式 | 异常 |';
+  const head = '| 对阵 | 胜率(A) | 战绩 A-B-平 | 平均回合(min~max) | 动作 p50/p90/max | 终局方式 | 压力观测 |';
   const sep = '|---|---|---|---|---|---|---|---|';
   return [head, sep, ...matrixRows].join('\n');
 }
@@ -182,9 +198,9 @@ function matchupRow(r) {
   if (r.stalls) anom.push(`卡死${r.stalls}`);
   if (r.errors) anom.push(`异常${r.errors}`);
   return `| ${COLOR_CN[r.a]} vs ${COLOR_CN[r.b]}${r.a === r.b ? '（镜像=先手胜率）' : ''} | ${r.winRateA === null ? '-' : r.winRateA + '%'} `
-    + `| ${r.winsA}-${r.winsB}-${r.draws} | ${r.turnsAvg ?? '-'} | ${r.turnsMax ?? '-'} `
+    + `| ${r.winsA}-${r.winsB}-${r.draws} | ${r.turnsAvg ?? '-'} (${r.turnsMin ?? '-'}~${r.turnsMax ?? '-'}) `
     + `| ${r.steps.p50 ?? '-'}/${r.steps.p90 ?? '-'}/${r.steps.max ?? '-'} `
-    + `| ${reasons} | ${anom.join(' ') || '无'} |`;
+    + `| ${reasons} | 手牌峰${r.maxHandPeak ?? '-'} 空库局${r.deckEmptyGames ?? '-'} ${anom.join(' ') || '无'} |`;
 }
 
 // 胜率矩阵：cell(i,j) = i 色对 j 色胜率（%），对角线为镜像局先手/后手合计口径

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>E2E [TEST-ONLY] 航海王 · 卡牌对战</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ============================================================
+    E2E 测试专用入口（tests/e2e/player-flow.js 的宿主页）。
+    [TEST-ONLY] 约束：不在正式 index.html 挂任何链接、不被 app.bundle.js
+    引用、不含玩家可见调试入口——与 selftest.html 同级的测试资产。
+    跑法见 tests/e2e/README.md（node tests/e2e/run.mjs）。
+    ============================================================ -->
+  <!-- 动态背景：深海 + 流光 + 星尘 -->
+  <div id="bg">
+    <div class="bg-gradient"></div>
+    <div class="bg-waves"></div>
+    <div class="bg-stars"></div>
+    <div class="bg-glow"></div>
+  </div>
+  <canvas id="fx"></canvas>
+
+  <!-- 主牌桌（与 index.html 同构：game.js setupUI 依赖全部按钮 id）-->
+  <div id="app">
+    <header id="topbar">
+      <div class="turn-info">
+        <span id="turnNo">回合 1</span>
+        <span id="phaseBadge" class="phase-badge">MAIN</span>
+      </div>
+      <div class="match-title">航海王卡牌对战</div>
+      <div class="top-actions">
+        <button id="btnHelp" class="btn-ghost top-btn">说明</button>
+        <button id="btnRestart" class="btn-ghost top-btn">重新开局</button>
+        <button id="btnMenu" class="btn-ghost top-btn">返回港口</button>
+      </div>
+    </header>
+
+    <section id="enemyZone" class="zone">
+      <div class="row top-row">
+        <div class="slot leader-slot" id="enemyLeaderSlot"></div>
+        <div class="life-row" id="enemyLife"></div>
+        <div class="don-zone" id="enemyDon" title="对手 DON!! 费用区"></div>
+        <div class="grave" id="enemyGrave" title="对手垃圾场">墓 <b>0</b></div>
+      </div>
+      <div class="row board-row" id="enemyBoard"></div>
+      <div class="row sub-row">
+        <div class="enemy-hand" id="enemyHand"></div>
+        <div class="slot stage-slot" id="enemyStage"></div>
+      </div>
+    </section>
+
+    <div id="battleLine">
+      <div class="line-glow"></div>
+    </div>
+
+    <section id="myZone" class="zone">
+      <div class="row sub-row">
+        <div class="slot stage-slot" id="myStage"></div>
+        <div class="don-zone mine" id="myDon" title="DON!! 费用区（点击附着）"></div>
+      </div>
+      <div class="row board-row" id="myBoard"></div>
+      <div class="row top-row">
+        <div class="slot leader-slot" id="myLeaderSlot"></div>
+        <div class="life-row" id="myLife"></div>
+        <div class="grave" id="myGrave" title="我的垃圾场">墓 <b>0</b></div>
+        <button id="btnEnd" class="btn-end">结束回合</button>
+      </div>
+      <div class="hand-wrap">
+        <div class="hand-row" id="myHand"></div>
+        <div class="hand-fade hand-fade-l" aria-hidden="true"></div>
+        <div class="hand-fade hand-fade-r" aria-hidden="true"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 响应面板（Blocker / Counter） -->
+  <div id="responsePanel" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="responseTitle">对方攻击！</h3>
+      <p id="responseDesc" class="muted"></p>
+      <div id="responseOptions"></div>
+      <button id="btnPass" class="btn-ghost">放弃响应</button>
+    </div>
+  </div>
+
+  <!-- 阶段演出横幅 -->
+  <div id="banner" class="hidden"></div>
+
+  <!-- 事件日志 -->
+  <aside id="logPanel">
+    <div class="log-head">战报</div>
+    <div id="logBody"></div>
+  </aside>
+
+  <!-- 出航准备（船长大厅） -->
+  <div id="setupPanel" class="modal">
+    <div class="modal-card setup hall">
+      <header class="hall-head">
+        <span class="hall-crest"></span>
+        <h3>选择你的船长</h3>
+        <p class="hall-sub">命运的潮汐正在召唤新的指挥官</p>
+        <div class="hall-rule"></div>
+        <div class="hall-help-row">
+          <button id="btnHallHelp" class="btn-ghost hall-help-btn">新手指南 · 玩法说明</button>
+        </div>
+      </header>
+      <div id="leaderChoices" class="leader-grid"></div>
+      <div class="setup-row deck-row">
+        <label class="sel-label">
+          <span class="sel-title">我的卡组</span>
+          <select id="deckSel"></select>
+          <span class="deck-hint" id="deckHint"></span>
+        </label>
+        <button id="btnBuilder" class="btn-ghost">构筑卡组</button>
+      </div>
+      <div class="mode-row">
+        <button id="btnLadder" class="mode-card ladder">
+          <span class="mc-body"><span class="mc-name">天梯排位</span><span class="mode-sub" id="ladderBadge"></span></span>
+        </button>
+        <button id="btnSurvival" class="mode-card survival">
+          <span class="mc-body"><span class="mc-name">生存挑战</span><span class="mode-sub" id="survivalBadge"></span></span>
+        </button>
+      </div>
+      <div class="sticky-cta">
+        <div class="setup-row" id="setupVoyageRow">
+          <label class="sel-label">
+            <span class="sel-title">AI 难度</span>
+            <select id="aiLevel">
+              <option value="easy">新手水手（易）</option>
+              <option value="normal" selected>精英船员（中）</option>
+              <option value="hard">风暴领主（难）</option>
+            </select>
+          </label>
+          <button id="btnStart" class="btn-primary btn-voyage">出航！</button>
+        </div>
+        <button id="btnResume" class="btn-ghost btn-resume hidden">继续上次对局</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 玩法说明 -->
+  <div id="helpPanel" class="modal hidden">
+    <div class="modal-card help-card">
+      <h3>玩法说明</h3>
+      <div id="helpBody" class="help-body"></div>
+      <div class="end-actions">
+        <button id="btnHelpClose" class="btn-primary">明白了，出航！</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 卡组构筑器 -->
+  <div id="builderPanel" class="modal hidden">
+    <div class="modal-card builder-card">
+      <h3>卡组构筑 <span class="builder-tip">点卡 +1 · 点右上角 ×N 减 1</span></h3>
+      <div class="builder-top">
+        <div id="builderLeaders" class="builder-leaders"></div>
+        <input id="builderName" placeholder="卡组名称" maxlength="12">
+        <button id="btnBuilderSave" class="btn-ghost">保存</button>
+        <button id="btnBuilderDelete" class="btn-ghost">删除</button>
+      </div>
+      <div class="builder-count" id="builderCount">已选 0 / 50</div>
+      <div id="builderPool" class="builder-pool"></div>
+      <div class="builder-actions">
+        <button id="btnBuilderFill" class="btn-ghost">快速填充</button>
+        <button id="btnBuilderClear" class="btn-ghost">清空</button>
+        <button id="btnBuilderBattle" class="btn-primary">用此卡组出航</button>
+        <button id="btnBuilderClose" class="btn-ghost">返回</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 对局结算 -->
+  <div id="endPanel" class="modal hidden">
+    <div class="modal-card end-card">
+      <div id="endTitle" class="end-title">胜利！</div>
+      <div id="endDetail" class="end-detail"></div>
+      <div class="end-actions">
+        <button id="btnRematch" class="btn-primary">再战一局</button>
+        <button id="btnBackMenu" class="btn-ghost">返回港口</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 加载链与 index.html 一致（onboarding 含：试玩需覆盖真实首访引导）-->
+  <script src="app.bundle.js"></script>
+  <script src="captains-data.js"></script>
+  <script src="save.js"></script>
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+  <script src="modes.js"></script>
+  <script src="onboarding.js"></script>
+  <script src="../tests/e2e/player-flow.js"></script>
+</body>
+</html>

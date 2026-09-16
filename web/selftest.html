@@ -253,7 +253,7 @@
     // -- 3 天梯：开局(0分→easy)→打完→结算 --
     OPTCG_MODES.startLadderGame();
     ok($('setupPanel').classList.contains('hidden'), '天梯开局 setup 已隐');
-    OPTCG_GAME.autoplay(500);
+    OPTCG_GAME.autoplay(500, 50); // 50ms 步进（虚拟时间快进）：42 断言四局串行总预算可控在 60s 内
     const st1 = await waitEnd();
     const ep1 = await waitEndPanel(); // 等 showEndPanel（终局演出+700ms）→ settle 已落盘
     ok(st1.winner !== null, '天梯局终局 (winner=' + st1.winner + ')');
@@ -268,7 +268,7 @@
 
     // -- 4 生存：开局→打完→streak 落盘 --
     OPTCG_MODES.startSurvivalGame();
-    OPTCG_GAME.autoplay(500);
+    OPTCG_GAME.autoplay(500, 50);
     const st2 = await waitEnd();
     const ep2 = await waitEndPanel(); // settle 落盘同样在 showEndPanel 内，轮询而非固定 sleep
     ok(st2.winner !== null, '生存局终局 (winner=' + st2.winner + ')');
@@ -307,7 +307,7 @@
     ok(OPTCG_GAME.state() && OPTCG_GAME.state().winner === null, '断档恢复后对局进行中');
 
     // -- 7 定时器卫生：backToMenu 后无跨局幽灵驱动 --
-    OPTCG_GAME.autoplay(50);
+    OPTCG_GAME.autoplay(50, 10);
     await new Promise((r) => setTimeout(r, 900));
     OPTCG_GAME.backToMenu();
     OPTCG_GAME.startGame({ leaderColor: 'red', level: 'easy' });

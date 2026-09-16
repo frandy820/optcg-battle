@@ -732,8 +732,11 @@ button:disabled {
 .btn-resume:hover { border-color: var(--gold-bright); box-shadow: 0 0 14px rgba(217,170,69,.3); }
 
 /* ---- 玩法说明面板 ---- */
-.help-card { max-width: 620px; }
-.help-body { display: flex; flex-direction: column; gap: 14px; margin: 14px 0 6px; }
+/* 小屏可关闭性（R5）：正文内滚、操作行钉底——触屏无 ESC，关闭钮必须不滚动即可见 */
+.help-card { max-width: 620px; display: flex; flex-direction: column; }
+.help-card > h3 { flex: none; }
+.help-body { display: flex; flex-direction: column; gap: 14px; margin: 14px 0 6px; flex: 1 1 auto; overflow-y: auto; min-height: 0; }
+.help-card .end-actions { flex: none; }
 .help-sec { display: flex; gap: 12px; align-items: flex-start; }
 .hs-ic {
   flex: none; display: inline-flex; align-items: center; justify-content: center;
@@ -775,6 +778,13 @@ button:disabled {
   :root { --card-w: 58px; --card-h: 82px; }
   .card.leader { width: 62px; height: 88px; }
   #app { padding: 2px 4px; padding-bottom: 14px; gap: 2px; grid-template-rows: 38px 1fr 4px 1.3fr; }
+  /* 手牌横向滚动收敛在手牌行内（R5 实测 390×10 张：grid 轨道被内容撑过视口，
+     顶栏右侧按钮被推出屏）——grid/flex 链 min-width:0 让 overflow-x 落到 #myHand 自身 */
+  #app { grid-template-columns: minmax(0, 1fr); }
+  #app > * { min-width: 0; }
+  #myZone .hand-wrap, #myHand { max-width: 100%; }
+  /* 战场行换行（R5 实测：7+ 单位不换行会把页面撑出 3px+ 横滚；换行后行高自适应）*/
+  .board-row { flex-wrap: wrap; row-gap: 4px; }
   .match-title { display: none; }
   .top-btn { padding: 4px 8px; font-size: 11px; letter-spacing: 0; }
   .turn-info { font-size: 11px; gap: 5px; }
