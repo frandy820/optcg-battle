@@ -43,12 +43,43 @@ const FRUIT = {
   'BLACK-05': null, 'BLACK-06': null, 'BLACK-07': null, 'BLACK-08': null,
   'BLACK-09': null, 'BLACK-10': 'paramecia',
 };
-// 船长数值 override（平衡杠杆：绿船长 5000→6000，对蓝/黄 matchup 全方向回带；重放幂等）
-const LEADER_OVERRIDE = { 'LEADER-GREEN': { power: 6000 }, 'LEADER-PURPLE': { power: 6000 } }; // 紫=罗：抵蓝压、全 matchup 回带
+// 船长数值 override（平衡杠杆；重放幂等）
+// 绿船长批2曾 5000→6000 抬全 matchup，批3 叠加索隆永久 buff 后平均胜率 66.7 全场最强 → 回落 5500
+// 紫=罗 6000：抵蓝压、全 matchup 回带
+const LEADER_OVERRIDE = { 'LEADER-GREEN': { power: 5500 }, 'LEADER-PURPLE': { power: 6000 } };
+// 船长技能（批3：六色差异化，全部走声明式 effect——引擎既有钩子/算子）
+const LEADER_SKILL = {
+  'LEADER-RED': {
+    skill: '橡胶橡胶·机关枪', skillDesc: '船长攻击宣告时，本次战斗战力 +1000',
+    effect: { hook: 'whenAttacking', op: { k: 'powerSelf', x: 1000, until: 'battle' } },
+  },
+  'LEADER-BLUE': {
+    skill: '天候棒·雷云', skillDesc: '费用 ≥3 的己方角色登场时，抽 1 张牌',
+    effect: { hook: 'onSummon', op: { k: 'draw', n: 1, minCost: 3 } },
+  },
+  'LEADER-GREEN': {
+    skill: '三刀流·鬼气', skillDesc: '费用 ≥6 的角色登场时，该角色永久 +1000',
+    effect: { hook: 'onSummon', op: { k: 'powerSelf', x: 1000, minCost: 6, until: 'forever' } },
+  },
+  'LEADER-YELLOW': {
+    skill: '宴会料理', skillDesc: '己方角色被击沉时，回复 1000 积分（不超过上限）',
+    effect: { hook: 'onAllyKO', op: { k: 'healLP', x: 1000 } },
+  },
+  'LEADER-PURPLE': {
+    // 三版 onKill 抽牌是强侧滚雪球（紫弱势局互斗吃不掉人=不触发，红v紫78/绿v紫83 打不回来）；
+    // 改 onAllyKO 阵亡抽牌=弱侧负反馈稳定器：被打得越狠资源越多，专治速攻爆破（与山治回血镜像成对）
+    skill: 'ROOM·回收', skillDesc: '己方角色被击沉时，抽 1 张牌',
+    effect: { hook: 'onAllyKO', op: { k: 'draw', n: 1 } },
+  },
+  'LEADER-BLACK': {
+    skill: '霸王的威压', skillDesc: '己方回合开始时，额外翻 1 颗费用豆',
+    effect: { hook: 'onTurnStart', op: { k: 'gainDon', n: 1 } },
+  },
+};
 for (const l of pool.leaders) {
   assert.ok(l.id in FRUIT, `leader 未映射: ${l.id}`);
   l.fruit = FRUIT[l.id];
-  Object.assign(l, LEADER_OVERRIDE[l.id] || {});
+  Object.assign(l, LEADER_OVERRIDE[l.id] || {}, LEADER_SKILL[l.id] || {});
 }
 
 // ---- ② 新卡 72 张（每色 9 角色 + 2 事件 + 1 舞台）----
@@ -123,7 +154,7 @@ const NEW = [
   ch('PURPLE-15', '卡里布', ' 沼沼果实 ', 4, 5000, null, [], null, 'logia'),
   ch('PURPLE-16', '柯拉松', ' 唐吉诃德·罗西南迪 ', 4, 5000, null, [], null, null),
   ch('PURPLE-17', '鹤', ' 海军参谋 ', 2, 3000, 2000, [], null, null),
-  ch('PURPLE-18', '让·巴特', ' 心脏海贼团 ', 7, 8000, null, [], null, null),
+  ch('PURPLE-18', '让·巴特', ' 心脏海贼团 ', 8, 8000, null, [], null, null),
   ch('PURPLE-19', '雷利', ' 冥王 ', 7, 7000, null, ['rush'], null, null),
   ev('PURPLE-E3', '领域·扫描', ' ROOM 展开 ', 1, 'draw', { n: 1 }),
   ev('PURPLE-E4', '心络机动', ' 转移战术 ', 2, 'restEnemy', {}),
@@ -157,6 +188,11 @@ const NEW = [
 ];
 
 // 现有卡（非 NEW）打果实系标签；NEW 卡的 fruit 由下方 ch() 定义，重放时直接 upsert 覆盖
+// 旧卡数值调参区（批3 平衡：紫 2 费 3K×2 挡不住绿 2 费 4K 滚雪球 → 对齐绿费线）
+const CARD_OVERRIDE = {
+  'PURPLE-02': { power: 4000 }, // 夏奇
+  'PURPLE-17': { power: 4000 }, // 鹤
+};
 const NEW_IDS = new Set(NEW.map((c) => c.id));
 for (const c of pool.cards) {
   if (NEW_IDS.has(c.id)) continue;
@@ -166,6 +202,7 @@ for (const c of pool.cards) {
   } else {
     c.fruit = null; // 事件/舞台无果实系
   }
+  Object.assign(c, CARD_OVERRIDE[c.id] || {});
 }
 const idxOf = new Map(pool.cards.map((c, i) => [c.id, i]));
 for (const c of NEW) {

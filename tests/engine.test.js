@@ -620,3 +620,52 @@ test('装备：替换旧件进墓场；非法目标/非装备卡抛错', () => {
   assert.equal(powerOfUnit(s.players[1].board[0]), 5000); // 3000 + W2 的 2000
   assert.ok(s.players[1].trash.some((c) => c.id === 'W1'), '旧件未进墓场');
 });
+
+// ===== 船长技能（批3：onAllyKO / onKill 钩子）=====
+test('船长技能：罗 ROOM·回收——己方角色被击沉时抽 1 张', () => {
+  const s = basicGame();
+  s.players[1].leader.effect = { hook: 'onAllyKO', op: { k: 'draw', n: 1 } };
+  applyAction(s, { t: 'endTurn', side: 0 });
+  setHand(s, 1, [mkChar('C1', 'blue', 1, 3000)]);
+  applyAction(s, { t: 'playCharacter', side: 1, idx: 0 });
+  applyAction(s, { t: 'endTurn', side: 1 });
+  // 甲方船长 6000 吃掉 3000 → 乙方阵亡补偿抽 1（弱侧负反馈，SPEC 即此语义）
+  s.players[0].leader.power = 6000;
+  const hand1 = s.players[1].hand.length, deck1 = s.players[1].deck.length;
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.players[1].board.length, 0, '角色应被击沉');
+  assert.equal(s.players[1].hand.length, hand1 + 1, '被击沉方应抽 1');
+  assert.equal(s.players[1].deck.length, deck1 - 1);
+});
+
+test('onKill 钩子：reqAttacker=leader 门槛——船长击沉触发抽牌、角色击沉不触发', () => {
+  const s = basicGame();
+  s.players[0].leader.effect = { hook: 'onKill', op: { k: 'draw', n: 1, reqAttacker: 'leader' } };
+  // A 出 6000 角色，B 出 3000 角色互送
+  setHand(s, 0, [mkChar('K1', 'red', 1, 6000)]);
+  applyAction(s, { t: 'playCharacter', side: 0, idx: 0 });
+  applyAction(s, { t: 'endTurn', side: 0 });
+  setHand(s, 1, [mkChar('V1', 'blue', 1, 3000)]);
+  applyAction(s, { t: 'playCharacter', side: 1, idx: 0 });
+  applyAction(s, { t: 'endTurn', side: 1 });
+  // A 回合：角色 K1 吃掉 V1 —— 攻击者是角色，门槛不满足，不抽
+  let hand0 = s.players[0].hand.length, deck0 = s.players[0].deck.length;
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'char', idx: 0 }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.players[1].board.length, 0);
+  assert.equal(s.players[0].hand.length, hand0, '角色击沉不应触发 reqAttacker=leader');
+  assert.equal(s.players[0].deck.length, deck0);
+  // B 再送一个，A 船长击沉 → 触发抽 1
+  applyAction(s, { t: 'endTurn', side: 0 }); // 场景 a 攻完仍在 A 回合，先交回
+  setHand(s, 1, [mkChar('V2', 'blue', 1, 3000)]);
+  applyAction(s, { t: 'playCharacter', side: 1, idx: 0 });
+  applyAction(s, { t: 'endTurn', side: 1 });
+  s.players[0].leader.power = 6000;
+  hand0 = s.players[0].hand.length; deck0 = s.players[0].deck.length;
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.players[1].board.length, 0);
+  assert.equal(s.players[0].hand.length, hand0 + 1, '船长击沉应抽 1');
+  assert.equal(s.players[0].deck.length, deck0 - 1);
+});

@@ -125,16 +125,21 @@ function logEvent(state, ev) {
 //   whenAttacking  攻击宣告时（横置后、Block/Counter 窗口前）
 //   onKO           被击倒进垃圾场时
 //   trigger        作为 Life 被翻出时（banish 送达的不触发）
+//   onSummon       己方角色登场时（船长技能用：娜美抽牌/索隆强化）
+//   onAllyKO       己方角色被击沉时（船长技能用：山治回血）
+//   onTurnStart    己方回合开始（DON 阶段后；船长技能用：香克斯加速）
+//   onKill         己方击沉对方角色时（ctx.attacker=击沉发起者 ref；船长技能用：罗抽牌）
 //
 // 算子 op（M0 实现 6 个，M1 卡池只允许引用已实现算子）：
 //   { k:'draw', n }
-//   { k:'powerSelf', x, until }        x 为增量（如 +2000 写 2000）
+//   { k:'powerSelf', x, until, minCost }  x 为增量（如 +2000 写 2000）；minCost=仅对费用≥该值的单位生效
 //   { k:'powerLeader', x, until }
 //   { k:'gainDon', n }                 从 DON!! 牌库翻 n 张入费用区
 //   { k:'koWeakest' }                  击倒敌方场上战力最低角色
 //   { k:'restEnemy', side? }           横置敌方一个角色
+//   { k:'healLP', x }                  LP 回复（上限=life×2000）
 
-const HOOKS = ['onPlay', 'whenAttacking', 'onKO', 'trigger'];
+const HOOKS = ['onPlay', 'whenAttacking', 'onKO', 'trigger', 'onSummon', 'onAllyKO', 'onTurnStart', 'onKill'];
 
 function hasKeyword(unit, kw) {
   if (Array.isArray(unit.keywords) && unit.keywords.includes(kw)) return true;
@@ -154,6 +159,10 @@ function runEffect(state, cardOrUnit, hook, ctx = {}) {
   switch (eff.op.k) {
     case 'draw': {
       const n = eff.op.n || 1;
+      // minCost 门槛（娜美：仅 3 费+ 登场才抽，防低费连抽滚雪球）
+      if (eff.op.minCost && ctx.self && ctx.self.cost != null && ctx.self.cost < eff.op.minCost) break;
+      // reqAttacker 门槛（罗 onKill：仅船长发起的击沉才抽，角色互斗吃掉不算）
+      if (eff.op.reqAttacker && (!ctx.attacker || ctx.attacker.type !== eff.op.reqAttacker)) break;
       for (let i = 0; i < n; i++) {
         if (me.deck.length === 0) { declareDeckOut(state, side); return; }
         me.hand.push(me.deck.pop());
@@ -164,6 +173,7 @@ function runEffect(state, cardOrUnit, hook, ctx = {}) {
     case 'powerSelf': {
       // self 必须是场上单位；否则退化为无操作
       if (!ctx.self || !ctx.self.power) break;
+      if (eff.op.minCost && ctx.self.cost < eff.op.minCost) break; // 费用门槛（索隆：只强化 5 费+）
       ctx.self.buffs.push({ x: eff.op.x, until: eff.op.until || 'turn', src: cardOrUnit.id });
       logEvent(state, { t: 'effectBuff', side, target: unitRefOf(state, side, ctx.self), x: eff.op.x, src: cardOrUnit.id });
       break;
@@ -189,6 +199,10 @@ function runEffect(state, cardOrUnit, hook, ctx = {}) {
         if (powerOfUnit(foe.board[i]) < powerOfUnit(foe.board[mi])) mi = i;
       }
       const [dead] = foe.board.splice(mi, 1);
+      if (Array.isArray(dead.gears) && dead.gears.length) {
+        foe.trash.push(...dead.gears);
+        dead.gears = [];
+      }
       foe.trash.push(dead);
       // 其后单位索引前移：同步修正附着 DON 记账（与 combat.koUnit 同源）
       for (const d of foe.donArea) {
@@ -204,6 +218,13 @@ function runEffect(state, cardOrUnit, hook, ctx = {}) {
       const target = foe.board[foe.board.length - 1];
       target.rest = true;
       logEvent(state, { t: 'rest', side: enemySide, idx: foe.board.length - 1, src: cardOrUnit.id });
+      break;
+    }
+    case 'healLP': {
+      const cap = me.leader.life * 2000;
+      const before = me.lp;
+      me.lp = Math.min(cap, me.lp + (eff.op.x || 1000));
+      logEvent(state, { t: 'heal', side, x: me.lp - before, lp: me.lp, src: cardOrUnit.id });
       break;
     }
     default:
@@ -357,21 +378,21 @@ function resolveAttack(state, p) {
   } else if (def.rest) {
     // 守备表示（横置）：打得动才击沉，无差额伤害；打不动=无战果
     if (atkPower > defPower) {
-      koUnit(state, p.target, p.attacker.side);
+      koUnit(state, p.target, p.attacker.side, p.attacker);
     } else {
       logEvent(state, { t: 'noDamage', reason: 'defense', side: p.target.side, atkPower, defPower });
     }
   } else {
     // 攻击表示互斗：战力比较，差额扣败方 LP；相等同归于尽（攻击者是船长则船长不沉）
     if (atkPower > defPower) {
-      koUnit(state, p.target, p.attacker.side);
+      koUnit(state, p.target, p.attacker.side, p.attacker);
       if (state.winner === null) dealLpDamage(state, p.target.side, atkPower - defPower, p.attacker.side);
     } else if (atkPower < defPower) {
-      if (p.attacker.type === 'char') koUnit(state, p.attacker, p.target.side);
+      if (p.attacker.type === 'char') koUnit(state, p.attacker, p.target.side, p.target);
       if (state.winner === null) dealLpDamage(state, p.attacker.side, defPower - atkPower, p.target.side);
     } else {
-      if (p.attacker.type === 'char') koUnit(state, p.attacker, p.target.side);
-      koUnit(state, p.target, p.attacker.side);
+      if (p.attacker.type === 'char') koUnit(state, p.attacker, p.target.side, p.target);
+      koUnit(state, p.target, p.attacker.side, p.attacker);
     }
   }
 
@@ -380,12 +401,18 @@ function resolveAttack(state, p) {
   state.pending = null;
 }
 
-// 击沉角色进墓场（触发 onKO）
-function koUnit(state, ref, bySide) {
+// 击沉角色进墓场（触发 onKO / onAllyKO / onKill）
+// byRef=击沉发起者 ref（{side,type,idx}；互斗反杀时为守方单位）——onKill 技能的 attacker 上下文
+function koUnit(state, ref, bySide, byRef = null) {
   const pl = state.players[ref.side];
   if (ref.type !== 'char') return;
   const [dead] = pl.board.splice(ref.idx, 1);
   if (!dead) return;
+  // 装备是独立卡：角色被击沉时装备一并展平进墓场（独立计数/可回收语义）
+  if (Array.isArray(dead.gears) && dead.gears.length) {
+    pl.trash.push(...dead.gears);
+    dead.gears = [];
+  }
   pl.trash.push(dead);
   // 其后单位索引前移：同步修正附着 DON 的 board 记账（否则 takeDon 找不到=引擎不一致）
   for (const d of pl.donArea) {
@@ -393,6 +420,11 @@ function koUnit(state, ref, bySide) {
   }
   logEvent(state, { t: 'ko', side: ref.side, cardId: dead.id });
   runEffect(state, dead, 'onKO', { side: ref.side, self: null });
+  // 船长技能：己方角色被击沉钩子（山治回血——阵亡补偿）
+  runEffect(state, pl.leader, 'onAllyKO', { side: ref.side, self: null });
+  // 船长技能：击沉对方角色钩子（罗抽牌——收割资源）；发起者先于目标移除时不触发
+  const byLeader = state.players[bySide] && state.players[bySide].leader;
+  if (byLeader) runEffect(state, byLeader, 'onKill', { side: bySide, self: null, attacker: byRef });
 }
 
 // LP 伤害与胜负（游戏王式积分制）
@@ -455,6 +487,10 @@ function startTurn(state) {
   }
   logEvent(state, { t: 'donGain', side: state.active, n });
 
+  // 船长技能：回合开始钩子（DON 阶段后、Main 前——香克斯的加速豆在此生效）
+  runEffect(state, pl.leader, 'onTurnStart', { side: state.active, self: null });
+  if (state.winner !== null) return; // 效果可能触发 deckout 等终局
+
   state.phase = 'main';
 }
 
@@ -480,10 +516,12 @@ function playCharacter(state, side, idx) {
   if (me.board.length >= 5) throw new Error('board limit 5 reached');
   payDons(me, card.cost);
   me.hand.splice(idx, 1);
-  const unit = { ...card, rest: false, playedTurn: state.turn, dons: 0, buffs: [] };
+  const unit = { ...card, rest: false, playedTurn: state.turn, dons: 0, buffs: [], gears: [] };
   me.board.push(unit);
   logEvent(state, { t: 'summon', side, cardId: card.id, cost: card.cost });
   runEffect(state, unit, 'onPlay', { side, self: unit });
+  // 船长技能：己方角色登场钩子（娜美抽牌/索隆强化——对新登场单位生效）
+  runEffect(state, me.leader, 'onSummon', { side, self: unit });
 }
 
 // 出事件：付费 → 执行效果 → 进垃圾场
@@ -929,9 +967,18 @@ const POOL = {
       "power": 5000,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "whenAttacking",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
       "art": "captains/luffy",
-      "fruit": "paramecia"
+      "fruit": "paramecia",
+      "skill": "橡胶橡胶·机关枪",
+      "skillDesc": "船长攻击宣告时，本次战斗战力 +1000"
     },
     {
       "id": "LEADER-BLUE",
@@ -942,9 +989,18 @@ const POOL = {
       "power": 5000,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "onSummon",
+        "op": {
+          "k": "draw",
+          "n": 1,
+          "minCost": 3
+        }
+      },
       "art": "captains/nami",
-      "fruit": null
+      "fruit": null,
+      "skill": "天候棒·雷云",
+      "skillDesc": "费用 ≥3 的己方角色登场时，抽 1 张牌"
     },
     {
       "id": "LEADER-GREEN",
@@ -952,12 +1008,22 @@ const POOL = {
       "sub": "海贼猎人",
       "type": "leader",
       "color": "green",
-      "power": 6000,
+      "power": 5500,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "onSummon",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "minCost": 6,
+          "until": "forever"
+        }
+      },
       "art": "captains/zoro",
-      "fruit": null
+      "fruit": null,
+      "skill": "三刀流·鬼气",
+      "skillDesc": "费用 ≥6 的角色登场时，该角色永久 +1000"
     },
     {
       "id": "LEADER-YELLOW",
@@ -968,9 +1034,17 @@ const POOL = {
       "power": 5000,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "onAllyKO",
+        "op": {
+          "k": "healLP",
+          "x": 1000
+        }
+      },
       "art": "captains/sanji",
-      "fruit": null
+      "fruit": null,
+      "skill": "宴会料理",
+      "skillDesc": "己方角色被击沉时，回复 1000 积分（不超过上限）"
     },
     {
       "id": "LEADER-PURPLE",
@@ -981,9 +1055,17 @@ const POOL = {
       "power": 6000,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "onAllyKO",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
       "art": "captains/law",
-      "fruit": "paramecia"
+      "fruit": "paramecia",
+      "skill": "ROOM·回收",
+      "skillDesc": "己方角色被击沉时，抽 1 张牌"
     },
     {
       "id": "LEADER-BLACK",
@@ -994,9 +1076,17 @@ const POOL = {
       "power": 5000,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "onTurnStart",
+        "op": {
+          "k": "gainDon",
+          "n": 1
+        }
+      },
       "art": "captains/shanks",
-      "fruit": null
+      "fruit": null,
+      "skill": "霸王的威压",
+      "skillDesc": "己方回合开始时，额外翻 1 颗费用豆"
     }
   ],
   "cards": [
@@ -2821,7 +2911,7 @@ const POOL = {
       "type": "char",
       "color": "purple",
       "cost": 2,
-      "power": 3000,
+      "power": 4000,
       "counter": 2000,
       "keywords": [],
       "effect": null,
@@ -2912,6 +3002,20 @@ const POOL = {
       "effect": null,
       "art": "PURPLE-10",
       "fruit": null
+    },
+    {
+      "id": "PURPLE-18",
+      "name": "让·巴特",
+      "sub": " 心脏海贼团 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 8,
+      "power": 8000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "PURPLE-18"
     },
     {
       "id": "PURPLE-E3",
@@ -3009,18 +3113,20 @@ const POOL = {
       "art": "PURPLE-14"
     },
     {
-      "id": "PURPLE-18",
-      "name": "让·巴特",
-      "sub": " 心脏海贼团 ",
+      "id": "PURPLE-19",
+      "name": "雷利",
+      "sub": " 冥王 ",
       "type": "char",
       "color": "purple",
       "cost": 7,
-      "power": 8000,
+      "power": 7000,
       "counter": null,
-      "keywords": [],
+      "keywords": [
+        "rush"
+      ],
       "effect": null,
       "fruit": null,
-      "art": "PURPLE-18"
+      "art": "PURPLE-19"
     },
     {
       "id": "PURPLE-E2",
@@ -3076,22 +3182,6 @@ const POOL = {
       "effect": null,
       "fruit": "paramecia",
       "art": "PURPLE-12"
-    },
-    {
-      "id": "PURPLE-19",
-      "name": "雷利",
-      "sub": " 冥王 ",
-      "type": "char",
-      "color": "purple",
-      "cost": 7,
-      "power": 7000,
-      "counter": null,
-      "keywords": [
-        "rush"
-      ],
-      "effect": null,
-      "fruit": null,
-      "art": "PURPLE-19"
     },
     {
       "id": "PURPLE-S1",

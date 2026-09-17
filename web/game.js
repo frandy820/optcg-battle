@@ -152,11 +152,13 @@
     el.setAttribute('role', 'button');
     el.setAttribute('aria-label', def.name + (def.cost != null ? `，费用 ${def.cost}` : '') + (def.power ? `，战力 ${def.power / 1000}K` : '') + (def.fruit ? `，${FRUIT_LABEL[def.fruit]}系` : ''));
     const fruitHtml = def.fruit ? `<span class="kw-badge fr-${def.fruit}">${FRUIT_LABEL[def.fruit]}系</span>` : '';
+    // 船长技能徽章（批3：六色差异化技能，卡面金字标记，悬停看详情）
+    const skillHtml = def.type === 'leader' && def.skill ? `<span class="kw-badge kw-skill" title="${def.skill}">${def.skill}</span>` : '';
     // 装备：卡面「装备」徽章 + 增益角标（武器纯攻 / 甲胄含坚壁）；已装上的单位在词条区亮出装备名
     const gearDefHtml = def.type === 'gear' && def.gear
       ? `<span class="kw-badge kw-gear">装备</span>${def.gear.gives ? def.gear.gives.map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('') : ''}` : '';
     const unitGearHtml = (def.gears || []).map((g) => `<span class="kw-badge kw-gear-on" title="已装备 ${g.name}">⚔${g.name}</span>`).join('');
-    const kwHtml = gearDefHtml + unitGearHtml + fruitHtml + (def.keywords || []).map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('');
+    const kwHtml = gearDefHtml + unitGearHtml + skillHtml + fruitHtml + (def.keywords || []).map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('');
     const costHtml = def.type === 'leader' ? '' : `<div class="cost">${def.cost}</div>`;
     const artUrl = `art/${def.art || def.id}.webp`;
     el.innerHTML = `
@@ -1064,6 +1066,7 @@
       { ic: 'sparkles', t: '关键词', p: '<span class="kw">速攻</span>：出场当回合即可攻击；<span class="kw">双击</span>：直攻船长的 LP 伤害 ×2；<span class="kw">猛击</span>：直攻船长 LP 伤害额外 +2K；<span class="kw">坚壁</span>：被攻击时防御 +1K。' },
       { ic: 'flame', t: '恶魔果实克制', p: '带果实角标的卡有系别：<b>超人系克自然系、自然系克动物系、动物系克超人系</b>（循环）。<b>攻击被自己克制的目标时战力 +1K</b>（打角色、直攻船长都算）；无果实角标的卡不参与克制。组卡时兼顾「我方输出系别」与「克制对方主力系别」是构筑深度所在。' },
       { ic: 'shield', t: '武器装备', p: '带「装备」徽章的卡：点击手牌后再点己方一名角色即穿上——<b>武器加攻击（+1K~+3K）</b>，<b>甲胄加攻击并获「坚壁」（被攻击时防御 +1K）</b>。每角色限穿 1 件（再穿=替换旧的进墓场），装备加成永久生效（不像费用豆每回合脱落），角色被击沉时装备随之进墓场。' },
+      { ic: 'crown', t: '船长技能', p: '六位船长各有专属技能（选将时悬停船长卡可看详情）：<b>路飞</b>船长攻击时战力 +1K；<b>娜美</b>费用 ≥3 的角色登场就抽 1 张；<b>索隆</b>5 费以上的角色登场永久 +1K；<b>山治</b>己方角色阵亡时回复 1K 积分；<b>罗</b>己方角色被击沉时抽 1 张；<b>香克斯</b>每回合开始多翻 1 颗费用豆。' },
       { ic: 'compass', t: '两种模式', p: '<b>天梯排位</b>：胜 +25 分、败 −15 分，分数升段位、敌将变强；<b>生存挑战</b>：连胜不断升档，一败归零、记录最佳连胜。' },
     ];
     $('helpBody').innerHTML = secs.map((s) =>
@@ -1163,6 +1166,7 @@
     parts.push(`<div class="ct-head"><b>${def.name}</b><span>${def.sub || ''}</span></div>`);
     parts.push(`<div class="ct-meta">${TYPE_NAME[def.type] || def.type} · ${COLOR_NAME[def.color] || def.color}${def.type === 'leader' ? ` · LP ${def.life * 2000}` : ''}${def.fruit ? ` · ${FRUIT_LABEL[def.fruit]}系` : ''}</div>`);
     if (def.fruit) parts.push(`<div class="ct-kw"><span class="kw-badge fr-${def.fruit}">${FRUIT_LABEL[def.fruit]}系</span><span>${FRUIT_TIP[def.fruit]}</span></div>`);
+    if (def.type === 'leader' && def.skill) parts.push(`<div class="ct-kw"><span class="kw-badge kw-skill">船长技能</span><span><b>${def.skill}</b>：${def.skillDesc}</span></div>`);
     if (def.type === 'gear' && def.gear) {
       parts.push(`<div class="ct-kw"><span class="kw-badge kw-gear">装备</span><span>附着到己方一名角色（限 1 件）：战力永久 +${def.gear.atk / 1000}K${(def.gear.gives || []).includes('blocker') ? '，并获「坚壁」——被攻击时防御再 +1K' : ''}；角色被击沉时装备随之进墓场</span></div>`);
     }

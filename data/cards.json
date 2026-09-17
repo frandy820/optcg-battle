@@ -27,9 +27,18 @@
       "power": 5000,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "whenAttacking",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
       "art": "captains/luffy",
-      "fruit": "paramecia"
+      "fruit": "paramecia",
+      "skill": "橡胶橡胶·机关枪",
+      "skillDesc": "船长攻击宣告时，本次战斗战力 +1000"
     },
     {
       "id": "LEADER-BLUE",
@@ -40,9 +49,18 @@
       "power": 5000,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "onSummon",
+        "op": {
+          "k": "draw",
+          "n": 1,
+          "minCost": 3
+        }
+      },
       "art": "captains/nami",
-      "fruit": null
+      "fruit": null,
+      "skill": "天候棒·雷云",
+      "skillDesc": "费用 ≥3 的己方角色登场时，抽 1 张牌"
     },
     {
       "id": "LEADER-GREEN",
@@ -50,12 +68,22 @@
       "sub": "海贼猎人",
       "type": "leader",
       "color": "green",
-      "power": 6000,
+      "power": 5500,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "onSummon",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "minCost": 6,
+          "until": "forever"
+        }
+      },
       "art": "captains/zoro",
-      "fruit": null
+      "fruit": null,
+      "skill": "三刀流·鬼气",
+      "skillDesc": "费用 ≥6 的角色登场时，该角色永久 +1000"
     },
     {
       "id": "LEADER-YELLOW",
@@ -66,9 +94,17 @@
       "power": 5000,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "onAllyKO",
+        "op": {
+          "k": "healLP",
+          "x": 1000
+        }
+      },
       "art": "captains/sanji",
-      "fruit": null
+      "fruit": null,
+      "skill": "宴会料理",
+      "skillDesc": "己方角色被击沉时，回复 1000 积分（不超过上限）"
     },
     {
       "id": "LEADER-PURPLE",
@@ -79,9 +115,17 @@
       "power": 6000,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "onAllyKO",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
       "art": "captains/law",
-      "fruit": "paramecia"
+      "fruit": "paramecia",
+      "skill": "ROOM·回收",
+      "skillDesc": "己方角色被击沉时，抽 1 张牌"
     },
     {
       "id": "LEADER-BLACK",
@@ -92,9 +136,17 @@
       "power": 5000,
       "life": 5,
       "keywords": [],
-      "effect": null,
+      "effect": {
+        "hook": "onTurnStart",
+        "op": {
+          "k": "gainDon",
+          "n": 1
+        }
+      },
       "art": "captains/shanks",
-      "fruit": null
+      "fruit": null,
+      "skill": "霸王的威压",
+      "skillDesc": "己方回合开始时，额外翻 1 颗费用豆"
     }
   ],
   "cards": [
@@ -1919,7 +1971,7 @@
       "type": "char",
       "color": "purple",
       "cost": 2,
-      "power": 3000,
+      "power": 4000,
       "counter": 2000,
       "keywords": [],
       "effect": null,
@@ -2010,6 +2062,20 @@
       "effect": null,
       "art": "PURPLE-10",
       "fruit": null
+    },
+    {
+      "id": "PURPLE-18",
+      "name": "让·巴特",
+      "sub": " 心脏海贼团 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 8,
+      "power": 8000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "PURPLE-18"
     },
     {
       "id": "PURPLE-E3",
@@ -2107,18 +2173,20 @@
       "art": "PURPLE-14"
     },
     {
-      "id": "PURPLE-18",
-      "name": "让·巴特",
-      "sub": " 心脏海贼团 ",
+      "id": "PURPLE-19",
+      "name": "雷利",
+      "sub": " 冥王 ",
       "type": "char",
       "color": "purple",
       "cost": 7,
-      "power": 8000,
+      "power": 7000,
       "counter": null,
-      "keywords": [],
+      "keywords": [
+        "rush"
+      ],
       "effect": null,
       "fruit": null,
-      "art": "PURPLE-18"
+      "art": "PURPLE-19"
     },
     {
       "id": "PURPLE-E2",
@@ -2174,22 +2242,6 @@
       "effect": null,
       "fruit": "paramecia",
       "art": "PURPLE-12"
-    },
-    {
-      "id": "PURPLE-19",
-      "name": "雷利",
-      "sub": " 冥王 ",
-      "type": "char",
-      "color": "purple",
-      "cost": 7,
-      "power": 7000,
-      "counter": null,
-      "keywords": [
-        "rush"
-      ],
-      "effect": null,
-      "fruit": null,
-      "art": "PURPLE-19"
     },
     {
       "id": "PURPLE-S1",

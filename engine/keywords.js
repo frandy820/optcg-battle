@@ -11,16 +11,21 @@
 //   whenAttacking  攻击宣告时（横置后、Block/Counter 窗口前）
 //   onKO           被击倒进垃圾场时
 //   trigger        作为 Life 被翻出时（banish 送达的不触发）
+//   onSummon       己方角色登场时（船长技能用：娜美抽牌/索隆强化）
+//   onAllyKO       己方角色被击沉时（船长技能用：山治回血）
+//   onTurnStart    己方回合开始（DON 阶段后；船长技能用：香克斯加速）
+//   onKill         己方击沉对方角色时（ctx.attacker=击沉发起者 ref；船长技能用：罗抽牌）
 //
 // 算子 op（M0 实现 6 个，M1 卡池只允许引用已实现算子）：
 //   { k:'draw', n }
-//   { k:'powerSelf', x, until }        x 为增量（如 +2000 写 2000）
+//   { k:'powerSelf', x, until, minCost }  x 为增量（如 +2000 写 2000）；minCost=仅对费用≥该值的单位生效
 //   { k:'powerLeader', x, until }
 //   { k:'gainDon', n }                 从 DON!! 牌库翻 n 张入费用区
 //   { k:'koWeakest' }                  击倒敌方场上战力最低角色
 //   { k:'restEnemy', side? }           横置敌方一个角色
+//   { k:'healLP', x }                  LP 回复（上限=life×2000）
 
-export const HOOKS = ['onPlay', 'whenAttacking', 'onKO', 'trigger'];
+export const HOOKS = ['onPlay', 'whenAttacking', 'onKO', 'trigger', 'onSummon', 'onAllyKO', 'onTurnStart', 'onKill'];
 
 export function hasKeyword(unit, kw) {
   if (Array.isArray(unit.keywords) && unit.keywords.includes(kw)) return true;
@@ -40,6 +45,10 @@ export function runEffect(state, cardOrUnit, hook, ctx = {}) {
   switch (eff.op.k) {
     case 'draw': {
       const n = eff.op.n || 1;
+      // minCost 门槛（娜美：仅 3 费+ 登场才抽，防低费连抽滚雪球）
+      if (eff.op.minCost && ctx.self && ctx.self.cost != null && ctx.self.cost < eff.op.minCost) break;
+      // reqAttacker 门槛（罗 onKill：仅船长发起的击沉才抽，角色互斗吃掉不算）
+      if (eff.op.reqAttacker && (!ctx.attacker || ctx.attacker.type !== eff.op.reqAttacker)) break;
       for (let i = 0; i < n; i++) {
         if (me.deck.length === 0) { declareDeckOut(state, side); return; }
         me.hand.push(me.deck.pop());
@@ -50,6 +59,7 @@ export function runEffect(state, cardOrUnit, hook, ctx = {}) {
     case 'powerSelf': {
       // self 必须是场上单位；否则退化为无操作
       if (!ctx.self || !ctx.self.power) break;
+      if (eff.op.minCost && ctx.self.cost < eff.op.minCost) break; // 费用门槛（索隆：只强化 5 费+）
       ctx.self.buffs.push({ x: eff.op.x, until: eff.op.until || 'turn', src: cardOrUnit.id });
       logEvent(state, { t: 'effectBuff', side, target: unitRefOf(state, side, ctx.self), x: eff.op.x, src: cardOrUnit.id });
       break;
@@ -94,6 +104,13 @@ export function runEffect(state, cardOrUnit, hook, ctx = {}) {
       const target = foe.board[foe.board.length - 1];
       target.rest = true;
       logEvent(state, { t: 'rest', side: enemySide, idx: foe.board.length - 1, src: cardOrUnit.id });
+      break;
+    }
+    case 'healLP': {
+      const cap = me.leader.life * 2000;
+      const before = me.lp;
+      me.lp = Math.min(cap, me.lp + (eff.op.x || 1000));
+      logEvent(state, { t: 'heal', side, x: me.lp - before, lp: me.lp, src: cardOrUnit.id });
       break;
     }
     default:

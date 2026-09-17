@@ -33,6 +33,10 @@ export function startTurn(state) {
   }
   logEvent(state, { t: 'donGain', side: state.active, n });
 
+  // 船长技能：回合开始钩子（DON 阶段后、Main 前——香克斯的加速豆在此生效）
+  runEffect(state, pl.leader, 'onTurnStart', { side: state.active, self: null });
+  if (state.winner !== null) return; // 效果可能触发 deckout 等终局
+
   state.phase = 'main';
 }
 
@@ -58,10 +62,12 @@ export function playCharacter(state, side, idx) {
   if (me.board.length >= 5) throw new Error('board limit 5 reached');
   payDons(me, card.cost);
   me.hand.splice(idx, 1);
-  const unit = { ...card, rest: false, playedTurn: state.turn, dons: 0, buffs: [] };
+  const unit = { ...card, rest: false, playedTurn: state.turn, dons: 0, buffs: [], gears: [] };
   me.board.push(unit);
   logEvent(state, { t: 'summon', side, cardId: card.id, cost: card.cost });
   runEffect(state, unit, 'onPlay', { side, self: unit });
+  // 船长技能：己方角色登场钩子（娜美抽牌/索隆强化——对新登场单位生效）
+  runEffect(state, me.leader, 'onSummon', { side, self: unit });
 }
 
 // 出事件：付费 → 执行效果 → 进垃圾场

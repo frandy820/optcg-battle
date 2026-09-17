@@ -129,21 +129,21 @@ export function resolveAttack(state, p) {
   } else if (def.rest) {
     // 守备表示（横置）：打得动才击沉，无差额伤害；打不动=无战果
     if (atkPower > defPower) {
-      koUnit(state, p.target, p.attacker.side);
+      koUnit(state, p.target, p.attacker.side, p.attacker);
     } else {
       logEvent(state, { t: 'noDamage', reason: 'defense', side: p.target.side, atkPower, defPower });
     }
   } else {
     // 攻击表示互斗：战力比较，差额扣败方 LP；相等同归于尽（攻击者是船长则船长不沉）
     if (atkPower > defPower) {
-      koUnit(state, p.target, p.attacker.side);
+      koUnit(state, p.target, p.attacker.side, p.attacker);
       if (state.winner === null) dealLpDamage(state, p.target.side, atkPower - defPower, p.attacker.side);
     } else if (atkPower < defPower) {
-      if (p.attacker.type === 'char') koUnit(state, p.attacker, p.target.side);
+      if (p.attacker.type === 'char') koUnit(state, p.attacker, p.target.side, p.target);
       if (state.winner === null) dealLpDamage(state, p.attacker.side, defPower - atkPower, p.target.side);
     } else {
-      if (p.attacker.type === 'char') koUnit(state, p.attacker, p.target.side);
-      koUnit(state, p.target, p.attacker.side);
+      if (p.attacker.type === 'char') koUnit(state, p.attacker, p.target.side, p.target);
+      koUnit(state, p.target, p.attacker.side, p.attacker);
     }
   }
 
@@ -152,8 +152,9 @@ export function resolveAttack(state, p) {
   state.pending = null;
 }
 
-// 击沉角色进墓场（触发 onKO）
-function koUnit(state, ref, bySide) {
+// 击沉角色进墓场（触发 onKO / onAllyKO / onKill）
+// byRef=击沉发起者 ref（{side,type,idx}；互斗反杀时为守方单位）——onKill 技能的 attacker 上下文
+function koUnit(state, ref, bySide, byRef = null) {
   const pl = state.players[ref.side];
   if (ref.type !== 'char') return;
   const [dead] = pl.board.splice(ref.idx, 1);
@@ -170,6 +171,11 @@ function koUnit(state, ref, bySide) {
   }
   logEvent(state, { t: 'ko', side: ref.side, cardId: dead.id });
   runEffect(state, dead, 'onKO', { side: ref.side, self: null });
+  // 船长技能：己方角色被击沉钩子（山治回血——阵亡补偿）
+  runEffect(state, pl.leader, 'onAllyKO', { side: ref.side, self: null });
+  // 船长技能：击沉对方角色钩子（罗抽牌——收割资源）；发起者先于目标移除时不触发
+  const byLeader = state.players[bySide] && state.players[bySide].leader;
+  if (byLeader) runEffect(state, byLeader, 'onKill', { side: bySide, self: null, attacker: byRef });
 }
 
 // LP 伤害与胜负（游戏王式积分制）
