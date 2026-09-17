@@ -200,7 +200,8 @@
     if (G.active !== MY) return '对方回合，暂时无法出牌';
     const me = G.players[MY];
     if (c.type === 'char' && me.board.length >= 5) return '场上已满 5 名角色，无法再召唤';
-    if (c.cost > O.usableDons(me)) return `费用不足：还需 ${c.cost - O.usableDons(me)} 颗 DON!!`;
+    const usable = O.usableDons(me);
+    if (c.cost > usable) return `费用不足：还差 ${c.cost - usable} 颗费用豆（能花的 DON!! 仅 ${usable} 颗，附着到卡上的算已消耗）`;
     return null;
   }
 
@@ -665,7 +666,7 @@
   $('myDon').addEventListener('click', () => {
     if (G.pending || G.active !== MY) return;
     if (selMode && selMode.mode === 'don') { selMode = null; clearHighlights(); renderHints(); return; }
-    if (O.usableDons(G.players[MY]) < 1) { showHintFlash('没有可用 DON!!'); return; }
+    if (O.usableDons(G.players[MY]) < 1) { showHintFlash('没有能花的 DON!! 了——都已附着或消耗，下回合开始自动补满'); return; }
     selMode = { mode: 'don' };
     highlightDonTargets();
     renderHints();
@@ -987,7 +988,7 @@
   function fillHelp() {
     const secs = [
       { ic: 'trophy', t: '胜利目标', p: '把<b>对方船长的生命扣到 0</b>即获胜。每次攻击对方船长，对方扣 1 张生命卡；对方牌库抽空也会判负。' },
-      { ic: 'layers', t: '回合流程', p: '你的回合：<b>补 2 颗 DON!!</b>（费用豆）→ 抽 1 张牌 → 出牌 / 攻击 / 附着 → 点「结束回合」。DON!! 每回合自动补满，附着的算已消耗。' },
+      { ic: 'layers', t: '回合流程', p: '你的回合：<b>费用区自动补 2 颗 DON!!</b>（费用豆，上回合附着的自动脱落回来）→ 抽 1 张牌 → 出牌 / 攻击 / 附着 → 点「结束回合」。费用区里<b>未附着的 DON!! 就是能花的钱</b>，附着到卡上的算已消耗。' },
       { ic: 'map', t: '出牌', p: '手牌左上角圆标是<b>费用</b>，消耗对应数量 DON!! 即可打出：角色进场（场上最多 5 名）、事件立即生效、舞台持续支援。' },
       { ic: 'swords', t: '攻击', p: '点己方未行动的角色或船长 → 再点<b>对方船长</b>或<b>已横置的角色</b>发起攻击。我方战力 ≥ 对方战力即击沉（KO）对方角色；攻击船长则扣 1 张生命。刚出场的角色下回合才能攻击。' },
       { ic: 'refresh', t: '竖放与横放', p: '场上卡片<b>竖放＝就绪</b>（本回合还能攻击 / 阻挡），<b>横放（转 90°）＝已休息</b>（本回合已行动或被效果横置，不能再攻击也不能再阻挡），到拥有者的回合开始时自动转回竖放。攻击和阻挡都会把卡横置；<b>对方卡片全横着时就是安全进攻窗口</b>。鼠标悬停任意卡片（手机长按）可看它的完整信息和当前状态。' },
@@ -1083,7 +1084,7 @@
       'onPlay:koWeakest': '打出时：击沉敌方场上战力最低的角色',
       'onPlay:restEnemy': '打出时：横置敌方一名角色（其本回合不能再攻击或阻挡）',
       'onPlay:draw': `打出时：抽 ${op.n || 1} 张牌`,
-      'onPlay:gainDon': `打出时：从 DON!! 牌库翻 ${op.n || 1} 颗进费用区（本回合可用）`,
+      'onPlay:gainDon': `打出时：从 DON!! 牌库翻 ${op.n || 1} 颗进费用区（本回合就能花）`,
     };
     return M[e.hook + ':' + op.k] || null;
   }
@@ -1113,7 +1114,10 @@
     const ownerTurn = isEnemy ? '对方回合' : '你的回合';
     const dons = +(el.dataset.dons || 0) || 0;
     const st = [];
-    if (inHand) st.push('<b>在手牌</b>：点击打出（费用须 ≤ 可用 DON!!）；带 C 标记的还可在对方攻击时打出作反击');
+    if (inHand) {
+      const usable = G ? O.usableDons(G.players[MY]) : 0;
+      st.push(`<b>在手牌</b>：点击打出，花费 ${def.cost} 颗费用豆（=费用区未附着的 DON!!，当前能花 ${usable} 颗）；带 C 标记的还可在对方攻击时打出作反击`);
+    }
     else if (def.type === 'stage') st.push(`<b>${who}舞台</b>：打出后持续在场生效，不参与战斗`);
     else if (rested) st.push(`<b>横放（已休息）</b>：${who}${def.type === 'leader' ? '船长' : '角色'}本回合已行动——不能攻击${def.keywords && def.keywords.includes('blocker') ? '、不能阻挡' : ''}；${ownerTurn}开始时转回竖放`);
     else st.push(`<b>竖放（就绪）</b>：${who}${def.type === 'leader' ? '船长可以发起攻击' : '角色仍可行动（攻击' + ((def.keywords || []).includes('blocker') ? '/阻挡' : '') + '）'}`);
