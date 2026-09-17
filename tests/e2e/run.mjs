@@ -60,6 +60,8 @@ const MODES = [
   { mode: 'main', budget: 600000, profile: 'p-main', tag: 'main' },
   { mode: 'rounds', budget: 900000, profile: 'p-rounds', tag: 'rounds' },
   { mode: 'edge', budget: 600000, profile: 'p-edge', tag: 'edge(两段)' },
+  // 反击窗口生命周期回归（快照构造窗口→打出反击牌→断言收口不冻死）
+  { mode: 'counter', budget: 300000, profile: 'p-counter', tag: 'counter(反击窗)' },
   // 小屏布局回归：固定 390×748 iframe 宿主（--window-size 不可靠，见 layout.html 注释）
   { mode: 'layout', budget: 120000, profile: 'p-layout', tag: 'layout(390)', url: `file://${join(ROOT, 'tests', 'e2e', 'layout.html').replace(/\\/g, '/')}`, prefix: 'LAYOUT-RESULT' },
 ];

@@ -215,7 +215,13 @@ body {
   font-size: 11px; color: #9aa5b8; border: 1px solid #2c3a55; border-radius: 6px;
   padding: 4px 8px; background: rgba(8,16,30,.7); white-space: nowrap;
 }
-.enemy-hand { display: flex; gap: 3px; flex: 1; justify-content: center; min-height: 34px; }
+.enemy-hand { display: flex; gap: 3px; flex: 1; justify-content: center; min-height: 34px; align-items: center; }
+/* 对方手牌数徽章（试玩反馈：看不出对方手里有几张） */
+.hand-count {
+  margin-left: 5px; padding: 2px 8px; border-radius: 9px; white-space: nowrap;
+  font-size: 11px; font-weight: 700; color: #ffe9b8; letter-spacing: 1px;
+  background: rgba(6,12,24,.72); border: 1px solid rgba(212,175,55,.4);
+}
 .card-back {
   width: 24px; height: 34px; border-radius: 4px;
   background:
@@ -749,11 +755,18 @@ button:disabled {
 
 /* ---- 卡片悬停信息卡（试玩反馈：卡面全量信息 + 竖/横语义）---- */
 #cardTip {
-  position: fixed; z-index: 9990; max-width: 276px; pointer-events: none;
+  position: fixed; z-index: 9990; max-width: 300px; pointer-events: none;
   background: linear-gradient(170deg, rgba(16,29,56,.96), rgba(10,20,38,.98));
   border: 1px solid rgba(212,175,55,.55); border-radius: 12px;
   padding: 10px 12px; font-size: 12px; line-height: 1.55; color: #cfd9ec;
   box-shadow: 0 12px 40px rgba(0,0,0,.65), 0 0 24px rgba(212,175,55,.12);
+}
+/* 悬停信息卡顶部卡面大图：aspect 预留高度防加载后跳动，矮视口封顶防溢出 */
+#cardTip .ct-art {
+  display: block; width: 100%; aspect-ratio: 20 / 29; max-height: 44vh;
+  object-fit: cover; object-position: center 12%;
+  border-radius: 8px; border: 1px solid rgba(212,175,55,.4);
+  margin-bottom: 8px; background: #060d1f;
 }
 #cardTip.hidden { display: none; }
 #cardTip .ct-head { display: flex; align-items: baseline; gap: 8px; }

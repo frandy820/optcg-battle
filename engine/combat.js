@@ -109,7 +109,7 @@ export function resolveAttack(state, p) {
     let dmg = Math.max(0, atkPower - defPower);
     if (dmg > 0 && hasKeyword(atk, 'doubleAttack')) dmg *= 2;
     if (hasKeyword(atk, 'banish')) dmg += 2000;
-    if (dmg <= 0) logEvent(state, { t: 'noDamage', reason: 'power' });
+    if (dmg <= 0) logEvent(state, { t: 'noDamage', reason: 'power', side: p.target.side, atkPower, defPower });
     else dealLpDamage(state, p.target.side, dmg, p.attacker.side);
   } else if (!def) {
     // 顶包/效果竞态下目标已不在场：无战果收场
@@ -119,7 +119,7 @@ export function resolveAttack(state, p) {
     if (atkPower > defPower) {
       koUnit(state, p.target, p.attacker.side);
     } else {
-      logEvent(state, { t: 'noDamage', reason: 'defense' });
+      logEvent(state, { t: 'noDamage', reason: 'defense', side: p.target.side, atkPower, defPower });
     }
   } else {
     // 攻击表示互斗：战力比较，差额扣败方 LP；相等同归于尽（攻击者是船长则船长不沉）

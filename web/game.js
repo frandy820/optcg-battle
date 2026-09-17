@@ -159,7 +159,7 @@
       <div class="name">${def.name}</div>
       <div class="sub">${def.sub || ''}</div>
       ${def.power ? `<div class="power">${def.power / 1000}K</div>` : ''}
-      ${def.counter ? `<div class="counter-badge">C ${def.counter / 1000}K</div>` : ''}
+      ${def.counter ? `<div class="counter-badge">反击 ${def.counter / 1000}K</div>` : ''}
     `;
     // 悬停详情交给 #cardTip（initCardTip）；原生 title 移除避免与富信息卡双弹
     if ((def.keywords || []).length) el.setAttribute('aria-label', el.getAttribute('aria-label') + '，' + def.keywords.map((k) => KW_LABEL[k] || k).join('/'));
@@ -195,7 +195,7 @@
     const me = G.players[MY];
     if (c.type === 'char' && me.board.length >= 5) return '场上已满 5 名角色，无法再召唤';
     const usable = O.usableDons(me);
-    if (c.cost > usable) return `费用不足：还差 ${c.cost - usable} 颗费用豆（能花的 DON!! 仅 ${usable} 颗，附着到卡上的算已消耗）`;
+    if (c.cost > usable) return `费用不足：还差 ${c.cost - usable} 颗费用豆（当前能花 ${usable} 颗，附着到卡上的算已消耗）`;
     return null;
   }
 
@@ -235,7 +235,9 @@
     });
     $('enemyStage').innerHTML = '';
     if (foe.stage) $('enemyStage').appendChild(cardEl(foe.stage, { cls: 'stage-mini' }));
-    $('enemyHand').innerHTML = foe.hand.map(() => '<span class="card-back"></span>').join('');
+    // 卡背最多画 8 张（宽度有界：9+ 张时会连数字徽章一起把 sub-row 撑出屏），真实张数看徽章
+    $('enemyHand').innerHTML = foe.hand.slice(0, 8).map(() => '<span class="card-back"></span>').join('')
+      + `<span class="hand-count" title="对方手牌 ${foe.hand.length} 张">手牌 ${foe.hand.length}</span>`;
     $('enemyGrave').innerHTML = `墓 <b>${foe.trash.length}</b>`;
 
     // 己方
@@ -290,8 +292,8 @@
     if (G.winner !== null) text = G.winner === MY ? '胜利！' : '战败…';
     else if (G.pending && G.pending.target.side === MY) text = '对方攻击——选择反击牌或放弃（无反击牌时自动结算）';
     else if (selMode && selMode.mode === 'attack') text = '选择攻击目标（对方场上有角色须先打角色；再点攻击者可取消）';
-    else if (selMode && selMode.mode === 'don') text = '选择 DON!! 附着目标（点己方单位，再点费用区取消）';
-    else if (myTurn) text = '你的回合：点手牌出牌 · 点单位攻击 · 点 DON!! 附着';
+    else if (selMode && selMode.mode === 'don') text = '选择费用豆附着目标（点己方单位，再点费用区取消）';
+    else if (myTurn) text = '你的回合：点手牌出牌 · 点单位攻击 · 点费用豆附着';
     else text = '对方行动中…';
     if (hint.textContent !== text) hint.textContent = text;
     hint.classList.remove('warn');
@@ -396,6 +398,21 @@
         await sleep(700);
         break;
       }
+      case 'noDamage': {
+        // 0 伤害/无战果也必须有反馈（试玩反馈：直攻打不穿防线不掉积分，看起来像攻击失效）
+        if (ev.reason !== 'power' && ev.reason !== 'defense') break; // gone：目标已不在场，静默
+        const msg = ev.reason === 'defense'
+          ? `守备坚固：${ev.atkPower / 1000}K 没能击破 ${ev.defPower / 1000}K 的守备——无战果`
+          : `攻不破防线：${ev.defPower / 1000}K 防线不低于 ${ev.atkPower / 1000}K 攻势——0 积分伤害（附着费用豆提升战力再打）`;
+        showHintFlash(msg, 'info');
+        if (ev.reason === 'power') { // 直攻不掉分：防守方徽章上飘 0
+          const tgt = ev.side === MY ? $('myLife') : $('enemyLife');
+          const badge = tgt && tgt.querySelector('.lp-badge');
+          if (badge) { const r = badge.getBoundingClientRect(); spawnDmg(r.left + r.width / 2, r.top, '0'); }
+        }
+        await sleep(500);
+        break;
+      }
       case 'win': {
         sfx(ev.winner === MY ? 'win' : 'lose');
         await sleep(250);
@@ -454,6 +471,11 @@
     } finally {
       busy = false;
       renderAll();
+      // 反击窗口收口：pending 已不是我方反击窗口（结算完/终局/换手）→ 收起面板。
+      // 挂在 doAction 收尾，保证所有结算路径（含打出最后一张反击牌后的自动结算）都会关窗
+      if (!(G && G.pending && G.pending.kind === 'counter' && G.pending.target.side === MY)) {
+        $('responsePanel').classList.add('hidden');
+      }
       autosaveNow(); // 有对局存快照；终局/无对局时 snapshot()=null → 清除断档
     }
   }
@@ -516,7 +538,7 @@
     line.className = 'log-line ' + (action.side === MY ? 'me' : '');
     const names = {
       playCharacter: '召唤角色', playEvent: '发动事件', playStage: '布置舞台',
-      attack: '发起攻击', block: '阻挡!', counter: '反击!', giveDon: '附着 DON!!',
+      attack: '发起攻击', block: '阻挡!', counter: '反击!', giveDon: '附着费用豆',
       endTurn: '结束回合', passCounter: '放弃反击',
     };
     line.textContent = `${action.side === MY ? '我方' : '敌方'} · ${names[action.t] || action.t}`;
@@ -576,16 +598,13 @@
       if (c.counter) {
         const o = document.createElement('div');
         o.className = 'resp-opt';
-        o.innerHTML = `<div class="lbl">${c.name}</div><div class="detail">+${c.counter / 1000}K 反击</div>`;
+        o.innerHTML = `<div class="lbl">${c.name}</div><div class="detail">反击 +${c.counter / 1000}K</div>`;
         o.onclick = () => {
           sfx('click');
-          // 窗口保持开放：反击后继续显示，直到放弃
-          doAction({ t: 'counter', side: MY, cards: [i] }).then(() => {
-            if (G && G.pending && G.pending.kind === 'counter') {
-              if (hasCounterCards()) openResponsePanel();
-              else handleMyPending(); // 最后一一张打完：无牌可续，自动结算
-            }
-          });
+          // 打出反击牌：引擎窗口保持开放（可继续垫）。面板的刷新与收起统一由 doAction 链管理——
+          // afterAction→handleMyPending 负责续垫刷新或自动结算，doAction 收尾在窗口结束时统一收窗
+          // （旧版在 .then 里自行开/关面板：打出最后一张走自动结算路径时无人收窗→面板冻死且「放弃」失效）
+          doAction({ t: 'counter', side: MY, cards: [i] });
         };
         box.appendChild(o);
       }
@@ -676,7 +695,7 @@
   $('myDon').addEventListener('click', () => {
     if (G.pending || G.active !== MY) return;
     if (selMode && selMode.mode === 'don') { selMode = null; clearHighlights(); renderHints(); return; }
-    if (O.usableDons(G.players[MY]) < 1) { showHintFlash('没有能花的 DON!! 了——都已附着或消耗，下回合开始自动补满'); return; }
+    if (O.usableDons(G.players[MY]) < 1) { showHintFlash('没有能花的费用豆了——都已附着或消耗，下回合开始自动补满'); return; }
     selMode = { mode: 'don' };
     highlightDonTargets();
     renderHints();
@@ -1001,13 +1020,13 @@
   function fillHelp() {
     const secs = [
       { ic: 'trophy', t: '胜利目标（积分制）', p: '双方船长各有 <b>LP 10000 积分</b>。攻击造成的伤害按<b>战力差额</b>扣对方 LP，<b>把对方 LP 扣到 0 即获胜</b>；对方牌库抽空也会判负。' },
-      { ic: 'layers', t: '回合流程', p: '你的回合：<b>费用区自动补 2 颗 DON!!</b>（费用豆，上回合附着的自动脱落回来）→ 抽 1 张牌 → 出牌 / 攻击 / 附着 → 点「结束回合」。费用区里<b>未附着的 DON!! 就是能花的钱</b>，附着到卡上的算已消耗。' },
-      { ic: 'map', t: '出牌', p: '手牌左上角圆标是<b>费用</b>，消耗对应数量 DON!! 即可打出：角色进场（场上最多 5 名）、事件立即生效、舞台持续支援。<b>刚出场的角色要等下回合才能攻击</b>（带速攻词条的当回合即可）。' },
-      { ic: 'swords', t: '攻击：卡片互斗', p: '点己方未行动的角色或船长 → 再点对方卡发起攻击。<b>对方场上有角色时必须先打角色</b>（横竖都可被攻击，不能绕过直攻船长）；对方场上没角色才能<b>直攻船长</b>，伤害 = 攻方战力 − 船长战力（打出反击牌可以垫高防线免伤）。攻击后攻击者横置。' },
+      { ic: 'layers', t: '回合流程', p: '你的回合：<b>费用区自动补 2 颗费用豆</b>（上回合附着的自动脱落回来）→ 抽 1 张牌 → 出牌 / 攻击 / 附着 → 点「结束回合」。费用区里<b>未附着的费用豆就是能花的钱</b>，附着到卡上的算已消耗。' },
+      { ic: 'map', t: '出牌', p: '手牌左上角圆标是<b>费用</b>，消耗对应数量费用豆即可打出：角色进场（场上最多 5 名）、事件立即生效、舞台持续支援。<b>刚出场的角色要等下回合才能攻击</b>（带速攻词条的当回合即可）。' },
+      { ic: 'swords', t: '攻击：卡片互斗', p: '点己方未行动的角色或船长 → 再点对方卡发起攻击。<b>对方场上有角色时必须先打角色</b>（横竖都可被攻击，不能绕过直攻船长）；对方场上没角色才能<b>直攻船长</b>，伤害 = 攻方战力 − 船长战力，<b>攻不破防线（差 ≤ 0）就是 0 伤害</b>（打出反击牌可以垫高防线免伤）。攻击后攻击者横置。' },
       { ic: 'refresh', t: '竖放与横放', p: '场上卡片<b>竖放＝攻击表示</b>：可以攻击，被攻击时进入<b>互斗</b>——战力高者胜，败方被击沉并按差额扣其主人 LP，相等同归于尽。<b>横放＝守备表示</b>：本回合已行动，被攻击时只比战力——攻方战力更高才被击沉，守方不损失 LP。己方回合开始时横放的卡自动转回竖放。鼠标悬停任意卡片（手机长按）可看完整信息。' },
-      { ic: 'heart', t: '反击', p: '对方攻击时进入<b>反击窗口</b>：手牌右下角带 <b>C 标记</b>的卡可打出为防守<b>垫战力</b>——直攻时垫高船长防线可免伤，互斗时反超战力可反杀攻方。<b>手里没有 C 标记的卡时会自动结算，不打扰你</b>；也可勾选「本局不再询问」永久自动。' },
+      { ic: 'heart', t: '反击', p: '对方攻击时进入<b>反击窗口</b>：手牌中带<b>「反击 +NK」角标</b>的卡可打出为防守<b>垫战力</b>——直攻时垫高船长防线可免伤，互斗时反超战力可反杀攻方。<b>手里没有反击角标的卡时会自动结算，不打扰你</b>；也可勾选「本局不再询问」永久自动。' },
       { ic: 'shield', t: '坚壁', p: '带<span class="kw">坚壁</span>词条的角色是硬盾：<b>被攻击时防御战力 +1K</b>（横放竖放都生效），更难被击沉——很适合守家。' },
-      { ic: 'anchor', t: 'DON!! 附着', p: '点左下费用区 → 点己方角色或船长，附着 1 颗 DON!! <b>+1000 战力</b>，攻防皆受益（互斗、守备、直攻差额都算）。附着后的 DON 本回合不可再用，规划好节奏。' },
+      { ic: 'anchor', t: '费用豆附着', p: '点左下费用区 → 点己方角色或船长，附着 1 颗费用豆 <b>+1000 战力</b>，攻防皆受益（互斗、守备、直攻差额都算）。附着后的费用豆本回合不可再用，规划好节奏。' },
       { ic: 'sparkles', t: '关键词', p: '<span class="kw">速攻</span>：出场当回合即可攻击；<span class="kw">双击</span>：直攻船长的 LP 伤害 ×2；<span class="kw">猛击</span>：直攻船长 LP 伤害额外 +2K；<span class="kw">坚壁</span>：被攻击时防御 +1K。' },
       { ic: 'compass', t: '两种模式', p: '<b>天梯排位</b>：胜 +25 分、败 −15 分，分数升段位、敌将变强；<b>生存挑战</b>：连胜不断升档，一败归零、记录最佳连胜。' },
     ];
@@ -1097,7 +1116,7 @@
       'onPlay:koWeakest': '打出时：击沉敌方场上战力最低的角色',
       'onPlay:restEnemy': '打出时：横置敌方一名角色（其本回合不能再攻击或阻挡）',
       'onPlay:draw': `打出时：抽 ${op.n || 1} 张牌`,
-      'onPlay:gainDon': `打出时：从 DON!! 牌库翻 ${op.n || 1} 颗进费用区（本回合就能花）`,
+      'onPlay:gainDon': `打出时：从费用库翻 ${op.n || 1} 颗进费用区（本回合就能花）`,
     };
     return M[e.hook + ':' + op.k] || null;
   }
@@ -1123,7 +1142,11 @@
     if (!id) return null;
     const def = O.POOL.cards.find((c) => c.id === id) || O.POOL.leaders.find((l) => l.id === id);
     if (!def) return null;
-    const parts = [cardInfoHtml(def)];
+    const parts = [
+      // 卡面大图（试玩反馈：悬停除文字外还要看大图）；缺图时 onerror 自移除不留空洞
+      `<img class="ct-art" src="art/${def.art || def.id}.webp" alt="" onerror="this.remove()">`,
+      cardInfoHtml(def),
+    ];
     // 状态行：竖/横是本游戏核心语义（竖=就绪，横=已休息），每次悬停都解释
     const inCodex = !!el.closest('.codex-panel');
     const rested = el.classList.contains('rest');
@@ -1136,12 +1159,12 @@
     if (inCodex) st.push('<b>图鉴浏览</b>：点击卡片可放大看卡面插画与完整说明');
     else if (inHand) {
       const usable = G ? O.usableDons(G.players[MY]) : 0;
-      st.push(`<b>在手牌</b>：点击打出，花费 ${def.cost} 颗费用豆（=费用区未附着的 DON!!，当前能花 ${usable} 颗）；带 C 标记的还可在对方攻击时打出作反击（垫高防守战力：直攻可免伤、互斗可反杀）`);
+      st.push(`<b>在手牌</b>：点击打出，花费 ${def.cost} 颗费用豆（=费用区未附着的费用豆，当前能花 ${usable} 颗）；带「反击」角标的还可在对方攻击时打出作反击（垫高防守战力：直攻可免伤、互斗可反杀）`);
     }
     else if (def.type === 'stage') st.push(`<b>${who}舞台</b>：打出后持续在场生效，不参与战斗`);
     else if (rested) st.push(`<b>横放＝守备表示</b>：${who}${def.type === 'leader' ? '船长本回合已攻击过' : '角色本回合已行动或被效果横置，不能再攻击'}；被攻击时只比战力——攻方战力更高才被击沉，守方不损失积分${(def.keywords || []).includes('blocker') ? '（坚壁：防御战力仍 +1K）' : ''}；${ownerTurn}开始时转回竖放`);
-    else st.push(`<b>竖放＝攻击表示</b>：${who}${def.type === 'leader' ? '船长可发起攻击（对方场上无角色时可直攻，伤害=双方战力差额）' : '角色可发起攻击（刚登场要等下回合，速攻词条除外）'}；被攻击时进入互斗——战力低者被击沉并按差额扣积分（LP），相等同归于尽`);
-    if (dons > 0) st.push(`<b>已附着 ${dons} 颗 DON!!</b>：战力 +${dons}K，攻防都算；${ownerTurn}开始时自动脱落回费用区`);
+    else st.push(`<b>竖放＝攻击表示</b>：${who}${def.type === 'leader' ? '船长可发起攻击（对方场上无角色时可直攻，伤害=双方战力差额，攻不破=0 伤害）' : '角色可发起攻击（刚登场要等下回合，速攻词条除外）'}；被攻击时进入互斗——战力低者被击沉并按差额扣积分（LP），相等同归于尽`);
+    if (dons > 0) st.push(`<b>已附着 ${dons} 颗费用豆</b>：战力 +${dons}K，攻防都算；${ownerTurn}开始时自动脱落回费用区`);
     parts.push(`<div class="ct-state">${st.map((s) => `<div>${s}</div>`).join('')}</div>`);
     return parts.join('');
   }
@@ -1153,8 +1176,9 @@
     document.body.appendChild(tip);
     const canHover = window.matchMedia && matchMedia('(hover: hover)').matches;
     let longTimer = null, longPressed = false, touchXY = null;
-    const hide = () => { tip.classList.add('hidden'); tip.innerHTML = ''; };
+    const hide = () => { tip.classList.add('hidden'); tip.innerHTML = ''; lastTipCard = null; };
     cardTipHide = hide;
+    let lastTipCard = null; // 同一张卡不重建内容：mousemove 高频重设 innerHTML 会让大图闪烁
     const place = (x, y) => {
       const r = tip.getBoundingClientRect();
       let L = x + 16, T = y + 16;
@@ -1166,7 +1190,7 @@
     const show = (el, x, y) => {
       const html = tipHtml(el);
       if (!html) return hide();
-      tip.innerHTML = html;
+      if (el !== lastTipCard) { tip.innerHTML = html; lastTipCard = el; }
       tip.classList.remove('hidden');
       place(x, y);
     };

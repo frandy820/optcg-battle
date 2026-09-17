@@ -442,12 +442,51 @@
     return finishReport();
   }
 
+  // ===== 反击窗口生命周期（回归：打出反击牌后面板必须收口——2026-09-17 打完最后一张走自动结算路径无人收窗，面板冻死且「放弃」失效）=====
+  async function counterWin() {
+    await waitFor(() => document.readyState === 'complete', 5000);
+    await sleep(1600);
+    const ob = document.getElementById('onboard');
+    if (ob && !ob.classList.contains('hidden')) { const s = ob.querySelector('.ob-skip'); if (s) s.click(); await waitFor(() => ob.classList.contains('hidden'), 2000); }
+    await clickAt($('btnStart'), '进入对战');
+    await waitFor(() => visible('setupPanel') === false && OPTCG_GAME.state(), 4000);
+    mark('构造反击窗口局面');
+    const snap = OPTCG_GAME.snapshot();
+    if (!step('取得对局快照', !!snap && !!snap.g)) return finishReport();
+    const g = snap.g;
+    g.winner = null;
+    g.active = 1; // 对方回合中（攻击已宣告）
+    g.pending = { kind: 'counter', attacker: { side: 1, type: 'leader' }, target: { side: 0, type: 'leader' }, counterBoost: 0, countered: [] };
+    g.players[1].leader.rest = true; // 攻击者已横置
+    g.players[0].hand[0].counter = 1000; // 强置两张反击牌（真实起手未必有，无法确定性走到该窗口）
+    g.players[0].hand[1].counter = 1000;
+    step('恢复反击窗口局面', OPTCG_GAME.restoreFromSnapshot(snap));
+    step('有反击牌时弹反击窗口', await waitFor(() => visible('responsePanel'), 2500));
+    const opts = () => document.querySelectorAll('#responseOptions .resp-opt');
+    if (!opts().length) return finishReport();
+    opts()[0].click();
+    await sleep(900);
+    // 还剩反击牌（至少强置的第 2 张）→ 窗口必须保持并刷新可继续垫
+    step('打出一张后面板续开(可继续垫)', visible('responsePanel') && opts().length >= 1, 'opts=' + opts().length);
+    // 连打至无牌：最后一张触发自动结算——旧版此处面板冻死在屏上
+    let guard = 0;
+    while (guard++ < 8) {
+      const o = document.querySelector('#responseOptions .resp-opt');
+      if (!o) break;
+      o.click();
+      await sleep(800);
+    }
+    step('打完反击牌自动结算并收起面板', await waitFor(() => !visible('responsePanel'), 5000), visible('responsePanel') ? '面板仍可见' : '');
+    return finishReport();
+  }
+
   (async () => {
     try {
       if (MODE === 'main') await main();
       else if (MODE === 'rounds') await rounds();
       else if (MODE === 'edge') await edge();
       else if (MODE === 'edge2') await edge2();
+      else if (MODE === 'counter') await counterWin();
       else return;
       if (MODE !== 'edge') await finishReport();
     } catch (e) {
