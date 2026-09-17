@@ -1,7 +1,7 @@
 // M0 引擎单测：阶段流转 / DON!! / 出牌 / 附着 / 战斗五步 / 全词条 / 胜负 / 合法性 / 确定性回放
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { newGame, applyAction, validateDeck, powerOfUnit, leaderPower, usableDons } from '../engine/index.js';
+import { newGame, applyAction, validateDeck, powerOfUnit, leaderPower, usableDons, fruitEdge } from '../engine/index.js';
 import { mkLeader, mkChar, mkEvent, mkStage, mkDeck, setHand } from './fixtures.js';
 
 function basicGame(seed = 7) {
@@ -518,4 +518,49 @@ test('回放确定性：同 seed 同动作序列 → 终态完全一致', () => 
   const b = run();
   delete a.rng; delete b.rng;
   assert.deepEqual(a, b);
+});
+
+// ===== 恶魔果实三系克制（批1 战斗体系：超人→自然→动物→超人，攻击方 +1000）=====
+test('果实克制环：三向循环成立、反向/同系/无果实均不生效', () => {
+  const P = { fruit: 'paramecia' }, L = { fruit: 'logia' }, Z = { fruit: 'zoan' };
+  assert.equal(fruitEdge(P, L), 1000, '超人克自然');
+  assert.equal(fruitEdge(L, Z), 1000, '自然克动物');
+  assert.equal(fruitEdge(Z, P), 1000, '动物克超人');
+  assert.equal(fruitEdge(L, P), 0, '反向不克制');
+  assert.equal(fruitEdge(P, P), 0, '同系不克制');
+  assert.equal(fruitEdge(P, {}), 0, '守方无果实');
+  assert.equal(fruitEdge({}, L), 0, '攻方无果实');
+});
+
+test('果实克制：互斗按克制后战力结算，clash 事件携带 fruitEdge', () => {
+  const s = basicGame();
+  const u = (id, color, power, fruit) =>
+    ({ ...mkChar(id, color, 1, power, { fruit }), rest: false, playedTurn: 0, dons: 0, buffs: [] });
+  s.players[0].board = [u('A1', 'red', 5000, 'paramecia')];
+  s.players[1].board = [u('D1', 'blue', 5000, 'logia')];
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'char', idx: 0 }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  const clash = s.log.find((e) => e.t === 'clash');
+  assert.equal(clash.fruitEdge, 1000);
+  assert.equal(clash.atkPower, 6000); // 5000 + 克制 1000
+  assert.equal(s.players[1].board.length, 0); // 守方被击沉
+  assert.equal(s.players[1].lp, 4 * 2000 - 1000); // 差额扣 LP
+});
+
+test('果实克制：直攻船长同样吃克制（船长带果实时）', () => {
+  const s = newGame({
+    leaderA: mkLeader('LA', 'red', 4, 5000, { fruit: 'paramecia' }),
+    deckA: mkDeck('red'),
+    leaderB: mkLeader('LB', 'blue', 4, 5000, { fruit: 'logia' }),
+    deckB: mkDeck('blue'),
+    seed: 7,
+  });
+  s.players[0].board = [];
+  s.players[1].board = []; // 场空 → 可直攻
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  const clash = s.log.find((e) => e.t === 'clash');
+  assert.equal(clash.fruitEdge, 1000);
+  assert.equal(clash.atkPower, 6000);
+  assert.equal(s.players[1].lp, 4 * 2000 - 1000); // dmg = 6000 − 5000
 });

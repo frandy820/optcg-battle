@@ -317,17 +317,29 @@ function respondCounter(state, action) {
 // 步骤4-5：比大小结算（游戏王式）+ 清算
 // 坚壁（blocker）：被攻击时防御战力 +1000（横竖皆生效）
 const BLOCKER_WALL = 1000;
+
+// 恶魔果实三系循环克制（批1 战斗体系）：超人→自然→动物→超人
+// 攻击方克制防守方 → 攻方战力 +1000（互斗/守备/直攻船长一律生效；任一方无果实则不参与）
+const FRUIT_BEATS = { paramecia: 'logia', logia: 'zoan', zoan: 'paramecia' };
+function fruitEdge(atkDef, defDef) {
+  const a = atkDef && atkDef.fruit, d = defDef && defDef.fruit;
+  return a && d && FRUIT_BEATS[a] === d ? 1000 : 0;
+}
+
 function resolveAttack(state, p) {
   const atk = resolveUnit(state, p.attacker);
-  const atkPower = p.attacker.type === 'leader'
-    ? leaderPower(state.players[p.attacker.side])
-    : powerOfUnit(atk);
+  const atkCard = p.attacker.type === 'leader' ? state.players[p.attacker.side].leader : atk;
   const def = resolveUnit(state, p.target);
+  const defCard = p.target.type === 'leader' ? state.players[p.target.side].leader : def;
+  const edge = fruitEdge(atkCard, defCard); // 果实克制：只利攻击方
+  const atkPower = (p.attacker.type === 'leader'
+    ? leaderPower(state.players[p.attacker.side])
+    : powerOfUnit(atk)) + edge;
   const defPower = (p.target.type === 'leader'
     ? leaderPower(state.players[p.target.side])
     : powerOfUnit(def) + (hasKeyword(def, 'blocker') ? BLOCKER_WALL : 0)) + p.counterBoost;
 
-  logEvent(state, { t: 'clash', atkPower, defPower });
+  logEvent(state, { t: 'clash', atkPower, defPower, fruitEdge: edge });
 
   if (p.target.type === 'leader') {
     // 直攻：伤害=差额（船长战力为防线，Counter 可减伤）；双击=差额×2，猛击=+2000 保底
@@ -606,6 +618,7 @@ function validateDeck(leaderDef, deckDefs) {
 
 
 
+
 // 建局并自动推进到先手 Main 阶段（含首回合 Refresh/Draw/DON!!+1）
 function newGame(opts) {
   const state = createGame(opts);
@@ -681,6 +694,7 @@ function defenseActions(state) {
 // ===== ai/heuristic.js =====
 // 启发式 AI：三档难度（easy=大噪声 / normal=纯启发式 / hard=启发式+浅层前瞻）
 // 输入 state + 合法动作列表，输出选中的动作。纯函数式，无引擎副作用。
+
 
 
 
@@ -799,7 +813,7 @@ function scoreAttack(state, act, me, foe) {
 
   if (act.target === 'leader' || act.target.type === 'leader') {
     // 直攻：伤害=差额（船长战力为防线）；无角色才可直攻
-    const def = leaderPower(foe);
+    const def = leaderPower(foe) - fruitEdge(atkUnit, foe.leader); // 果实克制抵扣防线
     let dmg = Math.max(0, atk - def - estCounter);
     if (dmg > 0 && hasKeyword(atkUnit, 'doubleAttack')) dmg *= 2;
     if (hasKeyword(atkUnit, 'banish')) dmg += 2000;
@@ -810,7 +824,7 @@ function scoreAttack(state, act, me, foe) {
   // 打角色（游戏王式互斗/守备；坚壁 blocker 防御 +1000）
   const victim = foe.board[act.target.idx];
   if (!victim) return -99;
-  const def = powerOfUnit(victim) + (hasKeyword(victim, 'blocker') ? 1000 : 0)
+  const def = powerOfUnit(victim) + (hasKeyword(victim, 'blocker') ? 1000 : 0) - fruitEdge(atkUnit, victim)
     + (victim.rest ? 0 : estCounter); // 守备表示无 Counter 加值
   if (victim.rest) {
     // 守备：打得动=击沉无伤害，打不动=无战果
@@ -826,7 +840,9 @@ function scoreAttack(state, act, me, foe) {
 function scoreDefense(state, act, me, foe) {
   const p = state.pending;
   const atkUnit = p.attacker.type === 'leader' ? foe.leader : foe.board[p.attacker.idx];
-  const atk = p.attacker.type === 'leader' ? leaderPower(foe) : powerOfUnit(atkUnit);
+  const defSelf = p.target.type === 'leader' ? me.leader : me.board[p.target.idx];
+  const atk = (p.attacker.type === 'leader' ? leaderPower(foe) : powerOfUnit(atkUnit))
+    + fruitEdge(atkUnit, defSelf); // 攻方克制我方：威胁值上浮，反击阈值随之抬高
 
   if (act.t === 'counter') {
     const card = me.hand[act.cards[0]];
@@ -853,7 +869,7 @@ function scoreDefense(state, act, me, foe) {
 // ===== data/cards.json =====
 const POOL = {
   "meta": {
-    "version": "0.1.0",
+    "version": "0.2.0",
     "note": "OPTCG-Battle 自创卡池：仅借 OP-TCG 规则机制，数值与卡面全部自设计；海贼王角色命名仅内网自玩用途，不公开分发",
     "colors": {
       "red": "速攻连打：低费速攻、攻击增益、直伤去除",
@@ -862,6 +878,12 @@ const POOL = {
       "yellow": "壁垒生存：坚壁密集、领袖强化",
       "purple": "节奏掌控：费用加速、横置干扰",
       "black": "暗黑去除：击倒、Banish 直伤"
+    },
+    "fruit": {
+      "cycle": "超人系→自然系→动物系→超人系（攻击方克制防守方，战力+1000）",
+      "paramecia": "超人系",
+      "logia": "自然系",
+      "zoan": "动物系"
     }
   },
   "leaders": [
@@ -875,7 +897,8 @@ const POOL = {
       "life": 5,
       "keywords": [],
       "effect": null,
-      "art": "captains/luffy"
+      "art": "captains/luffy",
+      "fruit": "paramecia"
     },
     {
       "id": "LEADER-BLUE",
@@ -887,7 +910,8 @@ const POOL = {
       "life": 5,
       "keywords": [],
       "effect": null,
-      "art": "captains/nami"
+      "art": "captains/nami",
+      "fruit": null
     },
     {
       "id": "LEADER-GREEN",
@@ -895,11 +919,12 @@ const POOL = {
       "sub": "海贼猎人",
       "type": "leader",
       "color": "green",
-      "power": 5000,
+      "power": 6000,
       "life": 5,
       "keywords": [],
       "effect": null,
-      "art": "captains/zoro"
+      "art": "captains/zoro",
+      "fruit": null
     },
     {
       "id": "LEADER-YELLOW",
@@ -911,7 +936,8 @@ const POOL = {
       "life": 5,
       "keywords": [],
       "effect": null,
-      "art": "captains/sanji"
+      "art": "captains/sanji",
+      "fruit": null
     },
     {
       "id": "LEADER-PURPLE",
@@ -919,11 +945,12 @@ const POOL = {
       "sub": "死亡外科医生",
       "type": "leader",
       "color": "purple",
-      "power": 5000,
+      "power": 6000,
       "life": 5,
       "keywords": [],
       "effect": null,
-      "art": "captains/law"
+      "art": "captains/law",
+      "fruit": "paramecia"
     },
     {
       "id": "LEADER-BLACK",
@@ -935,7 +962,8 @@ const POOL = {
       "life": 5,
       "keywords": [],
       "effect": null,
-      "art": "captains/shanks"
+      "art": "captains/shanks",
+      "fruit": null
     }
   ],
   "cards": [
@@ -950,20 +978,8 @@ const POOL = {
       "counter": 1000,
       "keywords": [],
       "effect": null,
-      "art": "RED-01"
-    },
-    {
-      "id": "RED-02",
-      "name": "克比",
-      "sub": " 海军本部少将 ",
-      "type": "char",
-      "color": "red",
-      "cost": 1,
-      "power": 3000,
-      "counter": 1000,
-      "keywords": [],
-      "effect": null,
-      "art": "RED-02"
+      "art": "RED-01",
+      "fruit": null
     },
     {
       "id": "RED-03",
@@ -978,20 +994,8 @@ const POOL = {
         "rush"
       ],
       "effect": null,
-      "art": "RED-03"
-    },
-    {
-      "id": "RED-04",
-      "name": "贝拉米",
-      "sub": " 鬣狗 ",
-      "type": "char",
-      "color": "red",
-      "cost": 2,
-      "power": 4000,
-      "counter": 1000,
-      "keywords": [],
-      "effect": null,
-      "art": "RED-04"
+      "art": "RED-03",
+      "fruit": null
     },
     {
       "id": "RED-05",
@@ -1006,7 +1010,8 @@ const POOL = {
         "blocker"
       ],
       "effect": null,
-      "art": "RED-05"
+      "art": "RED-05",
+      "fruit": "paramecia"
     },
     {
       "id": "RED-06",
@@ -1021,7 +1026,22 @@ const POOL = {
         "rush"
       ],
       "effect": null,
-      "art": "RED-06"
+      "art": "RED-06",
+      "fruit": null
+    },
+    {
+      "id": "RED-09",
+      "name": "卡文迪许",
+      "sub": " 海贼贵公子 ",
+      "type": "char",
+      "color": "red",
+      "cost": 5,
+      "power": 7000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "art": "RED-09",
+      "fruit": null
     },
     {
       "id": "RED-07",
@@ -1036,40 +1056,8 @@ const POOL = {
         "blocker"
       ],
       "effect": null,
-      "art": "RED-07"
-    },
-    {
-      "id": "RED-08",
-      "name": "艾斯",
-      "sub": " 火拳 ",
-      "type": "char",
-      "color": "red",
-      "cost": 4,
-      "power": 6000,
-      "counter": null,
-      "keywords": [],
-      "effect": {
-        "hook": "whenAttacking",
-        "op": {
-          "k": "powerSelf",
-          "x": 1000,
-          "until": "battle"
-        }
-      },
-      "art": "RED-08"
-    },
-    {
-      "id": "RED-09",
-      "name": "卡文迪许",
-      "sub": " 海贼贵公子 ",
-      "type": "char",
-      "color": "red",
-      "cost": 5,
-      "power": 7000,
-      "counter": null,
-      "keywords": [],
-      "effect": null,
-      "art": "RED-09"
+      "art": "RED-07",
+      "fruit": "paramecia"
     },
     {
       "id": "RED-10",
@@ -1089,7 +1077,52 @@ const POOL = {
           "until": "battle"
         }
       },
-      "art": "RED-10"
+      "art": "RED-10",
+      "fruit": null
+    },
+    {
+      "id": "RED-18",
+      "name": "卡塔库栗",
+      "sub": " 糯糯果实 ",
+      "type": "char",
+      "color": "red",
+      "cost": 8,
+      "power": 8000,
+      "counter": null,
+      "keywords": [
+        "doubleAttack"
+      ],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "RED-18"
+    },
+    {
+      "id": "RED-02",
+      "name": "克比",
+      "sub": " 海军本部少将 ",
+      "type": "char",
+      "color": "red",
+      "cost": 1,
+      "power": 3000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "RED-02",
+      "fruit": null
+    },
+    {
+      "id": "RED-04",
+      "name": "贝拉米",
+      "sub": " 鬣狗 ",
+      "type": "char",
+      "color": "red",
+      "cost": 2,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "RED-04",
+      "fruit": "paramecia"
     },
     {
       "id": "RED-E1",
@@ -1107,7 +1140,96 @@ const POOL = {
           "k": "koWeakest"
         }
       },
-      "art": "RED-E1"
+      "art": "RED-E1",
+      "fruit": null
+    },
+    {
+      "id": "RED-08",
+      "name": "艾斯",
+      "sub": " 火拳 ",
+      "type": "char",
+      "color": "red",
+      "cost": 4,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "whenAttacking",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
+      "art": "RED-08",
+      "fruit": "logia"
+    },
+    {
+      "id": "RED-14",
+      "name": "阿龙",
+      "sub": " 锯齿鲨鱼人 ",
+      "type": "char",
+      "color": "red",
+      "cost": 5,
+      "power": 7000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "RED-14"
+    },
+    {
+      "id": "RED-16",
+      "name": "达兹·波涅斯",
+      "sub": " 快斩果实 ",
+      "type": "char",
+      "color": "red",
+      "cost": 6,
+      "power": 6000,
+      "counter": null,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "RED-16"
+    },
+    {
+      "id": "RED-17",
+      "name": "罗布·路奇",
+      "sub": " 猫猫果实·豹 ",
+      "type": "char",
+      "color": "red",
+      "cost": 7,
+      "power": 7000,
+      "counter": null,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "fruit": "zoan",
+      "art": "RED-17"
+    },
+    {
+      "id": "RED-19",
+      "name": "萨卡斯基",
+      "sub": " 岩浆果实 ",
+      "type": "char",
+      "color": "red",
+      "cost": 8,
+      "power": 8000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "whenAttacking",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
+      "fruit": "logia",
+      "art": "RED-19"
     },
     {
       "id": "RED-E2",
@@ -1125,7 +1247,36 @@ const POOL = {
           "k": "restEnemy"
         }
       },
-      "art": "RED-E2"
+      "art": "RED-E2",
+      "fruit": null
+    },
+    {
+      "id": "RED-11",
+      "name": "巴基",
+      "sub": " 四分五裂 ",
+      "type": "char",
+      "color": "red",
+      "cost": 2,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "RED-11"
+    },
+    {
+      "id": "RED-13",
+      "name": "克洛",
+      "sub": " 百计 ",
+      "type": "char",
+      "color": "red",
+      "cost": 3,
+      "power": 6000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "RED-13"
     },
     {
       "id": "RED-S1",
@@ -1144,7 +1295,97 @@ const POOL = {
           "n": 1
         }
       },
-      "art": "RED-S1"
+      "art": "RED-S1",
+      "fruit": null
+    },
+    {
+      "id": "RED-S2",
+      "name": "阿拉巴斯坦王宫",
+      "sub": " 沙漠之国 ",
+      "type": "stage",
+      "color": "red",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "fruit": null,
+      "art": "RED-S2"
+    },
+    {
+      "id": "RED-12",
+      "name": "亚尔丽塔",
+      "sub": " 滑滑果实 ",
+      "type": "char",
+      "color": "red",
+      "cost": 1,
+      "power": 3000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "RED-12"
+    },
+    {
+      "id": "RED-15",
+      "name": "薇薇",
+      "sub": " 阿拉巴斯坦公主 ",
+      "type": "char",
+      "color": "red",
+      "cost": 1,
+      "power": 3000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "RED-15"
+    },
+    {
+      "id": "RED-E3",
+      "name": "斗志昂扬",
+      "sub": " 猛虎之势 ",
+      "type": "event",
+      "color": "red",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "powerLeader",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
+      "fruit": null,
+      "art": "RED-E3"
+    },
+    {
+      "id": "RED-E4",
+      "name": "东海的誓言",
+      "sub": " 出航之约 ",
+      "type": "event",
+      "color": "red",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "fruit": null,
+      "art": "RED-E4"
     },
     {
       "id": "BLUE-01",
@@ -1157,20 +1398,8 @@ const POOL = {
       "counter": 1000,
       "keywords": [],
       "effect": null,
-      "art": "BLUE-01"
-    },
-    {
-      "id": "BLUE-02",
-      "name": "达斯琪",
-      "sub": " 海军上校 ",
-      "type": "char",
-      "color": "blue",
-      "cost": 1,
-      "power": 3000,
-      "counter": 2000,
-      "keywords": [],
-      "effect": null,
-      "art": "BLUE-02"
+      "art": "BLUE-01",
+      "fruit": null
     },
     {
       "id": "BLUE-03",
@@ -1183,26 +1412,8 @@ const POOL = {
       "counter": 2000,
       "keywords": [],
       "effect": null,
-      "art": "BLUE-03"
-    },
-    {
-      "id": "BLUE-04",
-      "name": "罗宾",
-      "sub": " 恶魔之子 ",
-      "type": "char",
-      "color": "blue",
-      "cost": 2,
-      "power": 5000,
-      "counter": null,
-      "keywords": [],
-      "effect": {
-        "hook": "onPlay",
-        "op": {
-          "k": "draw",
-          "n": 1
-        }
-      },
-      "art": "BLUE-04"
+      "art": "BLUE-03",
+      "fruit": null
     },
     {
       "id": "BLUE-05",
@@ -1215,20 +1426,8 @@ const POOL = {
       "counter": 1000,
       "keywords": [],
       "effect": null,
-      "art": "BLUE-05"
-    },
-    {
-      "id": "BLUE-06",
-      "name": "犬岚公爵",
-      "sub": " 摩科莫公国 ",
-      "type": "char",
-      "color": "blue",
-      "cost": 3,
-      "power": 5000,
-      "counter": 1000,
-      "keywords": [],
-      "effect": null,
-      "art": "BLUE-06"
+      "art": "BLUE-05",
+      "fruit": null
     },
     {
       "id": "BLUE-07",
@@ -1243,7 +1442,8 @@ const POOL = {
         "blocker"
       ],
       "effect": null,
-      "art": "BLUE-07"
+      "art": "BLUE-07",
+      "fruit": "logia"
     },
     {
       "id": "BLUE-08",
@@ -1262,7 +1462,8 @@ const POOL = {
           "n": 1
         }
       },
-      "art": "BLUE-08"
+      "art": "BLUE-08",
+      "fruit": null
     },
     {
       "id": "BLUE-09",
@@ -1277,7 +1478,8 @@ const POOL = {
         "blocker"
       ],
       "effect": null,
-      "art": "BLUE-09"
+      "art": "BLUE-09",
+      "fruit": null
     },
     {
       "id": "BLUE-10",
@@ -1295,7 +1497,130 @@ const POOL = {
           "k": "restEnemy"
         }
       },
-      "art": "BLUE-10"
+      "art": "BLUE-10",
+      "fruit": "logia"
+    },
+    {
+      "id": "BLUE-19",
+      "name": "战国",
+      "sub": " 大佛 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 8,
+      "power": 7000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "BLUE-19"
+    },
+    {
+      "id": "BLUE-02",
+      "name": "达斯琪",
+      "sub": " 海军上校 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 1,
+      "power": 3000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "art": "BLUE-02",
+      "fruit": null
+    },
+    {
+      "id": "BLUE-04",
+      "name": "罗宾",
+      "sub": " 恶魔之子 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 2,
+      "power": 5000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "art": "BLUE-04",
+      "fruit": "paramecia"
+    },
+    {
+      "id": "BLUE-06",
+      "name": "犬岚公爵",
+      "sub": " 摩科莫公国 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 3,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "BLUE-06",
+      "fruit": null
+    },
+    {
+      "id": "BLUE-15",
+      "name": "巴利",
+      "sub": " 卡雷拉一号船坞 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 4,
+      "power": 6000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "BLUE-15"
+    },
+    {
+      "id": "BLUE-11",
+      "name": "卡普",
+      "sub": " 海军英雄 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 5,
+      "power": 6000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "BLUE-11"
+    },
+    {
+      "id": "BLUE-14",
+      "name": "尼普顿",
+      "sub": " 龙宫王 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 6,
+      "power": 6000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "fruit": null,
+      "art": "BLUE-14"
+    },
+    {
+      "id": "BLUE-12",
+      "name": "波尔萨利诺",
+      "sub": " 光光果实 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 7,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": "logia",
+      "art": "BLUE-12"
     },
     {
       "id": "BLUE-E1",
@@ -1314,26 +1639,8 @@ const POOL = {
           "n": 1
         }
       },
-      "art": "BLUE-E1"
-    },
-    {
-      "id": "BLUE-E2",
-      "name": "天候蛋",
-      "sub": " 雷云密布 ",
-      "type": "event",
-      "color": "blue",
-      "cost": 3,
-      "power": null,
-      "counter": null,
-      "keywords": [],
-      "effect": {
-        "hook": "onPlay",
-        "op": {
-          "k": "draw",
-          "n": 2
-        }
-      },
-      "art": "BLUE-E2"
+      "art": "BLUE-E1",
+      "fruit": null
     },
     {
       "id": "BLUE-S1",
@@ -1352,7 +1659,143 @@ const POOL = {
           "n": 1
         }
       },
-      "art": "BLUE-S1"
+      "art": "BLUE-S1",
+      "fruit": null
+    },
+    {
+      "id": "BLUE-E2",
+      "name": "天候蛋",
+      "sub": " 雷云密布 ",
+      "type": "event",
+      "color": "blue",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 2
+        }
+      },
+      "art": "BLUE-E2",
+      "fruit": null
+    },
+    {
+      "id": "BLUE-17",
+      "name": "加布拉",
+      "sub": " 狗狗果实·狼 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": "zoan",
+      "art": "BLUE-17"
+    },
+    {
+      "id": "BLUE-18",
+      "name": "卡库",
+      "sub": " 牛牛果实·长颈鹿 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 6,
+      "power": 6000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": "zoan",
+      "art": "BLUE-18"
+    },
+    {
+      "id": "BLUE-16",
+      "name": "斯潘达姆",
+      "sub": " CP9 长官 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 1,
+      "power": 3000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "BLUE-16"
+    },
+    {
+      "id": "BLUE-E3",
+      "name": "司法岛之战",
+      "sub": " 正义的重量 ",
+      "type": "event",
+      "color": "blue",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "fruit": null,
+      "art": "BLUE-E3"
+    },
+    {
+      "id": "BLUE-13",
+      "name": "白星",
+      "sub": " 鱼人岛公主 ",
+      "type": "char",
+      "color": "blue",
+      "cost": 3,
+      "power": 5000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "BLUE-13"
+    },
+    {
+      "id": "BLUE-E4",
+      "name": "六式·剃",
+      "sub": " 瞬身连击 ",
+      "type": "event",
+      "color": "blue",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "restEnemy"
+        }
+      },
+      "fruit": null,
+      "art": "BLUE-E4"
+    },
+    {
+      "id": "BLUE-S2",
+      "name": "水之都",
+      "sub": " 七水之都 ",
+      "type": "stage",
+      "color": "blue",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "fruit": null,
+      "art": "BLUE-S2"
     },
     {
       "id": "GREEN-01",
@@ -1365,7 +1808,8 @@ const POOL = {
       "counter": 1000,
       "keywords": [],
       "effect": null,
-      "art": "GREEN-01"
+      "art": "GREEN-01",
+      "fruit": "zoan"
     },
     {
       "id": "GREEN-02",
@@ -1378,7 +1822,8 @@ const POOL = {
       "counter": 1000,
       "keywords": [],
       "effect": null,
-      "art": "GREEN-02"
+      "art": "GREEN-02",
+      "fruit": null
     },
     {
       "id": "GREEN-03",
@@ -1391,7 +1836,8 @@ const POOL = {
       "counter": 2000,
       "keywords": [],
       "effect": null,
-      "art": "GREEN-03"
+      "art": "GREEN-03",
+      "fruit": null
     },
     {
       "id": "GREEN-04",
@@ -1406,7 +1852,8 @@ const POOL = {
         "rush"
       ],
       "effect": null,
-      "art": "GREEN-04"
+      "art": "GREEN-04",
+      "fruit": null
     },
     {
       "id": "GREEN-05",
@@ -1419,22 +1866,8 @@ const POOL = {
       "counter": null,
       "keywords": [],
       "effect": null,
-      "art": "GREEN-05"
-    },
-    {
-      "id": "GREEN-06",
-      "name": "马尔科",
-      "sub": " 不死鸟 ",
-      "type": "char",
-      "color": "green",
-      "cost": 5,
-      "power": 5000,
-      "counter": null,
-      "keywords": [
-        "blocker"
-      ],
-      "effect": null,
-      "art": "GREEN-06"
+      "art": "GREEN-05",
+      "fruit": "zoan"
     },
     {
       "id": "GREEN-07",
@@ -1447,7 +1880,8 @@ const POOL = {
       "counter": null,
       "keywords": [],
       "effect": null,
-      "art": "GREEN-07"
+      "art": "GREEN-07",
+      "fruit": "zoan"
     },
     {
       "id": "GREEN-08",
@@ -1462,7 +1896,8 @@ const POOL = {
         "doubleAttack"
       ],
       "effect": null,
-      "art": "GREEN-08"
+      "art": "GREEN-08",
+      "fruit": "zoan"
     },
     {
       "id": "GREEN-09",
@@ -1477,7 +1912,131 @@ const POOL = {
         "rush"
       ],
       "effect": null,
-      "art": "GREEN-09"
+      "art": "GREEN-09",
+      "fruit": "zoan"
+    },
+    {
+      "id": "GREEN-E4",
+      "name": "和之国黎明",
+      "sub": " 开国之路 ",
+      "type": "event",
+      "color": "green",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "gainDon",
+          "n": 1
+        }
+      },
+      "fruit": null,
+      "art": "GREEN-E4"
+    },
+    {
+      "id": "GREEN-E2",
+      "name": "百兽军团",
+      "sub": " 给赋者集结 ",
+      "type": "event",
+      "color": "green",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "gainDon",
+          "n": 1
+        }
+      },
+      "art": "GREEN-E2",
+      "fruit": null
+    },
+    {
+      "id": "GREEN-E1",
+      "name": "雷鸣八卦",
+      "sub": " 雷鸣 ",
+      "type": "event",
+      "color": "green",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "koWeakest"
+        }
+      },
+      "art": "GREEN-E1",
+      "fruit": null
+    },
+    {
+      "id": "GREEN-S1",
+      "name": "鬼岛",
+      "sub": " 和之国·凯多居城 ",
+      "type": "stage",
+      "color": "green",
+      "cost": 4,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "gainDon",
+          "n": 2
+        }
+      },
+      "art": "GREEN-S1",
+      "fruit": null
+    },
+    {
+      "id": "GREEN-06",
+      "name": "马尔科",
+      "sub": " 不死鸟 ",
+      "type": "char",
+      "color": "green",
+      "cost": 5,
+      "power": 5000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "GREEN-06",
+      "fruit": "zoan"
+    },
+    {
+      "id": "GREEN-17",
+      "name": "佩罗斯佩罗",
+      "sub": " 糖糖果实 ",
+      "type": "char",
+      "color": "green",
+      "cost": 6,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "GREEN-17"
+    },
+    {
+      "id": "GREEN-15",
+      "name": "藤虎",
+      "sub": " 重力果实 ",
+      "type": "char",
+      "color": "green",
+      "cost": 7,
+      "power": 7000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "GREEN-15"
     },
     {
       "id": "GREEN-10",
@@ -1497,15 +2056,109 @@ const POOL = {
           "until": "battle"
         }
       },
-      "art": "GREEN-10"
+      "art": "GREEN-10",
+      "fruit": "paramecia"
     },
     {
-      "id": "GREEN-E1",
-      "name": "雷鸣八卦",
-      "sub": " 雷鸣 ",
-      "type": "event",
+      "id": "GREEN-16",
+      "name": "蕾贝卡",
+      "sub": " 不败之女 ",
+      "type": "char",
+      "color": "green",
+      "cost": 2,
+      "power": 4000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "GREEN-16"
+    },
+    {
+      "id": "GREEN-11",
+      "name": "瓦伊帕",
+      "sub": " 香狄亚战士 ",
+      "type": "char",
       "color": "green",
       "cost": 3,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "GREEN-11"
+    },
+    {
+      "id": "GREEN-13",
+      "name": "锦卫门",
+      "sub": " 狐火流 ",
+      "type": "char",
+      "color": "green",
+      "cost": 4,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "GREEN-13"
+    },
+    {
+      "id": "GREEN-14",
+      "name": "河松",
+      "sub": " 川流 ",
+      "type": "char",
+      "color": "green",
+      "cost": 5,
+      "power": 5000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "fruit": null,
+      "art": "GREEN-14"
+    },
+    {
+      "id": "GREEN-12",
+      "name": "凯多",
+      "sub": " 鱼鱼果实·青龙 ",
+      "type": "char",
+      "color": "green",
+      "cost": 8,
+      "power": 8000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "whenAttacking",
+        "op": {
+          "k": "powerSelf",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
+      "fruit": "zoan",
+      "art": "GREEN-12"
+    },
+    {
+      "id": "GREEN-19",
+      "name": "霜月康家",
+      "sub": " 和之国大名 ",
+      "type": "char",
+      "color": "green",
+      "cost": 2,
+      "power": 3000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "GREEN-19"
+    },
+    {
+      "id": "GREEN-E3",
+      "name": "雷迎",
+      "sub": " 神之裁 ",
+      "type": "event",
+      "color": "green",
+      "cost": 4,
       "power": null,
       "counter": null,
       "keywords": [],
@@ -1515,13 +2168,28 @@ const POOL = {
           "k": "koWeakest"
         }
       },
-      "art": "GREEN-E1"
+      "fruit": null,
+      "art": "GREEN-E3"
     },
     {
-      "id": "GREEN-E2",
-      "name": "百兽军团",
-      "sub": " 给赋者集结 ",
-      "type": "event",
+      "id": "GREEN-18",
+      "name": "酒天丸",
+      "sub": " 阿修罗童子党 ",
+      "type": "char",
+      "color": "green",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "GREEN-18"
+    },
+    {
+      "id": "GREEN-S2",
+      "name": "空岛",
+      "sub": " 神之岛 ",
+      "type": "stage",
       "color": "green",
       "cost": 2,
       "power": null,
@@ -1534,26 +2202,8 @@ const POOL = {
           "n": 1
         }
       },
-      "art": "GREEN-E2"
-    },
-    {
-      "id": "GREEN-S1",
-      "name": "鬼岛",
-      "sub": " 和之国·凯多居城 ",
-      "type": "stage",
-      "color": "green",
-      "cost": 4,
-      "power": null,
-      "counter": null,
-      "keywords": [],
-      "effect": {
-        "hook": "onPlay",
-        "op": {
-          "k": "gainDon",
-          "n": 2
-        }
-      },
-      "art": "GREEN-S1"
+      "fruit": null,
+      "art": "GREEN-S2"
     },
     {
       "id": "YELLOW-01",
@@ -1566,7 +2216,8 @@ const POOL = {
       "counter": 2000,
       "keywords": [],
       "effect": null,
-      "art": "YELLOW-01"
+      "art": "YELLOW-01",
+      "fruit": "paramecia"
     },
     {
       "id": "YELLOW-02",
@@ -1581,22 +2232,8 @@ const POOL = {
         "blocker"
       ],
       "effect": null,
-      "art": "YELLOW-02"
-    },
-    {
-      "id": "YELLOW-03",
-      "name": "玛丽哥德",
-      "sub": " 蛇蛇果实 ",
-      "type": "char",
-      "color": "yellow",
-      "cost": 2,
-      "power": 3000,
-      "counter": 1000,
-      "keywords": [
-        "blocker"
-      ],
-      "effect": null,
-      "art": "YELLOW-03"
+      "art": "YELLOW-02",
+      "fruit": "zoan"
     },
     {
       "id": "YELLOW-04",
@@ -1609,7 +2246,8 @@ const POOL = {
       "counter": 1000,
       "keywords": [],
       "effect": null,
-      "art": "YELLOW-04"
+      "art": "YELLOW-04",
+      "fruit": "paramecia"
     },
     {
       "id": "YELLOW-05",
@@ -1622,22 +2260,8 @@ const POOL = {
       "counter": 2000,
       "keywords": [],
       "effect": null,
-      "art": "YELLOW-05"
-    },
-    {
-      "id": "YELLOW-06",
-      "name": "乔兹",
-      "sub": " 钻石 ",
-      "type": "char",
-      "color": "yellow",
-      "cost": 4,
-      "power": 5000,
-      "counter": null,
-      "keywords": [
-        "blocker"
-      ],
-      "effect": null,
-      "art": "YELLOW-06"
+      "art": "YELLOW-05",
+      "fruit": null
     },
     {
       "id": "YELLOW-07",
@@ -1650,22 +2274,8 @@ const POOL = {
       "counter": null,
       "keywords": [],
       "effect": null,
-      "art": "YELLOW-07"
-    },
-    {
-      "id": "YELLOW-08",
-      "name": "巴索罗缪·熊",
-      "sub": " 暴君 ",
-      "type": "char",
-      "color": "yellow",
-      "cost": 5,
-      "power": 6000,
-      "counter": null,
-      "keywords": [
-        "blocker"
-      ],
-      "effect": null,
-      "art": "YELLOW-08"
+      "art": "YELLOW-07",
+      "fruit": "logia"
     },
     {
       "id": "YELLOW-09",
@@ -1685,7 +2295,8 @@ const POOL = {
           "until": "battle"
         }
       },
-      "art": "YELLOW-09"
+      "art": "YELLOW-09",
+      "fruit": "paramecia"
     },
     {
       "id": "YELLOW-10",
@@ -1703,7 +2314,8 @@ const POOL = {
           "k": "restEnemy"
         }
       },
-      "art": "YELLOW-10"
+      "art": "YELLOW-10",
+      "fruit": "logia"
     },
     {
       "id": "YELLOW-E1",
@@ -1723,7 +2335,24 @@ const POOL = {
           "until": "battle"
         }
       },
-      "art": "YELLOW-E1"
+      "art": "YELLOW-E1",
+      "fruit": null
+    },
+    {
+      "id": "YELLOW-03",
+      "name": "玛丽哥德",
+      "sub": " 蛇蛇果实 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 2,
+      "power": 3000,
+      "counter": 1000,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "YELLOW-03",
+      "fruit": "zoan"
     },
     {
       "id": "YELLOW-E2",
@@ -1741,7 +2370,91 @@ const POOL = {
           "k": "restEnemy"
         }
       },
-      "art": "YELLOW-E2"
+      "art": "YELLOW-E2",
+      "fruit": null
+    },
+    {
+      "id": "YELLOW-06",
+      "name": "乔兹",
+      "sub": " 钻石 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "YELLOW-06",
+      "fruit": "paramecia"
+    },
+    {
+      "id": "YELLOW-08",
+      "name": "巴索罗缪·熊",
+      "sub": " 暴君 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "art": "YELLOW-08",
+      "fruit": "paramecia"
+    },
+    {
+      "id": "YELLOW-11",
+      "name": "波雅·汉库珂",
+      "sub": " 甜甜果实 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 6,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "YELLOW-11"
+    },
+    {
+      "id": "YELLOW-15",
+      "name": "皮卡",
+      "sub": " 石石果实 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 7,
+      "power": 6000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "YELLOW-15"
+    },
+    {
+      "id": "YELLOW-E3",
+      "name": "铁块",
+      "sub": " 六式防御 ",
+      "type": "event",
+      "color": "yellow",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "powerLeader",
+          "x": 1000,
+          "until": "battle"
+        }
+      },
+      "fruit": null,
+      "art": "YELLOW-E3"
     },
     {
       "id": "YELLOW-S1",
@@ -1760,7 +2473,151 @@ const POOL = {
           "n": 1
         }
       },
-      "art": "YELLOW-S1"
+      "art": "YELLOW-S1",
+      "fruit": null
+    },
+    {
+      "id": "YELLOW-16",
+      "name": "特雷波尔",
+      "sub": " 粘粘果实 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 3,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "YELLOW-16"
+    },
+    {
+      "id": "YELLOW-13",
+      "name": "塞尼奥尔·皮克",
+      "sub": " 游游果实 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "YELLOW-13"
+    },
+    {
+      "id": "YELLOW-14",
+      "name": "迪亚曼蒂",
+      "sub": " 飘飘果实 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "YELLOW-14"
+    },
+    {
+      "id": "YELLOW-12",
+      "name": "玛格丽特",
+      "sub": " 九蛇战士 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 2,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "YELLOW-12"
+    },
+    {
+      "id": "YELLOW-19",
+      "name": "阿布萨罗姆",
+      "sub": " 透明果实 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 3,
+      "power": 4000,
+      "counter": null,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "YELLOW-19"
+    },
+    {
+      "id": "YELLOW-18",
+      "name": "莫奈",
+      "sub": " 鸟鸟果实·夜枭 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 4,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": "zoan",
+      "art": "YELLOW-18"
+    },
+    {
+      "id": "YELLOW-17",
+      "name": "维尔戈",
+      "sub": " 鬼竹 ",
+      "type": "char",
+      "color": "yellow",
+      "cost": 5,
+      "power": 4000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "fruit": null,
+      "art": "YELLOW-17"
+    },
+    {
+      "id": "YELLOW-E4",
+      "name": "花儿之舞",
+      "sub": " 冈扇流 ",
+      "type": "event",
+      "color": "yellow",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "restEnemy"
+        }
+      },
+      "fruit": null,
+      "art": "YELLOW-E4"
+    },
+    {
+      "id": "YELLOW-S2",
+      "name": "德雷斯罗萨",
+      "sub": " 科利亚高原 ",
+      "type": "stage",
+      "color": "yellow",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "fruit": null,
+      "art": "YELLOW-S2"
     },
     {
       "id": "PURPLE-01",
@@ -1773,7 +2630,8 @@ const POOL = {
       "counter": 1000,
       "keywords": [],
       "effect": null,
-      "art": "PURPLE-01"
+      "art": "PURPLE-01",
+      "fruit": null
     },
     {
       "id": "PURPLE-02",
@@ -1786,20 +2644,8 @@ const POOL = {
       "counter": 2000,
       "keywords": [],
       "effect": null,
-      "art": "PURPLE-02"
-    },
-    {
-      "id": "PURPLE-03",
-      "name": "佩金",
-      "sub": " 企鹅帽 ",
-      "type": "char",
-      "color": "purple",
-      "cost": 2,
-      "power": 4000,
-      "counter": 1000,
-      "keywords": [],
-      "effect": null,
-      "art": "PURPLE-03"
+      "art": "PURPLE-02",
+      "fruit": null
     },
     {
       "id": "PURPLE-04",
@@ -1818,20 +2664,8 @@ const POOL = {
           "n": 1
         }
       },
-      "art": "PURPLE-04"
-    },
-    {
-      "id": "PURPLE-05",
-      "name": "阿普",
-      "sub": " Scratchmen Apoo ",
-      "type": "char",
-      "color": "purple",
-      "cost": 3,
-      "power": 5000,
-      "counter": 1000,
-      "keywords": [],
-      "effect": null,
-      "art": "PURPLE-05"
+      "art": "PURPLE-04",
+      "fruit": "paramecia"
     },
     {
       "id": "PURPLE-06",
@@ -1846,25 +2680,8 @@ const POOL = {
         "rush"
       ],
       "effect": null,
-      "art": "PURPLE-06"
-    },
-    {
-      "id": "PURPLE-07",
-      "name": "凯撒·克朗",
-      "sub": " 毒气 ",
-      "type": "char",
-      "color": "purple",
-      "cost": 4,
-      "power": 5000,
-      "counter": null,
-      "keywords": [],
-      "effect": {
-        "hook": "onPlay",
-        "op": {
-          "k": "restEnemy"
-        }
-      },
-      "art": "PURPLE-07"
+      "art": "PURPLE-06",
+      "fruit": null
     },
     {
       "id": "PURPLE-08",
@@ -1877,7 +2694,8 @@ const POOL = {
       "counter": null,
       "keywords": [],
       "effect": null,
-      "art": "PURPLE-08"
+      "art": "PURPLE-08",
+      "fruit": "zoan"
     },
     {
       "id": "PURPLE-09",
@@ -1897,7 +2715,8 @@ const POOL = {
           "until": "battle"
         }
       },
-      "art": "PURPLE-09"
+      "art": "PURPLE-09",
+      "fruit": "paramecia"
     },
     {
       "id": "PURPLE-10",
@@ -1910,25 +2729,117 @@ const POOL = {
       "counter": 1000,
       "keywords": [],
       "effect": null,
-      "art": "PURPLE-10"
+      "art": "PURPLE-10",
+      "fruit": null
     },
     {
-      "id": "PURPLE-E1",
-      "name": "ROOM·手术刀",
-      "sub": " 手术果实 ",
+      "id": "PURPLE-E3",
+      "name": "领域·扫描",
+      "sub": " ROOM 展开 ",
       "type": "event",
       "color": "purple",
-      "cost": 3,
+      "cost": 1,
       "power": null,
       "counter": null,
       "keywords": [],
       "effect": {
         "hook": "onPlay",
         "op": {
-          "k": "koWeakest"
+          "k": "draw",
+          "n": 1
         }
       },
-      "art": "PURPLE-E1"
+      "fruit": null,
+      "art": "PURPLE-E3"
+    },
+    {
+      "id": "PURPLE-03",
+      "name": "佩金",
+      "sub": " 企鹅帽 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 2,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "PURPLE-03",
+      "fruit": null
+    },
+    {
+      "id": "PURPLE-05",
+      "name": "阿普",
+      "sub": " Scratchmen Apoo ",
+      "type": "char",
+      "color": "purple",
+      "cost": 3,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "art": "PURPLE-05",
+      "fruit": "paramecia"
+    },
+    {
+      "id": "PURPLE-07",
+      "name": "凯撒·克朗",
+      "sub": " 毒气 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "restEnemy"
+        }
+      },
+      "art": "PURPLE-07",
+      "fruit": "logia"
+    },
+    {
+      "id": "PURPLE-13",
+      "name": "乌尔基",
+      "sub": " 因果果实 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "PURPLE-13"
+    },
+    {
+      "id": "PURPLE-14",
+      "name": "佩吉万",
+      "sub": " 龙龙果实·棘背龙 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 6,
+      "power": 7000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": "zoan",
+      "art": "PURPLE-14"
+    },
+    {
+      "id": "PURPLE-18",
+      "name": "让·巴特",
+      "sub": " 心脏海贼团 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 7,
+      "power": 8000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "PURPLE-18"
     },
     {
       "id": "PURPLE-E2",
@@ -1947,7 +2858,59 @@ const POOL = {
           "n": 1
         }
       },
-      "art": "PURPLE-E2"
+      "art": "PURPLE-E2",
+      "fruit": null
+    },
+    {
+      "id": "PURPLE-E1",
+      "name": "ROOM·手术刀",
+      "sub": " 手术果实 ",
+      "type": "event",
+      "color": "purple",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "koWeakest"
+        }
+      },
+      "art": "PURPLE-E1",
+      "fruit": null
+    },
+    {
+      "id": "PURPLE-12",
+      "name": "卡彭·贝基",
+      "sub": " 坚城果实 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "PURPLE-12"
+    },
+    {
+      "id": "PURPLE-19",
+      "name": "雷利",
+      "sub": " 冥王 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 7,
+      "power": 7000,
+      "counter": null,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "fruit": null,
+      "art": "PURPLE-19"
     },
     {
       "id": "PURPLE-S1",
@@ -1966,7 +2929,103 @@ const POOL = {
           "n": 1
         }
       },
-      "art": "PURPLE-S1"
+      "art": "PURPLE-S1",
+      "fruit": null
+    },
+    {
+      "id": "PURPLE-11",
+      "name": "乔艾莉·波妮",
+      "sub": " 年龄果实 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 3,
+      "power": 4000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "PURPLE-11"
+    },
+    {
+      "id": "PURPLE-15",
+      "name": "卡里布",
+      "sub": " 沼沼果实 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": "logia",
+      "art": "PURPLE-15"
+    },
+    {
+      "id": "PURPLE-17",
+      "name": "鹤",
+      "sub": " 海军参谋 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 2,
+      "power": 3000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "PURPLE-17"
+    },
+    {
+      "id": "PURPLE-16",
+      "name": "柯拉松",
+      "sub": " 唐吉诃德·罗西南迪 ",
+      "type": "char",
+      "color": "purple",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "PURPLE-16"
+    },
+    {
+      "id": "PURPLE-E4",
+      "name": "心络机动",
+      "sub": " 转移战术 ",
+      "type": "event",
+      "color": "purple",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "restEnemy"
+        }
+      },
+      "fruit": null,
+      "art": "PURPLE-E4"
+    },
+    {
+      "id": "PURPLE-S2",
+      "name": "北海航路",
+      "sub": " 斯温·哈根号 ",
+      "type": "stage",
+      "color": "purple",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "gainDon",
+          "n": 1
+        }
+      },
+      "fruit": null,
+      "art": "PURPLE-S2"
     },
     {
       "id": "BLACK-01",
@@ -1979,7 +3038,8 @@ const POOL = {
       "counter": 1000,
       "keywords": [],
       "effect": null,
-      "art": "BLACK-01"
+      "art": "BLACK-01",
+      "fruit": null
     },
     {
       "id": "BLACK-02",
@@ -1992,7 +3052,8 @@ const POOL = {
       "counter": 2000,
       "keywords": [],
       "effect": null,
-      "art": "BLACK-02"
+      "art": "BLACK-02",
+      "fruit": "zoan"
     },
     {
       "id": "BLACK-03",
@@ -2005,7 +3066,8 @@ const POOL = {
       "counter": 1000,
       "keywords": [],
       "effect": null,
-      "art": "BLACK-03"
+      "art": "BLACK-03",
+      "fruit": null
     },
     {
       "id": "BLACK-04",
@@ -2018,25 +3080,8 @@ const POOL = {
       "counter": 1000,
       "keywords": [],
       "effect": null,
-      "art": "BLACK-04"
-    },
-    {
-      "id": "BLACK-05",
-      "name": "瓦斯卡多",
-      "sub": " 恶政王 ",
-      "type": "char",
-      "color": "black",
-      "cost": 4,
-      "power": 5000,
-      "counter": null,
-      "keywords": [],
-      "effect": {
-        "hook": "onPlay",
-        "op": {
-          "k": "koWeakest"
-        }
-      },
-      "art": "BLACK-05"
+      "art": "BLACK-04",
+      "fruit": null
     },
     {
       "id": "BLACK-06",
@@ -2049,7 +3094,8 @@ const POOL = {
       "counter": null,
       "keywords": [],
       "effect": null,
-      "art": "BLACK-06"
+      "art": "BLACK-06",
+      "fruit": null
     },
     {
       "id": "BLACK-07",
@@ -2064,22 +3110,8 @@ const POOL = {
         "blocker"
       ],
       "effect": null,
-      "art": "BLACK-07"
-    },
-    {
-      "id": "BLACK-08",
-      "name": "雨之希留",
-      "sub": " 雨 ",
-      "type": "char",
-      "color": "black",
-      "cost": 6,
-      "power": 7000,
-      "counter": null,
-      "keywords": [
-        "rush"
-      ],
-      "effect": null,
-      "art": "BLACK-08"
+      "art": "BLACK-07",
+      "fruit": null
     },
     {
       "id": "BLACK-09",
@@ -2094,7 +3126,8 @@ const POOL = {
         "blocker"
       ],
       "effect": null,
-      "art": "BLACK-09"
+      "art": "BLACK-09",
+      "fruit": null
     },
     {
       "id": "BLACK-10",
@@ -2109,25 +3142,8 @@ const POOL = {
         "banish"
       ],
       "effect": null,
-      "art": "BLACK-10"
-    },
-    {
-      "id": "BLACK-E1",
-      "name": "黑洞",
-      "sub": " 暗暗果实 ",
-      "type": "event",
-      "color": "black",
-      "cost": 5,
-      "power": null,
-      "counter": null,
-      "keywords": [],
-      "effect": {
-        "hook": "onPlay",
-        "op": {
-          "k": "koWeakest"
-        }
-      },
-      "art": "BLACK-E1"
+      "art": "BLACK-10",
+      "fruit": "paramecia"
     },
     {
       "id": "BLACK-E2",
@@ -2145,7 +3161,22 @@ const POOL = {
           "k": "restEnemy"
         }
       },
-      "art": "BLACK-E2"
+      "art": "BLACK-E2",
+      "fruit": null
+    },
+    {
+      "id": "BLACK-14",
+      "name": "多米诺",
+      "sub": " 因佩尔看守 ",
+      "type": "char",
+      "color": "black",
+      "cost": 2,
+      "power": 4000,
+      "counter": 2000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "BLACK-14"
     },
     {
       "id": "BLACK-S1",
@@ -2163,10 +3194,241 @@ const POOL = {
           "k": "koWeakest"
         }
       },
-      "art": "BLACK-S1"
+      "art": "BLACK-S1",
+      "fruit": null
+    },
+    {
+      "id": "BLACK-05",
+      "name": "瓦斯卡多",
+      "sub": " 恶政王 ",
+      "type": "char",
+      "color": "black",
+      "cost": 4,
+      "power": 5000,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "koWeakest"
+        }
+      },
+      "art": "BLACK-05",
+      "fruit": null
+    },
+    {
+      "id": "BLACK-E1",
+      "name": "黑洞",
+      "sub": " 暗暗果实 ",
+      "type": "event",
+      "color": "black",
+      "cost": 5,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "koWeakest"
+        }
+      },
+      "art": "BLACK-E1",
+      "fruit": null
+    },
+    {
+      "id": "BLACK-08",
+      "name": "雨之希留",
+      "sub": " 雨 ",
+      "type": "char",
+      "color": "black",
+      "cost": 6,
+      "power": 7000,
+      "counter": null,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "art": "BLACK-08",
+      "fruit": null
+    },
+    {
+      "id": "BLACK-19",
+      "name": "钢骨·空",
+      "sub": " 海军元帅 ",
+      "type": "char",
+      "color": "black",
+      "cost": 7,
+      "power": 8000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "BLACK-19"
+    },
+    {
+      "id": "BLACK-E4",
+      "name": "黑团议事",
+      "sub": " 暗中盘算 ",
+      "type": "event",
+      "color": "black",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "draw",
+          "n": 1
+        }
+      },
+      "fruit": null,
+      "art": "BLACK-E4"
+    },
+    {
+      "id": "BLACK-18",
+      "name": "拉基·路",
+      "sub": " 红发干部 ",
+      "type": "char",
+      "color": "black",
+      "cost": 2,
+      "power": 5000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "BLACK-18"
+    },
+    {
+      "id": "BLACK-13",
+      "name": "布鲁诺",
+      "sub": " 门门果实 ",
+      "type": "char",
+      "color": "black",
+      "cost": 3,
+      "power": 5000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": "paramecia",
+      "art": "BLACK-13"
+    },
+    {
+      "id": "BLACK-15",
+      "name": "小萨蒂",
+      "sub": " 地狱看守长 ",
+      "type": "char",
+      "color": "black",
+      "cost": 4,
+      "power": 6000,
+      "counter": 1000,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "BLACK-15"
+    },
+    {
+      "id": "BLACK-11",
+      "name": "马歇尔·D·蒂奇",
+      "sub": " 暗暗果实 ",
+      "type": "char",
+      "color": "black",
+      "cost": 5,
+      "power": 7000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": "logia",
+      "art": "BLACK-11"
+    },
+    {
+      "id": "BLACK-S2",
+      "name": "马林梵多",
+      "sub": " 海军本部港 ",
+      "type": "stage",
+      "color": "black",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "gainDon",
+          "n": 1
+        }
+      },
+      "fruit": null,
+      "art": "BLACK-S2"
+    },
+    {
+      "id": "BLACK-17",
+      "name": "耶稣布",
+      "sub": " 红发狙击手 ",
+      "type": "char",
+      "color": "black",
+      "cost": 3,
+      "power": 5000,
+      "counter": null,
+      "keywords": [
+        "rush"
+      ],
+      "effect": null,
+      "fruit": null,
+      "art": "BLACK-17"
+    },
+    {
+      "id": "BLACK-12",
+      "name": "汉尼拔",
+      "sub": " 因佩尔副署长 ",
+      "type": "char",
+      "color": "black",
+      "cost": 5,
+      "power": 6000,
+      "counter": null,
+      "keywords": [
+        "blocker"
+      ],
+      "effect": null,
+      "fruit": null,
+      "art": "BLACK-12"
+    },
+    {
+      "id": "BLACK-E3",
+      "name": "LEVEL 6",
+      "sub": " 无限地狱 ",
+      "type": "event",
+      "color": "black",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "effect": {
+        "hook": "onPlay",
+        "op": {
+          "k": "koWeakest"
+        }
+      },
+      "fruit": null,
+      "art": "BLACK-E3"
+    },
+    {
+      "id": "BLACK-16",
+      "name": "本·贝克曼",
+      "sub": " 红发副船长 ",
+      "type": "char",
+      "color": "black",
+      "cost": 5,
+      "power": 7000,
+      "counter": null,
+      "keywords": [],
+      "effect": null,
+      "fruit": null,
+      "art": "BLACK-16"
     }
   ]
-};
+}
+;
 
 // ===== public API =====
 global.OPTCG = {

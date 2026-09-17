@@ -44,7 +44,7 @@ const BASELINE = argStr('baseline', null);
 
 const COLORS = ['red', 'blue', 'green', 'yellow', 'purple', 'black'];
 const COLOR_CN = { red: '红', blue: '蓝', green: '绿', yellow: '黄', purple: '紫', black: '黑' };
-const STALL_ACTIONS = 500; // 卡死判定：驱动层 guard，超过即停并记数
+const STALL_ACTIONS = 900; // 卡死判定：驱动层 guard，超过即停并记数（对峙局每回合~15步×60回合，deckout 兜底在 STALL 前终局）
 const MAX_TURNS = 300;     // 回合上限兜底（正常局 < 30 回合）
 
 // ---- 工具 ----

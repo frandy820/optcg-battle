@@ -308,7 +308,8 @@
       + (total === 50 ? ` ${CAP().icon('check')} 可保存出航` : `（还差 ${50 - total} 张）`);
     const pool = $('builderPool');
     pool.innerHTML = '';
-    OPTCG.POOL.cards.filter((c) => c.color === bColor).forEach((c) => {
+    OPTCG.POOL.cards.filter((c) => c.color === bColor)
+      .sort((a, b) => (a.cost - b.cost) || a.id.localeCompare(b.id)).forEach((c) => {
       const n = bCounts[c.id] || 0;
       const w = document.createElement('div');
       w.className = 'bp-card';

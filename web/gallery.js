@@ -27,7 +27,9 @@
     const groups = [];
     if (OPTCG.POOL.leaders.length) groups.push({ key: 'leader', name: '船长卡', list: OPTCG.POOL.leaders.slice() });
     for (const color of ['red', 'blue', 'green', 'yellow', 'purple', 'black']) {
-      const list = OPTCG.POOL.cards.filter((c) => c.color === color);
+      // cards.json 组内是费用曲线交错序（默认卡组构造用），图鉴展示按费用+id 归序
+      const list = OPTCG.POOL.cards.filter((c) => c.color === color)
+        .sort((a, b) => (a.cost - b.cost) || a.id.localeCompare(b.id));
       if (list.length) groups.push({ key: color, name: (COLOR_NAME[color] || color) + '阵营', list });
     }
     let total = 0;

@@ -9,12 +9,16 @@ const COLORS = ['red', 'blue', 'green', 'yellow', 'purple', 'black'];
 const OPS = ['draw', 'powerSelf', 'powerLeader', 'gainDon', 'koWeakest', 'restEnemy'];
 const HOOKS = ['onPlay', 'whenAttacking', 'onKO', 'trigger'];
 const KW = ['rush', 'blocker', 'doubleAttack', 'banish'];
+const FRUITS = ['paramecia', 'logia', 'zoan'];
 
 test('卡池 schema：id 唯一、类型/颜色合法、字段完整', () => {
   const all = [...pool.leaders, ...pool.cards];
   const ids = new Set(all.map((c) => c.id));
   assert.equal(ids.size, all.length, 'id 必须唯一');
   assert.equal(pool.leaders.length, 6);
+  for (const c of all) {
+    assert.ok(c.fruit === null || FRUITS.includes(c.fruit), `bad fruit ${c.id}: ${c.fruit}`);
+  }
   for (const c of pool.cards) {
     assert.ok(COLORS.includes(c.color), `bad color ${c.id}`);
     assert.ok(['char', 'event', 'stage'].includes(c.type), `bad type ${c.id}`);
@@ -23,6 +27,7 @@ test('卡池 schema：id 唯一、类型/颜色合法、字段完整', () => {
       assert.ok(Number.isInteger(c.power) && c.power >= 1000 && c.power <= 9000, `bad power ${c.id}`);
     } else {
       assert.equal(c.power, null, `non-char power must be null ${c.id}`);
+      assert.equal(c.fruit, null, `non-char fruit must be null ${c.id}`);
     }
     if (c.counter !== null) {
       assert.equal(c.type, 'char', `counter only on char ${c.id}`);
@@ -36,12 +41,21 @@ test('卡池 schema：id 唯一、类型/颜色合法、字段完整', () => {
   }
 });
 
-test('卡池规模：六色各 12+ 张、总数 60-80', () => {
+test('卡池规模：六色各 20+ 张、总数 140-180（批1 扩池）', () => {
   for (const col of COLORS) {
     const n = pool.cards.filter((c) => c.color === col).length;
-    assert.ok(n >= 12, `${col} only ${n} cards`);
+    assert.ok(n >= 20, `${col} only ${n} cards`);
   }
-  assert.ok(pool.cards.length >= 60 && pool.cards.length <= 80);
+  assert.ok(pool.cards.length >= 140 && pool.cards.length <= 180);
+});
+
+test('恶魔果实：三系均有分布（克制体系参与度）', () => {
+  for (const f of FRUITS) {
+    const n = pool.cards.filter((c) => c.type === 'char' && c.fruit === f).length;
+    assert.ok(n >= 8, `${f} 仅 ${n} 张角色卡`);
+  }
+  // 船长也参与克制（直攻/被直攻时）：至少 2 位船长带果实
+  assert.ok(pool.leaders.filter((l) => l.fruit).length >= 2);
 });
 
 test('卡池：每色费用曲线铺满 1-8、含事件与舞台', () => {

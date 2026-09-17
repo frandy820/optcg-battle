@@ -308,6 +308,10 @@ body {
 }
 .kw-rush { background: #c0392b; } .kw-blocker { background: #1f7a4d; }
 .kw-doubleAttack { background: #8e44ad; } .kw-banish { background: #2c3e50; }
+/* 恶魔果实系别角标（克制环：超人→自然→动物→超人） */
+.kw-badge.fr-paramecia { background: #c05621; }
+.kw-badge.fr-logia { background: #0e7490; }
+.kw-badge.fr-zoan { background: #6d4c41; }
 
 /* 属性色卡框光晕 */
 .card.red    { border-color: var(--c-red); box-shadow: 0 0 0 1px #7a2225, inset 0 0 10px rgba(229,72,77,.22), 0 4px 10px rgba(0,0,0,.55), 0 0 12px rgba(229,72,77,.14); }

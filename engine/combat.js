@@ -92,17 +92,29 @@ export function respondCounter(state, action) {
 // 步骤4-5：比大小结算（游戏王式）+ 清算
 // 坚壁（blocker）：被攻击时防御战力 +1000（横竖皆生效）
 const BLOCKER_WALL = 1000;
+
+// 恶魔果实三系循环克制（批1 战斗体系）：超人→自然→动物→超人
+// 攻击方克制防守方 → 攻方战力 +1000（互斗/守备/直攻船长一律生效；任一方无果实则不参与）
+const FRUIT_BEATS = { paramecia: 'logia', logia: 'zoan', zoan: 'paramecia' };
+export function fruitEdge(atkDef, defDef) {
+  const a = atkDef && atkDef.fruit, d = defDef && defDef.fruit;
+  return a && d && FRUIT_BEATS[a] === d ? 1000 : 0;
+}
+
 export function resolveAttack(state, p) {
   const atk = resolveUnit(state, p.attacker);
-  const atkPower = p.attacker.type === 'leader'
-    ? leaderPower(state.players[p.attacker.side])
-    : powerOfUnit(atk);
+  const atkCard = p.attacker.type === 'leader' ? state.players[p.attacker.side].leader : atk;
   const def = resolveUnit(state, p.target);
+  const defCard = p.target.type === 'leader' ? state.players[p.target.side].leader : def;
+  const edge = fruitEdge(atkCard, defCard); // 果实克制：只利攻击方
+  const atkPower = (p.attacker.type === 'leader'
+    ? leaderPower(state.players[p.attacker.side])
+    : powerOfUnit(atk)) + edge;
   const defPower = (p.target.type === 'leader'
     ? leaderPower(state.players[p.target.side])
     : powerOfUnit(def) + (hasKeyword(def, 'blocker') ? BLOCKER_WALL : 0)) + p.counterBoost;
 
-  logEvent(state, { t: 'clash', atkPower, defPower });
+  logEvent(state, { t: 'clash', atkPower, defPower, fruitEdge: edge });
 
   if (p.target.type === 'leader') {
     // 直攻：伤害=差额（船长战力为防线，Counter 可减伤）；双击=差额×2，猛击=+2000 保底

@@ -3,6 +3,7 @@
 import { powerOfUnit, leaderPower, usableDons, cloneGame } from '../engine/state.js';
 import { hasKeyword } from '../engine/keywords.js';
 import { applyAction } from '../engine/phases.js';
+import { fruitEdge } from '../engine/combat.js';
 
 export const LEVELS = ['easy', 'normal', 'hard'];
 
@@ -118,7 +119,7 @@ function scoreAttack(state, act, me, foe) {
 
   if (act.target === 'leader' || act.target.type === 'leader') {
     // 直攻：伤害=差额（船长战力为防线）；无角色才可直攻
-    const def = leaderPower(foe);
+    const def = leaderPower(foe) - fruitEdge(atkUnit, foe.leader); // 果实克制抵扣防线
     let dmg = Math.max(0, atk - def - estCounter);
     if (dmg > 0 && hasKeyword(atkUnit, 'doubleAttack')) dmg *= 2;
     if (hasKeyword(atkUnit, 'banish')) dmg += 2000;
@@ -129,7 +130,7 @@ function scoreAttack(state, act, me, foe) {
   // 打角色（游戏王式互斗/守备；坚壁 blocker 防御 +1000）
   const victim = foe.board[act.target.idx];
   if (!victim) return -99;
-  const def = powerOfUnit(victim) + (hasKeyword(victim, 'blocker') ? 1000 : 0)
+  const def = powerOfUnit(victim) + (hasKeyword(victim, 'blocker') ? 1000 : 0) - fruitEdge(atkUnit, victim)
     + (victim.rest ? 0 : estCounter); // 守备表示无 Counter 加值
   if (victim.rest) {
     // 守备：打得动=击沉无伤害，打不动=无战果
@@ -145,7 +146,9 @@ function scoreAttack(state, act, me, foe) {
 function scoreDefense(state, act, me, foe) {
   const p = state.pending;
   const atkUnit = p.attacker.type === 'leader' ? foe.leader : foe.board[p.attacker.idx];
-  const atk = p.attacker.type === 'leader' ? leaderPower(foe) : powerOfUnit(atkUnit);
+  const defSelf = p.target.type === 'leader' ? me.leader : me.board[p.target.idx];
+  const atk = (p.attacker.type === 'leader' ? leaderPower(foe) : powerOfUnit(atkUnit))
+    + fruitEdge(atkUnit, defSelf); // 攻方克制我方：威胁值上浮，反击阈值随之抬高
 
   if (act.t === 'counter') {
     const card = me.hand[act.cards[0]];

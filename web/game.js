@@ -13,6 +13,13 @@
   const CAP = () => window.OPTCG_CAPTAINS; // captains-data.js：图标库 + 阵营徽记 + 船长配置
   const COLOR_NAME = { red: '红', blue: '蓝', green: '绿', yellow: '黄', purple: '紫', black: '黑' };
   const KW_LABEL = { rush: '速攻', blocker: '坚壁', doubleAttack: '双击', banish: '猛击' };
+  // 恶魔果实三系（克制环：超人→自然→动物→超人，攻击方克制防守方 +1K）
+  const FRUIT_LABEL = { paramecia: '超人', logia: '自然', zoan: '动物' };
+  const FRUIT_TIP = {
+    paramecia: '超人系果实：克自然系——攻击自然系目标（含船长）时战力 +1K',
+    logia: '自然系果实：克动物系——攻击动物系目标（含船长）时战力 +1K',
+    zoan: '动物系果实：克超人系——攻击超人系目标（含船长）时战力 +1K',
+  };
   const MY = 0, FOE = 1;
   const AI_DELAY = 650;        // AI 每步延时（演出感）
   const FX_TIMEOUT = 4000;     // 演出总兜底：超时强制解锁（防软锁）
@@ -143,8 +150,9 @@
     el.dataset.cardId = def.id;
     el.tabIndex = 0; // 键盘可达（Enter/Space 激活，委托见 initFocusManager）
     el.setAttribute('role', 'button');
-    el.setAttribute('aria-label', def.name + (def.cost != null ? `，费用 ${def.cost}` : '') + (def.power ? `，战力 ${def.power / 1000}K` : ''));
-    const kwHtml = (def.keywords || []).map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('');
+    el.setAttribute('aria-label', def.name + (def.cost != null ? `，费用 ${def.cost}` : '') + (def.power ? `，战力 ${def.power / 1000}K` : '') + (def.fruit ? `，${FRUIT_LABEL[def.fruit]}系` : ''));
+    const fruitHtml = def.fruit ? `<span class="kw-badge fr-${def.fruit}">${FRUIT_LABEL[def.fruit]}系</span>` : '';
+    const kwHtml = fruitHtml + (def.keywords || []).map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('');
     const costHtml = def.type === 'leader' ? '' : `<div class="cost">${def.cost}</div>`;
     const artUrl = `art/${def.art || def.id}.webp`;
     el.innerHTML = `
@@ -353,6 +361,7 @@
         void document.body.offsetWidth; // 重启动画
         document.body.classList.add('shake');
         spawnRing(ev);
+        if (ev.fruitEdge > 0) spawnDmg(innerWidth / 2 - 44, innerHeight / 2 - 84, '克制 +1K'); // 果实克制提示
         await sleep(420);
         break;
       }
@@ -1028,6 +1037,7 @@
       { ic: 'shield', t: '坚壁', p: '带<span class="kw">坚壁</span>词条的角色是硬盾：<b>被攻击时防御战力 +1K</b>（横放竖放都生效），更难被击沉——很适合守家。' },
       { ic: 'anchor', t: '费用豆附着', p: '点左下费用区 → 点己方角色或船长，附着 1 颗费用豆 <b>+1000 战力</b>，攻防皆受益（互斗、守备、直攻差额都算）。附着后的费用豆本回合不可再用，规划好节奏。' },
       { ic: 'sparkles', t: '关键词', p: '<span class="kw">速攻</span>：出场当回合即可攻击；<span class="kw">双击</span>：直攻船长的 LP 伤害 ×2；<span class="kw">猛击</span>：直攻船长 LP 伤害额外 +2K；<span class="kw">坚壁</span>：被攻击时防御 +1K。' },
+      { ic: 'flame', t: '恶魔果实克制', p: '带果实角标的卡有系别：<b>超人系克自然系、自然系克动物系、动物系克超人系</b>（循环）。<b>攻击被自己克制的目标时战力 +1K</b>（打角色、直攻船长都算）；无果实角标的卡不参与克制。组卡时兼顾「我方输出系别」与「克制对方主力系别」是构筑深度所在。' },
       { ic: 'compass', t: '两种模式', p: '<b>天梯排位</b>：胜 +25 分、败 −15 分，分数升段位、敌将变强；<b>生存挑战</b>：连胜不断升档，一败归零、记录最佳连胜。' },
     ];
     $('helpBody').innerHTML = secs.map((s) =>
@@ -1125,7 +1135,8 @@
   function cardInfoHtml(def) {
     const parts = [];
     parts.push(`<div class="ct-head"><b>${def.name}</b><span>${def.sub || ''}</span></div>`);
-    parts.push(`<div class="ct-meta">${TYPE_NAME[def.type] || def.type} · ${COLOR_NAME[def.color] || def.color}${def.type === 'leader' ? ` · LP ${def.life * 2000}` : ''}</div>`);
+    parts.push(`<div class="ct-meta">${TYPE_NAME[def.type] || def.type} · ${COLOR_NAME[def.color] || def.color}${def.type === 'leader' ? ` · LP ${def.life * 2000}` : ''}${def.fruit ? ` · ${FRUIT_LABEL[def.fruit]}系` : ''}</div>`);
+    if (def.fruit) parts.push(`<div class="ct-kw"><span class="kw-badge fr-${def.fruit}">${FRUIT_LABEL[def.fruit]}系</span><span>${FRUIT_TIP[def.fruit]}</span></div>`);
     const nums = [];
     if (def.type !== 'leader' && def.cost != null) nums.push(`费用 ${def.cost}`);
     if (def.power) nums.push(`战力 ${def.power / 1000}K`);
