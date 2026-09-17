@@ -2,9 +2,9 @@
 //
 // 静态词条（布尔标记，引擎在规则点检查）：
 //   rush          登场回合即可攻击
-//   blocker       可横置顶包成为攻击目标
-//   doubleAttack  对 Leader 伤害变 2
-//   banish        造成的伤害使 Life 卡直接进垃圾场（不入手牌、不发 Trigger）
+//   blocker       可横置顶包成为攻击目标（守备表示挡刀）
+//   doubleAttack  直攻船长的 LP 伤害 ×2
+//   banish        猛击：直攻船长时 LP 伤害额外 +2000（LP 积分制语义）
 //
 // 触发钩子（卡上 effect: { hook, op }）：
 //   onPlay         登场/打出时
@@ -74,6 +74,10 @@ export function runEffect(state, cardOrUnit, hook, ctx = {}) {
       }
       const [dead] = foe.board.splice(mi, 1);
       foe.trash.push(dead);
+      // 其后单位索引前移：同步修正附着 DON 记账（与 combat.koUnit 同源）
+      for (const d of foe.donArea) {
+        if (d.attached && d.attached.type === 'char' && d.attached.idx > mi) d.attached.idx--;
+      }
       logEvent(state, { t: 'ko', side: enemySide, idx: mi, cardId: dead.id, by: cardOrUnit.id });
       runEffect(state, dead, 'onKO', { side: enemySide, self: null });
       break;

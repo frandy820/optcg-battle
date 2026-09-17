@@ -34,7 +34,7 @@ export function createAI(level = 'normal', rng = Math.random) {
           // 响应窗口自动 pass 到结算完毕
           let guard = 4;
           while (st.pending && guard-- > 0) {
-            applyAction(st, { t: st.pending.kind === 'block' ? 'passBlock' : 'passCounter', side: st.pending.target.side });
+            applyAction(st, { t: 'passCounter', side: st.pending.target.side });
           }
           const v = s * 1.5 + evaluate(st, me) * 2.0;
           if (v > bestV) { bestV = v; best = a; }
@@ -55,7 +55,7 @@ export function evaluate(state, me) {
     const sign = side === me ? 1 : -1;
     v += sign * (pl.board.reduce((n, u) => n + powerOfUnit(u) / 1000, 0) * 2);
     v += sign * pl.hand.length * 1.6;
-    v += sign * pl.life.length * 2.5;
+    v += sign * (pl.lp / 2000) * 2.5; // LP 积分（游戏王式）
     v += sign * usableDons(pl) * 1.2;
     v += sign * leaderPower(pl) / 4000;
     if (pl.stage) v += sign * 2;
@@ -114,24 +114,32 @@ function scoreAttack(state, act, me, foe) {
   // whenAttacking 增益预估
   if (atkUnit.effect && atkUnit.effect.hook === 'whenAttacking'
     && atkUnit.effect.op.k === 'powerSelf') atk += atkUnit.effect.op.x;
+  const estCounter = foe.hand.filter((c) => c.counter).length * 700; // 反击预期折减
 
   if (act.target === 'leader' || act.target.type === 'leader') {
+    // 直攻：伤害=差额（船长战力为防线）；无角色才可直攻
     const def = leaderPower(foe);
-    const estCounter = foe.hand.filter((c) => c.counter).length * 700; // 反击预期折减
-    if (foe.life.length === 0) return 1000; // 致胜一击
-    if (atk >= def + estCounter) {
-      let s = 24 + (hasKeyword(atkUnit, 'doubleAttack') ? 10 : 0)
-        + (hasKeyword(atkUnit, 'banish') ? 6 : 0);
-      return s;
-    }
-    return -4;
+    let dmg = Math.max(0, atk - def - estCounter);
+    if (dmg > 0 && hasKeyword(atkUnit, 'doubleAttack')) dmg *= 2;
+    if (hasKeyword(atkUnit, 'banish')) dmg += 2000;
+    if (dmg >= foe.lp) return 1000; // 致胜一击
+    if (dmg > 0) return 24 + dmg / 400;
+    return -4; // 打不穿船长防线
   }
-  // 打已横置角色
+  // 打角色（游戏王式互斗/守备；坚壁 blocker 防御 +1000）
   const victim = foe.board[act.target.idx];
   if (!victim) return -99;
-  const estCounter = foe.hand.filter((c) => c.counter).length * 700;
-  if (atk >= powerOfUnit(victim) + estCounter) return 20 + victim.power / 400;
-  return -4;
+  const def = powerOfUnit(victim) + (hasKeyword(victim, 'blocker') ? 1000 : 0)
+    + (victim.rest ? 0 : estCounter); // 守备表示无 Counter 加值
+  if (victim.rest) {
+    // 守备：打得动=击沉无伤害，打不动=无战果
+    if (atk > def) return 18 + victim.power / 400;
+    return -6; // 踩墙白费一次攻击
+  }
+  // 攻击表示互斗：差额扣 LP，攻方低则被反杀
+  if (atk > def) return 20 + (atk - def) / 400 + victim.power / 400;
+  if (atk < def) return -10; // 反杀风险（攻方沉+扣差额）
+  return -3; // 同归于尽
 }
 
 function scoreDefense(state, act, me, foe) {
@@ -139,26 +147,20 @@ function scoreDefense(state, act, me, foe) {
   const atkUnit = p.attacker.type === 'leader' ? foe.leader : foe.board[p.attacker.idx];
   const atk = p.attacker.type === 'leader' ? leaderPower(foe) : powerOfUnit(atkUnit);
 
-  if (act.t === 'block') {
-    const b = me.board[act.idx];
-    const def = powerOfUnit(b);
-    if (p.target.type === 'leader' && me.life.length <= 1) return 500; // 保命
-    if (def + me.hand.filter((c) => c.counter).reduce((n, c) => n + c.counter, 0) >= atk) return 28;
-    return -6; // 挡不住白丢
-  }
   if (act.t === 'counter') {
     const card = me.hand[act.cards[0]];
     const curDef = (p.target.type === 'leader' ? leaderPower(me) : powerOfUnit(me.board[p.target.idx]))
+      + (p.target.type !== 'leader' && hasKeyword(me.board[p.target.idx], 'blocker') ? 1000 : 0)
       + p.counterBoost;
     if (curDef + card.counter >= atk) {
       // 能翻盘才反：致死攻击必反，一般攻击看价值
-      if (p.target.type === 'leader' && me.life.length === 0) return 800;
+      if (p.target.type === 'leader' && me.lp <= atk - curDef) return 800;
       return 22;
     }
     return -8; // 补不够就不补
   }
   // pass：被打角色高价值时不该 pass（分低），给 pass 一个参考值
-  if (p.target.type === 'leader' && me.life.length === 0) return -500;
+  if (p.target.type === 'leader' && me.lp <= 3000) return -500;
   if (p.target.type === 'char') {
     const victim = me.board[p.target.idx];
     if (victim) return -victim.power / 800; // 高价值单位受损倾向响应

@@ -3,7 +3,7 @@
 import { usableDons, logEvent, resolveUnit, DON_CAP } from './state.js';
 import { runEffect, declareDeckOut, hasKeyword } from './keywords.js';
 import {
-  startAttack, respondBlock, respondCounter,
+  startAttack, respondCounter,
 } from './combat.js';
 
 // 回合开始自动序列：Refresh → Draw → DON!!（无决策，引擎自动推进到 Main）
@@ -141,11 +141,10 @@ export function applyAction(state, action) {
   const side = action.side;
   if (typeof side !== 'number') throw new Error('action.side required');
 
-  // 响应窗口：行动权在防守方
+  // 响应窗口（Counter）：行动权在防守方
   if (state.pending) {
     if (side !== state.pending.target.side) throw new Error('not your response window');
     switch (action.t) {
-      case 'block': case 'passBlock': respondBlock(state, action); return;
       case 'counter': case 'passCounter': respondCounter(state, action); return;
       default: throw new Error(`illegal action ${action.t} during response window`);
     }

@@ -72,9 +72,10 @@ test('数值 sanity：同费战力区间合理（±1000 内波动、无超模）
   }
   for (const [cost, cs] of byCost) {
     for (const c of cs) {
-      // 官方 vanilla 节奏 ≈ (cost+2)*1000；本池取保守一档，区间 = [cost千, cost+2千]
-      const lo = cost * 1000;
-      const hi = (cost + 2) * 1000;
+      // LP 互斗制平衡迭代后带：同费 vanilla 节奏 ≈ (cost+1)~(cost+3)千；
+      // 此处只拦超模离群值，总盘平衡由 balance-sim / balance.test 门禁把关
+      const lo = Math.max(1000, (cost - 1) * 1000);
+      const hi = (cost + 3) * 1000;
       assert.ok(
         c.power >= lo && c.power <= hi,
         `${c.id} cost${cost} power${c.power} 超出合理区间 [${lo}, ${hi}]`,

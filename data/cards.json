@@ -31,7 +31,7 @@
       "type": "leader",
       "color": "blue",
       "power": 5000,
-      "life": 4,
+      "life": 5,
       "keywords": [],
       "effect": null,
       "art": "captains/nami"
@@ -79,7 +79,7 @@
       "type": "leader",
       "color": "black",
       "power": 5000,
-      "life": 4,
+      "life": 5,
       "keywords": [],
       "effect": null,
       "art": "captains/shanks"
@@ -313,7 +313,7 @@
       "type": "char",
       "color": "blue",
       "cost": 1,
-      "power": 2000,
+      "power": 3000,
       "counter": 2000,
       "keywords": [],
       "effect": null,
@@ -326,7 +326,7 @@
       "type": "char",
       "color": "blue",
       "cost": 2,
-      "power": 3000,
+      "power": 4000,
       "counter": 2000,
       "keywords": [],
       "effect": null,
@@ -339,7 +339,7 @@
       "type": "char",
       "color": "blue",
       "cost": 2,
-      "power": 4000,
+      "power": 5000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -384,7 +384,7 @@
       "type": "char",
       "color": "blue",
       "cost": 4,
-      "power": 5000,
+      "power": 6000,
       "counter": 1000,
       "keywords": [
         "blocker"
@@ -562,7 +562,7 @@
       "type": "char",
       "color": "green",
       "cost": 5,
-      "power": 6000,
+      "power": 5000,
       "counter": null,
       "keywords": [],
       "effect": null,
@@ -575,7 +575,7 @@
       "type": "char",
       "color": "green",
       "cost": 5,
-      "power": 6000,
+      "power": 5000,
       "counter": null,
       "keywords": [
         "blocker"
@@ -590,7 +590,7 @@
       "type": "char",
       "color": "green",
       "cost": 6,
-      "power": 7000,
+      "power": 6000,
       "counter": null,
       "keywords": [],
       "effect": null,
@@ -603,7 +603,7 @@
       "type": "char",
       "color": "green",
       "cost": 7,
-      "power": 8000,
+      "power": 7000,
       "counter": null,
       "keywords": [
         "doubleAttack"
@@ -618,7 +618,7 @@
       "type": "char",
       "color": "green",
       "cost": 8,
-      "power": 8000,
+      "power": 7000,
       "counter": null,
       "keywords": [
         "rush"
@@ -633,7 +633,7 @@
       "type": "char",
       "color": "green",
       "cost": 8,
-      "power": 9000,
+      "power": 8000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -737,7 +737,7 @@
       "type": "char",
       "color": "yellow",
       "cost": 2,
-      "power": 4000,
+      "power": 3000,
       "counter": 1000,
       "keywords": [
         "blocker"

@@ -58,14 +58,12 @@ function createGame({ leaderA, deckA, leaderB, deckB, seed = 1 }) {
 
 function mkPlayer(id, leaderDef, deckDefs, rng) {
   let deck = shuffle(deckDefs, rng);
-  const life = deck.slice(0, leaderDef.life);
-  deck = deck.slice(leaderDef.life);
   const hand = deck.slice(0, START_HAND);
   deck = deck.slice(START_HAND);
   return {
     id,
     leader: { ...leaderDef, rest: false, dons: 0, buffs: [] },
-    life,                  // 盖放的 Life（CardDef 数组，翻到才公开）
+    lp: leaderDef.life * 2000, // LP 积分（游戏王式：原生命卡 ×2000 折算，LP≤0 判负）
     deck,                  // 牌组（顶在尾部 pop）
     hand,                  // 手牌
     donDeck: DON_DECK_SIZE,
@@ -117,9 +115,9 @@ function logEvent(state, ev) {
 //
 // 静态词条（布尔标记，引擎在规则点检查）：
 //   rush          登场回合即可攻击
-//   blocker       可横置顶包成为攻击目标
-//   doubleAttack  对 Leader 伤害变 2
-//   banish        造成的伤害使 Life 卡直接进垃圾场（不入手牌、不发 Trigger）
+//   blocker       可横置顶包成为攻击目标（守备表示挡刀）
+//   doubleAttack  直攻船长的 LP 伤害 ×2
+//   banish        猛击：直攻船长时 LP 伤害额外 +2000（LP 积分制语义）
 //
 // 触发钩子（卡上 effect: { hook, op }）：
 //   onPlay         登场/打出时
@@ -189,6 +187,10 @@ function runEffect(state, cardOrUnit, hook, ctx = {}) {
       }
       const [dead] = foe.board.splice(mi, 1);
       foe.trash.push(dead);
+      // 其后单位索引前移：同步修正附着 DON 记账（与 combat.koUnit 同源）
+      for (const d of foe.donArea) {
+        if (d.attached && d.attached.type === 'char' && d.attached.idx > mi) d.attached.idx--;
+      }
       logEvent(state, { t: 'ko', side: enemySide, idx: mi, cardId: dead.id, by: cardOrUnit.id });
       runEffect(state, dead, 'onKO', { side: enemySide, self: null });
       break;
@@ -222,11 +224,14 @@ function unitRefOf(state, side, unit) {
 
 // ===== engine/combat.js =====
 // 战斗五步：攻击宣告 → Blocker 顶包 → Counter 窗口 → 结算 → 清算
+// 游戏王式积分制：角色互斗比较战力、差额扣 LP；对方场上无角色时才可直攻船长（差额扣 LP）
 // 响应窗口通过 state.pending 暴露给双方（人或 AI 均以 action 驱动，无回调）
 
 
 
 // 发起攻击：action { t:'attack', attacker:{side,type,idx}, target:'leader'|{type:'char',idx} }
+// 目标规则：对方场上有角色 → 必须指定其一（竖=攻击表示，横=守备表示，均可被攻击）；
+//           场上无角色 → 只能直攻船长（船长战力为天然防线，伤害=差额）
 function startAttack(state, action) {
   if (state.pending) throw new Error('cannot attack while pending window open');
   const { attacker, target } = action;
@@ -242,14 +247,13 @@ function startAttack(state, action) {
   const defSide = attacker.side === 0 ? 1 : 0;
   const foe = state.players[defSide];
 
-  // 目标合法性：只能打 Leader，或已横置的角色
   let targetRef;
   if (target === 'leader' || target.type === 'leader') {
+    if (foe.board.length > 0) throw new Error('must attack a character while opponent board is not empty');
     targetRef = { side: defSide, type: 'leader' };
   } else {
     const unit = foe.board[target.idx];
     if (!unit) throw new Error('target not found');
-    if (!unit.rest) throw new Error('can only attack rested characters or the leader');
     targetRef = { side: defSide, type: 'char', idx: target.idx };
   }
 
@@ -262,33 +266,16 @@ function startAttack(state, action) {
   if (state.winner !== null) return; // 效果可能直接终局
 
   state.pending = {
-    kind: 'block',
+    kind: 'counter',
     attacker,
     target: targetRef,
     counterBoost: 0,
     countered: [],
   };
-  logEvent(state, { t: 'window', kind: 'block', side: defSide });
+  logEvent(state, { t: 'window', kind: 'counter', side: defSide });
 }
 
-// 响应1：Blocker 顶包：action { t:'block', idx }  |  { t:'passBlock' }
-function respondBlock(state, action) {
-  const p = expectPending(state, 'block');
-  const foe = state.players[p.target.side];
-  if (action.t === 'block') {
-    const unit = foe.board[action.idx];
-    if (!unit) throw new Error('blocker not found');
-    if (!hasKeyword(unit, 'blocker')) throw new Error('unit lacks Blocker');
-    if (unit.rest) throw new Error('blocker is rested');
-    unit.rest = true;
-    p.target = { side: p.target.side, type: 'char', idx: action.idx };
-    logEvent(state, { t: 'block', side: p.target.side, idx: action.idx });
-  }
-  p.kind = 'counter';
-  logEvent(state, { t: 'window', kind: 'counter', side: p.target.side });
-}
-
-// 响应2：Counter（可多次累加）：action { t:'counter', cards:[handIdx...] }  |  { t:'passCounter' }
+// 响应窗口：Counter（可多次累加，为防守目标+战力/直攻减伤）：action { t:'counter', cards:[handIdx...] }  |  { t:'passCounter' }
 function respondCounter(state, action) {
   const p = expectPending(state, 'counter');
   const defSide = p.target.side;
@@ -327,36 +314,50 @@ function respondCounter(state, action) {
   resolveAttack(state, p);
 }
 
-// 步骤4-5：比大小结算 + 清算
+// 步骤4-5：比大小结算（游戏王式）+ 清算
+// 坚壁（blocker）：被攻击时防御战力 +1000（横竖皆生效）
+const BLOCKER_WALL = 1000;
 function resolveAttack(state, p) {
   const atk = resolveUnit(state, p.attacker);
-  const def = resolveUnit(state, p.target);
   const atkPower = p.attacker.type === 'leader'
     ? leaderPower(state.players[p.attacker.side])
     : powerOfUnit(atk);
+  const def = resolveUnit(state, p.target);
   const defPower = (p.target.type === 'leader'
     ? leaderPower(state.players[p.target.side])
-    : powerOfUnit(def)) + p.counterBoost;
+    : powerOfUnit(def) + (hasKeyword(def, 'blocker') ? BLOCKER_WALL : 0)) + p.counterBoost;
 
   logEvent(state, { t: 'clash', atkPower, defPower });
 
-  if (atkPower >= defPower) {
-    if (p.target.type === 'leader') {
-      const hits = hasKeyword(atk, 'doubleAttack') ? 2 : 1;
-      for (let h = 0; h < hits && state.winner === null; h++) {
-        dealLeaderDamage(state, p, atk);
-      }
+  if (p.target.type === 'leader') {
+    // 直攻：伤害=差额（船长战力为防线，Counter 可减伤）；双击=差额×2，猛击=+2000 保底
+    let dmg = Math.max(0, atkPower - defPower);
+    if (dmg > 0 && hasKeyword(atk, 'doubleAttack')) dmg *= 2;
+    if (hasKeyword(atk, 'banish')) dmg += 2000;
+    if (dmg <= 0) logEvent(state, { t: 'noDamage', reason: 'power' });
+    else dealLpDamage(state, p.target.side, dmg, p.attacker.side);
+  } else if (!def) {
+    // 顶包/效果竞态下目标已不在场：无战果收场
+    logEvent(state, { t: 'noDamage', reason: 'gone' });
+  } else if (def.rest) {
+    // 守备表示（横置）：打得动才击沉，无差额伤害；打不动=无战果
+    if (atkPower > defPower) {
+      koUnit(state, p.target, p.attacker.side);
     } else {
-      // 角色被击倒
-      const foe = state.players[p.target.side];
-      const [dead] = foe.board.splice(p.target.idx, 1);
-      foe.trash.push(dead);
-      logEvent(state, { t: 'ko', side: p.target.side, cardId: dead.id });
-      // 后续单位 idx 位移：pending 已结束，无需修正
-      runEffect(state, dead, 'onKO', { side: p.target.side, self: null });
+      logEvent(state, { t: 'noDamage', reason: 'defense' });
     }
   } else {
-    logEvent(state, { t: 'noDamage', reason: 'power' });
+    // 攻击表示互斗：战力比较，差额扣败方 LP；相等同归于尽（攻击者是船长则船长不沉）
+    if (atkPower > defPower) {
+      koUnit(state, p.target, p.attacker.side);
+      if (state.winner === null) dealLpDamage(state, p.target.side, atkPower - defPower, p.attacker.side);
+    } else if (atkPower < defPower) {
+      if (p.attacker.type === 'char') koUnit(state, p.attacker, p.target.side);
+      if (state.winner === null) dealLpDamage(state, p.attacker.side, defPower - atkPower, p.target.side);
+    } else {
+      if (p.attacker.type === 'char') koUnit(state, p.attacker, p.target.side);
+      koUnit(state, p.target, p.attacker.side);
+    }
   }
 
   // 清算：本次战斗的临时增益清空
@@ -364,25 +365,30 @@ function resolveAttack(state, p) {
   state.pending = null;
 }
 
-function dealLeaderDamage(state, p, atk) {
-  const defSide = p.target.side;
-  const foe = state.players[defSide];
-  if (foe.life.length === 0) {
-    state.winner = p.attacker.side;
-    state.winReason = 'leader';
-    logEvent(state, { t: 'win', winner: state.winner, reason: 'leader' });
-    return;
+// 击沉角色进墓场（触发 onKO）
+function koUnit(state, ref, bySide) {
+  const pl = state.players[ref.side];
+  if (ref.type !== 'char') return;
+  const [dead] = pl.board.splice(ref.idx, 1);
+  if (!dead) return;
+  pl.trash.push(dead);
+  // 其后单位索引前移：同步修正附着 DON 的 board 记账（否则 takeDon 找不到=引擎不一致）
+  for (const d of pl.donArea) {
+    if (d.attached && d.attached.type === 'char' && d.attached.idx > ref.idx) d.attached.idx--;
   }
-  const flipped = foe.life.shift();
-  const banish = hasKeyword(atk, 'banish');
-  if (banish) {
-    foe.trash.push(flipped);
-    logEvent(state, { t: 'life', side: defSide, cardId: flipped.id, banish: true });
-  } else {
-    foe.hand.push(flipped);
-    logEvent(state, { t: 'life', side: defSide, cardId: flipped.id, to: 'hand' });
-    // Trigger：翻出即发动（无论去向——官方为入手牌后可选择发动，M0 自动发动）
-    runEffect(state, flipped, 'trigger', { side: defSide, self: null });
+  logEvent(state, { t: 'ko', side: ref.side, cardId: dead.id });
+  runEffect(state, dead, 'onKO', { side: ref.side, self: null });
+}
+
+// LP 伤害与胜负（游戏王式积分制）
+function dealLpDamage(state, side, dmg, bySide) {
+  const pl = state.players[side];
+  pl.lp -= dmg;
+  logEvent(state, { t: 'lp', side, dmg, lp: pl.lp });
+  if (pl.lp <= 0) {
+    state.winner = bySide;
+    state.winReason = 'lp';
+    logEvent(state, { t: 'win', winner: state.winner, reason: 'lp' });
   }
 }
 
@@ -542,11 +548,10 @@ function applyAction(state, action) {
   const side = action.side;
   if (typeof side !== 'number') throw new Error('action.side required');
 
-  // 响应窗口：行动权在防守方
+  // 响应窗口（Counter）：行动权在防守方
   if (state.pending) {
     if (side !== state.pending.target.side) throw new Error('not your response window');
     switch (action.t) {
-      case 'block': case 'passBlock': respondBlock(state, action); return;
       case 'counter': case 'passCounter': respondCounter(state, action); return;
       default: throw new Error(`illegal action ${action.t} during response window`);
     }
@@ -642,6 +647,7 @@ function listActions(state) {
   });
 
   // 攻击：己方未横置且可行动的单位 × 合法目标
+  // 游戏王式：对方场上有角色（竖/横均可）→ 必须指定其一；场上无角色 → 只能直攻船长
   const attackers = [];
   if (!me.leader.rest) attackers.push({ side, type: 'leader' });
   me.board.forEach((u, i) => {
@@ -649,8 +655,9 @@ function listActions(state) {
     if (u.playedTurn === state.turn && !hasKeyword(u, 'rush')) return;
     attackers.push({ side, type: 'char', idx: i });
   });
-  const targets = ['leader'];
-  foe.board.forEach((u, i) => { if (u.rest) targets.push({ type: 'char', idx: i }); });
+  const targets = foe.board.length > 0
+    ? foe.board.map((_, i) => ({ type: 'char', idx: i }))
+    : ['leader'];
   for (const a of attackers) {
     for (const tg of targets) acts.push({ t: 'attack', side, attacker: a, target: tg });
   }
@@ -664,17 +671,10 @@ function defenseActions(state) {
   const side = p.target.side;
   const me = state.players[side];
   const acts = [];
-  if (p.kind === 'block') {
-    me.board.forEach((u, i) => {
-      if (!u.rest && hasKeyword(u, 'blocker')) acts.push({ t: 'block', side, idx: i });
-    });
-    acts.push({ t: 'passBlock', side });
-  } else if (p.kind === 'counter') {
-    me.hand.forEach((c, i) => {
-      if (c.counter) acts.push({ t: 'counter', side, cards: [i] });
-    });
-    acts.push({ t: 'passCounter', side });
-  }
+  me.hand.forEach((c, i) => {
+    if (c.counter) acts.push({ t: 'counter', side, cards: [i] });
+  });
+  acts.push({ t: 'passCounter', side });
   return acts;
 }
 
@@ -715,7 +715,7 @@ function createAI(level = 'normal', rng = Math.random) {
           // 响应窗口自动 pass 到结算完毕
           let guard = 4;
           while (st.pending && guard-- > 0) {
-            applyAction(st, { t: st.pending.kind === 'block' ? 'passBlock' : 'passCounter', side: st.pending.target.side });
+            applyAction(st, { t: 'passCounter', side: st.pending.target.side });
           }
           const v = s * 1.5 + evaluate(st, me) * 2.0;
           if (v > bestV) { bestV = v; best = a; }
@@ -736,7 +736,7 @@ function evaluate(state, me) {
     const sign = side === me ? 1 : -1;
     v += sign * (pl.board.reduce((n, u) => n + powerOfUnit(u) / 1000, 0) * 2);
     v += sign * pl.hand.length * 1.6;
-    v += sign * pl.life.length * 2.5;
+    v += sign * (pl.lp / 2000) * 2.5; // LP 积分（游戏王式）
     v += sign * usableDons(pl) * 1.2;
     v += sign * leaderPower(pl) / 4000;
     if (pl.stage) v += sign * 2;
@@ -795,24 +795,32 @@ function scoreAttack(state, act, me, foe) {
   // whenAttacking 增益预估
   if (atkUnit.effect && atkUnit.effect.hook === 'whenAttacking'
     && atkUnit.effect.op.k === 'powerSelf') atk += atkUnit.effect.op.x;
+  const estCounter = foe.hand.filter((c) => c.counter).length * 700; // 反击预期折减
 
   if (act.target === 'leader' || act.target.type === 'leader') {
+    // 直攻：伤害=差额（船长战力为防线）；无角色才可直攻
     const def = leaderPower(foe);
-    const estCounter = foe.hand.filter((c) => c.counter).length * 700; // 反击预期折减
-    if (foe.life.length === 0) return 1000; // 致胜一击
-    if (atk >= def + estCounter) {
-      let s = 24 + (hasKeyword(atkUnit, 'doubleAttack') ? 10 : 0)
-        + (hasKeyword(atkUnit, 'banish') ? 6 : 0);
-      return s;
-    }
-    return -4;
+    let dmg = Math.max(0, atk - def - estCounter);
+    if (dmg > 0 && hasKeyword(atkUnit, 'doubleAttack')) dmg *= 2;
+    if (hasKeyword(atkUnit, 'banish')) dmg += 2000;
+    if (dmg >= foe.lp) return 1000; // 致胜一击
+    if (dmg > 0) return 24 + dmg / 400;
+    return -4; // 打不穿船长防线
   }
-  // 打已横置角色
+  // 打角色（游戏王式互斗/守备；坚壁 blocker 防御 +1000）
   const victim = foe.board[act.target.idx];
   if (!victim) return -99;
-  const estCounter = foe.hand.filter((c) => c.counter).length * 700;
-  if (atk >= powerOfUnit(victim) + estCounter) return 20 + victim.power / 400;
-  return -4;
+  const def = powerOfUnit(victim) + (hasKeyword(victim, 'blocker') ? 1000 : 0)
+    + (victim.rest ? 0 : estCounter); // 守备表示无 Counter 加值
+  if (victim.rest) {
+    // 守备：打得动=击沉无伤害，打不动=无战果
+    if (atk > def) return 18 + victim.power / 400;
+    return -6; // 踩墙白费一次攻击
+  }
+  // 攻击表示互斗：差额扣 LP，攻方低则被反杀
+  if (atk > def) return 20 + (atk - def) / 400 + victim.power / 400;
+  if (atk < def) return -10; // 反杀风险（攻方沉+扣差额）
+  return -3; // 同归于尽
 }
 
 function scoreDefense(state, act, me, foe) {
@@ -820,26 +828,20 @@ function scoreDefense(state, act, me, foe) {
   const atkUnit = p.attacker.type === 'leader' ? foe.leader : foe.board[p.attacker.idx];
   const atk = p.attacker.type === 'leader' ? leaderPower(foe) : powerOfUnit(atkUnit);
 
-  if (act.t === 'block') {
-    const b = me.board[act.idx];
-    const def = powerOfUnit(b);
-    if (p.target.type === 'leader' && me.life.length <= 1) return 500; // 保命
-    if (def + me.hand.filter((c) => c.counter).reduce((n, c) => n + c.counter, 0) >= atk) return 28;
-    return -6; // 挡不住白丢
-  }
   if (act.t === 'counter') {
     const card = me.hand[act.cards[0]];
     const curDef = (p.target.type === 'leader' ? leaderPower(me) : powerOfUnit(me.board[p.target.idx]))
+      + (p.target.type !== 'leader' && hasKeyword(me.board[p.target.idx], 'blocker') ? 1000 : 0)
       + p.counterBoost;
     if (curDef + card.counter >= atk) {
       // 能翻盘才反：致死攻击必反，一般攻击看价值
-      if (p.target.type === 'leader' && me.life.length === 0) return 800;
+      if (p.target.type === 'leader' && me.lp <= atk - curDef) return 800;
       return 22;
     }
     return -8; // 补不够就不补
   }
   // pass：被打角色高价值时不该 pass（分低），给 pass 一个参考值
-  if (p.target.type === 'leader' && me.life.length === 0) return -500;
+  if (p.target.type === 'leader' && me.lp <= 3000) return -500;
   if (p.target.type === 'char') {
     const victim = me.board[p.target.idx];
     if (victim) return -victim.power / 800; // 高价值单位受损倾向响应
@@ -882,7 +884,7 @@ const POOL = {
       "type": "leader",
       "color": "blue",
       "power": 5000,
-      "life": 4,
+      "life": 5,
       "keywords": [],
       "effect": null,
       "art": "captains/nami"
@@ -930,7 +932,7 @@ const POOL = {
       "type": "leader",
       "color": "black",
       "power": 5000,
-      "life": 4,
+      "life": 5,
       "keywords": [],
       "effect": null,
       "art": "captains/shanks"
@@ -1164,7 +1166,7 @@ const POOL = {
       "type": "char",
       "color": "blue",
       "cost": 1,
-      "power": 2000,
+      "power": 3000,
       "counter": 2000,
       "keywords": [],
       "effect": null,
@@ -1177,7 +1179,7 @@ const POOL = {
       "type": "char",
       "color": "blue",
       "cost": 2,
-      "power": 3000,
+      "power": 4000,
       "counter": 2000,
       "keywords": [],
       "effect": null,
@@ -1190,7 +1192,7 @@ const POOL = {
       "type": "char",
       "color": "blue",
       "cost": 2,
-      "power": 4000,
+      "power": 5000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -1235,7 +1237,7 @@ const POOL = {
       "type": "char",
       "color": "blue",
       "cost": 4,
-      "power": 5000,
+      "power": 6000,
       "counter": 1000,
       "keywords": [
         "blocker"
@@ -1413,7 +1415,7 @@ const POOL = {
       "type": "char",
       "color": "green",
       "cost": 5,
-      "power": 6000,
+      "power": 5000,
       "counter": null,
       "keywords": [],
       "effect": null,
@@ -1426,7 +1428,7 @@ const POOL = {
       "type": "char",
       "color": "green",
       "cost": 5,
-      "power": 6000,
+      "power": 5000,
       "counter": null,
       "keywords": [
         "blocker"
@@ -1441,7 +1443,7 @@ const POOL = {
       "type": "char",
       "color": "green",
       "cost": 6,
-      "power": 7000,
+      "power": 6000,
       "counter": null,
       "keywords": [],
       "effect": null,
@@ -1454,7 +1456,7 @@ const POOL = {
       "type": "char",
       "color": "green",
       "cost": 7,
-      "power": 8000,
+      "power": 7000,
       "counter": null,
       "keywords": [
         "doubleAttack"
@@ -1469,7 +1471,7 @@ const POOL = {
       "type": "char",
       "color": "green",
       "cost": 8,
-      "power": 8000,
+      "power": 7000,
       "counter": null,
       "keywords": [
         "rush"
@@ -1484,7 +1486,7 @@ const POOL = {
       "type": "char",
       "color": "green",
       "cost": 8,
-      "power": 9000,
+      "power": 8000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -1588,7 +1590,7 @@ const POOL = {
       "type": "char",
       "color": "yellow",
       "cost": 2,
-      "power": 4000,
+      "power": 3000,
       "counter": 1000,
       "keywords": [
         "blocker"
@@ -2164,8 +2166,7 @@ const POOL = {
       "art": "BLACK-S1"
     }
   ]
-}
-;
+};
 
 // ===== public API =====
 global.OPTCG = {

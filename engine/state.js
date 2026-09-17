@@ -32,14 +32,12 @@ export function createGame({ leaderA, deckA, leaderB, deckB, seed = 1 }) {
 
 function mkPlayer(id, leaderDef, deckDefs, rng) {
   let deck = shuffle(deckDefs, rng);
-  const life = deck.slice(0, leaderDef.life);
-  deck = deck.slice(leaderDef.life);
   const hand = deck.slice(0, START_HAND);
   deck = deck.slice(START_HAND);
   return {
     id,
     leader: { ...leaderDef, rest: false, dons: 0, buffs: [] },
-    life,                  // 盖放的 Life（CardDef 数组，翻到才公开）
+    lp: leaderDef.life * 2000, // LP 积分（游戏王式：原生命卡 ×2000 折算，LP≤0 判负）
     deck,                  // 牌组（顶在尾部 pop）
     hand,                  // 手牌
     donDeck: DON_DECK_SIZE,

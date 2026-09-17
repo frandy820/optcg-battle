@@ -14,15 +14,15 @@ function basicGame(seed = 7) {
   });
 }
 
-test('建局：双方 50 牌组、起手 5+首回合抽1、Life=leader.life、DON 牌库 10', () => {
+test('建局：双方 50 牌组、起手 5+首回合抽1、LP=life×2000、DON 牌库 10', () => {
   const s = basicGame();
   assert.equal(s.players[0].hand.length, 6); // 先手已进入首回合（抽1）
-  assert.equal(s.players[0].deck.length, 50 - 4 - 5 - 1);
+  assert.equal(s.players[0].deck.length, 50 - 5 - 1); // LP 制不再抽生命卡，50 全在牌库
   assert.equal(s.players[0].donArea.length, 1);
   assert.equal(s.players[0].donDeck, 9);
   // 后手尚未行动
   assert.equal(s.players[1].hand.length, 5);
-  assert.equal(s.players[1].life.length, 4);
+  assert.equal(s.players[1].lp, 4 * 2000);
   assert.equal(s.players[1].donDeck, 10);
   assert.equal(s.players[1].donArea.length, 0);
 });
@@ -46,7 +46,7 @@ test('先手全局第一回合 DON!! 只 +1，且抽了 1 张', () => {
   assert.equal(s.active, 0);
   assert.equal(s.players[0].donArea.length, 1); // first turn +1
   assert.equal(s.players[0].hand.length, 6);    // 5 + draw 1
-  assert.equal(s.players[0].deck.length, 50 - 4 - 5 - 1);
+  assert.equal(s.players[0].deck.length, 50 - 5 - 1);
 });
 
 test('第二回合（后手）DON!! +2', () => {
@@ -71,7 +71,6 @@ test('Refresh：己方横置单位回正', () => {
   setHand(s, 0, [mkChar('C1', 'red', 1, 2000, { keywords: ['rush'] })]);
   applyAction(s, { t: 'playCharacter', side: 0, idx: 0 });
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'char', idx: 0 }, target: 'leader' });
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'passCounter', side: 1 });
   assert.equal(s.players[0].board[0].rest, true);
   applyAction(s, { t: 'endTurn', side: 0 });
@@ -180,68 +179,116 @@ test('Rush：登场回合即可攻击', () => {
   setHand(s, 0, [mkChar('CR', 'red', 1, 3000, { keywords: ['rush'] })]);
   applyAction(s, { t: 'playCharacter', side: 0, idx: 0 });
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'char', idx: 0 }, target: 'leader' });
-  assert.ok(s.pending || s.players[1].life.length < 4 || s.players[0].board[0].rest);
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.pending, null);       // 结算完毕（3000 vs 5000 伤害 0）
   assert.equal(s.players[0].board[0].rest, true);
 });
 
-test('攻击目标：竖直（未横置）角色不可被攻击', () => {
+test('攻击目标：对方场上有角色时不能直攻船长，必须指定角色（竖直也可被攻击）', () => {
   const s = basicGame();
   s.players[0].donArea = Array.from({ length: 5 }, (_, i) => ({ id: i, rest: false, attached: null }));
   s.players[1].board = [{ ...mkChar('CB', 'blue', 1, 1000), rest: false, playedTurn: 0, dons: 0, buffs: [] }];
   assert.throws(() => applyAction(s, {
-    t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 },
-  }), /rested characters/);
+    t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader',
+  }), /must attack a character/);
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
+  assert.equal(s.pending.kind, 'counter');
 });
 
-test('攻击目标：已横置角色可被攻击', () => {
+test('攻击目标：已横置角色可被攻击（守备表示）', () => {
   const s = basicGame();
   s.players[1].board = [{ ...mkChar('CB', 'blue', 1, 1000), rest: true, playedTurn: 0, dons: 0, buffs: [] }];
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
-  assert.equal(s.pending.kind, 'block');
+  assert.equal(s.pending.kind, 'counter');
 });
 
 test('Leader 攻击后横置（每回合一次的天然限制）', () => {
   const s = basicGame();
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'passCounter', side: 1 });
   assert.equal(s.players[0].leader.rest, true);
   assert.throws(() => applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' }), /rested/);
 });
 
-test('Blocker：可顶包成为目标并横置', () => {
+test('坚壁（blocker）：被攻击时防御战力 +1000，打不动即无战果', () => {
   const s = basicGame();
+  // 5000 攻坚壁 4000（守备）：4000+1000=5000，不 > → 守备无战果，坚壁存活
   s.players[1].board = [
-    { ...mkChar('BLK', 'blue', 1, 4000, { keywords: ['blocker'] }), rest: false, playedTurn: 0, dons: 0, buffs: [] },
+    { ...mkChar('BLK', 'blue', 1, 4000, { keywords: ['blocker'] }), rest: true, playedTurn: 0, dons: 0, buffs: [] },
   ];
-  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  applyAction(s, { t: 'block', side: 1, idx: 0 });
-  assert.equal(s.pending.target.type, 'char');
-  assert.equal(s.pending.target.idx, 0);
-  assert.equal(s.players[1].board[0].rest, true);
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.players[1].board.length, 1);
+  assert.equal(s.players[1].lp, 4 * 2000); // 守备无差额伤害
 });
 
-test('非 Blocker 不能顶包', () => {
+test('非坚壁角色无防御加成', () => {
   const s = basicGame();
   s.players[1].board = [
-    { ...mkChar('NB', 'blue', 1, 4000), rest: false, playedTurn: 0, dons: 0, buffs: [] },
+    { ...mkChar('NB', 'blue', 1, 4000), rest: true, playedTurn: 0, dons: 0, buffs: [] },
   ];
-  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  assert.throws(() => applyAction(s, { t: 'block', side: 1, idx: 0 }), /Blocker/);
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.players[1].board.length, 0); // 5000 > 4000：被击沉
 });
 
-test('Counter：弃手牌 counter 卡 +1000 防御力', () => {
+test('互斗：攻方战力高 → 守方沉 + 守方扣差额 LP', () => {
+  const s = basicGame();
+  s.players[1].board = [{ ...mkChar('SM', 'blue', 1, 3000), rest: false, playedTurn: 0, dons: 0, buffs: [] }];
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.players[1].board.length, 0);
+  assert.equal(s.players[1].lp, 4 * 2000 - 2000); // 5000-3000 差额
+});
+
+test('互斗：守方战力高 → 船长攻击不沉、攻方扣差额 LP', () => {
+  const s = basicGame();
+  s.players[0].leader.power = 4000;
+  s.players[1].board = [{ ...mkChar('BIG', 'blue', 1, 6000), rest: false, playedTurn: 0, dons: 0, buffs: [] }];
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.players[1].board.length, 1);   // 守方存活
+  assert.equal(s.players[0].lp, 4 * 2000 - 2000); // 攻方扣差额 6000-4000
+});
+
+test('互斗：角色攻方被反杀 → 沉+扣差额；相等同归于尽无伤害', () => {
+  const s = basicGame();
+  s.players[0].donArea = Array.from({ length: 5 }, (_, i) => ({ id: i, rest: false, attached: null }));
+  setHand(s, 0, [mkChar('EQ', 'red', 1, 5000, { keywords: ['rush'] })]);
+  applyAction(s, { t: 'playCharacter', side: 0, idx: 0 });
+  // 攻 5000 互斗守 6000：攻方沉 + 攻方扣 1000
+  s.players[1].board = [{ ...mkChar('BIG', 'blue', 1, 6000), rest: false, playedTurn: 0, dons: 0, buffs: [] }];
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'char', idx: 0 }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.players[0].board.length, 0);
+  assert.equal(s.players[1].board.length, 1);
+  assert.equal(s.players[0].lp, 4 * 2000 - 1000);
+  // 相等：同归于尽（5000 vs 5000）
+  s.players[0].donArea = Array.from({ length: 5 }, (_, i) => ({ id: i, rest: false, attached: null }));
+  setHand(s, 0, [mkChar('EQ2', 'red', 1, 5000, { keywords: ['rush'] })]);
+  applyAction(s, { t: 'playCharacter', side: 0, idx: 0 });
+  const lp0 = s.players[0].lp;
+  const lp1 = s.players[1].lp;
+  s.players[1].board = [{ ...mkChar('EQ3', 'blue', 1, 5000), rest: false, playedTurn: 0, dons: 0, buffs: [] }];
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'char', idx: 0 }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.players[0].board.length, 0);
+  assert.equal(s.players[1].board.length, 0);
+  assert.equal(s.players[0].lp, lp0); // 相等无伤害
+  assert.equal(s.players[1].lp, lp1);
+});
+
+test('Counter：弃手牌 counter 卡抵消直攻伤害', () => {
   const s = basicGame();
   s.players[1].hand = [mkChar('CTR', 'blue', 1, 1000, { counter: 1000 })];
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' }); // 5000 vs 5000
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'counter', side: 1, cards: [0] });
   assert.equal(s.pending.counterBoost, 1000);
   assert.equal(s.players[1].hand.length, 0);
   assert.equal(s.players[1].trash.length, 1);
   applyAction(s, { t: 'passCounter', side: 1 });
-  // 5000 vs 5000+1000：攻击失败，无 Life 流失
-  assert.equal(s.players[1].life.length, 4);
+  // 5000 vs 5000+1000：伤害=差额 0，LP 不动
+  assert.equal(s.players[1].lp, 4 * 2000);
   assert.equal(s.players[1].hand.length, 0);
 });
 
@@ -249,7 +296,6 @@ test('无 counter 值的卡不能用作 Counter', () => {
   const s = basicGame();
   s.players[1].hand = [mkChar('NC', 'blue', 1, 1000)];
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  applyAction(s, { t: 'passBlock', side: 1 });
   assert.throws(() => applyAction(s, { t: 'counter', side: 1, cards: [0] }), /no counter/);
 });
 
@@ -260,7 +306,6 @@ test('Counter 可多次累加（+2000 双卡）', () => {
     mkChar('C2', 'blue', 1, 1000, { counter: 1000 }),
   ];
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'counter', side: 1, cards: [1] }); // 注意 splice 后索引位移：先出高索引
   applyAction(s, { t: 'counter', side: 1, cards: [0] });
   assert.equal(s.pending.counterBoost, 2000);
@@ -268,83 +313,70 @@ test('Counter 可多次累加（+2000 双卡）', () => {
   assert.equal(s.pending, null);
 });
 
-test('结算：攻击方 power ≥ 防守 Leader → 翻 Life 入手牌', () => {
+test('直攻结算：伤害=战力差额扣 LP', () => {
   const s = basicGame();
   s.players[0].leader.power = 6000; // 强攻
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'passCounter', side: 1 });
-  assert.equal(s.players[1].life.length, 3);
-  assert.equal(s.players[1].hand.length, 6); // 5 起手+1 回合抽+1 Life
+  assert.equal(s.players[1].lp, 4 * 2000 - 1000);
 });
 
-test('结算：攻击方 power < 防守方 → 无事发生（攻击者不受损）', () => {
+test('直攻结算：攻方 power < 防守方 → 伤害 0（攻击者不受损但已横置）', () => {
   const s = basicGame();
   s.players[0].leader.power = 4000; // 弱攻 5000 防守
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'passCounter', side: 1 });
-  assert.equal(s.players[1].life.length, 4);
+  assert.equal(s.players[1].lp, 4 * 2000);
   assert.equal(s.players[0].leader.rest, true); // 但攻击宣告已成立
 });
 
-test('击倒角色：攻击已横置角色，胜方 K.O. 败方进垃圾场', () => {
+test('守备击沉：攻击已横置角色，打得动即 KO，无 LP 伤害', () => {
   const s = basicGame();
   s.players[1].board = [{ ...mkChar('VIC', 'blue', 1, 1000), rest: true, playedTurn: 0, dons: 0, buffs: [] }];
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'passCounter', side: 1 });
   assert.equal(s.players[1].board.length, 0);
   assert.equal(s.players[1].trash.filter((c) => c.id === 'VIC').length, 1);
-  assert.equal(s.players[1].life.length, 4); // 打角色不伤 Life
+  assert.equal(s.players[1].lp, 4 * 2000); // 打角色无 LP 伤害
 });
 
-test('胜利：Life 清空后再伤 Leader 即胜', () => {
+test('胜利：LP 扣到 0 即胜', () => {
   const s = basicGame();
-  s.players[1].life = [];
+  s.players[0].leader.power = 6000;
+  s.players[1].lp = 1000; // 差额 1000 一击致命
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'passCounter', side: 1 });
   assert.equal(s.winner, 0);
-  assert.equal(s.winReason, 'leader');
+  assert.equal(s.winReason, 'lp');
   assert.throws(() => applyAction(s, { t: 'endTurn', side: 0 }), /game over/);
 });
 
-test('Double Attack：对 Leader 一击翻 2 张 Life', () => {
+test('Double Attack：直攻差额伤害 ×2', () => {
   const s = basicGame();
   s.players[0].leader.power = 6000;
   s.players[0].leader.keywords = ['doubleAttack'];
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'passCounter', side: 1 });
-  assert.equal(s.players[1].life.length, 2);
-  assert.equal(s.players[1].hand.length, 7);
+  assert.equal(s.players[1].lp, 4 * 2000 - 2000); // (6000-5000)×2
 });
 
-test('Banish：受伤 Life 直接进垃圾场，不入手牌', () => {
+test('Banish（猛击）：直攻伤害额外 +2000', () => {
   const s = basicGame();
   s.players[0].leader.power = 6000;
   s.players[0].leader.keywords = ['banish'];
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'passCounter', side: 1 });
-  assert.equal(s.players[1].life.length, 3);
-  assert.equal(s.players[1].hand.length, 6 - 1); // 无 Life 补牌：起手5+抽1
-  assert.equal(s.players[1].trash.length, 1);
+  assert.equal(s.players[1].lp, 4 * 2000 - 3000); // 1000+2000
 });
 
-test('Trigger：翻出的 Life 卡自动发动触发效果', () => {
+test('LP 制：直攻不补手牌（无生命卡机制）', () => {
   const s = basicGame();
   s.players[0].leader.power = 6000;
-  s.players[1].life = [mkChar('TRG', 'blue', 1, 1000, { effect: { hook: 'trigger', op: { k: 'draw', n: 1 } } })];
-  const deckBefore = s.players[1].deck.length;
   const handBefore = s.players[1].hand.length;
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'passCounter', side: 1 });
-  // Life 入手(+1) + trigger 抽牌(+1)
-  assert.equal(s.players[1].hand.length, handBefore + 2);
-  assert.equal(s.players[1].deck.length, deckBefore - 1);
+  assert.equal(s.players[1].hand.length, handBefore);
+  assert.equal(s.players[1].trash.length, 0);
 });
 
 test('On Play：登场抽牌', () => {
@@ -366,10 +398,9 @@ test('When Attacking：宣告攻击时给自己 +2000（battle 生效）', () =>
   })]);
   applyAction(s, { t: 'playCharacter', side: 0, idx: 0 });
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'char', idx: 0 }, target: 'leader' });
-  // 4000+2000=6000 vs 5000：命中
-  applyAction(s, { t: 'passBlock', side: 1 });
+  // 4000+2000=6000 vs 5000：伤害=差额 1000
   applyAction(s, { t: 'passCounter', side: 1 });
-  assert.equal(s.players[1].life.length, 3);
+  assert.equal(s.players[1].lp, 4 * 2000 - 1000);
   // battle buff 已清算
   assert.equal(powerOfUnit(s.players[0].board[0]), 4000);
 });
@@ -381,7 +412,6 @@ test('On K.O.：被击倒时触发（敌方视角）', () => {
   const deckBefore = s.players[1].deck.length;
   const handBefore = s.players[1].hand.length;
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
-  applyAction(s, { t: 'passBlock', side: 1 });
   applyAction(s, { t: 'passCounter', side: 1 });
   assert.equal(s.players[1].hand.length, handBefore + 1);
   assert.equal(s.players[1].deck.length, deckBefore - 1);
@@ -426,7 +456,7 @@ test('行动权：非行动方操作抛错', () => {
 test('行动权：响应窗口只有防守方能响应', () => {
   const s = basicGame();
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
-  assert.throws(() => applyAction(s, { t: 'passBlock', side: 0 }), /not your response/);
+  assert.throws(() => applyAction(s, { t: 'passCounter', side: 0 }), /not your response/);
 });
 
 test('行动权：响应窗口未关闭不能 endTurn/出牌', () => {
@@ -474,7 +504,6 @@ test('回放确定性：同 seed 同动作序列 → 终态完全一致', () => 
       { t: 'endTurn', side: 0 },
       { t: 'endTurn', side: 1 },
       { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' },
-      { t: 'passBlock', side: 1 },
       { t: 'passCounter', side: 1 },
       { t: 'endTurn', side: 0 },
       { t: 'endTurn', side: 1 },

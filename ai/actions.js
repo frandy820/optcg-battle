@@ -31,6 +31,7 @@ export function listActions(state) {
   });
 
   // 攻击：己方未横置且可行动的单位 × 合法目标
+  // 游戏王式：对方场上有角色（竖/横均可）→ 必须指定其一；场上无角色 → 只能直攻船长
   const attackers = [];
   if (!me.leader.rest) attackers.push({ side, type: 'leader' });
   me.board.forEach((u, i) => {
@@ -38,8 +39,9 @@ export function listActions(state) {
     if (u.playedTurn === state.turn && !hasKeyword(u, 'rush')) return;
     attackers.push({ side, type: 'char', idx: i });
   });
-  const targets = ['leader'];
-  foe.board.forEach((u, i) => { if (u.rest) targets.push({ type: 'char', idx: i }); });
+  const targets = foe.board.length > 0
+    ? foe.board.map((_, i) => ({ type: 'char', idx: i }))
+    : ['leader'];
   for (const a of attackers) {
     for (const tg of targets) acts.push({ t: 'attack', side, attacker: a, target: tg });
   }
@@ -53,16 +55,9 @@ function defenseActions(state) {
   const side = p.target.side;
   const me = state.players[side];
   const acts = [];
-  if (p.kind === 'block') {
-    me.board.forEach((u, i) => {
-      if (!u.rest && hasKeyword(u, 'blocker')) acts.push({ t: 'block', side, idx: i });
-    });
-    acts.push({ t: 'passBlock', side });
-  } else if (p.kind === 'counter') {
-    me.hand.forEach((c, i) => {
-      if (c.counter) acts.push({ t: 'counter', side, cards: [i] });
-    });
-    acts.push({ t: 'passCounter', side });
-  }
+  me.hand.forEach((c, i) => {
+    if (c.counter) acts.push({ t: 'counter', side, cards: [i] });
+  });
+  acts.push({ t: 'passCounter', side });
   return acts;
 }
