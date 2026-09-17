@@ -55,7 +55,11 @@
     }
     const hit = document.elementFromPoint(cx, cy);
     if (!hit || !(el === hit || el.contains(hit) || hit.contains(el))) {
-      return step(label, false, '点击命中被遮挡：中心点命中的是 <' + (hit && hit.tagName) + '>');
+      // 手牌叠瓦（负 margin+交错 translateY）是设计形态：命中的是同容器兄弟卡不算遮挡，改点可见主体
+      const sibling = hit && hit.closest('.card') && el.closest('.card') && hit.closest('#myHand') && el.closest('#myHand');
+      if (sibling) { el.click(); return step(label, true, '叠瓦命中兄弟卡，改用 DOM click'); }
+      const desc = hit ? '<' + hit.tagName + (hit.id ? '#' + hit.id : '') + (hit.className && typeof hit.className === 'string' ? '.' + hit.className.split(' ').slice(0, 3).join('.') : '') + '>' : 'null';
+      return step(label, false, '点击命中被遮挡：中心点命中的是 ' + desc);
     }
     el.click();
     return step(label, true);
@@ -199,14 +203,72 @@
         + ' diag:' + JSON.stringify((OPTCG_GAME._diag && OPTCG_GAME._diag()) || null)));
     } else step('存在可出手牌', true, '首回合起手无低费卡（正常随机），出牌验证移至全场累计断言');
 
+    // ===== 费用豆附着（回归：点费用区→点场上卡，战力角标须实时 +1K；曾因 selMode 类型误判掉进攻击选择）=====
+    const donFree = () => document.querySelector('#myDon .don:not(.rest):not(.attached)');
+    const attachDon = async () => {
+      const u = document.querySelector('#myBoard .card:not(.rest)');
+      if (!u || !donFree()) return null; // 无条件可测
+      const uid = u.dataset.cardId;
+      const p0 = +u.querySelector('.power').textContent.replace('K', '');
+      await clickAt($('myDon'), '点击费用区进入附着模式');
+      const inDonMode = await waitFor(() => /附着目标/.test($('hint').textContent), 1500);
+      const tgt = document.querySelector('#myBoard .card:not(.rest)'); // renderAll 后元素已换，重取
+      if (tgt) await clickAt(tgt, '点击场上单位附着费用豆');
+      const donOk = await waitFor(() => {
+        const el = document.querySelector('#myBoard .card[data-card-id="' + uid + '"]');
+        return el && +el.querySelector('.power').textContent.replace('K', '') === p0 + 1;
+      }, 2500);
+      return !!(inDonMode && donOk) || ('hint:' + $('hint').textContent);
+    };
+    let donResult = await attachDon();
+    for (let r = 0; r < 3 && donResult === null
+      && document.querySelectorAll('#myHand .card').length > 0; r++) {
+      // 首回合豆少/起手全贵卡：结束回合等豆涨（每回合+2），回来先附着再出牌。
+      // AI 攻击会弹反击面板（modal 盖全屏）：见到即放弃，否则后续点击全被挡
+      if (visible('responsePanel')) await clickAt($('btnPass'), '放弃反击');
+      if (!$('btnEnd').classList.contains('can-act')) {
+        await waitFor(() => $('btnEnd').classList.contains('can-act') || visible('responsePanel'), 8000);
+        if (visible('responsePanel')) await clickAt($('btnPass'), '放弃反击2');
+        if (!$('btnEnd').classList.contains('can-act')) break;
+      }
+      await clickAt($('btnEnd'), '结束回合等豆补满');
+      const backMy = await waitFor(() => {
+        if (visible('responsePanel')) { $('btnPass').click(); return false; }
+        return /你的回合/.test($('phaseBadge').textContent);
+      }, 20000);
+      if (!backMy) continue; // AI 长考超时：状态不保证我回合，跳过本轮（点击会被回合守卫吞掉）
+      donResult = await attachDon(); // 先附着（豆满）——没条件再出牌垫场面
+      if (donResult === null) {
+        const c = document.querySelector('#myHand .card.playable');
+        if (c) { await clickAt(c, '垫一张牌'); await sleep(1500); }
+        donResult = await attachDon();
+      }
+    }
+    // 段末收敛：回到我方回合且无响应窗口（后续段的元素引用/悬停 tip 才稳定）
+    await waitFor(() => {
+      if (visible('responsePanel')) { $('btnPass').click(); return false; }
+      return $('btnEnd').classList.contains('can-act');
+    }, 15000);
+    if (donResult === null) step('费用豆附着后战力角标+1K', true, '场上无卡或无可用豆（跳过）');
+    else step('费用豆附着后战力角标+1K', donResult === true, donResult === true ? '' : String(donResult));
+
     // ===== 悬停信息卡（卡面全量信息 + 竖/横语义）=====
     if (window.matchMedia && matchMedia('(hover: hover)').matches) {
-      const anyCard = document.querySelector('#myHand .card') || document.querySelector('#myBoard .card');
+      let anyCard = document.querySelector('#myHand .card') || document.querySelector('#myBoard .card');
       if (anyCard) {
-        anyCard.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, clientX: 60, clientY: 300 }));
-        await sleep(300);
+        const tipShown = () => {
+          const tip = document.getElementById('cardTip');
+          return !!(tip && !tip.classList.contains('hidden') && tip.textContent.length > 20);
+        };
+        // renderAll 会强制收起 tip（元素已换）：重取元素重派发，1.5s 内出现即算
+        let shown = false;
+        for (let i = 0; i < 2 && !shown; i++) {
+          anyCard = document.querySelector('#myHand .card') || document.querySelector('#myBoard .card');
+          if (!anyCard) break;
+          anyCard.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, clientX: 60, clientY: 300 }));
+          shown = await waitFor(tipShown, 1500);
+        }
         const tip = document.getElementById('cardTip');
-        const shown = tip && !tip.classList.contains('hidden') && tip.textContent.length > 20;
         step('悬停卡片弹出信息卡', !!shown, shown ? tip.textContent.slice(0, 60) : '未出现');
         if (shown) step('信息卡含数值与竖横状态说明', /费用|战力|生命/.test(tip.textContent) && /竖放|横置|手牌/.test(tip.textContent), tip.querySelector('.ct-state') ? tip.querySelector('.ct-state').textContent.slice(0, 60) : '');
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
@@ -225,6 +287,9 @@
     } else step('不可出原因有提示', true, '本回合无不可出卡（跳过）');
 
     // ===== 攻击：选攻击者 → 选目标；反复选择/取消（破坏性子项）=====
+    // 前段跨回合推进后状态不保证我回合（点击会被回合守卫静默吞掉）：先收敛
+    await waitFor(() => $('btnEnd').classList.contains('can-act') && !visible('responsePanel'), 15000);
+    if (visible('responsePanel')) await clickAt($('btnPass'), '放弃反击(攻击段前)');
     const attacker = document.querySelector('#myBoard .card.playable') || document.querySelector('[data-role="leader-0"] .card');
     if (attacker && played) {
       await clickAt(attacker, '点击己方单位选为攻击者');

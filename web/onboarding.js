@@ -156,7 +156,13 @@
   function maybeAuto() {
     if (isDone()) return;
     if (/[?&](autostart|autoplay|open)=/.test(location.search)) return;
-    setTimeout(() => { if (!isDone() && !activeFlag) start(); }, 800);
+    // 防御（试玩反馈 F2 一次性异常）：对局中绝不弹教程——仅大厅可见时自动弹
+    setTimeout(() => {
+      if (isDone() || activeFlag) return;
+      const hall = document.getElementById('setupPanel');
+      if (hall && hall.classList.contains('hidden')) return;
+      start();
+    }, 800);
   }
 
   const obBtn = $('btnOnboarding');

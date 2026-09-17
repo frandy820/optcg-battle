@@ -103,7 +103,17 @@
           }
           return [w, offenders];
         };
+        // 战斗演出（body.shake/冲击环/伤害浮字）会造成瞬时溢出：先等演出退场，超标再复采确认
+        const calm = async () => {
+          for (let i = 0; i < 10; i++) {
+            if (!D.body.classList.contains('shake') && !D.querySelector('.clash-ring,.dmg-num,.dmg-calc')) return true;
+            await sleep(200);
+          }
+          return false;
+        };
+        await calm();
         let [po, off] = pageOver();
+        if (po > 2) { await calm(); const p2 = pageOver()[0]; if (p2 <= 2) po = p2; }
         step('手牌溢出不出页面级横向滚动', po <= 2, `doc scrollWidth vs 视口${W}：${po > 2 ? '超出 ' + po + 'px：' + off : '无横滚'}`);
         const tops = ['btnHelp', 'btnRestart', 'btnMenu'].filter((id) => inVp($(id))).length;
         step('顶栏三按钮仍全部可见(未被推出屏)', tops === 3, tops + '/3');

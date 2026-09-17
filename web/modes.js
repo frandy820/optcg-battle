@@ -71,6 +71,8 @@
     return r.json();
   }
   async function cloudSync() {
+    // file:// 直开时无同源 /api 可言：不发探测请求（试玩反馈：console 持续 404 红错），直接保持离线
+    if (location.protocol === 'file:') { cloud.on = false; cloud.decks = []; refreshMenu(); return; }
     const uid = userId();
     try {
       const h = await Promise.race([

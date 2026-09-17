@@ -145,6 +145,8 @@
 
   // ===== DOM 构造 =====
   function cardEl(def, opts = {}) {
+    // 场上单位战力实时化：livePower 由 renderAll 传入（含费用豆/装备/buff）；手牌·图鉴·构筑器显示卡面基础值
+    const shownPower = opts.livePower != null ? opts.livePower : def.power;
     const el = document.createElement('div');
     el.className = `card ${def.color}` + (opts.cls ? ' ' + opts.cls : '');
     el.dataset.cardId = def.id;
@@ -172,7 +174,7 @@
       </div>
       <div class="name">${def.name}</div>
       <div class="sub">${def.sub || ''}</div>
-      ${def.power ? `<div class="power">${def.power / 1000}K</div>` : ''}
+      ${shownPower ? `<div class="power"${opts.livePower != null && opts.livePower !== def.power ? ' title="含费用豆/装备/增益的当前战力"' : ''}>${shownPower / 1000}K</div>` : ''}
       ${def.type === 'gear' && def.gear ? `<div class="power gear-atk">+${def.gear.atk / 1000}K</div>` : ''}
       ${def.counter ? `<div class="counter-badge">反击 ${def.counter / 1000}K</div>` : ''}
     `;
@@ -182,7 +184,7 @@
   }
 
   function leaderEl(pl, side) {
-    const el = cardEl(pl.leader, { cls: 'leader' + (pl.leader.rest ? ' rest' : '') });
+    const el = cardEl(pl.leader, { cls: 'leader' + (pl.leader.rest ? ' rest' : ''), livePower: O.leaderPower(pl) });
     const wrap = document.createElement('div');
     wrap.style.position = 'relative';
     wrap.tabIndex = 0;
@@ -244,7 +246,7 @@
     $('enemyDon').innerHTML = foe.donArea.map((d) => donEl(d).outerHTML).join('');
     $('enemyBoard').innerHTML = '';
     foe.board.forEach((u, i) => {
-      const el = cardEl(u, { cls: (u.rest ? 'rest ' : '') });
+      const el = cardEl(u, { cls: (u.rest ? 'rest ' : ''), livePower: O.powerOfUnit(u) });
       el.dataset.foeIdx = i;
       el.dataset.dons = u.dons || 0; // 悬停信息卡读（附着 DON 数）
       $('enemyBoard').appendChild(el);
@@ -265,7 +267,7 @@
     $('myBoard').innerHTML = '';
     me.board.forEach((u, i) => {
       const canAtk = myTurn && !u.rest && (u.playedTurn < G.turn || (u.keywords || []).includes('rush'));
-      const el = cardEl(u, { cls: (u.rest ? 'rest ' : '') + (canAtk ? 'playable' : '') });
+      const el = cardEl(u, { cls: (u.rest ? 'rest ' : '') + (canAtk ? 'playable' : ''), livePower: O.powerOfUnit(u) });
       el.dataset.myIdx = i;
       el.dataset.dons = u.dons || 0; // 悬停信息卡读（附着 DON 数）
       $('myBoard').appendChild(el);
@@ -318,6 +320,7 @@
 
   // ===== 演出播放器 =====
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  let lastClash = null; // clash→lp 链：结算时浮出「攻K−守K=差K」算式（伤害来源透明化）
   function playEvents() {
     const evs = G.log.slice(logSeen);
     logSeen = G.log.length;
@@ -366,6 +369,7 @@
       }
       case 'clash': {
         sfx('clash');
+        lastClash = { a: ev.atkPower, d: ev.defPower }; // 供紧随的 lp 事件浮出算式
         document.body.classList.remove('shake');
         void document.body.offsetWidth; // 重启动画
         document.body.classList.add('shake');
@@ -380,6 +384,11 @@
         if (badge) {
           const r = badge.getBoundingClientRect();
           spawnDmg(r.left + r.width / 2, r.top, `-${Math.round(ev.dmg / 1000)}K`);
+          // 结算透明度：数字从哪来的（攻K − 守K，试玩反馈「伤害明细不透明」）；非战斗扣血无算式
+          if (lastClash) {
+            spawnCalc(r.left + r.width / 2, r.top - 18, `${lastClash.a / 1000}K − ${lastClash.d / 1000}K = ${Math.round(ev.dmg / 1000)}K`);
+            lastClash = null;
+          }
           badge.classList.remove('hit'); void badge.offsetWidth; // 重启动画
           badge.classList.add('hit');
           burst(r.left + r.width / 2, r.top + r.height / 2, '#ff8a8a', 22, 4);
@@ -449,6 +458,12 @@
     document.body.appendChild(ring);
     setTimeout(() => ring.remove(), 600);
   }
+  // 浮字统一视口 clamp：absolute 元素右缘超窗会推高 document scrollWidth（e2e layout 曾量到 4px 横滚）
+  function clampToViewport(el) {
+    const r = el.getBoundingClientRect();
+    if (r.right > innerWidth - 4) el.style.left = (el.offsetLeft - (r.right - innerWidth) - 6) + 'px';
+    else if (r.left < 4) el.style.left = (el.offsetLeft + (4 - r.left)) + 'px';
+  }
   function spawnDmg(x, y, text) {
     const d = document.createElement('div');
     d.className = 'dmg-num';
@@ -456,7 +471,18 @@
     d.style.left = (x - 20) + 'px';
     d.style.top = (y - 30) + 'px';
     document.body.appendChild(d);
+    clampToViewport(d);
     setTimeout(() => d.remove(), 1100);
+  }
+  function spawnCalc(x, y, text) {
+    const d = document.createElement('div');
+    d.className = 'dmg-calc';
+    d.textContent = text;
+    d.style.left = (x - 44) + 'px';
+    d.style.top = y + 'px';
+    document.body.appendChild(d);
+    clampToViewport(d);
+    setTimeout(() => d.remove(), 1250);
   }
   function showBanner(text, extraCls) {
     const b = $('banner');
@@ -574,7 +600,8 @@
     hint.textContent = msg;
     hint.classList.add('warn');
     if (hintTimer) clearTimeout(hintTimer);
-    hintTimer = setTimeout(() => { hintTimer = null; if (G) renderHints(); }, 1600);
+    // 2.6s：试玩反馈 1.6s 即逝几乎不可感知（读不完一句原因文案）
+    hintTimer = setTimeout(() => { hintTimer = null; if (G) renderHints(); }, 2600);
   }
 
   // ===== 响应面板（游戏王式：仅反击窗口；无反击手段时自动结算不打扰）=====
@@ -629,7 +656,6 @@
     });
     const chk = $('chkAutoPass');
     if (chk) { chk.checked = autoPassSession; chk.onchange = () => { autoPassSession = chk.checked; }; }
-    $('btnPass').textContent = '放弃反击，结算';
     $('responsePanel').classList.remove('hidden');
   }
   function closeAndAct(a) {
@@ -668,7 +694,7 @@
       doAction({ t: 'playGear', side: MY, idx: selMode.idx, to: { type: 'char', idx: +card.dataset.myIdx } });
       return;
     }
-    if (selMode === 'don') {
+    if (selMode && selMode.mode === 'don') { // 附着目标：与 myLeaderSlot 同判法（selMode 是 {mode:'don'} 对象；旧 ==='don' 字符串比较永假→点卡掉进攻击选择，附着死路）
       doAction({ t: 'giveDon', side: MY, to: { type: 'char', idx: +card.dataset.myIdx }, count: 1 });
       return;
     }
@@ -890,8 +916,16 @@
     $('btnHelpClose').onclick = () => { sfx('click'); $('helpPanel').classList.add('hidden'); };
     $('btnMenu').onclick = async () => {
       sfx('click');
-      // 天梯/生存的投降结算归 OPTCG_MODES（settle）裁量，此处只管回大厅
       if (G && G.winner === null && !(await uiConfirm('投降并返回港口？当前对局将判负', { okText: '投降返回' }))) return;
+      // 投降=判负：天梯/生存走 settle 计败局（试玩反馈：投降静默判负，天梯逃过 -15、生存连胜不归零）
+      if (G && G.winner === null && gameCtx && gameCtx.mode !== 'free' && window.OPTCG_MODES) {
+        try {
+          const line = window.OPTCG_MODES.settle(gameCtx, false);
+          if (line) toast('已判负 · ' + line.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim());
+        } catch (e) { /* settle 异常不阻断返回 */ }
+      } else {
+        toast('本局已判负');
+      }
       backToMenu();
     };
     $('btnRematch').onclick = () => {
@@ -957,7 +991,9 @@
     ['setupPanel', 'endPanel', 'responsePanel', 'helpPanel', 'builderPanel'].forEach((id) => $(id).classList.add('hidden'));
     showBanner('决斗！', '');
     renderAll();
-    showHintFlash(`对手：${foeLeader.name}（${COLOR_NAME[foeColor]}）`, 'info');
+    // 开局即报模式（试玩反馈：点天梯/生存后无任何反馈，打完一局才知道模式是否生效）
+    const MODE_NAME = { ladder: '天梯排位', survival: '生存挑战', free: '自由对战' };
+    showHintFlash(`${MODE_NAME[(gameCtx && gameCtx.mode) || 'free']} · 对手：${foeLeader.name}（${COLOR_NAME[foeColor]}）`, 'info');
     autosaveNow(); // 开局即留档：AI 回合中崩溃/关页也可恢复
     requestAnimationFrame(fitTableView); // 进局后按当前视口重适配（banner/hand 渲染完）
   }
@@ -1015,6 +1051,32 @@
     } catch (e) { return null; }
   }
 
+  // 断档恢复时按引擎 log 重建最近战报（快照含完整 G.log；UI 战报原本只增量记录——恢复后从零开始丢失脉络）
+  function rebuildLog(g) {
+    const body = $('logBody');
+    if (!body || !Array.isArray(g.log)) return;
+    const NAME = { summon: '召唤角色', attack: '发起攻击', counter: '反击!', endTurn: '结束回合' };
+    const lines = [];
+    for (const ev of g.log) {
+      if (!(ev.t in NAME)) continue;
+      const side = ev.t === 'attack' ? (ev.attacker && ev.attacker.side) : ev.side; // attack 事件战力方在 attacker
+      if (typeof side !== 'number') continue;
+      let text = `${side === MY ? '我方' : '敌方'} · ${NAME[ev.t]}`;
+      if (ev.t === 'summon' && ev.cardId) {
+        const c = O.POOL.cards.find((x) => x.id === ev.cardId);
+        if (c) text += `：${c.name}`;
+      }
+      lines.push(text);
+    }
+    // 与 addLogLine 同构（最新在上，最多 18 条）
+    for (const text of lines.slice(-18).reverse()) {
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      line.textContent = text;
+      body.appendChild(line);
+    }
+  }
+
   function restoreFromSnapshot(snap) {
     try {
       if (!snap || !snap.g) return false;
@@ -1036,6 +1098,7 @@
       logSeen = Array.isArray(g.log) ? g.log.length : 0;
       if (g.players[MY].leader && g.players[MY].leader.color) myLeaderColor = g.players[MY].leader.color;
       $('logBody').innerHTML = '';
+      rebuildLog(g); // 恢复战报脉络（简版：最近 18 条动作）
       ['setupPanel', 'endPanel', 'responsePanel', 'helpPanel', 'builderPanel'].forEach((id) => $(id).classList.add('hidden'));
       renderAll();
       autosaveNow();
