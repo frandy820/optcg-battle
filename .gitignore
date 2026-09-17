@@ -1,3 +1,4 @@
 node_modules/
 *.log
 web/art/.tmp/
+data/backup/
