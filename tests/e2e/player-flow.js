@@ -128,6 +128,27 @@
     const scroll = $('setupPanel') ? $('setupPanel').querySelector('.modal-card') : null;
     if (scroll) step('大厅弹层内容可滚动', scroll.scrollHeight >= scroll.clientHeight, `内容高${scroll.scrollHeight} 视高${scroll.clientHeight}`);
 
+    // ===== 卡牌图鉴（大厅入口 → 全卡浏览 → 放大 → Esc 两级关闭）=====
+    if ($('btnCodex')) {
+      await clickAt($('btnCodex'), '打开卡牌图鉴');
+      const codexOpen = await waitFor(() => !!document.getElementById('codexPanel') && !document.getElementById('codexPanel').classList.contains('hidden'), 2000);
+      const n = document.querySelectorAll('#codexPanel .codex-grid .card').length;
+      step('图鉴打开且有全量卡', codexOpen && n >= 20, n + ' 张卡');
+      if (codexOpen && n > 0) {
+        await clickAt(document.querySelector('#codexPanel .codex-grid .card'), '点击图鉴卡放大');
+        step('放大视图显示卡面原图', await waitFor(() => {
+          const img = document.querySelector('#codexPanel ~ .codex-viewer img, .codex-viewer img');
+          return !!(img && img.src.includes('/art/') && img.naturalWidth > 0);
+        }, 2500));
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        await sleep(250);
+        step('Esc 关闭放大视图', !document.querySelector('.codex-viewer'));
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        await sleep(250);
+        step('Esc 关闭图鉴回大厅', !document.querySelector('#codexPanel') || document.getElementById('codexPanel').classList.contains('hidden'));
+      }
+    } else step('打开卡牌图鉴', true, '宿主页无入口（跳过）');
+
     // ===== 不选船长直接出航（默认数据可玩性）=====
     localStorage.removeItem('optcg_deck_sel');
     mark('点击出航(未选船长)');

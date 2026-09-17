@@ -757,6 +757,48 @@ button:disabled {
   #cardTip { left: 50% !important; top: auto !important; bottom: 96px; transform: translateX(-50%); max-width: 86vw; }
 }
 
+/* ---- 卡牌图鉴（gallery.js）---- */
+.codex-card { max-width: 900px; display: flex; flex-direction: column; max-height: 88vh; }
+.codex-head { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(212,175,55,.25); padding-bottom: 8px; }
+.codex-head h3 { color: var(--gold-bright); letter-spacing: 3px; margin-bottom: 0; border-bottom: none; padding-bottom: 0; flex: 1; }
+.codex-count { font-size: 12px; color: #8fa0bd; letter-spacing: 1px; }
+.codex-body { overflow-y: auto; margin-top: 10px; flex: 1 1 auto; min-height: 0; }
+.codex-sec { margin-bottom: 16px; }
+.codex-sec-head { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gold-bright); margin-bottom: 8px; letter-spacing: 2px; }
+.codex-sec-n { font-size: 11px; color: #64769a; margin-left: 4px; letter-spacing: 1px; }
+.codex-sec-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.codex-sec-dot.red { background: var(--c-red); } .codex-sec-dot.blue { background: var(--c-blue); }
+.codex-sec-dot.green { background: var(--c-green); } .codex-sec-dot.yellow { background: var(--c-yellow); }
+.codex-sec-dot.purple { background: var(--c-purple); } .codex-sec-dot.black { background: var(--c-black); }
+.codex-sec-dot.leader { background: radial-gradient(circle at 35% 30%, #ffe9a8, var(--gold) 60%); }
+.codex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 14px 10px; }
+.codex-grid .card { cursor: zoom-in; }
+.codex-grid .card:hover { transform: translateY(-4px); box-shadow: var(--glow); z-index: 5; }
+/* 放大视图：左原图右说明 */
+.codex-view-card { position: relative; display: flex; gap: 18px; align-items: stretch;
+  background: linear-gradient(170deg, #101d38, #0a1426); border: 1px solid var(--gold-dim);
+  border-radius: var(--r-lg); padding: 18px; max-width: 780px; width: 100%; box-shadow: var(--shadow-modal); }
+.codex-view-art { flex: none; width: 300px; display: flex; align-items: center; justify-content: center;
+  background: #060d1f; border: 1px solid rgba(212,175,55,.35); border-radius: var(--r-md); overflow: hidden; }
+.codex-view-art img { max-width: 100%; max-height: 64vh; object-fit: contain; display: block; }
+.codex-view-info { flex: 1; min-width: 0; font-size: 13px; line-height: 1.6; color: #cfd9ec; padding-bottom: 34px; }
+.codex-view-info .ct-head b { color: #f0d68a; font-size: 18px; letter-spacing: 1px; }
+.codex-view-info .ct-head span { color: #8fa0bd; font-size: 12px; margin-left: 6px; }
+.codex-view-info .ct-meta { color: #9fb0cc; margin: 4px 0 6px; }
+.codex-view-info .ct-nums { color: #f0d68a; font-weight: 700; margin-bottom: 6px; }
+.codex-view-info .ct-kw { display: flex; gap: 6px; align-items: flex-start; margin: 3px 0; }
+.codex-view-info .ct-kw .kw-badge { flex: none; }
+.codex-view-info .ct-eff { margin: 6px 0; padding: 6px 10px; background: rgba(217,170,69,.08); border-left: 2px solid rgba(217,170,69,.5); border-radius: 4px; color: #e8dfc2; }
+.codex-view-info .ct-none { color: #8fa0bd; }
+.codex-view-close { position: absolute; right: 14px; bottom: 12px; }
+@media (max-width: 700px) {
+  .codex-view-card { flex-direction: column; align-items: center; padding: 14px; }
+  .codex-view-art { width: 100%; }
+  .codex-view-art img { max-height: 38vh; }
+  .codex-view-info { width: 100%; }
+  .codex-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px 8px; }
+}
+
 /* ---- 玩法说明面板 ---- */
 /* 小屏可关闭性（R5）：正文内滚、操作行钉底——触屏无 ESC，关闭钮必须不滚动即可见 */
 .help-card { max-width: 620px; display: flex; flex-direction: column; }

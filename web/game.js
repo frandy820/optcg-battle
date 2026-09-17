@@ -1018,7 +1018,7 @@
       try { return G && { turn: G.turn, pending: G.pending || null, acts: (O.listActions(G) || []).map((a) => a.t) }; } catch (e) { return null; }
     },
   };
-  window.OPTCG_UI = { toast, confirm: uiConfirm }; // 统一反馈层（modes.js/save.js 共用）
+  window.OPTCG_UI = { toast, confirm: uiConfirm, cardInfoHtml }; // 统一反馈层（modes.js/save.js/gallery.js 共用）
 
   setupUI();
   initFocusManager();
@@ -1089,11 +1089,8 @@
     return M[e.hook + ':' + op.k] || null;
   }
   let cardTipHide = null; // renderAll 重渲染后强制隐藏（悬停中的卡元素已被替换）
-  function tipHtml(el) {
-    const id = el.dataset.cardId;
-    if (!id) return null;
-    const def = O.POOL.cards.find((c) => c.id === id) || O.POOL.leaders.find((l) => l.id === id);
-    if (!def) return null;
+  // 卡牌静态信息（悬停信息卡与图鉴放大视图共用同一真值源）
+  function cardInfoHtml(def) {
     const parts = [];
     parts.push(`<div class="ct-head"><b>${def.name}</b><span>${def.sub || ''}</span></div>`);
     parts.push(`<div class="ct-meta">${TYPE_NAME[def.type] || def.type} · ${COLOR_NAME[def.color] || def.color}${def.type === 'leader' ? ` · 生命 ${def.life}` : ''}</div>`);
@@ -1106,7 +1103,16 @@
     const et = effectText(def);
     if (et) parts.push(`<div class="ct-eff">${et}</div>`);
     else if (def.type === 'char') parts.push('<div class="ct-eff ct-none">无特殊效果的白板角色，靠战力和费用取胜</div>');
+    return parts.join('');
+  }
+  function tipHtml(el) {
+    const id = el.dataset.cardId;
+    if (!id) return null;
+    const def = O.POOL.cards.find((c) => c.id === id) || O.POOL.leaders.find((l) => l.id === id);
+    if (!def) return null;
+    const parts = [cardInfoHtml(def)];
     // 状态行：竖/横是本游戏核心语义（竖=就绪，横=已休息），每次悬停都解释
+    const inCodex = !!el.closest('.codex-panel');
     const rested = el.classList.contains('rest');
     const inHand = !!el.closest('#myHand');
     const isEnemy = !!el.closest('#enemyBoard,#enemyStage,#enemyLeaderSlot');
@@ -1114,7 +1120,8 @@
     const ownerTurn = isEnemy ? '对方回合' : '你的回合';
     const dons = +(el.dataset.dons || 0) || 0;
     const st = [];
-    if (inHand) {
+    if (inCodex) st.push('<b>图鉴浏览</b>：点击卡片可放大看卡面插画与完整说明');
+    else if (inHand) {
       const usable = G ? O.usableDons(G.players[MY]) : 0;
       st.push(`<b>在手牌</b>：点击打出，花费 ${def.cost} 颗费用豆（=费用区未附着的 DON!!，当前能花 ${usable} 颗）；带 C 标记的还可在对方攻击时打出作反击`);
     }
