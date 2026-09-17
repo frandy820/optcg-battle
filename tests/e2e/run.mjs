@@ -37,7 +37,7 @@ function chromeDump({ mode, budget, profile, url }) {
   const prof = join(tmp, profile);
   const target = url || `${BASE}?e2e=${mode}`;
   const dom = execFileSync(CHROME, [
-    '--headless=new', '--disable-gpu', `--user-data-dir=${prof}`,
+    '--headless', '--disable-gpu', `--user-data-dir=${prof}`,
     '--window-size=1440,900', `--virtual-time-budget=${budget}`,
     // headless 静音参数：后台网络（GCM/组件更新/同步）在受限网络下重试会拖住虚拟时钟
     '--no-proxy-server', '--disable-background-networking', '--disable-component-update',

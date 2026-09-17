@@ -36,7 +36,7 @@ function findChrome() {
 }
 function chromeDump({ url, budget, profile, tag }) {
   return execFileSync(findChrome(), [
-    '--headless=new', '--disable-gpu', `--user-data-dir=${profile}`,
+    '--headless', '--disable-gpu', `--user-data-dir=${profile}`,
     '--window-size=1440,900', `--virtual-time-budget=${budget}`,
     '--no-proxy-server', '--disable-background-networking', '--disable-component-update',
     '--disable-sync', '--metrics-recording-only', '--mute-audio', '--no-first-run',
