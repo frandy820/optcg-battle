@@ -12,7 +12,7 @@
 
   const CAP = () => window.OPTCG_CAPTAINS; // captains-data.js：图标库 + 阵营徽记 + 船长配置
   const COLOR_NAME = { red: '红', blue: '蓝', green: '绿', yellow: '黄', purple: '紫', black: '黑' };
-  const KW_LABEL = { rush: '速攻', blocker: '阻挡', doubleAttack: '双击', banish: '放逐' };
+  const KW_LABEL = { rush: '速攻', blocker: '坚壁', doubleAttack: '双击', banish: '猛击' };
   const MY = 0, FOE = 1;
   const AI_DELAY = 650;        // AI 每步延时（演出感）
   const FX_TIMEOUT = 4000;     // 演出总兜底：超时强制解锁（防软锁）
@@ -168,19 +168,13 @@
 
   function leaderEl(pl, side) {
     const el = cardEl(pl.leader, { cls: 'leader' + (pl.leader.rest ? ' rest' : '') });
-    const pips = Array.from({ length: pl.leader.life }, (_, i) =>
-      `<span class="life-pip ${i < pl.life.length ? '' : 'off'}"></span>`).join('');
     const wrap = document.createElement('div');
     wrap.style.position = 'relative';
     wrap.tabIndex = 0;
     wrap.setAttribute('role', 'button');
-    wrap.setAttribute('aria-label', pl.leader.name + '（我方船长）');
+    wrap.setAttribute('aria-label', pl.leader.name + (side === MY ? '（我方船长）' : '（对方船长）'));
     wrap.appendChild(el);
     el.dataset.dons = pl.leader.dons || 0; // 悬停信息卡读（船长附着 DON 数）
-    const pipRow = document.createElement('div');
-    pipRow.className = 'life-pips';
-    pipRow.innerHTML = pips;
-    el.appendChild(pipRow);
     wrap.dataset.role = 'leader-' + side;
     return wrap;
   }
@@ -196,13 +190,24 @@
   function handLockReason(c) {
     if (!G) return '尚未开始对局';
     if (G.winner !== null) return '对局已结束';
-    if (G.pending) return '对方攻击中——请在响应窗口选择阻挡或反击';
+    if (G.pending) return '对方攻击中——反击窗口处理中，稍候';
     if (G.active !== MY) return '对方回合，暂时无法出牌';
     const me = G.players[MY];
     if (c.type === 'char' && me.board.length >= 5) return '场上已满 5 名角色，无法再召唤';
     const usable = O.usableDons(me);
     if (c.cost > usable) return `费用不足：还差 ${c.cost - usable} 颗费用豆（能花的 DON!! 仅 ${usable} 颗，附着到卡上的算已消耗）`;
     return null;
+  }
+
+  // LP 积分条（游戏王式：扣到 0 判负）
+  function lpBar(pl) {
+    const max = pl.leader.life * 2000;
+    const lp = Math.max(0, pl.lp);
+    const pct = Math.max(0, Math.min(100, lp / max * 100));
+    const low = lp <= 3000 ? ' low' : '';
+    return `<div class="lp-badge${low}" role="meter" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${lp}" aria-label="LP 积分">`
+      + `<span class="lp-label">LP</span><b class="lp-num">${lp}</b>`
+      + `<div class="lp-bar"><i style="width:${pct}%"></i></div></div>`;
   }
 
   // ===== 主渲染 =====
@@ -219,8 +224,7 @@
     // 对手
     const foeLeaderSlot = $('enemyLeaderSlot');
     foeLeaderSlot.innerHTML = ''; foeLeaderSlot.appendChild(leaderEl(foe, FOE));
-    $('enemyLife').innerHTML = foe.life.map(() => '<span class="life-card"></span>').join('')
-      + Array.from({ length: Math.max(0, foe.leader.life - foe.life.length) }, () => '<span class="life-card empty"></span>').join('');
+    $('enemyLife').innerHTML = lpBar(foe);
     $('enemyDon').innerHTML = foe.donArea.map((d) => donEl(d).outerHTML).join('');
     $('enemyBoard').innerHTML = '';
     foe.board.forEach((u, i) => {
@@ -237,8 +241,7 @@
     // 己方
     const myLeaderSlot = $('myLeaderSlot');
     myLeaderSlot.innerHTML = ''; myLeaderSlot.appendChild(leaderEl(me, MY));
-    $('myLife').innerHTML = me.life.map(() => '<span class="life-card"></span>').join('')
-      + Array.from({ length: Math.max(0, me.leader.life - me.life.length) }, () => '<span class="life-card empty"></span>').join('');
+    $('myLife').innerHTML = lpBar(me);
     $('myDon').innerHTML = me.donArea.map((d) => donEl(d).outerHTML).join('');
     $('myDon').classList.toggle('can-act', myTurn && O.usableDons(me) > 0);
     $('myBoard').innerHTML = '';
@@ -285,8 +288,8 @@
     const myTurn = G.active === MY && !G.pending;
     let text;
     if (G.winner !== null) text = G.winner === MY ? '胜利！' : '战败…';
-    else if (G.pending && G.pending.target.side === MY) text = '对方攻击——选择阻挡/反击或放弃';
-    else if (selMode && selMode.mode === 'attack') text = '选择攻击目标（点敌方领袖或已横置角色，再点攻击者可取消）';
+    else if (G.pending && G.pending.target.side === MY) text = '对方攻击——选择反击牌或放弃（无反击牌时自动结算）';
+    else if (selMode && selMode.mode === 'attack') text = '选择攻击目标（对方场上有角色须先打角色；再点攻击者可取消）';
     else if (selMode && selMode.mode === 'don') text = '选择 DON!! 附着目标（点己方单位，再点费用区取消）';
     else if (myTurn) text = '你的回合：点手牌出牌 · 点单位攻击 · 点 DON!! 附着';
     else text = '对方行动中…';
@@ -351,15 +354,15 @@
         await sleep(420);
         break;
       }
-      case 'life': {
+      case 'lp': {
         const target = ev.side === MY ? $('myLife') : $('enemyLife');
-        const cardEls = target.querySelectorAll('.life-card:not(.empty)');
-        const first = cardEls[0];
-        if (first) {
-          const r = first.getBoundingClientRect();
-          spawnDmg(r.left + r.width / 2, r.top, ev.banish ? '放逐!' : '-1');
-          if (!ev.banish) { first.classList.add('flip'); }
-          burst(r.left + r.width / 2, r.top + r.height / 2, ev.banish ? '#b18cff' : '#ffd98e', 22, 4);
+        const badge = target.querySelector('.lp-badge');
+        if (badge) {
+          const r = badge.getBoundingClientRect();
+          spawnDmg(r.left + r.width / 2, r.top, `-${Math.round(ev.dmg / 1000)}K`);
+          badge.classList.remove('hit'); void badge.offsetWidth; // 重启动画
+          badge.classList.add('hit');
+          burst(r.left + r.width / 2, r.top + r.height / 2, '#ff8a8a', 22, 4);
         }
         await sleep(430);
         break;
@@ -388,14 +391,9 @@
         break;
       }
       case 'counter': {
-        showBanner('COUNTER!', '');
+        showBanner('反击！', '');
         burst(innerWidth / 2, innerHeight / 2, '#8fd3ff', 30, 7);
         await sleep(700);
-        break;
-      }
-      case 'block': {
-        showBanner('BLOCK!', '');
-        await sleep(600);
         break;
       }
       case 'win': {
@@ -469,7 +467,7 @@
     if (!aiToAct) return; // 玩家操作异常：hint 已提示原因，不需兜底
     if (++aiErrs > 3) toast('对方行动连续异常，已自动兜底处理；如仍异常请「重新开局」', 'error');
     try {
-      if (G.pending) O.applyAction(G, { t: G.pending.kind === 'block' ? 'passBlock' : 'passCounter', side: FOE });
+      if (G.pending) O.applyAction(G, { t: 'passCounter', side: FOE });
       else O.applyAction(G, { t: 'endTurn', side: FOE });
       renderAll();
       afterAction();
@@ -481,7 +479,7 @@
   async function afterAction() {
     if (G.winner !== null) return;
     if (G.pending) {
-      if (G.pending.target.side === MY) openResponsePanel();
+      if (G.pending.target.side === MY) handleMyPending();
       else scheduleAI(aiRespond, AI_DELAY);
       return;
     }
@@ -509,7 +507,7 @@
     if (busy) { scheduleAI(aiRespond, AI_DELAY); return; } // 同上：响应链不可断
     let a;
     try { a = ai.choose(G, O.listActions(G)); } catch (e) { console.warn('ai choose failed', e); a = null; }
-    doAction(a || { t: G.pending.kind === 'block' ? 'passBlock' : 'passCounter', side: FOE }); // 异常兜底：放弃响应
+    doAction(a || { t: 'passCounter', side: FOE }); // 异常兜底：放弃响应
   }
 
   function addLogLine(action) {
@@ -519,7 +517,7 @@
     const names = {
       playCharacter: '召唤角色', playEvent: '发动事件', playStage: '布置舞台',
       attack: '发起攻击', block: '阻挡!', counter: '反击!', giveDon: '附着 DON!!',
-      endTurn: '结束回合', passBlock: '放弃阻挡', passCounter: '放弃反击',
+      endTurn: '结束回合', passCounter: '放弃反击',
     };
     line.textContent = `${action.side === MY ? '我方' : '敌方'} · ${names[action.t] || action.t}`;
     body.prepend(line);
@@ -539,51 +537,62 @@
     hintTimer = setTimeout(() => { hintTimer = null; if (G) renderHints(); }, 1600);
   }
 
-  // ===== 响应面板 =====
+  // ===== 响应面板（游戏王式：仅反击窗口；无反击手段时自动结算不打扰）=====
+  let autoPassSession = false; // 「本局不再询问」：本局所有反击窗口自动放弃结算
+  function hasCounterCards() {
+    const me = G && G.players[MY];
+    return !!(me && me.hand.some((c) => c.counter));
+  }
+  // 我方待响应入口：无反击牌或已选自动结算 → 跳过弹窗直接 pass
+  // （处于 doAction 的 await 链内 busy 占用，须经 setTimeout 延迟一步再走 doAction）
+  function handleMyPending() {
+    if (autoPassSession || !hasCounterCards()) {
+      showHintFlash(autoPassSession ? '本局已选自动结算——反击窗口自动跳过' : '无反击牌，自动结算', 'info');
+      scheduleAI(() => { if (G && G.pending && G.pending.target.side === MY) doAction({ t: 'passCounter', side: MY }); }, 140);
+      return;
+    }
+    openResponsePanel();
+  }
   function openResponsePanel() {
     const p = G.pending;
+    if (!p) return;
     const foe = G.players[FOE];
     const atkUnit = p.attacker.type === 'leader' ? foe.leader : foe.board[p.attacker.idx];
     const defUnit = p.target.type === 'leader' ? G.players[MY].leader : G.players[MY].board[p.target.idx];
     const atkP = p.attacker.type === 'leader' ? O.leaderPower(foe) : O.powerOfUnit(atkUnit);
-    const defP = (p.target.type === 'leader' ? O.leaderPower(G.players[MY]) : O.powerOfUnit(defUnit)) + p.counterBoost;
-    $('responseTitle').textContent = p.kind === 'block' ? '对方攻击！要阻挡吗？' : '反击窗口';
-    // 机制说明随文案给出：新玩家不需试错即可懂「阻挡=替船长承受」「反击=加战力可反杀」
-    $('responseDesc').textContent = `${atkUnit.name} ${atkP} → ${defUnit.name} ${defP}`
-      + (p.kind === 'counter'
-        ? '（打出反击牌累积防守战力，防守战力 ≥ 攻击战力即可击沉攻方）'
-        : '（阻挡者代替船长承受攻击：战力不足则阻挡者被击沉、船长无伤）');
+    const defUnitP = p.target.type === 'leader' ? O.leaderPower(G.players[MY]) : O.powerOfUnit(defUnit);
+    const wall = p.target.type === 'char' && (defUnit.keywords || []).includes('blocker') ? 1000 : 0;
+    const defP = defUnitP + wall + p.counterBoost;
+    $('responseTitle').textContent = '反击窗口';
+    // 机制说明随文案给出：反击=垫战力（直攻打不穿=免伤；互斗反超=反杀攻方）
+    $('responseDesc').textContent = `${atkUnit.name} ${atkP / 1000}K → ${defUnit.name} ${defP / 1000}K`
+      + (p.target.type === 'leader'
+        ? '（直攻：打出反击牌垫高船长防线，攻方战力不超防线就免受积分伤害）'
+        : '（互斗：打出反击牌垫高守方战力——反超即可反杀攻方并按差额扣其积分）');
     const box = $('responseOptions');
     box.innerHTML = '';
     const me = G.players[MY];
-    if (p.kind === 'block') {
-      me.board.forEach((u, i) => {
-        if (!u.rest && (u.keywords || []).includes('blocker')) {
-          const o = document.createElement('div');
-          o.className = 'resp-opt';
-          o.innerHTML = `<div class="lbl">${u.name}</div><div class="detail">战力 ${O.powerOfUnit(u)} · 阻挡</div>`;
-          o.onclick = () => { sfx('click'); closeAndAct({ t: 'block', side: MY, idx: i }); };
-          box.appendChild(o);
-        }
-      });
-    } else {
-      me.hand.forEach((c, i) => {
-        if (c.counter) {
-          const o = document.createElement('div');
-          o.className = 'resp-opt';
-          o.innerHTML = `<div class="lbl">${c.name}</div><div class="detail">+${c.counter / 1000}K 反击</div>`;
-          o.onclick = () => {
-            sfx('click');
-            // 窗口保持开放：反击后继续显示，直到放弃
-            doAction({ t: 'counter', side: MY, cards: [i] }).then(() => {
-              if (G && G.pending && G.pending.kind === 'counter') openResponsePanel();
-            });
-          };
-          box.appendChild(o);
-        }
-      });
-    }
-    $('btnPass').textContent = p.kind === 'block' ? '不阻挡，继续' : '放弃反击，结算';
+    me.hand.forEach((c, i) => {
+      if (c.counter) {
+        const o = document.createElement('div');
+        o.className = 'resp-opt';
+        o.innerHTML = `<div class="lbl">${c.name}</div><div class="detail">+${c.counter / 1000}K 反击</div>`;
+        o.onclick = () => {
+          sfx('click');
+          // 窗口保持开放：反击后继续显示，直到放弃
+          doAction({ t: 'counter', side: MY, cards: [i] }).then(() => {
+            if (G && G.pending && G.pending.kind === 'counter') {
+              if (hasCounterCards()) openResponsePanel();
+              else handleMyPending(); // 最后一一张打完：无牌可续，自动结算
+            }
+          });
+        };
+        box.appendChild(o);
+      }
+    });
+    const chk = $('chkAutoPass');
+    if (chk) { chk.checked = autoPassSession; chk.onchange = () => { autoPassSession = chk.checked; }; }
+    $('btnPass').textContent = '放弃反击，结算';
     $('responsePanel').classList.remove('hidden');
   }
   function closeAndAct(a) {
@@ -594,7 +603,7 @@
     const p = G && G.pending;
     if (!p) return;
     sfx('click');
-    closeAndAct({ t: p.kind === 'block' ? 'passBlock' : 'passCounter', side: MY });
+    closeAndAct({ t: 'passCounter', side: MY });
   };
 
   // ===== 交互绑定 =====
@@ -632,7 +641,7 @@
     if (!selMode || selMode.mode !== 'attack') return;
     const idx = +card.dataset.foeIdx;
     const u = G.players[FOE].board[idx];
-    if (!u.rest) { showHintFlash('只能攻击已横置的单位或领袖'); return; }
+    // 游戏王式：对方场上角色横竖均可被攻击（竖=互斗，横=守备表示）
     const a = { t: 'attack', side: MY, attacker: selMode.attacker, target: { type: 'char', idx } };
     selMode = null;
     clearHighlights();
@@ -641,6 +650,7 @@
 
   $('enemyLeaderSlot').addEventListener('click', () => {
     if (!selMode || selMode.mode !== 'attack') return;
+    if (G.players[FOE].board.length > 0) { showHintFlash('对方场上有角色——先击败角色，才能直攻船长'); return; }
     const a = { t: 'attack', side: MY, attacker: selMode.attacker, target: 'leader' };
     selMode = null;
     clearHighlights();
@@ -675,11 +685,12 @@
   function highlightTargets() {
     clearHighlights();
     const foe = G.players[FOE];
-    const leadWrap = $('enemyLeaderSlot');
-    leadWrap.querySelector('.card')?.classList.add('targetable');
-    foe.board.forEach((u, i) => {
-      if (u.rest) $('enemyBoard').children[i]?.classList.add('targetable');
-    });
+    if (foe.board.length > 0) {
+      // 对方场上有角色：全部角色可选（竖=互斗，横=守备），船长不可直攻
+      foe.board.forEach((_, i) => $('enemyBoard').children[i]?.classList.add('targetable'));
+    } else {
+      $('enemyLeaderSlot').querySelector('.card')?.classList.add('targetable');
+    }
     markSelected();
   }
   function highlightDonTargets() {
@@ -793,7 +804,7 @@
         </span>
         <span class="cc-foot">
           <span class="cc-no">${c.cardNumber}</span>
-          <span class="cc-life">生命 ${c.life}</span>
+          <span class="cc-life">LP ${c.life * 2000}</span>
           <span class="cc-on">${CAP().icon('check')} 出战</span>
         </span>`;
       pick.onclick = () => { sfx('click'); setLeaderColor(c.color); };
@@ -881,6 +892,7 @@
     ai = O.createAI(opts.level || $('aiLevel').value);
     gameCtx = opts.ctx || { mode: 'free', leaderColor: color, deckRef: deckA };
     ended = false;
+    autoPassSession = false; // 「本局不再询问」随新局重置
     logSeen = G.log.length;
     myLeaderColor = color;
     selMode = null;
@@ -888,7 +900,7 @@
     stopAutoplayTimer();
     $('logBody').innerHTML = '';
     ['setupPanel', 'endPanel', 'responsePanel', 'helpPanel', 'builderPanel'].forEach((id) => $(id).classList.add('hidden'));
-    showBanner('DUEL!', '');
+    showBanner('决斗！', '');
     renderAll();
     showHintFlash(`对手：${foeLeader.name}（${COLOR_NAME[foeColor]}）`, 'info');
     autosaveNow(); // 开局即留档：AI 回合中崩溃/关页也可恢复
@@ -910,7 +922,7 @@
   function showEndPanel() {
     if (!G || G.winner === null) return;
     const win = G.winner === MY;
-    let detail = `历时 ${G.turn} 回合 · 我方生命 ${G.players[MY].life.length} 张`;
+    let detail = `历时 ${G.turn} 回合 · 我方剩余 LP ${Math.max(0, G.players[MY].lp)} · 对方剩余 LP ${Math.max(0, G.players[FOE].lp)}`;
     if (gameCtx && window.OPTCG_MODES) {
       const s = window.OPTCG_MODES.settle(gameCtx, win);
       if (s) detail = s + '<br>' + detail;
@@ -957,6 +969,7 @@
       if (typeof g.active !== 'number') return false;
       for (const pl of g.players) {
         if (!pl || !pl.leader || !Array.isArray(pl.hand) || !Array.isArray(pl.board) || !Array.isArray(pl.deck)) return false;
+        if (typeof pl.lp !== 'number') return false; // 旧生命卡制快照无 LP 字段：拒收（save 层清档重来）
       }
       if (g.winner !== null) return false; // 已终局的快照没有恢复意义
       gen++;
@@ -964,7 +977,7 @@
       G = g;
       ai = O.createAI(AI_LEVELS.includes(snap.level) ? snap.level : 'normal');
       gameCtx = snap.ctx == null ? null : JSON.parse(JSON.stringify(snap.ctx));
-      ended = false; selMode = null; busy = false;
+      ended = false; selMode = null; busy = false; autoPassSession = false;
       logSeen = Array.isArray(g.log) ? g.log.length : 0;
       if (g.players[MY].leader && g.players[MY].leader.color) myLeaderColor = g.players[MY].leader.color;
       $('logBody').innerHTML = '';
@@ -973,7 +986,7 @@
       autosaveNow();
       // 轮到 AI 或有待响应时重新驱动（复用 afterAction 的调度路径）
       if (g.pending) {
-        if (g.pending.target.side === MY) openResponsePanel();
+        if (g.pending.target.side === MY) handleMyPending();
         else scheduleAI(aiRespond, AI_DELAY);
       } else if (g.active === FOE) {
         scheduleAI(aiStep, AI_DELAY);
@@ -984,18 +997,18 @@
     }
   }
 
-  // ===== 玩法说明（新手友好）=====
+  // ===== 玩法说明（新手友好，游戏王式积分制）=====
   function fillHelp() {
     const secs = [
-      { ic: 'trophy', t: '胜利目标', p: '把<b>对方船长的生命扣到 0</b>即获胜。每次攻击对方船长，对方扣 1 张生命卡；对方牌库抽空也会判负。' },
+      { ic: 'trophy', t: '胜利目标（积分制）', p: '双方船长各有 <b>LP 10000 积分</b>。攻击造成的伤害按<b>战力差额</b>扣对方 LP，<b>把对方 LP 扣到 0 即获胜</b>；对方牌库抽空也会判负。' },
       { ic: 'layers', t: '回合流程', p: '你的回合：<b>费用区自动补 2 颗 DON!!</b>（费用豆，上回合附着的自动脱落回来）→ 抽 1 张牌 → 出牌 / 攻击 / 附着 → 点「结束回合」。费用区里<b>未附着的 DON!! 就是能花的钱</b>，附着到卡上的算已消耗。' },
-      { ic: 'map', t: '出牌', p: '手牌左上角圆标是<b>费用</b>，消耗对应数量 DON!! 即可打出：角色进场（场上最多 5 名）、事件立即生效、舞台持续支援。' },
-      { ic: 'swords', t: '攻击', p: '点己方未行动的角色或船长 → 再点<b>对方船长</b>或<b>已横置的角色</b>发起攻击。我方战力 ≥ 对方战力即击沉（KO）对方角色；攻击船长则扣 1 张生命。刚出场的角色下回合才能攻击。' },
-      { ic: 'refresh', t: '竖放与横放', p: '场上卡片<b>竖放＝就绪</b>（本回合还能攻击 / 阻挡），<b>横放（转 90°）＝已休息</b>（本回合已行动或被效果横置，不能再攻击也不能再阻挡），到拥有者的回合开始时自动转回竖放。攻击和阻挡都会把卡横置；<b>对方卡片全横着时就是安全进攻窗口</b>。鼠标悬停任意卡片（手机长按）可看它的完整信息和当前状态。' },
-      { ic: 'heart', t: '生命与反击', p: '生命被扣时翻入手牌。手牌右下角带 <b>C 标记</b>的可作反击牌：在「反击窗口」打出，为本回合防守 <b>+战力</b>，可能反杀攻方。' },
-      { ic: 'shield', t: '阻挡', p: '带<span class="kw">阻挡</span>词条的未横置角色可在响应面板选择挡刀：攻击转由它承受，战力不足则它被击沉、船长无伤。' },
-      { ic: 'anchor', t: 'DON!! 附着', p: '点左下费用区 → 点己方角色或船长，附着 1 颗 DON!! <b>+1000 战力</b>，攻防皆受益。附着后的 DON 本回合不可再用，规划好节奏。' },
-      { ic: 'sparkles', t: '关键词', p: '<span class="kw">速攻</span>：出场当回合即可攻击；<span class="kw">双击</span>：一回合攻击两次；<span class="kw">放逐</span>：扣的生命直接进墓场不进手牌；<span class="kw">阻挡</span>：可为船长挡刀。' },
+      { ic: 'map', t: '出牌', p: '手牌左上角圆标是<b>费用</b>，消耗对应数量 DON!! 即可打出：角色进场（场上最多 5 名）、事件立即生效、舞台持续支援。<b>刚出场的角色要等下回合才能攻击</b>（带速攻词条的当回合即可）。' },
+      { ic: 'swords', t: '攻击：卡片互斗', p: '点己方未行动的角色或船长 → 再点对方卡发起攻击。<b>对方场上有角色时必须先打角色</b>（横竖都可被攻击，不能绕过直攻船长）；对方场上没角色才能<b>直攻船长</b>，伤害 = 攻方战力 − 船长战力（打出反击牌可以垫高防线免伤）。攻击后攻击者横置。' },
+      { ic: 'refresh', t: '竖放与横放', p: '场上卡片<b>竖放＝攻击表示</b>：可以攻击，被攻击时进入<b>互斗</b>——战力高者胜，败方被击沉并按差额扣其主人 LP，相等同归于尽。<b>横放＝守备表示</b>：本回合已行动，被攻击时只比战力——攻方战力更高才被击沉，守方不损失 LP。己方回合开始时横放的卡自动转回竖放。鼠标悬停任意卡片（手机长按）可看完整信息。' },
+      { ic: 'heart', t: '反击', p: '对方攻击时进入<b>反击窗口</b>：手牌右下角带 <b>C 标记</b>的卡可打出为防守<b>垫战力</b>——直攻时垫高船长防线可免伤，互斗时反超战力可反杀攻方。<b>手里没有 C 标记的卡时会自动结算，不打扰你</b>；也可勾选「本局不再询问」永久自动。' },
+      { ic: 'shield', t: '坚壁', p: '带<span class="kw">坚壁</span>词条的角色是硬盾：<b>被攻击时防御战力 +1K</b>（横放竖放都生效），更难被击沉——很适合守家。' },
+      { ic: 'anchor', t: 'DON!! 附着', p: '点左下费用区 → 点己方角色或船长，附着 1 颗 DON!! <b>+1000 战力</b>，攻防皆受益（互斗、守备、直攻差额都算）。附着后的 DON 本回合不可再用，规划好节奏。' },
+      { ic: 'sparkles', t: '关键词', p: '<span class="kw">速攻</span>：出场当回合即可攻击；<span class="kw">双击</span>：直攻船长的 LP 伤害 ×2；<span class="kw">猛击</span>：直攻船长 LP 伤害额外 +2K；<span class="kw">坚壁</span>：被攻击时防御 +1K。' },
       { ic: 'compass', t: '两种模式', p: '<b>天梯排位</b>：胜 +25 分、败 −15 分，分数升段位、敌将变强；<b>生存挑战</b>：连胜不断升档，一败归零、记录最佳连胜。' },
     ];
     $('helpBody').innerHTML = secs.map((s) =>
@@ -1056,7 +1069,7 @@
     autoTimer = setInterval(() => {
       if (!G || G.winner !== null) { stopAutoplayTimer(); return; } // 局没了/已终局：自我清理，不空转
       if (busy) return;
-      if (G.pending && G.pending.target.side === MY) { doAction({ t: G.pending.kind === 'block' ? 'passBlock' : 'passCounter', side: MY }); return; }
+      if (G.pending && G.pending.target.side === MY) { doAction({ t: 'passCounter', side: MY }); return; }
       if (G.active !== MY) return;
       const acts = O.listActions(G).filter((a) => a.t !== 'takeDon' && a.t !== 'giveDon');
       if (!acts.length) return;
@@ -1069,9 +1082,9 @@
   // 桌面 hover / 触屏长按 550ms → 显示全量卡信息（类型·费用·战力·反击·关键词解释·效果·竖横状态·附着 DON）
   const KW_TIP = {
     rush: '登场当回合即可攻击（其他角色要等下回合）',
-    blocker: '未横置时可替船长承受攻击——对方攻击时响应面板会出现阻挡选项',
-    doubleAttack: '攻击对方船长时扣 2 张生命（普通攻击扣 1）',
-    banish: '它造成的生命伤害直接进墓场，不进对方手牌',
+    blocker: '坚壁之盾：被攻击时防御战力 +1K（横放竖放都生效），更难被击沉',
+    doubleAttack: '直攻船长时积分（LP）伤害 ×2',
+    banish: '猛击：直攻船长时积分（LP）伤害额外 +2K',
   };
   const TYPE_NAME = { leader: '船长卡', char: '角色卡', event: '事件卡', stage: '舞台卡' };
   function effectText(def) {
@@ -1093,7 +1106,7 @@
   function cardInfoHtml(def) {
     const parts = [];
     parts.push(`<div class="ct-head"><b>${def.name}</b><span>${def.sub || ''}</span></div>`);
-    parts.push(`<div class="ct-meta">${TYPE_NAME[def.type] || def.type} · ${COLOR_NAME[def.color] || def.color}${def.type === 'leader' ? ` · 生命 ${def.life}` : ''}</div>`);
+    parts.push(`<div class="ct-meta">${TYPE_NAME[def.type] || def.type} · ${COLOR_NAME[def.color] || def.color}${def.type === 'leader' ? ` · LP ${def.life * 2000}` : ''}</div>`);
     const nums = [];
     if (def.type !== 'leader' && def.cost != null) nums.push(`费用 ${def.cost}`);
     if (def.power) nums.push(`战力 ${def.power / 1000}K`);
@@ -1123,11 +1136,11 @@
     if (inCodex) st.push('<b>图鉴浏览</b>：点击卡片可放大看卡面插画与完整说明');
     else if (inHand) {
       const usable = G ? O.usableDons(G.players[MY]) : 0;
-      st.push(`<b>在手牌</b>：点击打出，花费 ${def.cost} 颗费用豆（=费用区未附着的 DON!!，当前能花 ${usable} 颗）；带 C 标记的还可在对方攻击时打出作反击`);
+      st.push(`<b>在手牌</b>：点击打出，花费 ${def.cost} 颗费用豆（=费用区未附着的 DON!!，当前能花 ${usable} 颗）；带 C 标记的还可在对方攻击时打出作反击（垫高防守战力：直攻可免伤、互斗可反杀）`);
     }
     else if (def.type === 'stage') st.push(`<b>${who}舞台</b>：打出后持续在场生效，不参与战斗`);
-    else if (rested) st.push(`<b>横放（已休息）</b>：${who}${def.type === 'leader' ? '船长' : '角色'}本回合已行动——不能攻击${def.keywords && def.keywords.includes('blocker') ? '、不能阻挡' : ''}；${ownerTurn}开始时转回竖放`);
-    else st.push(`<b>竖放（就绪）</b>：${who}${def.type === 'leader' ? '船长可以发起攻击' : '角色仍可行动（攻击' + ((def.keywords || []).includes('blocker') ? '/阻挡' : '') + '）'}`);
+    else if (rested) st.push(`<b>横放＝守备表示</b>：${who}${def.type === 'leader' ? '船长本回合已攻击过' : '角色本回合已行动或被效果横置，不能再攻击'}；被攻击时只比战力——攻方战力更高才被击沉，守方不损失积分${(def.keywords || []).includes('blocker') ? '（坚壁：防御战力仍 +1K）' : ''}；${ownerTurn}开始时转回竖放`);
+    else st.push(`<b>竖放＝攻击表示</b>：${who}${def.type === 'leader' ? '船长可发起攻击（对方场上无角色时可直攻，伤害=双方战力差额）' : '角色可发起攻击（刚登场要等下回合，速攻词条除外）'}；被攻击时进入互斗——战力低者被击沉并按差额扣积分（LP），相等同归于尽`);
     if (dons > 0) st.push(`<b>已附着 ${dons} 颗 DON!!</b>：战力 +${dons}K，攻防都算；${ownerTurn}开始时自动脱落回费用区`);
     parts.push(`<div class="ct-state">${st.map((s) => `<div>${s}</div>`).join('')}</div>`);
     return parts.join('');

@@ -23,6 +23,10 @@
     window[fn] = (msg) => { R.dialogs.push(fn + ': ' + msg); return fn === 'confirm' ? true : undefined; };
   }
   window.addEventListener('error', (e) => R.errors.push(e.message + ' @' + (e.filename || '') + ':' + (e.lineno || '')));
+  // doAction 异常走 console.warn 吞掉（不冒泡 window.error）：记录下来供失败步排障
+  const warns = [];
+  const origWarn = console.warn.bind(console);
+  console.warn = (...a) => { warns.push(a.map((x) => (x && x.message) || String(x)).join(' ').slice(0, 120)); origWarn(...a); };
 
   const $ = (id) => document.getElementById(id);
   const visible = (id) => { const el = $(id); return !!el && !el.classList.contains('hidden'); };
@@ -80,7 +84,9 @@
         if (p) { p.click(); playedCount++; await sleep(550); }
         const atk = document.querySelector('#myBoard .card.playable') || document.querySelector('[data-role="leader-0"] .card:not(.rest)');
         if (atk && !document.querySelector('.targetable')) { atk.click(); await sleep(400); }
-        const t = document.querySelector('#enemyLeaderSlot .card.targetable');
+        // 游戏王式目标规则：对方场上有角色时角色是唯一可选目标，场空才能直攻船长
+        const t = document.querySelector('#enemyLeaderSlot .card.targetable')
+          || document.querySelector('#enemyBoard .card.targetable');
         if (t) { t.click(); atkCount++; await sleep(550); }
         const b = $('btnEnd'); if (b) b.click();
       }
@@ -173,13 +179,24 @@
       const bHand = document.querySelectorAll('#myHand .card').length;
       const bBoard = document.querySelectorAll('#myBoard .card').length;
       const bGrave = (document.querySelector('#myGrave b') || {}).textContent;
+      const bStage = document.querySelectorAll('#myStage .card').length;
+      // 舞台卡打出不进墓地也不占 board、带抽牌效果时手牌数还会回平——必须单看舞台区
+      const changed = () => document.querySelectorAll('#myHand .card').length < bHand
+        || document.querySelectorAll('#myBoard .card').length > bBoard
+        || ((document.querySelector('#myGrave b') || {}).textContent) !== bGrave
+        || document.querySelectorAll('#myStage .card').length > bStage;
       await clickAt(playable(), '点击可出手牌');
-      played = await waitFor(() => {
-        return document.querySelectorAll('#myHand .card').length < bHand
-          || document.querySelectorAll('#myBoard .card').length > bBoard
-          || ((document.querySelector('#myGrave b') || {}).textContent) !== bGrave;
-      }, 4000);
-      step('出牌成功且有效果', played);
+      // 点击竞态兜底（元素重渲染/演出占用 busy 会让首击 no-op）：1.2s 无变化重取元素再点一次
+      if (!await waitFor(changed, 1200)) {
+        const again = playable();
+        if (again) await clickAt(again, '重试点击可出手牌');
+      }
+      played = await waitFor(changed, 6000);
+      step('出牌成功且有效果', played, played ? '' : ('warn:' + warns.slice(-2).join(' | ') + ' hint:' + (($('hint') || {}).textContent || '')
+        + ' dons(rest/total):' + document.querySelectorAll('#myDon .don.rest').length + '/' + document.querySelectorAll('#myDon .don').length
+        + ' hand:' + document.querySelectorAll('#myHand .card').length + '(b' + bHand + ')'
+        + ' log:' + [...document.querySelectorAll('#logBody .log-line')].slice(0, 3).map((x) => x.textContent).join('；')
+        + ' diag:' + JSON.stringify((OPTCG_GAME._diag && OPTCG_GAME._diag()) || null)));
     } else step('存在可出手牌', true, '首回合起手无低费卡（正常随机），出牌验证移至全场累计断言');
 
     // ===== 悬停信息卡（卡面全量信息 + 竖/横语义）=====
@@ -221,20 +238,24 @@
         step('再点攻击者可取消', cancelled);
         await clickAt(attacker, '重新选择攻击者');
         await waitFor(() => document.querySelector('.targetable'), 1500);
+        // 游戏王式目标规则：对方场上有角色→必须打角色（互斗/守备）；无角色→直攻船长
+        const foeUnit = document.querySelector('#enemyBoard .card.targetable');
         const foeLeader = document.querySelector('#enemyLeaderSlot .card');
-        if (foeLeader && foeLeader.classList.contains('targetable')) {
-          const foeLife0 = document.querySelectorAll('#enemyLife .life-card:not(.empty)').length;
+        const lpOf = (sel) => { const n = document.querySelector(sel + ' .lp-num'); return n ? +n.textContent : null; };
+        const foeLp0 = lpOf('#enemyLife');
+        const myLp0 = lpOf('#myLife');
+        if (foeUnit || (foeLeader && foeLeader.classList.contains('targetable'))) {
           const foeBoard0 = document.querySelectorAll('#enemyBoard .card').length;
-          await clickAt(foeLeader, '点击敌方领袖发起攻击');
+          await clickAt(foeUnit || foeLeader, foeUnit ? '点击敌方角色发起攻击' : '点击敌方领袖直攻');
           const attacked = await waitFor(() => {
-            const l = document.querySelectorAll('#enemyLife .life-card:not(.empty)').length;
+            const lpMoved = (lpOf('#enemyLife') !== foeLp0) || (lpOf('#myLife') !== myLp0); // 差额扣分或反击反杀
             const b = document.querySelectorAll('#enemyBoard .card').length;
-            const logHit = [...document.querySelectorAll('#logBody .log-line')].some((x) => /攻击|阻挡|反击/.test(x.textContent));
-            return l < foeLife0 || b !== foeBoard0 || logHit || visible('responsePanel');
+            const logHit = [...document.querySelectorAll('#logBody .log-line')].some((x) => /攻击|反击/.test(x.textContent));
+            return lpMoved || b !== foeBoard0 || logHit || visible('responsePanel');
           }, 6000);
           step('攻击发起并有结算反馈', attacked);
           await waitFor(() => !visible('responsePanel'), 6000);
-        } else step('敌方领袖可选为目标', false, '未高亮');
+        } else step('有可选攻击目标', false, '无 targetable 目标');
       }
     } else step('可发起攻击', true, '首回合无已落地单位，攻击验证移至全场累计断言');
 

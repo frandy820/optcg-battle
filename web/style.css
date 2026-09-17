@@ -32,7 +32,10 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; }
+/* clip 而非 hidden：hidden 下瞬时越界元素（伤害数字/震动期 fixed 层）仍会撑大
+   documentElement.scrollWidth，390 小屏断言偶发 2-6px 假横滚（2026-09-17 layout flaky 根因）；
+   clip 让文档成为非滚动容器，游戏页本就整体不滚 */
+html, body { height: 100%; overflow: clip; }
 body {
   font-family: "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
   color: var(--sea-cream);
@@ -56,9 +59,11 @@ body {
     radial-gradient(closest-side circle at 70% 40%, rgba(212, 175, 55, 0.04), transparent 70%);
   animation: bgDrift 26s ease-in-out infinite alternate;
 }
+/* 漂移用 background-position 驱动（不用 transform：缩放/位移会让固定层越出视口，
+   在 390px 小屏断言里偶发撑出 2-3px 文档横向滚动——2026-09-17 layout flaky 根因） */
 @keyframes bgDrift {
-  from { transform: translate(-2%, -1%) scale(1); }
-  to   { transform: translate(2%, 1.5%) scale(1.06); }
+  from { background-position: 0% 0%, 0% 0%; }
+  to   { background-position: 55% 35%, 45% 65%; }
 }
 .bg-stars {
   position: absolute; inset: 0;
@@ -140,28 +145,45 @@ body {
 #enemyBoard { justify-content: center; }
 #myBoard { justify-content: center; }
 
-.life-row { display: flex; gap: 4px; }
-.life-card {
-  width: 26px; height: 36px; border-radius: 4px;
-  background: repeating-linear-gradient(135deg, #26221a 0 4px, #3a3c33 4px 8px);
+/* LP 积分徽章（游戏王式积分制；替代旧生命卡渲染） */
+.life-row { display: flex; gap: 4px; min-height: 30px; align-items: center; }
+.lp-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 4px 12px 4px 10px; border-radius: 999px;
+  background: linear-gradient(135deg, rgba(38,34,26,.92), rgba(58,60,51,.88));
   border: 1px solid var(--gold-dim);
-  box-shadow: 0 2px 6px rgba(0,0,0,.5);
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
 }
-.life-card.empty {
-  background: transparent; border: 1px dashed rgba(212,175,55,.3);
-  box-shadow: none;
+.lp-badge .lp-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--gold-dim);
 }
-.life-card.flip { animation: lifeFlip .6s cubic-bezier(.2,.8,.3,1); transform-style: preserve-3d; }
-@keyframes lifeFlip {
-  0% { transform: rotateY(0) scale(1); filter: brightness(2.5); }
-  50% { transform: rotateY(90deg) scale(1.25); filter: brightness(3); }
-  100% { transform: rotateY(0) scale(1); }
+.lp-badge .lp-num {
+  font-size: 17px; font-variant-numeric: tabular-nums;
+  color: #ffe9a8; text-shadow: 0 1px 2px rgba(0,0,0,.6); line-height: 1;
 }
-.life-card.lost { animation: lifeLost .7s forwards; }
-@keyframes lifeLost {
-  40% { transform: scale(1.3); filter: brightness(2.8); }
-  100% { transform: scale(0) rotate(200deg); opacity: 0; }
+.lp-badge .lp-bar {
+  width: 86px; height: 7px; border-radius: 4px; overflow: hidden;
+  background: rgba(0,0,0,.45); border: 1px solid rgba(212,175,55,.25);
 }
+.lp-badge .lp-bar i {
+  display: block; height: 100%;
+  background: linear-gradient(90deg, #d4af37, #ffe9a8);
+  transition: width .45s cubic-bezier(.2,.8,.3,1);
+}
+.lp-badge.low .lp-num { color: #ff8a8a; }
+.lp-badge.low .lp-bar i { background: linear-gradient(90deg, #b3423a, #ff8a8a); }
+.lp-badge.hit { animation: lpHit .45s ease-out; }
+@keyframes lpHit {
+  0% { transform: scale(1); filter: brightness(1); }
+  30% { transform: scale(1.14); filter: brightness(1.9); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+/* 反击窗口「本局不再询问」勾选行 */
+.resp-auto {
+  display: flex; align-items: center; gap: 7px; margin: 10px 0 2px;
+  font-size: 13px; color: var(--muted, #9aa3b5); cursor: pointer; user-select: none;
+}
+.resp-auto input { accent-color: #d4af37; }
 
 .don-zone {
   display: flex; flex-wrap: wrap; gap: 3px; max-width: 190px;
@@ -310,13 +332,6 @@ body {
 
 /* Leader 卡 */
 .card.leader { width: 82px; height: 112px; }
-.card.leader .life-pips { position: absolute; top: -6px; right: -8px; display: flex; gap: 2px; z-index: 3; }
-.life-pip {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ff9db1, #c01e46 70%);
-  border: 1px solid #ffd3dc; box-shadow: 0 0 6px rgba(255,80,120,.8);
-}
-.life-pip.off { background: #2a2f3c; box-shadow: none; border-color: #4a5164; }
 
 /* ============ 手牌（扇形） ============ */
 .hand-row {
@@ -858,7 +873,6 @@ button:disabled {
   .turn-info { font-size: 11px; gap: 5px; }
   .grave { font-size: 10px; padding: 3px 5px; }
   .don-zone { max-width: 120px; }
-  .life-card { width: 18px; height: 26px; }
   #logPanel { display: none; }
   .card .name { font-size: 8.5px; }
   .card .power { font-size: 9.5px; min-width: 36px; }
