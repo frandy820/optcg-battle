@@ -158,6 +158,11 @@ function koUnit(state, ref, bySide) {
   if (ref.type !== 'char') return;
   const [dead] = pl.board.splice(ref.idx, 1);
   if (!dead) return;
+  // 装备是独立卡：角色被击沉时装备一并展平进墓场（独立计数/可回收语义）
+  if (Array.isArray(dead.gears) && dead.gears.length) {
+    pl.trash.push(...dead.gears);
+    dead.gears = [];
+  }
   pl.trash.push(dead);
   // 其后单位索引前移：同步修正附着 DON 的 board 记账（否则 takeDon 找不到=引擎不一致）
   for (const d of pl.donArea) {

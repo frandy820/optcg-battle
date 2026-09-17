@@ -85,7 +85,8 @@ function cloneGame(state) {
 function powerOfUnit(unit) {
   if (!unit) return 0;
   const buff = unit.buffs.reduce((n, b) => n + b.x, 0);
-  return unit.power + unit.dons * 1000 + buff;
+  const gearAtk = (unit.gears || []).reduce((n, g) => n + ((g.gear && g.gear.atk) || 0), 0);
+  return unit.power + unit.dons * 1000 + buff + gearAtk;
 }
 
 function leaderPower(pl) {
@@ -136,7 +137,9 @@ function logEvent(state, ev) {
 const HOOKS = ['onPlay', 'whenAttacking', 'onKO', 'trigger'];
 
 function hasKeyword(unit, kw) {
-  return Array.isArray(unit.keywords) && unit.keywords.includes(kw);
+  if (Array.isArray(unit.keywords) && unit.keywords.includes(kw)) return true;
+  // 装备词条归并（甲胄给 blocker 等）：装备在则视为单位词条
+  return Array.isArray(unit.gears) && unit.gears.some((g) => g.gear && Array.isArray(g.gear.gives) && g.gear.gives.includes(kw));
 }
 
 // 统一执行入口：ctx = { state, side(操作方), self(效果来源单位或卡), rngNotNeeded }
@@ -509,6 +512,20 @@ function playStage(state, side, idx) {
   runEffect(state, card, 'onPlay', { side, self: null });
 }
 
+// 出装备：付费附着到己方角色（每角色限 1 件，重复出=替换旧的进垃圾场）
+function playGear(state, side, idx, to) {
+  const me = state.players[side];
+  const card = me.hand[idx];
+  if (!card || card.type !== 'gear') throw new Error('not a gear card in hand');
+  const target = me.board[to && to.idx];
+  if (!target) throw new Error('gear target not found');
+  payDons(me, card.cost);
+  me.hand.splice(idx, 1);
+  if (target.gears && target.gears.length) me.trash.push(target.gears[0]); // 替换：旧装备随葬
+  target.gears = [card];
+  logEvent(state, { t: 'gear', side, cardId: card.id, to: { type: 'char', idx: to.idx } });
+}
+
 // 附着 DON!!：费用区（未横置未附着）→ 己方 Leader/角色
 function giveDon(state, side, to, count) {
   const me = state.players[side];
@@ -574,6 +591,7 @@ function applyAction(state, action) {
     case 'playCharacter': playCharacter(state, side, action.idx); break;
     case 'playEvent': playEvent(state, side, action.idx); break;
     case 'playStage': playStage(state, side, action.idx); break;
+    case 'playGear': playGear(state, side, action.idx, action.to); break;
     case 'giveDon': giveDon(state, side, action.to, action.count || 1); break;
     case 'takeDon': takeDon(state, side, action.from, action.count || 1); break;
     case 'attack': startAttack(state, action); break;
@@ -646,6 +664,11 @@ function listActions(state) {
   me.hand.forEach((c, i) => {
     if (c.cost > dons) return;
     if (c.type === 'char' && me.board.length >= 5) return;
+    if (c.type === 'gear') {
+      // 装备：枚举己方每个角色作为目标（每角色限 1 件，替换式）
+      me.board.forEach((_, j) => acts.push({ t: 'playGear', side, idx: i, to: { type: 'char', idx: j } }));
+      return;
+    }
     acts.push({ t: c.type === 'char' ? 'playCharacter' : c.type === 'event' ? 'playEvent' : 'playStage', side, idx: i });
   });
 
@@ -778,6 +801,16 @@ function scoreAction(state, act) {
       const c = me.hand[act.idx];
       if (!c) return -99;
       return 32 + c.cost * 5 + effValue(c.effect, state, side);
+    }
+    case 'playGear': {
+      const c = me.hand[act.idx];
+      const target = me.board[act.to && act.to.idx];
+      if (!c || !target) return -99;
+      if (target.gears && target.gears.length) return -50; // 已装备再装=旧件随葬浪费
+      let s = 20 + c.cost * 2;
+      if (c.gear && c.gear.atk) s += c.gear.atk / 400 + (c.gear.atk >= 3000 ? 6 : 0);
+      if (c.gear && (c.gear.gives || []).includes('blocker')) s += 10; // 甲胄=坚壁防御位
+      return s;
     }
     case 'giveDon': return 6;
     case 'takeDon': return -99; // AI 不倒腾 DON!!（与 give 互切会死循环）
@@ -1333,6 +1366,23 @@ const POOL = {
       "art": "RED-12"
     },
     {
+      "id": "RED-G1",
+      "name": "三代鬼彻",
+      "sub": " 和之国妖刀 ",
+      "type": "gear",
+      "color": "red",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "RED-G1"
+    },
+    {
       "id": "RED-15",
       "name": "薇薇",
       "sub": " 阿拉巴斯坦公主 ",
@@ -1345,6 +1395,26 @@ const POOL = {
       "effect": null,
       "fruit": null,
       "art": "RED-15"
+    },
+    {
+      "id": "RED-G2",
+      "name": "武装色·硬化",
+      "sub": " 全身武装 ",
+      "type": "gear",
+      "color": "red",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 1000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "RED-G2"
     },
     {
       "id": "RED-E3",
@@ -1798,6 +1868,43 @@ const POOL = {
       "art": "BLUE-S2"
     },
     {
+      "id": "BLUE-G1",
+      "name": "时雨",
+      "sub": " 良业物 ",
+      "type": "gear",
+      "color": "blue",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "BLUE-G1"
+    },
+    {
+      "id": "BLUE-G2",
+      "name": "六式·铁块",
+      "sub": " 钢铁之躯 ",
+      "type": "gear",
+      "color": "blue",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 1000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "BLUE-G2"
+    },
+    {
       "id": "GREEN-01",
       "name": "乔巴",
       "sub": " 妹尾的驯鹿 ",
@@ -2206,6 +2313,43 @@ const POOL = {
       "art": "GREEN-S2"
     },
     {
+      "id": "GREEN-G1",
+      "name": "天羽羽斩",
+      "sub": " 和之国黑刀 ",
+      "type": "gear",
+      "color": "green",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "GREEN-G1"
+    },
+    {
+      "id": "GREEN-G2",
+      "name": "电击毛皮",
+      "sub": " 毛皮族静电 ",
+      "type": "gear",
+      "color": "green",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 1000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "GREEN-G2"
+    },
+    {
       "id": "YELLOW-01",
       "name": "佩罗娜",
       "sub": " 幽灵公主 ",
@@ -2600,6 +2744,23 @@ const POOL = {
       "art": "YELLOW-E4"
     },
     {
+      "id": "YELLOW-G1",
+      "name": "黑刀·夜",
+      "sub": " 世界最强黑刀 ",
+      "type": "gear",
+      "color": "yellow",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 3000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "YELLOW-G1"
+    },
+    {
       "id": "YELLOW-S2",
       "name": "德雷斯罗萨",
       "sub": " 科利亚高原 ",
@@ -2618,6 +2779,26 @@ const POOL = {
       },
       "fruit": null,
       "art": "YELLOW-S2"
+    },
+    {
+      "id": "YELLOW-G2",
+      "name": "霍米兹铁卫",
+      "sub": " 大妈的看门人 ",
+      "type": "gear",
+      "color": "yellow",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "YELLOW-G2"
     },
     {
       "id": "PURPLE-01",
@@ -3028,6 +3209,43 @@ const POOL = {
       "art": "PURPLE-S2"
     },
     {
+      "id": "PURPLE-G1",
+      "name": "鬼哭",
+      "sub": " 诅咒之刀 ",
+      "type": "gear",
+      "color": "purple",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "PURPLE-G1"
+    },
+    {
+      "id": "PURPLE-G2",
+      "name": "北海重甲",
+      "sub": " 带毛皮的披风 ",
+      "type": "gear",
+      "color": "purple",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 1000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "PURPLE-G2"
+    },
+    {
       "id": "BLACK-01",
       "name": "毒Q",
       "sub": " 死神 ",
@@ -3342,6 +3560,23 @@ const POOL = {
       "art": "BLACK-11"
     },
     {
+      "id": "BLACK-G1",
+      "name": "狙击镜",
+      "sub": " 红发狙击手 ",
+      "type": "gear",
+      "color": "black",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 1000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "BLACK-G1"
+    },
+    {
       "id": "BLACK-S2",
       "name": "马林梵多",
       "sub": " 海军本部港 ",
@@ -3425,6 +3660,26 @@ const POOL = {
       "effect": null,
       "fruit": null,
       "art": "BLACK-16"
+    },
+    {
+      "id": "BLACK-G2",
+      "name": "黑刀·初代鬼彻",
+      "sub": " 妖刀一文字 ",
+      "type": "gear",
+      "color": "black",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "BLACK-G2"
     }
   ]
 }

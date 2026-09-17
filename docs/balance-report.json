@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generatedAt": "2026-09-17T10:17:31.608Z",
+    "generatedAt": "2026-09-17T10:40:43.255Z",
     "games": 60,
     "hardGames": 8,
     "stallThreshold": 900,
-    "totalMinutes": 0.4,
+    "totalMinutes": 0.5,
     "note": "dev-only 平衡工具；AI 同档对垒、交替先后手；平局（卡死/异常）不计入胜率分母"
   },
   "matrix": [

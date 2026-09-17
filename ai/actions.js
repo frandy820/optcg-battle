@@ -17,6 +17,11 @@ export function listActions(state) {
   me.hand.forEach((c, i) => {
     if (c.cost > dons) return;
     if (c.type === 'char' && me.board.length >= 5) return;
+    if (c.type === 'gear') {
+      // 装备：枚举己方每个角色作为目标（每角色限 1 件，替换式）
+      me.board.forEach((_, j) => acts.push({ t: 'playGear', side, idx: i, to: { type: 'char', idx: j } }));
+      return;
+    }
     acts.push({ t: c.type === 'char' ? 'playCharacter' : c.type === 'event' ? 'playEvent' : 'playStage', side, idx: i });
   });
 

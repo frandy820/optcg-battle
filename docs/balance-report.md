@@ -1,6 +1,6 @@
 # OP-TCG Battle 平衡模拟报告
 
-> 生成：2026-09-17T10:17:31.608Z · `node scripts/balance-sim.js` · 样本 60 局/matchup（normal）+ 8 局/matchup（hard） · 卡死线 900 动作/局 · 总耗时 0.4 min
+> 生成：2026-09-17T10:40:43.255Z · `node scripts/balance-sim.js` · 样本 60 局/matchup（normal）+ 8 局/matchup（hard） · 卡死线 900 动作/局 · 总耗时 0.5 min
 
 口径：AI 同档对垒；每 matchup 内双方交替先后手；胜率分母不含平局（卡死/异常局）；镜像局胜率=先手方胜率，理论应 ≈50%。
 

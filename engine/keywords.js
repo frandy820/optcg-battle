@@ -23,7 +23,9 @@
 export const HOOKS = ['onPlay', 'whenAttacking', 'onKO', 'trigger'];
 
 export function hasKeyword(unit, kw) {
-  return Array.isArray(unit.keywords) && unit.keywords.includes(kw);
+  if (Array.isArray(unit.keywords) && unit.keywords.includes(kw)) return true;
+  // 装备词条归并（甲胄给 blocker 等）：装备在则视为单位词条
+  return Array.isArray(unit.gears) && unit.gears.some((g) => g.gear && Array.isArray(g.gear.gives) && g.gear.gives.includes(kw));
 }
 
 // 统一执行入口：ctx = { state, side(操作方), self(效果来源单位或卡), rngNotNeeded }
@@ -73,6 +75,10 @@ export function runEffect(state, cardOrUnit, hook, ctx = {}) {
         if (powerOfUnit(foe.board[i]) < powerOfUnit(foe.board[mi])) mi = i;
       }
       const [dead] = foe.board.splice(mi, 1);
+      if (Array.isArray(dead.gears) && dead.gears.length) {
+        foe.trash.push(...dead.gears);
+        dead.gears = [];
+      }
       foe.trash.push(dead);
       // 其后单位索引前移：同步修正附着 DON 记账（与 combat.koUnit 同源）
       for (const d of foe.donArea) {

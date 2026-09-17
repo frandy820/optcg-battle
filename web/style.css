@@ -312,6 +312,13 @@ body {
 .kw-badge.fr-paramecia { background: #c05621; }
 .kw-badge.fr-logia { background: #0e7490; }
 .kw-badge.fr-zoan { background: #6d4c41; }
+/* 装备徽章：卡面「装备」标记 / 场上单位已穿装备亮名 */
+.kw-badge.kw-gear { background: #7c5cbf; }
+.kw-badge.kw-gear-on { background: #b8860b; max-width: 58px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 装备卡攻击角标（+NK，金色描边区分本体战力） */
+.power.gear-atk { background: linear-gradient(135deg,#8a6d1d,#c9a227); border-color: #f5d76e; }
+/* 装备目标高亮：已带装备=半亮（可换装但弃旧件） */
+.card.targetable.replaceable { opacity: .55; }
 
 /* 属性色卡框光晕 */
 .card.red    { border-color: var(--c-red); box-shadow: 0 0 0 1px #7a2225, inset 0 0 10px rgba(229,72,77,.22), 0 4px 10px rgba(0,0,0,.55), 0 0 12px rgba(229,72,77,.14); }

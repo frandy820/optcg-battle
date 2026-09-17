@@ -21,13 +21,17 @@ test('卡池 schema：id 唯一、类型/颜色合法、字段完整', () => {
   }
   for (const c of pool.cards) {
     assert.ok(COLORS.includes(c.color), `bad color ${c.id}`);
-    assert.ok(['char', 'event', 'stage'].includes(c.type), `bad type ${c.id}`);
+    assert.ok(['char', 'event', 'stage', 'gear'].includes(c.type), `bad type ${c.id}`);
     assert.ok(Number.isInteger(c.cost) && c.cost >= 1 && c.cost <= 8, `bad cost ${c.id}`);
     if (c.type === 'char') {
       assert.ok(Number.isInteger(c.power) && c.power >= 1000 && c.power <= 9000, `bad power ${c.id}`);
     } else {
       assert.equal(c.power, null, `non-char power must be null ${c.id}`);
       assert.equal(c.fruit, null, `non-char fruit must be null ${c.id}`);
+    }
+    if (c.type === 'gear') {
+      assert.ok(c.gear && [1000, 2000, 3000].includes(c.gear.atk), `bad gear.atk ${c.id}`);
+      assert.ok(!c.gear.gives || c.gear.gives.every((k) => ['blocker'].includes(k)), `bad gear.gives ${c.id}`);
     }
     if (c.counter !== null) {
       assert.equal(c.type, 'char', `counter only on char ${c.id}`);
@@ -47,6 +51,15 @@ test('卡池规模：六色各 20+ 张、总数 140-180（批1 扩池）', () =>
     assert.ok(n >= 20, `${col} only ${n} cards`);
   }
   assert.ok(pool.cards.length >= 140 && pool.cards.length <= 180);
+});
+
+test('装备（批2）：每色 ≥2 件、武器/甲胄两类齐备', () => {
+  for (const col of COLORS) {
+    const gears = pool.cards.filter((c) => c.color === col && c.type === 'gear');
+    assert.ok(gears.length >= 2, `${col} only ${gears.length} gear`);
+    // 甲胄（含 gives blocker）每色至少 1 件
+    assert.ok(gears.some((g) => (g.gear.gives || []).includes('blocker')), `${col} no armor gear`);
+  }
 });
 
 test('恶魔果实：三系均有分布（克制体系参与度）', () => {

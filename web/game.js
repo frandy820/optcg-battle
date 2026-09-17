@@ -152,7 +152,11 @@
     el.setAttribute('role', 'button');
     el.setAttribute('aria-label', def.name + (def.cost != null ? `，费用 ${def.cost}` : '') + (def.power ? `，战力 ${def.power / 1000}K` : '') + (def.fruit ? `，${FRUIT_LABEL[def.fruit]}系` : ''));
     const fruitHtml = def.fruit ? `<span class="kw-badge fr-${def.fruit}">${FRUIT_LABEL[def.fruit]}系</span>` : '';
-    const kwHtml = fruitHtml + (def.keywords || []).map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('');
+    // 装备：卡面「装备」徽章 + 增益角标（武器纯攻 / 甲胄含坚壁）；已装上的单位在词条区亮出装备名
+    const gearDefHtml = def.type === 'gear' && def.gear
+      ? `<span class="kw-badge kw-gear">装备</span>${def.gear.gives ? def.gear.gives.map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('') : ''}` : '';
+    const unitGearHtml = (def.gears || []).map((g) => `<span class="kw-badge kw-gear-on" title="已装备 ${g.name}">⚔${g.name}</span>`).join('');
+    const kwHtml = gearDefHtml + unitGearHtml + fruitHtml + (def.keywords || []).map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('');
     const costHtml = def.type === 'leader' ? '' : `<div class="cost">${def.cost}</div>`;
     const artUrl = `art/${def.art || def.id}.webp`;
     el.innerHTML = `
@@ -167,6 +171,7 @@
       <div class="name">${def.name}</div>
       <div class="sub">${def.sub || ''}</div>
       ${def.power ? `<div class="power">${def.power / 1000}K</div>` : ''}
+      ${def.type === 'gear' && def.gear ? `<div class="power gear-atk">+${def.gear.atk / 1000}K</div>` : ''}
       ${def.counter ? `<div class="counter-badge">反击 ${def.counter / 1000}K</div>` : ''}
     `;
     // 悬停详情交给 #cardTip（initCardTip）；原生 title 移除避免与富信息卡双弹
@@ -202,6 +207,7 @@
     if (G.active !== MY) return '对方回合，暂时无法出牌';
     const me = G.players[MY];
     if (c.type === 'char' && me.board.length >= 5) return '场上已满 5 名角色，无法再召唤';
+    if (c.type === 'gear' && me.board.length === 0) return '场上没有角色可装备——先召唤一名角色';
     const usable = O.usableDons(me);
     if (c.cost > usable) return `费用不足：还差 ${c.cost - usable} 颗费用豆（当前能花 ${usable} 颗，附着到卡上的算已消耗）`;
     return null;
@@ -301,6 +307,7 @@
     else if (G.pending && G.pending.target.side === MY) text = '对方攻击——选择反击牌或放弃（无反击牌时自动结算）';
     else if (selMode && selMode.mode === 'attack') text = '选择攻击目标（对方场上有角色须先打角色；再点攻击者可取消）';
     else if (selMode && selMode.mode === 'don') text = '选择费用豆附着目标（点己方单位，再点费用区取消）';
+    else if (selMode && selMode.mode === 'gear') text = '选择要装备的角色（点己方场上单位；半亮=已带装备，再装会替换旧件；再点该装备卡取消）';
     else if (myTurn) text = '你的回合：点手牌出牌 · 点单位攻击 · 点费用豆附着';
     else text = '对方行动中…';
     if (hint.textContent !== text) hint.textContent = text;
@@ -546,7 +553,7 @@
     const line = document.createElement('div');
     line.className = 'log-line ' + (action.side === MY ? 'me' : '');
     const names = {
-      playCharacter: '召唤角色', playEvent: '发动事件', playStage: '布置舞台',
+      playCharacter: '召唤角色', playEvent: '发动事件', playStage: '布置舞台', playGear: '装备武器',
       attack: '发起攻击', block: '阻挡!', counter: '反击!', giveDon: '附着费用豆',
       endTurn: '结束回合', passCounter: '放弃反击',
     };
@@ -642,12 +649,23 @@
     if (!c) return;
     const why = handLockReason(c);
     if (why) { showHintFlash(why); return; } // 不可出：给出具体原因
+    if (c.type === 'gear') {
+      // 装备：先进选择模式点己方角色（每角色限 1 件，重复装备=替换旧的进墓场）
+      selMode = { mode: 'gear', idx, cardId: c.id };
+      highlightGearTargets();
+      renderHints();
+      return;
+    }
     doAction({ t: c.type === 'char' ? 'playCharacter' : c.type === 'event' ? 'playEvent' : 'playStage', side: MY, idx });
   });
 
   $('myBoard').addEventListener('click', (e) => {
     const card = e.target.closest('.card'); if (!card) return;
     if (G.pending || G.active !== MY) return;
+    if (selMode && selMode.mode === 'gear') {
+      doAction({ t: 'playGear', side: MY, idx: selMode.idx, to: { type: 'char', idx: +card.dataset.myIdx } });
+      return;
+    }
     if (selMode === 'don') {
       doAction({ t: 'giveDon', side: MY, to: { type: 'char', idx: +card.dataset.myIdx }, count: 1 });
       return;
@@ -725,6 +743,13 @@
     clearHighlights();
     $('myLeaderSlot').querySelector('.card')?.classList.add('targetable');
     G.players[MY].board.forEach((_, i) => $('myBoard').children[i]?.classList.add('targetable'));
+  }
+  function highlightGearTargets() {
+    clearHighlights();
+    // 已装备的目标降级提示色（可换装但会弃掉旧件），未装备的正常高亮
+    G.players[MY].board.forEach((u, i) => {
+      $('myBoard').children[i]?.classList.add(u.gears && u.gears.length ? 'targetable replaceable' : 'targetable');
+    });
   }
   // 攻击者选中标记：选完目标前，攻击者保持明显"已选中"态（可发现性）
   function markSelected() {
@@ -1038,6 +1063,7 @@
       { ic: 'anchor', t: '费用豆附着', p: '点左下费用区 → 点己方角色或船长，附着 1 颗费用豆 <b>+1000 战力</b>，攻防皆受益（互斗、守备、直攻差额都算）。附着后的费用豆本回合不可再用，规划好节奏。' },
       { ic: 'sparkles', t: '关键词', p: '<span class="kw">速攻</span>：出场当回合即可攻击；<span class="kw">双击</span>：直攻船长的 LP 伤害 ×2；<span class="kw">猛击</span>：直攻船长 LP 伤害额外 +2K；<span class="kw">坚壁</span>：被攻击时防御 +1K。' },
       { ic: 'flame', t: '恶魔果实克制', p: '带果实角标的卡有系别：<b>超人系克自然系、自然系克动物系、动物系克超人系</b>（循环）。<b>攻击被自己克制的目标时战力 +1K</b>（打角色、直攻船长都算）；无果实角标的卡不参与克制。组卡时兼顾「我方输出系别」与「克制对方主力系别」是构筑深度所在。' },
+      { ic: 'shield', t: '武器装备', p: '带「装备」徽章的卡：点击手牌后再点己方一名角色即穿上——<b>武器加攻击（+1K~+3K）</b>，<b>甲胄加攻击并获「坚壁」（被攻击时防御 +1K）</b>。每角色限穿 1 件（再穿=替换旧的进墓场），装备加成永久生效（不像费用豆每回合脱落），角色被击沉时装备随之进墓场。' },
       { ic: 'compass', t: '两种模式', p: '<b>天梯排位</b>：胜 +25 分、败 −15 分，分数升段位、敌将变强；<b>生存挑战</b>：连胜不断升档，一败归零、记录最佳连胜。' },
     ];
     $('helpBody').innerHTML = secs.map((s) =>
@@ -1115,7 +1141,7 @@
     doubleAttack: '直攻船长时积分（LP）伤害 ×2',
     banish: '猛击：直攻船长时积分（LP）伤害额外 +2K',
   };
-  const TYPE_NAME = { leader: '船长卡', char: '角色卡', event: '事件卡', stage: '舞台卡' };
+  const TYPE_NAME = { leader: '船长卡', char: '角色卡', event: '事件卡', stage: '舞台卡', gear: '装备卡' };
   function effectText(def) {
     const e = def.effect;
     if (!e) return '';
@@ -1137,6 +1163,13 @@
     parts.push(`<div class="ct-head"><b>${def.name}</b><span>${def.sub || ''}</span></div>`);
     parts.push(`<div class="ct-meta">${TYPE_NAME[def.type] || def.type} · ${COLOR_NAME[def.color] || def.color}${def.type === 'leader' ? ` · LP ${def.life * 2000}` : ''}${def.fruit ? ` · ${FRUIT_LABEL[def.fruit]}系` : ''}</div>`);
     if (def.fruit) parts.push(`<div class="ct-kw"><span class="kw-badge fr-${def.fruit}">${FRUIT_LABEL[def.fruit]}系</span><span>${FRUIT_TIP[def.fruit]}</span></div>`);
+    if (def.type === 'gear' && def.gear) {
+      parts.push(`<div class="ct-kw"><span class="kw-badge kw-gear">装备</span><span>附着到己方一名角色（限 1 件）：战力永久 +${def.gear.atk / 1000}K${(def.gear.gives || []).includes('blocker') ? '，并获「坚壁」——被攻击时防御再 +1K' : ''}；角色被击沉时装备随之进墓场</span></div>`);
+    }
+    if ((def.gears || []).length) {
+      const g = def.gears[0];
+      parts.push(`<div class="ct-kw"><span class="kw-badge kw-gear-on">已装备 ${g.name}</span><span>战力 +${(g.gear.atk || 0) / 1000}K${(g.gear.gives || []).includes('blocker') ? ' + 坚壁' : ''}（下方的总战力已含装备）</span></div>`);
+    }
     const nums = [];
     if (def.type !== 'leader' && def.cost != null) nums.push(`费用 ${def.cost}`);
     if (def.power) nums.push(`战力 ${def.power / 1000}K`);

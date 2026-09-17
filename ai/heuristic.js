@@ -85,6 +85,16 @@ function scoreAction(state, act) {
       if (!c) return -99;
       return 32 + c.cost * 5 + effValue(c.effect, state, side);
     }
+    case 'playGear': {
+      const c = me.hand[act.idx];
+      const target = me.board[act.to && act.to.idx];
+      if (!c || !target) return -99;
+      if (target.gears && target.gears.length) return -50; // 已装备再装=旧件随葬浪费
+      let s = 20 + c.cost * 2;
+      if (c.gear && c.gear.atk) s += c.gear.atk / 400 + (c.gear.atk >= 3000 ? 6 : 0);
+      if (c.gear && (c.gear.gives || []).includes('blocker')) s += 10; // 甲胄=坚壁防御位
+      return s;
+    }
     case 'giveDon': return 6;
     case 'takeDon': return -99; // AI 不倒腾 DON!!（与 give 互切会死循环）
     case 'attack': return scoreAttack(state, act, me, foe);

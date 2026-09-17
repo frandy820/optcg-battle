@@ -59,7 +59,8 @@ export function cloneGame(state) {
 export function powerOfUnit(unit) {
   if (!unit) return 0;
   const buff = unit.buffs.reduce((n, b) => n + b.x, 0);
-  return unit.power + unit.dons * 1000 + buff;
+  const gearAtk = (unit.gears || []).reduce((n, g) => n + ((g.gear && g.gear.atk) || 0), 0);
+  return unit.power + unit.dons * 1000 + buff + gearAtk;
 }
 
 export function leaderPower(pl) {

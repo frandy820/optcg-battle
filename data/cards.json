@@ -464,6 +464,23 @@
       "art": "RED-12"
     },
     {
+      "id": "RED-G1",
+      "name": "三代鬼彻",
+      "sub": " 和之国妖刀 ",
+      "type": "gear",
+      "color": "red",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "RED-G1"
+    },
+    {
       "id": "RED-15",
       "name": "薇薇",
       "sub": " 阿拉巴斯坦公主 ",
@@ -476,6 +493,26 @@
       "effect": null,
       "fruit": null,
       "art": "RED-15"
+    },
+    {
+      "id": "RED-G2",
+      "name": "武装色·硬化",
+      "sub": " 全身武装 ",
+      "type": "gear",
+      "color": "red",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 1000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "RED-G2"
     },
     {
       "id": "RED-E3",
@@ -929,6 +966,43 @@
       "art": "BLUE-S2"
     },
     {
+      "id": "BLUE-G1",
+      "name": "时雨",
+      "sub": " 良业物 ",
+      "type": "gear",
+      "color": "blue",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "BLUE-G1"
+    },
+    {
+      "id": "BLUE-G2",
+      "name": "六式·铁块",
+      "sub": " 钢铁之躯 ",
+      "type": "gear",
+      "color": "blue",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 1000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "BLUE-G2"
+    },
+    {
       "id": "GREEN-01",
       "name": "乔巴",
       "sub": " 妹尾的驯鹿 ",
@@ -1337,6 +1411,43 @@
       "art": "GREEN-S2"
     },
     {
+      "id": "GREEN-G1",
+      "name": "天羽羽斩",
+      "sub": " 和之国黑刀 ",
+      "type": "gear",
+      "color": "green",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "GREEN-G1"
+    },
+    {
+      "id": "GREEN-G2",
+      "name": "电击毛皮",
+      "sub": " 毛皮族静电 ",
+      "type": "gear",
+      "color": "green",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 1000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "GREEN-G2"
+    },
+    {
       "id": "YELLOW-01",
       "name": "佩罗娜",
       "sub": " 幽灵公主 ",
@@ -1731,6 +1842,23 @@
       "art": "YELLOW-E4"
     },
     {
+      "id": "YELLOW-G1",
+      "name": "黑刀·夜",
+      "sub": " 世界最强黑刀 ",
+      "type": "gear",
+      "color": "yellow",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 3000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "YELLOW-G1"
+    },
+    {
       "id": "YELLOW-S2",
       "name": "德雷斯罗萨",
       "sub": " 科利亚高原 ",
@@ -1749,6 +1877,26 @@
       },
       "fruit": null,
       "art": "YELLOW-S2"
+    },
+    {
+      "id": "YELLOW-G2",
+      "name": "霍米兹铁卫",
+      "sub": " 大妈的看门人 ",
+      "type": "gear",
+      "color": "yellow",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "YELLOW-G2"
     },
     {
       "id": "PURPLE-01",
@@ -2159,6 +2307,43 @@
       "art": "PURPLE-S2"
     },
     {
+      "id": "PURPLE-G1",
+      "name": "鬼哭",
+      "sub": " 诅咒之刀 ",
+      "type": "gear",
+      "color": "purple",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "PURPLE-G1"
+    },
+    {
+      "id": "PURPLE-G2",
+      "name": "北海重甲",
+      "sub": " 带毛皮的披风 ",
+      "type": "gear",
+      "color": "purple",
+      "cost": 2,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 1000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "PURPLE-G2"
+    },
+    {
       "id": "BLACK-01",
       "name": "毒Q",
       "sub": " 死神 ",
@@ -2473,6 +2658,23 @@
       "art": "BLACK-11"
     },
     {
+      "id": "BLACK-G1",
+      "name": "狙击镜",
+      "sub": " 红发狙击手 ",
+      "type": "gear",
+      "color": "black",
+      "cost": 1,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 1000
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "BLACK-G1"
+    },
+    {
       "id": "BLACK-S2",
       "name": "马林梵多",
       "sub": " 海军本部港 ",
@@ -2556,6 +2758,26 @@
       "effect": null,
       "fruit": null,
       "art": "BLACK-16"
+    },
+    {
+      "id": "BLACK-G2",
+      "name": "黑刀·初代鬼彻",
+      "sub": " 妖刀一文字 ",
+      "type": "gear",
+      "color": "black",
+      "cost": 3,
+      "power": null,
+      "counter": null,
+      "keywords": [],
+      "gear": {
+        "atk": 2000,
+        "gives": [
+          "blocker"
+        ]
+      },
+      "effect": null,
+      "fruit": null,
+      "art": "BLACK-G2"
     }
   ]
 }

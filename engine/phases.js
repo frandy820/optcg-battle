@@ -90,6 +90,20 @@ export function playStage(state, side, idx) {
   runEffect(state, card, 'onPlay', { side, self: null });
 }
 
+// 出装备：付费附着到己方角色（每角色限 1 件，重复出=替换旧的进垃圾场）
+export function playGear(state, side, idx, to) {
+  const me = state.players[side];
+  const card = me.hand[idx];
+  if (!card || card.type !== 'gear') throw new Error('not a gear card in hand');
+  const target = me.board[to && to.idx];
+  if (!target) throw new Error('gear target not found');
+  payDons(me, card.cost);
+  me.hand.splice(idx, 1);
+  if (target.gears && target.gears.length) me.trash.push(target.gears[0]); // 替换：旧装备随葬
+  target.gears = [card];
+  logEvent(state, { t: 'gear', side, cardId: card.id, to: { type: 'char', idx: to.idx } });
+}
+
 // 附着 DON!!：费用区（未横置未附着）→ 己方 Leader/角色
 export function giveDon(state, side, to, count) {
   const me = state.players[side];
@@ -155,6 +169,7 @@ export function applyAction(state, action) {
     case 'playCharacter': playCharacter(state, side, action.idx); break;
     case 'playEvent': playEvent(state, side, action.idx); break;
     case 'playStage': playStage(state, side, action.idx); break;
+    case 'playGear': playGear(state, side, action.idx, action.to); break;
     case 'giveDon': giveDon(state, side, action.to, action.count || 1); break;
     case 'takeDon': takeDon(state, side, action.from, action.count || 1); break;
     case 'attack': startAttack(state, action); break;

@@ -564,3 +564,59 @@ test('果实克制：直攻船长同样吃克制（船长带果实时）', () =>
   assert.equal(clash.atkPower, 6000);
   assert.equal(s.players[1].lp, 4 * 2000 - 1000); // dmg = 6000 − 5000
 });
+
+// ===== 武器装备（批2：附着角色持久增益，每角色限 1 件，替换式）=====
+const mkGear = (id, color, cost, gear) =>
+  ({ id, name: id, sub: '', type: 'gear', color, cost, power: null, counter: null, keywords: [], gear, effect: null, fruit: null });
+
+test('装备：武器附着战力永久 +，角色被击沉装备随之进墓场', () => {
+  const s = basicGame();
+  applyAction(s, { t: 'endTurn', side: 0 });
+  s.players[1].donArea = Array.from({ length: 10 }, (_, i) => ({ id: i, rest: false, attached: null }));
+  setHand(s, 1, [mkChar('C1', 'blue', 1, 3000)]);
+  applyAction(s, { t: 'playCharacter', side: 1, idx: 0 });
+  setHand(s, 1, [mkGear('W1', 'blue', 2, { atk: 2000 })]);
+  applyAction(s, { t: 'playGear', side: 1, idx: 0, to: { type: 'char', idx: 0 } });
+  assert.equal(powerOfUnit(s.players[1].board[0]), 5000); // 3000 + 2000
+  // 甲方 6000 攻击击沉 → 装备随角色进墓
+  s.players[0].leader.power = 6000;
+  applyAction(s, { t: 'endTurn', side: 1 });
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.players[1].board.length, 0);
+  assert.ok(s.players[1].trash.some((c) => c.id === 'W1'), '装备未随葬');
+});
+
+test('装备：甲胄 gives blocker——防御战力 +1K（装备词条归并）', () => {
+  const s = basicGame();
+  applyAction(s, { t: 'endTurn', side: 0 });
+  s.players[1].donArea = Array.from({ length: 10 }, (_, i) => ({ id: i, rest: false, attached: null }));
+  setHand(s, 1, [mkChar('C1', 'blue', 1, 4000)]);
+  applyAction(s, { t: 'playCharacter', side: 1, idx: 0 });
+  setHand(s, 1, [mkGear('A1', 'blue', 2, { atk: 1000, gives: ['blocker'] })]);
+  applyAction(s, { t: 'playGear', side: 1, idx: 0, to: { type: 'char', idx: 0 } });
+  // 5000 攻 vs 4000+1000(装备)+1000(坚壁)=6000：守方反超 → 攻方扣差额，守方存活
+  applyAction(s, { t: 'endTurn', side: 1 });
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'passCounter', side: 1 });
+  assert.equal(s.players[1].board.length, 1);
+  assert.equal(s.players[0].lp, 4 * 2000 - 1000);
+});
+
+test('装备：替换旧件进墓场；非法目标/非装备卡抛错', () => {
+  const s = basicGame();
+  applyAction(s, { t: 'endTurn', side: 0 });
+  s.players[1].donArea = Array.from({ length: 10 }, (_, i) => ({ id: i, rest: false, attached: null }));
+  setHand(s, 1, [mkChar('C1', 'blue', 1, 3000)]);
+  applyAction(s, { t: 'playCharacter', side: 1, idx: 0 });
+  setHand(s, 1, [mkGear('W1', 'blue', 2, { atk: 1000 }), mkGear('W2', 'blue', 2, { atk: 2000 })]);
+  // 非法目标（此时手牌还有装备卡，先校验目标路径）
+  assert.throws(() => applyAction(s, { t: 'playGear', side: 1, idx: 0, to: { type: 'char', idx: 5 } }), /not found/);
+  setHand(s, 1, [mkChar('NC', 'blue', 1, 1000)]);
+  assert.throws(() => applyAction(s, { t: 'playGear', side: 1, idx: 0, to: { type: 'char', idx: 0 } }), /not a gear/);
+  setHand(s, 1, [mkGear('W1', 'blue', 2, { atk: 1000 }), mkGear('W2', 'blue', 2, { atk: 2000 })]);
+  applyAction(s, { t: 'playGear', side: 1, idx: 0, to: { type: 'char', idx: 0 } });
+  applyAction(s, { t: 'playGear', side: 1, idx: 0, to: { type: 'char', idx: 0 } }); // 替换
+  assert.equal(powerOfUnit(s.players[1].board[0]), 5000); // 3000 + W2 的 2000
+  assert.ok(s.players[1].trash.some((c) => c.id === 'W1'), '旧件未进墓场');
+});

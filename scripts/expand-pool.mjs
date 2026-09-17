@@ -60,6 +60,8 @@ const st = (id, name, sub, cost, k, op) =>
   ({ id, name, sub, type: 'stage', color: id.split('-')[0].toLowerCase(), cost, power: null, counter: null, keywords: [], effect: { hook: 'onPlay', op: { k, ...op } }, fruit: null, art: id });
 const P_ = (x, until = 'battle') => ({ k: 'powerSelf', x, until });
 const PL = (x, until = 'battle') => ({ k: 'powerLeader', x, until });
+const gr = (id, name, sub, cost, gear) =>
+  ({ id, name, sub, type: 'gear', color: id.split('-')[0].toLowerCase(), cost, power: null, counter: null, keywords: [], gear, effect: null, fruit: null, art: id });
 const NEW = [
   // ===== red：东海篇 + 阿拉巴斯坦 + 推进城（速攻连打）=====
   ch('RED-11', '巴基', ' 四分五裂 ', 2, 5000, 1000, [], null, 'paramecia'),
@@ -139,6 +141,19 @@ const NEW = [
   ev('BLACK-E3', 'LEVEL 6', ' 无限地狱 ', 3, 'koWeakest', {}),
   ev('BLACK-E4', '黑团议事', ' 暗中盘算 ', 1, 'draw', { n: 1 }),
   st('BLACK-S2', '马林梵多', ' 海军本部港 ', 2, 'gainDon', { n: 1 }),
+  // ===== 批2 装备（每色 2 件：武器=纯攻 atk，甲胄=atk+坚壁 blocker；每角色限 1 件，替换式）=====
+  gr('RED-G1', '三代鬼彻', ' 和之国妖刀 ', 2, { atk: 2000 }),
+  gr('RED-G2', '武装色·硬化', ' 全身武装 ', 2, { atk: 1000, gives: ['blocker'] }),
+  gr('BLUE-G1', '时雨', ' 良业物 ', 2, { atk: 2000 }),
+  gr('BLUE-G2', '六式·铁块', ' 钢铁之躯 ', 2, { atk: 1000, gives: ['blocker'] }),
+  gr('GREEN-G1', '天羽羽斩', ' 和之国黑刀 ', 2, { atk: 2000 }),
+  gr('GREEN-G2', '电击毛皮', ' 毛皮族静电 ', 2, { atk: 1000, gives: ['blocker'] }),
+  gr('YELLOW-G1', '黑刀·夜', ' 世界最强黑刀 ', 3, { atk: 3000 }),
+  gr('YELLOW-G2', '霍米兹铁卫', ' 大妈的看门人 ', 3, { atk: 2000, gives: ['blocker'] }),
+  gr('PURPLE-G1', '鬼哭', ' 诅咒之刀 ', 2, { atk: 2000 }),
+  gr('PURPLE-G2', '北海重甲', ' 带毛皮的披风 ', 2, { atk: 1000, gives: ['blocker'] }),
+  gr('BLACK-G1', '狙击镜', ' 红发狙击手 ', 1, { atk: 1000 }),
+  gr('BLACK-G2', '黑刀·初代鬼彻', ' 妖刀一文字 ', 3, { atk: 2000, gives: ['blocker'] }),
 ];
 
 // 现有卡（非 NEW）打果实系标签；NEW 卡的 fruit 由下方 ch() 定义，重放时直接 upsert 覆盖
