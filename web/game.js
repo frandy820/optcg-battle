@@ -776,7 +776,7 @@
     clearHighlights();
     // 已装备的目标降级提示色（可换装但会弃掉旧件），未装备的正常高亮
     G.players[MY].board.forEach((u, i) => {
-      $('myBoard').children[i]?.classList.add(u.gears && u.gears.length ? 'targetable replaceable' : 'targetable');
+      $('myBoard').children[i]?.classList.add(...(u.gears && u.gears.length ? ['targetable', 'replaceable'] : ['targetable']));
     });
   }
   // 攻击者选中标记：选完目标前，攻击者保持明显"已选中"态（可发现性）
@@ -849,7 +849,7 @@
   function deckOf(color) {
     const cs = O.POOL.cards.filter((c) => c.color === color);
     const deck = [];
-    for (const c of cs) for (let i = 0; i < 4; i++) deck.push(c);
+    for (let i = 0; i < 4; i++) for (const c of cs) deck.push(c); // 轮次交错：全卡型均入组（旧连块×4 会把池序靠后的装备/舞台截出 50 张外＝对局中永不可达）
     return deck.slice(0, 50);
   }
 
@@ -1111,7 +1111,8 @@
       }
       return true;
     } catch (e) {
-      return false; // 坏数据不崩，交由调用方（save.resume）清档
+      console.warn('restoreFromSnapshot failed:', e); // 坏数据不崩，交由调用方（save.resume）清档；warn 留痕供 e2e/排障
+      return false;
     }
   }
 

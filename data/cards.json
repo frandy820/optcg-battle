@@ -46,7 +46,7 @@
       "sub": "天候航海士",
       "type": "leader",
       "color": "blue",
-      "power": 5000,
+      "power": 5500,
       "life": 5,
       "keywords": [],
       "effect": {
@@ -54,13 +54,13 @@
         "op": {
           "k": "draw",
           "n": 1,
-          "minCost": 3
+          "minCost": 2
         }
       },
       "art": "captains/nami",
       "fruit": null,
       "skill": "天候棒·雷云",
-      "skillDesc": "费用 ≥3 的己方角色登场时，抽 1 张牌"
+      "skillDesc": "费用 ≥2 的角色登场就抽 1 张"
     },
     {
       "id": "LEADER-GREEN",
@@ -68,7 +68,7 @@
       "sub": "海贼猎人",
       "type": "leader",
       "color": "green",
-      "power": 5500,
+      "power": 4500,
       "life": 5,
       "keywords": [],
       "effect": {
@@ -76,14 +76,14 @@
         "op": {
           "k": "powerSelf",
           "x": 1000,
-          "minCost": 6,
+          "minCost": 7,
           "until": "forever"
         }
       },
       "art": "captains/zoro",
       "fruit": null,
       "skill": "三刀流·鬼气",
-      "skillDesc": "费用 ≥6 的角色登场时，该角色永久 +1000"
+      "skillDesc": "费用 ≥7 的角色登场时，该角色永久 +1000"
     },
     {
       "id": "LEADER-YELLOW",
@@ -116,7 +116,7 @@
       "life": 5,
       "keywords": [],
       "effect": {
-        "hook": "onAllyKO",
+        "hook": "onKill",
         "op": {
           "k": "draw",
           "n": 1
@@ -125,7 +125,7 @@
       "art": "captains/law",
       "fruit": "paramecia",
       "skill": "ROOM·回收",
-      "skillDesc": "己方角色被击沉时，抽 1 张牌"
+      "skillDesc": "船长击沉对方角色时，抽 1 张牌"
     },
     {
       "id": "LEADER-BLACK",
@@ -249,7 +249,7 @@
       "type": "char",
       "color": "red",
       "cost": 7,
-      "power": 8000,
+      "power": 9000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -672,7 +672,7 @@
       "type": "char",
       "color": "blue",
       "cost": 5,
-      "power": 6000,
+      "power": 7000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -708,7 +708,7 @@
       "type": "char",
       "color": "blue",
       "cost": 7,
-      "power": 8000,
+      "power": 9000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -727,7 +727,7 @@
       "type": "char",
       "color": "blue",
       "cost": 8,
-      "power": 7000,
+      "power": 8000,
       "counter": null,
       "keywords": [
         "blocker"
@@ -805,7 +805,7 @@
       "type": "char",
       "color": "blue",
       "cost": 5,
-      "power": 6000,
+      "power": 7000,
       "counter": 1000,
       "keywords": [],
       "effect": null,
@@ -1011,7 +1011,7 @@
         "hook": "onPlay",
         "op": {
           "k": "draw",
-          "n": 1
+          "n": 2
         }
       },
       "fruit": null,
@@ -1066,7 +1066,7 @@
       "keywords": [],
       "effect": null,
       "art": "GREEN-01",
-      "fruit": "zoan"
+      "fruit": "paramecia"
     },
     {
       "id": "GREEN-02",
@@ -1124,7 +1124,7 @@
       "keywords": [],
       "effect": null,
       "art": "GREEN-05",
-      "fruit": "zoan"
+      "fruit": "paramecia"
     },
     {
       "id": "GREEN-07",
@@ -1205,7 +1205,7 @@
       "effect": {
         "hook": "onPlay",
         "op": {
-          "k": "gainDon",
+          "k": "draw",
           "n": 1
         }
       },
@@ -1218,14 +1218,14 @@
       "sub": " 雷鸣 ",
       "type": "event",
       "color": "green",
-      "cost": 3,
+      "cost": 2,
       "power": null,
       "counter": null,
       "keywords": [],
       "effect": {
         "hook": "onPlay",
         "op": {
-          "k": "koWeakest"
+          "k": "restEnemy"
         }
       },
       "art": "GREEN-E1",
@@ -1245,7 +1245,7 @@
         "hook": "onPlay",
         "op": {
           "k": "gainDon",
-          "n": 2
+          "n": 1
         }
       },
       "art": "GREEN-S1",
@@ -1265,7 +1265,7 @@
       ],
       "effect": null,
       "art": "GREEN-06",
-      "fruit": "zoan"
+      "fruit": "paramecia"
     },
     {
       "id": "GREEN-17",
@@ -1415,14 +1415,15 @@
       "sub": " 神之裁 ",
       "type": "event",
       "color": "green",
-      "cost": 4,
+      "cost": 2,
       "power": null,
       "counter": null,
       "keywords": [],
       "effect": {
         "hook": "onPlay",
         "op": {
-          "k": "koWeakest"
+          "k": "draw",
+          "n": 2
         }
       },
       "fruit": null,
@@ -1599,7 +1600,7 @@
       "type": "char",
       "color": "yellow",
       "cost": 7,
-      "power": 8000,
+      "power": 9000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -1985,7 +1986,7 @@
       "type": "char",
       "color": "purple",
       "cost": 3,
-      "power": 4000,
+      "power": 5000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -1996,7 +1997,7 @@
         }
       },
       "art": "PURPLE-04",
-      "fruit": "paramecia"
+      "fruit": "logia"
     },
     {
       "id": "PURPLE-06",
@@ -2070,7 +2071,7 @@
       "type": "char",
       "color": "purple",
       "cost": 8,
-      "power": 8000,
+      "power": 9000,
       "counter": null,
       "keywords": [],
       "effect": null,
@@ -2123,7 +2124,7 @@
       "keywords": [],
       "effect": null,
       "art": "PURPLE-05",
-      "fruit": "paramecia"
+      "fruit": "logia"
     },
     {
       "id": "PURPLE-07",
@@ -2240,7 +2241,7 @@
         "blocker"
       ],
       "effect": null,
-      "fruit": "paramecia",
+      "fruit": "logia",
       "art": "PURPLE-12"
     },
     {
@@ -2270,7 +2271,7 @@
       "type": "char",
       "color": "purple",
       "cost": 3,
-      "power": 4000,
+      "power": 5000,
       "counter": 1000,
       "keywords": [],
       "effect": null,
@@ -2298,7 +2299,7 @@
       "type": "char",
       "color": "purple",
       "cost": 2,
-      "power": 3000,
+      "power": 4000,
       "counter": 2000,
       "keywords": [],
       "effect": null,
@@ -2325,14 +2326,14 @@
       "sub": " 转移战术 ",
       "type": "event",
       "color": "purple",
-      "cost": 2,
+      "cost": 3,
       "power": null,
       "counter": null,
       "keywords": [],
       "effect": {
         "hook": "onPlay",
         "op": {
-          "k": "restEnemy"
+          "k": "koWeakest"
         }
       },
       "fruit": null,
@@ -2590,14 +2591,15 @@
       "sub": " 暗暗果实 ",
       "type": "event",
       "color": "black",
-      "cost": 5,
+      "cost": 3,
       "power": null,
       "counter": null,
       "keywords": [],
       "effect": {
         "hook": "onPlay",
         "op": {
-          "k": "koWeakest"
+          "k": "draw",
+          "n": 2
         }
       },
       "art": "BLACK-E1",
@@ -2660,7 +2662,7 @@
       "type": "char",
       "color": "black",
       "cost": 2,
-      "power": 5000,
+      "power": 4000,
       "counter": null,
       "keywords": [],
       "effect": null,
@@ -2715,7 +2717,7 @@
       "sub": " 红发狙击手 ",
       "type": "gear",
       "color": "black",
-      "cost": 1,
+      "cost": 2,
       "power": null,
       "counter": null,
       "keywords": [],

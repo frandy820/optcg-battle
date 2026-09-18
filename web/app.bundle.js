@@ -783,7 +783,11 @@ function createAI(level = 'normal', rng = Math.random) {
       const me = state.pending ? state.pending.target.side : state.active;
       let best = null;
       let bestV = -Infinity;
-      for (const { a, s } of scored.slice(0, 5)) {
+      for (const { a, s: s0 } of scored.slice(0, 3)) {
+        // hard 攻击折减：前瞻把对手响应强制 pass，但高反击手牌的真实局会翻盘互斗/垫防线
+        // （normal 靠 6 分噪声偶有回避，hard noise=0 恒选最高分=恒踩激进坑，红v蓝实证）
+        const foeNow = state.players[1 - me];
+        const s = a.t === 'attack' ? s0 - foeNow.hand.filter((c) => c.counter).length * 3.0 : s0;
         const st = cloneGame(state);
         try {
           applyAction(st, JSON.parse(JSON.stringify(a)));
@@ -792,7 +796,7 @@ function createAI(level = 'normal', rng = Math.random) {
           while (st.pending && guard-- > 0) {
             applyAction(st, { t: 'passCounter', side: st.pending.target.side });
           }
-          const v = s * 1.5 + evaluate(st, me) * 2.0;
+          const v = s * 2.0 + evaluate(st, me) * 0.3; // 启发分主导：中间局面估值噪声大（红v蓝实证前瞻净贡献为负），evaluate 只留终局检测与轻量修正
           if (v > bestV) { bestV = v; best = a; }
         } catch { /* 模拟异常则跳过该动作 */ }
       }
@@ -811,6 +815,8 @@ function evaluate(state, me) {
     const sign = side === me ? 1 : -1;
     v += sign * (pl.board.reduce((n, u) => n + powerOfUnit(u) / 1000, 0) * 2);
     v += sign * pl.hand.length * 1.6;
+    // 反击牌前瞻盲区补偿：前瞻把对手响应强制 pass，但真实局高 counter 手牌会翻盘互斗/垫高防线
+    v += sign * pl.hand.filter((c) => c.counter).length * 0.9;
     v += sign * (pl.lp / 2000) * 2.5; // LP 积分（游戏王式）
     v += sign * usableDons(pl) * 1.2;
     v += sign * leaderPower(pl) / 4000;
@@ -986,7 +992,7 @@ const POOL = {
       "sub": "天候航海士",
       "type": "leader",
       "color": "blue",
-      "power": 5000,
+      "power": 5500,
       "life": 5,
       "keywords": [],
       "effect": {
@@ -994,13 +1000,13 @@ const POOL = {
         "op": {
           "k": "draw",
           "n": 1,
-          "minCost": 3
+          "minCost": 2
         }
       },
       "art": "captains/nami",
       "fruit": null,
       "skill": "天候棒·雷云",
-      "skillDesc": "费用 ≥3 的己方角色登场时，抽 1 张牌"
+      "skillDesc": "费用 ≥2 的角色登场就抽 1 张"
     },
     {
       "id": "LEADER-GREEN",
@@ -1008,7 +1014,7 @@ const POOL = {
       "sub": "海贼猎人",
       "type": "leader",
       "color": "green",
-      "power": 5500,
+      "power": 4500,
       "life": 5,
       "keywords": [],
       "effect": {
@@ -1016,14 +1022,14 @@ const POOL = {
         "op": {
           "k": "powerSelf",
           "x": 1000,
-          "minCost": 6,
+          "minCost": 7,
           "until": "forever"
         }
       },
       "art": "captains/zoro",
       "fruit": null,
       "skill": "三刀流·鬼气",
-      "skillDesc": "费用 ≥6 的角色登场时，该角色永久 +1000"
+      "skillDesc": "费用 ≥7 的角色登场时，该角色永久 +1000"
     },
     {
       "id": "LEADER-YELLOW",
@@ -1056,7 +1062,7 @@ const POOL = {
       "life": 5,
       "keywords": [],
       "effect": {
-        "hook": "onAllyKO",
+        "hook": "onKill",
         "op": {
           "k": "draw",
           "n": 1
@@ -1065,7 +1071,7 @@ const POOL = {
       "art": "captains/law",
       "fruit": "paramecia",
       "skill": "ROOM·回收",
-      "skillDesc": "己方角色被击沉时，抽 1 张牌"
+      "skillDesc": "船长击沉对方角色时，抽 1 张牌"
     },
     {
       "id": "LEADER-BLACK",
@@ -1189,7 +1195,7 @@ const POOL = {
       "type": "char",
       "color": "red",
       "cost": 7,
-      "power": 8000,
+      "power": 9000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -1612,7 +1618,7 @@ const POOL = {
       "type": "char",
       "color": "blue",
       "cost": 5,
-      "power": 6000,
+      "power": 7000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -1648,7 +1654,7 @@ const POOL = {
       "type": "char",
       "color": "blue",
       "cost": 7,
-      "power": 8000,
+      "power": 9000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -1667,7 +1673,7 @@ const POOL = {
       "type": "char",
       "color": "blue",
       "cost": 8,
-      "power": 7000,
+      "power": 8000,
       "counter": null,
       "keywords": [
         "blocker"
@@ -1745,7 +1751,7 @@ const POOL = {
       "type": "char",
       "color": "blue",
       "cost": 5,
-      "power": 6000,
+      "power": 7000,
       "counter": 1000,
       "keywords": [],
       "effect": null,
@@ -1951,7 +1957,7 @@ const POOL = {
         "hook": "onPlay",
         "op": {
           "k": "draw",
-          "n": 1
+          "n": 2
         }
       },
       "fruit": null,
@@ -2006,7 +2012,7 @@ const POOL = {
       "keywords": [],
       "effect": null,
       "art": "GREEN-01",
-      "fruit": "zoan"
+      "fruit": "paramecia"
     },
     {
       "id": "GREEN-02",
@@ -2064,7 +2070,7 @@ const POOL = {
       "keywords": [],
       "effect": null,
       "art": "GREEN-05",
-      "fruit": "zoan"
+      "fruit": "paramecia"
     },
     {
       "id": "GREEN-07",
@@ -2145,7 +2151,7 @@ const POOL = {
       "effect": {
         "hook": "onPlay",
         "op": {
-          "k": "gainDon",
+          "k": "draw",
           "n": 1
         }
       },
@@ -2158,14 +2164,14 @@ const POOL = {
       "sub": " 雷鸣 ",
       "type": "event",
       "color": "green",
-      "cost": 3,
+      "cost": 2,
       "power": null,
       "counter": null,
       "keywords": [],
       "effect": {
         "hook": "onPlay",
         "op": {
-          "k": "koWeakest"
+          "k": "restEnemy"
         }
       },
       "art": "GREEN-E1",
@@ -2185,7 +2191,7 @@ const POOL = {
         "hook": "onPlay",
         "op": {
           "k": "gainDon",
-          "n": 2
+          "n": 1
         }
       },
       "art": "GREEN-S1",
@@ -2205,7 +2211,7 @@ const POOL = {
       ],
       "effect": null,
       "art": "GREEN-06",
-      "fruit": "zoan"
+      "fruit": "paramecia"
     },
     {
       "id": "GREEN-17",
@@ -2355,14 +2361,15 @@ const POOL = {
       "sub": " 神之裁 ",
       "type": "event",
       "color": "green",
-      "cost": 4,
+      "cost": 2,
       "power": null,
       "counter": null,
       "keywords": [],
       "effect": {
         "hook": "onPlay",
         "op": {
-          "k": "koWeakest"
+          "k": "draw",
+          "n": 2
         }
       },
       "fruit": null,
@@ -2539,7 +2546,7 @@ const POOL = {
       "type": "char",
       "color": "yellow",
       "cost": 7,
-      "power": 8000,
+      "power": 9000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -2925,7 +2932,7 @@ const POOL = {
       "type": "char",
       "color": "purple",
       "cost": 3,
-      "power": 4000,
+      "power": 5000,
       "counter": null,
       "keywords": [],
       "effect": {
@@ -2936,7 +2943,7 @@ const POOL = {
         }
       },
       "art": "PURPLE-04",
-      "fruit": "paramecia"
+      "fruit": "logia"
     },
     {
       "id": "PURPLE-06",
@@ -3010,7 +3017,7 @@ const POOL = {
       "type": "char",
       "color": "purple",
       "cost": 8,
-      "power": 8000,
+      "power": 9000,
       "counter": null,
       "keywords": [],
       "effect": null,
@@ -3063,7 +3070,7 @@ const POOL = {
       "keywords": [],
       "effect": null,
       "art": "PURPLE-05",
-      "fruit": "paramecia"
+      "fruit": "logia"
     },
     {
       "id": "PURPLE-07",
@@ -3180,7 +3187,7 @@ const POOL = {
         "blocker"
       ],
       "effect": null,
-      "fruit": "paramecia",
+      "fruit": "logia",
       "art": "PURPLE-12"
     },
     {
@@ -3210,7 +3217,7 @@ const POOL = {
       "type": "char",
       "color": "purple",
       "cost": 3,
-      "power": 4000,
+      "power": 5000,
       "counter": 1000,
       "keywords": [],
       "effect": null,
@@ -3238,7 +3245,7 @@ const POOL = {
       "type": "char",
       "color": "purple",
       "cost": 2,
-      "power": 3000,
+      "power": 4000,
       "counter": 2000,
       "keywords": [],
       "effect": null,
@@ -3265,14 +3272,14 @@ const POOL = {
       "sub": " 转移战术 ",
       "type": "event",
       "color": "purple",
-      "cost": 2,
+      "cost": 3,
       "power": null,
       "counter": null,
       "keywords": [],
       "effect": {
         "hook": "onPlay",
         "op": {
-          "k": "restEnemy"
+          "k": "koWeakest"
         }
       },
       "fruit": null,
@@ -3530,14 +3537,15 @@ const POOL = {
       "sub": " 暗暗果实 ",
       "type": "event",
       "color": "black",
-      "cost": 5,
+      "cost": 3,
       "power": null,
       "counter": null,
       "keywords": [],
       "effect": {
         "hook": "onPlay",
         "op": {
-          "k": "koWeakest"
+          "k": "draw",
+          "n": 2
         }
       },
       "art": "BLACK-E1",
@@ -3600,7 +3608,7 @@ const POOL = {
       "type": "char",
       "color": "black",
       "cost": 2,
-      "power": 5000,
+      "power": 4000,
       "counter": null,
       "keywords": [],
       "effect": null,
@@ -3655,7 +3663,7 @@ const POOL = {
       "sub": " 红发狙击手 ",
       "type": "gear",
       "color": "black",
-      "cost": 1,
+      "cost": 2,
       "power": null,
       "counter": null,
       "keywords": [],
@@ -3772,8 +3780,7 @@ const POOL = {
       "art": "BLACK-G2"
     }
   ]
-}
-;
+};
 
 // ===== public API =====
 global.OPTCG = {

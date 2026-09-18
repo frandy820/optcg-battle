@@ -14,7 +14,7 @@ const MAX_ACTIONS = 900;
 function deckOf(color) {
   const cs = pool.cards.filter((c) => c.color === color);
   const deck = [];
-  for (const c of cs) for (let i = 0; i < 4; i++) deck.push(c);
+  for (let i = 0; i < 4; i++) for (const c of cs) deck.push(c); // 轮次交错：全卡型均入组（与 game.js/balance-sim.js/balance.test.js 同源）
   return deck.slice(0, 50);
 }
 

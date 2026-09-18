@@ -58,7 +58,7 @@ function fnv(str) {
 function deckOf(color) {
   const cs = O.POOL.cards.filter((c) => c.color === color);
   const deck = [];
-  for (const c of cs) for (let i = 0; i < 4; i++) deck.push(c);
+  for (let i = 0; i < 4; i++) for (const c of cs) deck.push(c); // 轮次交错：全卡型均入组（旧连块×4 会把池序靠后的装备/舞台截出 50 张外，2026-09-18 三处同源同步修）
   return deck.slice(0, 50);
 }
 

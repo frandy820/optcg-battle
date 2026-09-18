@@ -101,7 +101,7 @@ function stageSelftest() {
 function stageE2E() {
   const t0 = Date.now();
   const r = spawnSync(process.execPath, ['tests/e2e/run.mjs', '--timeout', String(CHROME_TIMEOUT / 1000)], { cwd: ROOT, encoding: 'utf8', timeout: 3600000 });
-  const tail = (r.stdout || '').trim().split('\n').filter(Boolean).slice(-3).join(' ⏎ ');
+  const tail = (r.stdout || '').trim().split('\n').filter(Boolean).slice(-20).join(' ⏎ '); // 20 行：FAIL 步骤可定位（3 行会把挂点吞掉）
   record('e2e', r.status === 0, Date.now() - t0, tail);
 }
 

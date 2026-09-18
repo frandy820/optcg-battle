@@ -206,6 +206,8 @@
     // ===== 贝里附着（回归：点贝里区→点场上卡，战力角标须实时 +1K；曾因 selMode 类型误判掉进攻击选择）=====
     const donFree = () => document.querySelector('#myDon .don:not(.rest):not(.attached)');
     const attachDon = async () => {
+      // 回合守卫（btnEnd.can-act=renderAll 置的我回合标志）：非我回合点击被静默吞、hint 残留误报失败
+      if (!$('btnEnd').classList.contains('can-act')) return null;
       const u = document.querySelector('#myBoard .card:not(.rest)');
       if (!u || !donFree()) return null; // 无条件可测
       const uid = u.dataset.cardId;
@@ -220,7 +222,11 @@
       }, 2500);
       return !!(inDonMode && donOk) || ('hint:' + $('hint').textContent);
     };
-    let donResult = await attachDon();
+    // 附着点击撞 busy 时 doAction 直接 return 不清 selMode → don 模式残留会吞掉攻击段的
+    // 首次点卡（don 分支优先）。Esc 是游戏提供的清选择态出口，各段出口统一清一次
+    const clearSel = () => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    const attachDonSafe = async () => { const r = await attachDon(); clearSel(); return r; };
+    let donResult = await attachDonSafe();
     for (let r = 0; r < 3 && donResult === null
       && document.querySelectorAll('#myHand .card').length > 0; r++) {
       // 首回合豆少/起手全贵卡：结束回合等豆涨（每回合+2），回来先附着再出牌。
@@ -237,18 +243,20 @@
         return /你的回合/.test($('phaseBadge').textContent);
       }, 20000);
       if (!backMy) continue; // AI 长考超时：状态不保证我回合，跳过本轮（点击会被回合守卫吞掉）
-      donResult = await attachDon(); // 先附着（豆满）——没条件再出牌垫场面
+      donResult = await attachDonSafe(); // 先附着（豆满）——没条件再出牌垫场面
       if (donResult === null) {
         const c = document.querySelector('#myHand .card.playable');
         if (c) { await clickAt(c, '垫一张牌'); await sleep(1500); }
-        donResult = await attachDon();
+        donResult = await attachDonSafe();
       }
     }
-    // 段末收敛：回到我方回合且无响应窗口（后续段的元素引用/悬停 tip 才稳定）
+    // 段末收敛：回到我方回合且无响应窗口、无残留选择模式（后续段的元素引用/悬停 tip/点击语义才稳定）
+    clearSel();
     await waitFor(() => {
       if (visible('responsePanel')) { $('btnPass').click(); return false; }
       return $('btnEnd').classList.contains('can-act');
     }, 15000);
+    clearSel();
     if (donResult === null) step('贝里附着后战力角标+1K', true, '场上无卡或无可用豆（跳过）');
     else step('贝里附着后战力角标+1K', donResult === true, donResult === true ? '' : String(donResult));
 
@@ -282,19 +290,24 @@
     if (unplayable) {
       await clickAt(unplayable, '点击不可出手牌');
       await waitFor(() => $('hint') && $('hint').classList.contains('warn'), 1500)
-        ? step('不可出原因有提示', /费用|满|回合|响应/.test($('hint').textContent), $('hint').textContent)
+        ? step('不可出原因有提示', /费用|满|回合|响应|召唤|装备/.test($('hint').textContent), $('hint').textContent)
         : step('不可出原因有提示', false, '无 warn 提示');
     } else step('不可出原因有提示', true, '本回合无不可出卡（跳过）');
 
     // ===== 攻击：选攻击者 → 选目标；反复选择/取消（破坏性子项）=====
-    // 前段跨回合推进后状态不保证我回合（点击会被回合守卫静默吞掉）：先收敛
+    // 前段跨回合推进后状态不保证我回合（点击会被回合守卫静默吞掉）：先收敛+清残留选择模式
     await waitFor(() => $('btnEnd').classList.contains('can-act') && !visible('responsePanel'), 15000);
     if (visible('responsePanel')) await clickAt($('btnPass'), '放弃反击(攻击段前)');
+    clearSel();
     const attacker = document.querySelector('#myBoard .card.playable') || document.querySelector('[data-role="leader-0"] .card');
     if (attacker && played) {
       await clickAt(attacker, '点击己方单位选为攻击者');
       const targeted = await waitFor(() => document.querySelector('.targetable'), 1500);
-      step('攻击者选择后有目标高亮', targeted);
+      step('攻击者选择后有目标高亮', targeted, targeted ? '' : 'diag:' + JSON.stringify({
+        d: OPTCG_GAME._diag && OPTCG_GAME._diag(),
+        hint: $('hint') ? $('hint').textContent.slice(0, 40) : '',
+        atkCls: attacker.className,
+      }));
       if (targeted) {
         step('目标选择提示明确', /攻击目标/.test($('hint').textContent), $('hint').textContent);
         // 反复取消/重选（真实玩家常见动作）
@@ -323,6 +336,67 @@
         } else step('有可选攻击目标', false, '无 targetable 目标');
       }
     } else step('可发起攻击', true, '首回合无已落地单位，攻击验证移至全场累计断言');
+
+    // ===== 装备流（批2 回归：点装备卡→己方角色高亮→点目标穿上→战力角标跳变+已装备徽章；再装=替换旧件进墓场）=====
+    const gearInHand = () => [...document.querySelectorAll('#myHand .card')].find((c) => c.querySelector('.kw-gear'));
+    const graveN = () => { const b = $('myGrave') && $('myGrave').querySelector('b'); return b ? +b.textContent : 0; };
+    const equipFlow = async (replace) => {
+      const g = gearInHand();
+      const unit = document.querySelector('#myBoard .card');
+      // playable 检查：费用不足/无角色时点装备卡只会弹锁提示，须返回 null 让外层循环攒费用/垫角色重试
+      if (!g || !g.classList.contains('playable') || !unit || !$('btnEnd').classList.contains('can-act')) return null;
+      const uid = unit.dataset.cardId;
+      const p0 = +unit.querySelector('.power').textContent.replace('K', '');
+      const g0 = graveN();
+      await clickAt(g, '点击装备卡进入选择模式');
+      const inGearMode = await waitFor(() => /装备的角色/.test($('hint').textContent), 1500);
+      const tgt = document.querySelector('#myBoard .card.targetable:not(.replaceable)') || document.querySelector('#myBoard .card.targetable');
+      if (tgt) await clickAt(tgt, '点击场上角色穿上装备');
+      const worn = await waitFor(() => {
+        const el = document.querySelector('#myBoard .card[data-card-id="' + uid + '"]');
+        return el && el.querySelector('.kw-gear-on') && +el.querySelector('.power').textContent.replace('K', '') > p0;
+      }, 3000);
+      const replaced = replace ? await waitFor(() => graveN() === g0 + 1, 2500) : true; // 替换流：旧件进墓场
+      return { ok: !!(inGearMode && worn && replaced), note: 'hint:' + $('hint').textContent };
+    };
+    let equip = await equipFlow(false);
+    // 8 轮等待：装备在稀释卡组里每件仅 1 份（2/50），须主动过牌（打非装备手牌+结束回合）把装备抽上手
+    for (let r = 0; r < 8 && equip === null; r++) {
+      if (visible('responsePanel')) await clickAt($('btnPass'), '放弃反击(装备段)');
+      if (!$('btnEnd').classList.contains('can-act')) {
+        await waitFor(() => $('btnEnd').classList.contains('can-act') || visible('responsePanel'), 8000);
+        if (visible('responsePanel')) await clickAt($('btnPass'), '放弃反击2(装备段)');
+        if (!$('btnEnd').classList.contains('can-act')) break;
+      }
+      // 场上没角色先垫一名（装备需要目标）
+      if (document.querySelectorAll('#myBoard .card').length === 0) {
+        const c = document.querySelector('#myHand .card.playable:not(:has(.kw-gear))') || document.querySelector('#myHand .card.playable');
+        if (c) { await clickAt(c, '垫一张角色'); await sleep(1500); }
+      }
+      // 装备在手但费用不足：只 endTurn 攒贝里（每回合+2），不再出牌抢预算
+      const gearWaiting = gearInHand() && !gearInHand().classList.contains('playable');
+      if (!gearWaiting) {
+        const extra = document.querySelector('#myHand .card.playable:not(:has(.kw-gear))');
+        if (extra && document.querySelectorAll('#myBoard .card').length > 0) { await clickAt(extra, '过牌(出非装备手牌)'); await sleep(1200); }
+      }
+      await clickAt($('btnEnd'), '结束回合等装备卡/费用');
+      const backMy2 = await waitFor(() => {
+        if (visible('responsePanel')) { $('btnPass').click(); return false; }
+        return $('btnEnd').classList.contains('can-act');
+      }, 20000);
+      if (!backMy2) continue;
+      equip = await equipFlow(false);
+    }
+    if (equip === null) step('装备穿上后战力跳变+已装备徽章', true, '起手无装备卡或场上无角色（跳过）');
+    else {
+      step('装备穿上后战力跳变+已装备徽章', equip.ok, equip.ok ? '' : equip.note);
+      if (equip.ok && gearInHand()) { // 替换流：同一角色再装一件，旧件进墓场
+        await waitFor(() => $('btnEnd').classList.contains('can-act') && !visible('responsePanel'), 8000);
+        const rep = await equipFlow(true);
+        step('再装一件=替换旧件进墓场', rep === null || rep.ok, rep ? (rep.ok ? '' : rep.note) : '无条件（跳过）');
+      } else step('再装一件=替换旧件进墓场', true, '无第二件装备卡（跳过）');
+    }
+    clearSel();
 
     // ===== 结束回合 → AI 行动 → 回到玩家 =====
     mark('结束回合→AI');
@@ -421,9 +495,10 @@
     // ===== 残留审计（统计只计分出胜负的局：超长局兜底留下的未完成样本剔除）=====
     const stats = R.rounds.filter((s) => s.winner === 0 || s.winner === 1);
     if (stats.length >= 2) {
-      const durs = stats.map((s) => s.durMs);
-      const maxDrift = Math.max(...durs) / Math.max(1, Math.min(...durs));
-      step('局时长无异常漂移', maxDrift < 4, durs.join('/') + 'ms 比值' + maxDrift.toFixed(2));
+      // 按每回合归一（调池后回合分布变宽是设计结果，13 回合长局≠性能漂移；抓的是「演出/AI 卡顿」级异常）
+      const perTurn = stats.map((s) => s.durMs / Math.max(1, s.turn));
+      const maxDrift = Math.max(...perTurn) / Math.max(1, Math.min(...perTurn));
+      step('局时长无异常漂移', maxDrift < 4, stats.map((s) => s.durMs + 'ms/' + s.turn + '回合').join(' ') + ' 单回合均值比' + maxDrift.toFixed(2));
       const aiAvg = stats.map((s) => s.aiTurnsMs.length ? Math.round(s.aiTurnsMs.reduce((a, b) => a + b, 0) / s.aiTurnsMs.length) : 0);
       step('AI 节奏无明显变慢', !(aiAvg[0] && aiAvg[aiAvg.length - 1] && aiAvg[aiAvg.length - 1] > aiAvg[0] * 3), 'AI回合均值 ' + aiAvg.join('/') + 'ms');
     }
@@ -545,6 +620,68 @@
     return finishReport();
   }
 
+  // ===== 装备流专测（回归：deckOf 稀释卡组下装备 2/50 靠自然抽到手是概率题——API 构造确定性局面走真实点击流）=====
+  async function gearWin() {
+    await waitFor(() => document.readyState === 'complete', 5000);
+    await sleep(1600);
+    const ob = document.getElementById('onboard');
+    if (ob && !ob.classList.contains('hidden')) { const s = ob.querySelector('.ob-skip'); if (s) s.click(); await waitFor(() => ob.classList.contains('hidden'), 2000); }
+    await clickAt($('btnStart'), '进入对战');
+    await waitFor(() => visible('setupPanel') === false && OPTCG_GAME.state(), 4000);
+    mark('构造装备在手局面');
+    const snap = OPTCG_GAME.snapshot();
+    if (!step('取得对局快照', !!snap && !!snap.g)) return finishReport();
+    const g = snap.g;
+    const O = window.OPTCG;
+    const myColor = g.players[0].leader.color;
+    const gears = O.POOL.cards.filter((c) => c.color === myColor && c.type === 'gear').sort((a, b) => a.cost - b.cost);
+    if (!step('本色卡池有装备卡', gears.length >= 2, gears.map((c) => c.id).join(','))) return finishReport();
+    // 我方回合、无 pending、贝里区 5 枚可用、手前两张=两件装备、场上一名角色
+    g.winner = null; g.pending = null; g.active = 0;
+    g.players[0].donArea = Array.from({ length: 5 }, () => ({ rest: false, attached: null }));
+    g.players[0].hand[0] = gears[0];
+    g.players[0].hand[1] = gears[1];
+    const hero = O.POOL.cards.find((c) => c.color === myColor && c.type === 'char' && c.cost <= 3);
+    g.players[0].board = [Object.assign({}, hero, { dons: 0, gears: [], buffs: [], rest: false, playedTurn: g.turn })];
+    // 内联复刻 restoreFromSnapshot 的入参校验，定位注入后哪项不合法
+    const vv = [];
+    vv.push(['players2', Array.isArray(g.players) && g.players.length === 2]);
+    vv.push(['turn', typeof g.turn === 'number']);
+    vv.push(['winnerKey', 'winner' in g && g.winner === null]);
+    vv.push(['active', typeof g.active === 'number']);
+    for (const pl of g.players) vv.push(['pl-' + (pl.leader && pl.leader.color), !!(pl && pl.leader && Array.isArray(pl.hand) && Array.isArray(pl.board) && Array.isArray(pl.deck) && typeof pl.lp === 'number')]);
+    step('注入后快照结构合法', vv.every((x) => x[1]), vv.map((x) => x[0] + '=' + x[1]).join(' '));
+    step('恢复装备在手+角色在场局面', OPTCG_GAME.restoreFromSnapshot(snap), warns.slice(-2).join(' | '));
+    const graveN = () => { const b = $('myGrave') && $('myGrave').querySelector('b'); return b ? +b.textContent : 0; };
+    const gearCard = [...document.querySelectorAll('#myHand .card')].find((c) => c.querySelector('.kw-gear'));
+    if (!step('手牌渲染出装备卡', !!gearCard)) return finishReport();
+    await clickAt(gearCard, '点击装备卡进入选择模式');
+    step('进入装备选择模式(hint)', await waitFor(() => /装备的角色/.test($('hint').textContent), 1500), $('hint').textContent);
+    const uid = document.querySelector('#myBoard .card').dataset.cardId;
+    const p0 = +document.querySelector('#myBoard .card .power').textContent.replace('K', '');
+    const tgt = document.querySelector('#myBoard .card.targetable');
+    if (tgt) await clickAt(tgt, '点击场上角色穿上装备');
+    const worn = await waitFor(() => {
+      const el = document.querySelector('#myBoard .card[data-card-id="' + uid + '"]');
+      return el && el.querySelector('.kw-gear-on') && +el.querySelector('.power').textContent.replace('K', '') > p0;
+    }, 3000);
+    step('装备穿上后战力跳变+已装备徽章', worn, worn ? '' : 'power ' + p0 + '→' + (() => { const el = document.querySelector('#myBoard .card[data-card-id="' + uid + '"]'); return el ? el.querySelector('.power').textContent : '?'; })());
+    // 替换流：同一角色再装第二件，旧件进墓场
+    if (worn) {
+      const g1 = graveN();
+      const gear2 = [...document.querySelectorAll('#myHand .card')].find((c) => c.querySelector('.kw-gear'));
+      if (gear2 && gear2.classList.contains('playable')) {
+        await clickAt(gear2, '点击第二件装备卡');
+        await waitFor(() => /装备的角色/.test($('hint').textContent), 1500);
+        const tgt2 = document.querySelector('#myBoard .card.targetable'); // 已装备目标降级 replaceable 仍可选
+        if (tgt2) await clickAt(tgt2, '再装到同一角色(替换旧件)');
+        const replaced = await waitFor(() => graveN() === g1 + 1, 2500);
+        step('再装一件=替换旧件进墓场', replaced, '墓 ' + g1 + '→' + graveN());
+      } else step('再装一件=替换旧件进墓场', true, '第二件不可出（跳过）');
+    }
+    return finishReport();
+  }
+
   (async () => {
     try {
       if (MODE === 'main') await main();
@@ -552,6 +689,7 @@
       else if (MODE === 'edge') await edge();
       else if (MODE === 'edge2') await edge2();
       else if (MODE === 'counter') await counterWin();
+      else if (MODE === 'gear') await gearWin();
       else return;
       if (MODE !== 'edge') await finishReport();
     } catch (e) {

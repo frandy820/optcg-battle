@@ -28,7 +28,11 @@ export function createAI(level = 'normal', rng = Math.random) {
       const me = state.pending ? state.pending.target.side : state.active;
       let best = null;
       let bestV = -Infinity;
-      for (const { a, s } of scored.slice(0, 5)) {
+      for (const { a, s: s0 } of scored.slice(0, 3)) {
+        // hard 攻击折减：前瞻把对手响应强制 pass，但高反击手牌的真实局会翻盘互斗/垫防线
+        // （normal 靠 6 分噪声偶有回避，hard noise=0 恒选最高分=恒踩激进坑，红v蓝实证）
+        const foeNow = state.players[1 - me];
+        const s = a.t === 'attack' ? s0 - foeNow.hand.filter((c) => c.counter).length * 3.0 : s0;
         const st = cloneGame(state);
         try {
           applyAction(st, JSON.parse(JSON.stringify(a)));
@@ -37,7 +41,7 @@ export function createAI(level = 'normal', rng = Math.random) {
           while (st.pending && guard-- > 0) {
             applyAction(st, { t: 'passCounter', side: st.pending.target.side });
           }
-          const v = s * 1.5 + evaluate(st, me) * 2.0;
+          const v = s * 2.0 + evaluate(st, me) * 0.3; // 启发分主导：中间局面估值噪声大（红v蓝实证前瞻净贡献为负），evaluate 只留终局检测与轻量修正
           if (v > bestV) { bestV = v; best = a; }
         } catch { /* 模拟异常则跳过该动作 */ }
       }
@@ -56,6 +60,8 @@ export function evaluate(state, me) {
     const sign = side === me ? 1 : -1;
     v += sign * (pl.board.reduce((n, u) => n + powerOfUnit(u) / 1000, 0) * 2);
     v += sign * pl.hand.length * 1.6;
+    // 反击牌前瞻盲区补偿：前瞻把对手响应强制 pass，但真实局高 counter 手牌会翻盘互斗/垫高防线
+    v += sign * pl.hand.filter((c) => c.counter).length * 0.9;
     v += sign * (pl.lp / 2000) * 2.5; // LP 积分（游戏王式）
     v += sign * usableDons(pl) * 1.2;
     v += sign * leaderPower(pl) / 4000;
