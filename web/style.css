@@ -921,13 +921,25 @@ button:disabled {
   #logPanel { display: none; }
   .card .name { font-size: 8.5px; }
   .card .power { font-size: 9.5px; min-width: 36px; }
-  .hand-row { overflow-x: auto; justify-content: flex-start; }
+  /* 手牌：不溢出时居中（safe center 溢出时自动回退可滚动起点——老浏览器不识别整条失效，
+     保留 flex-start 兜底），修 390 档整体偏左（实测内容中心 119 vs 容器中心 195）*/
+  .hand-row { overflow-x: auto; justify-content: flex-start; justify-content: safe center; }
+  /* 手牌行内上方留白：odd 卡 translateY(-6px) + 费用徽章 -6px 的上方溢出会被
+     overflow-x 连带的 overflow-y 裁掉（实测徽章 top 低于容器 top 9.7px=「卡片上方没有显示全」）*/
+  .hand-row { padding-top: 10px; }
+  /* 扇形只保留旋转，去掉上移（上移是上方裁切的放大器）*/
+  #myHand .card:nth-child(odd) { transform: rotate(-2deg); }
+  #myHand .card:nth-child(even) { transform: rotate(2deg); }
   #myHand .card { margin: 0 -5px; }
   /* 提示条允许两行换行（桌面保持单行省略）*/
   #hint {
     white-space: normal; max-width: 86vw; line-height: 1.45;
     text-align: center; padding: 4px 12px;
   }
+  /* 小卡文字层：52-58px 卡的图下区仅 ~35px，name/sub/power 三层绝对定位实测完全叠死
+     （nameSubOverlap 10px、sub 与 power 又叠 3px）——副标题让位（长按信息卡/图鉴仍可看全），保名字+战力 */
+  .card .sub { display: none; }
+  .card .name { top: calc(52% + 9px); }
 }
 /* 390 档：顶栏三按钮收窄为图标按钮（文字隐藏，aria-label/标题由 game.js 提供）*/
 @media (max-width: 430px) {
