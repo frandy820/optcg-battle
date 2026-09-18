@@ -70,6 +70,9 @@
     card = root.querySelector('.ob-card');
     root.querySelector('.ob-skip').onclick = () => finish();
     root.querySelector('.ob-next').onclick = () => (idx >= STEPS.length - 1 ? finish() : show(idx + 1));
+    // 试玩反馈 P2-9：遮罩拦截一切点击，玩家没注意角落教程卡会以为「游戏坏了」——
+    // 点遮罩空白=推进到下一步（最后一步=完成），任何点击都有反馈不再「失灵」
+    root.querySelector('.ob-mask').onclick = () => (idx >= STEPS.length - 1 ? finish() : show(idx + 1));
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && activeFlag) finish();
     });

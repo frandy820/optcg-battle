@@ -1066,8 +1066,12 @@ button:disabled {
 
 @media (max-width: 640px) {
   .builder-pool { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; }
-  .mode-row { flex-direction: column; gap: 8px; }
-  .deck-row { flex-wrap: wrap; }
+  .mode-row { flex-direction: column; gap: 6px; margin-top: 8px; }
+  /* 模式区前置后（P2-7 重排）：小屏压缩竖排模式卡与头部边距，保 sticky CTA 不遮卡 */
+  .mode-card { padding: 7px 13px; }
+  .deck-row { flex-wrap: wrap; margin-top: 8px; }
+  .hall-sub { margin: 2px 0 4px; }
+  .hall-help-row { margin-top: 6px; }
   .deck-row select { max-width: none; }
   .setup-row { align-items: stretch; flex-direction: column; }
   .setup-row .sel-label { width: 100%; }

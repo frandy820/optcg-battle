@@ -37,14 +37,14 @@
       const rect = (el) => el ? el.getBoundingClientRect() : null;
       const inVp = (el) => { const r = rect(el); return !!r && r.top >= -2 && r.bottom <= H + 2 && r.left >= -2 && r.right <= W + 2; };
 
-      // ===== ① 大厅：sticky CTA 首屏可见；滚底后模式卡与 CTA 同屏 =====
+      // ===== ① 大厅：sticky CTA 首屏可见；模式区前置后无需滚动即完整可见（P2-7 重排）=====
       step('390 大厅首屏出航钮可见(sticky-cta)', inVp($('btnStart')));
+      const lad = rect($('btnLadder')), sur = rect($('btnSurvival')), cta = rect(D.querySelector('.sticky-cta'));
+      step('模式卡首屏即完整可见(无需滚动)', !!lad && !!sur && lad.top >= 0 && sur.bottom <= H, lad && sur ? `ladder ${Math.round(lad.top)}-${Math.round(lad.bottom)} survival ${Math.round(sur.top)}-${Math.round(sur.bottom)}` : '缺卡');
+      step('模式卡未被 sticky CTA 遮挡', !!sur && !!cta && sur.bottom <= cta.top + 6, `survival底${Math.round(sur.bottom)} cta顶${Math.round(cta.top)}`);
       const card = D.querySelector('#setupPanel .modal-card');
       card.scrollTop = card.scrollHeight;
       await sleep(500);
-      const lad = rect($('btnLadder')), sur = rect($('btnSurvival')), cta = rect(D.querySelector('.sticky-cta'));
-      step('滚底后两张模式卡完整可见', !!lad && !!sur && lad.top >= 0 && sur.bottom <= H, lad && sur ? `ladder ${Math.round(lad.top)}-${Math.round(lad.bottom)} survival ${Math.round(sur.top)}-${Math.round(sur.bottom)}` : '缺卡');
-      step('模式卡未被 sticky CTA 遮挡', !!sur && !!cta && sur.bottom <= cta.top + 6, `survival底${Math.round(sur.bottom)} cta顶${Math.round(cta.top)}`);
       step('滚底后出航钮仍可见', inVp($('btnStart')));
 
       // ===== ② help：正文内滚、关闭钮钉底（触屏无 ESC，不允许滚完正文才能关）=====
