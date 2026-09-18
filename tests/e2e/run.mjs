@@ -10,7 +10,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // file:// 基址：e2e.html 及其相对引用（../tests/e2e/player-flow.js、art/…）全部本地直读
-const BASE = `file://${join(ROOT, 'web', 'e2e.html').replace(/\\/g, '/')}`;
+// E2E_BASE 环境变量可覆盖为线上 URL（发布后线上冒烟：真实网络+CDN 路径走一遍断言流）
+const BASE = process.env.E2E_BASE || `file://${join(ROOT, 'web', 'e2e.html').replace(/\\/g, '/')}`;
 
 // ---- Chrome 探测 ----
 function findChrome() {
