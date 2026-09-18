@@ -145,7 +145,7 @@
 
   // ===== DOM 构造 =====
   function cardEl(def, opts = {}) {
-    // 场上单位战力实时化：livePower 由 renderAll 传入（含费用豆/装备/buff）；手牌·图鉴·构筑器显示卡面基础值
+    // 场上单位战力实时化：livePower 由 renderAll 传入（含贝里/装备/buff）；手牌·图鉴·构筑器显示卡面基础值
     const shownPower = opts.livePower != null ? opts.livePower : def.power;
     const el = document.createElement('div');
     el.className = `card ${def.color}` + (opts.cls ? ' ' + opts.cls : '');
@@ -174,7 +174,7 @@
       </div>
       <div class="name">${def.name}</div>
       <div class="sub">${def.sub || ''}</div>
-      ${shownPower ? `<div class="power"${opts.livePower != null && opts.livePower !== def.power ? ' title="含费用豆/装备/增益的当前战力"' : ''}>${shownPower / 1000}K</div>` : ''}
+      ${shownPower ? `<div class="power"${opts.livePower != null && opts.livePower !== def.power ? ' title="含贝里/装备/增益的当前战力"' : ''}>${shownPower / 1000}K</div>` : ''}
       ${def.type === 'gear' && def.gear ? `<div class="power gear-atk">+${def.gear.atk / 1000}K</div>` : ''}
       ${def.counter ? `<div class="counter-badge">反击 ${def.counter / 1000}K</div>` : ''}
     `;
@@ -213,7 +213,7 @@
     if (c.type === 'char' && me.board.length >= 5) return '场上已满 5 名角色，无法再召唤';
     if (c.type === 'gear' && me.board.length === 0) return '场上没有角色可装备——先召唤一名角色';
     const usable = O.usableDons(me);
-    if (c.cost > usable) return `费用不足：还差 ${c.cost - usable} 颗费用豆（当前能花 ${usable} 颗，附着到卡上的算已消耗）`;
+    if (c.cost > usable) return `费用不足：还差 ${c.cost - usable} 枚贝里（当前能花 ${usable} 枚，附着到卡上的算已消耗）`;
     return null;
   }
 
@@ -310,9 +310,9 @@
     if (G.winner !== null) text = G.winner === MY ? '胜利！' : '战败…';
     else if (G.pending && G.pending.target.side === MY) text = '对方攻击——选择反击牌或放弃（无反击牌时自动结算）';
     else if (selMode && selMode.mode === 'attack') text = '选择攻击目标（对方场上有角色须先打角色；再点攻击者可取消）';
-    else if (selMode && selMode.mode === 'don') text = '选择费用豆附着目标（点己方单位，再点费用区取消）';
+    else if (selMode && selMode.mode === 'don') text = '选择贝里附着目标（点己方单位，再点贝里区取消）';
     else if (selMode && selMode.mode === 'gear') text = '选择要装备的角色（点己方场上单位；半亮=已带装备，再装会替换旧件；再点该装备卡取消）';
-    else if (myTurn) text = '你的回合：点手牌出牌 · 点单位攻击 · 点费用豆附着';
+    else if (myTurn) text = '你的回合：点手牌出牌 · 点单位攻击 · 点贝里附着';
     else text = '对方行动中…';
     if (hint.textContent !== text) hint.textContent = text;
     hint.classList.remove('warn');
@@ -430,7 +430,7 @@
         if (ev.reason !== 'power' && ev.reason !== 'defense') break; // gone：目标已不在场，静默
         const msg = ev.reason === 'defense'
           ? `守备坚固：${ev.atkPower / 1000}K 没能击破 ${ev.defPower / 1000}K 的守备——无战果`
-          : `攻不破防线：${ev.defPower / 1000}K 防线不低于 ${ev.atkPower / 1000}K 攻势——0 积分伤害（附着费用豆提升战力再打）`;
+          : `攻不破防线：${ev.defPower / 1000}K 防线不低于 ${ev.atkPower / 1000}K 攻势——0 积分伤害（附着贝里提升战力再打）`;
         showHintFlash(msg, 'info');
         if (ev.reason === 'power') { // 直攻不掉分：防守方徽章上飘 0
           const tgt = ev.side === MY ? $('myLife') : $('enemyLife');
@@ -582,7 +582,7 @@
     line.className = 'log-line ' + (action.side === MY ? 'me' : '');
     const names = {
       playCharacter: '召唤角色', playEvent: '发动事件', playStage: '布置舞台', playGear: '装备武器',
-      attack: '发起攻击', block: '阻挡!', counter: '反击!', giveDon: '附着费用豆',
+      attack: '发起攻击', block: '阻挡!', counter: '反击!', giveDon: '附着贝里',
       endTurn: '结束回合', passCounter: '放弃反击',
     };
     line.textContent = `${action.side === MY ? '我方' : '敌方'} · ${names[action.t] || action.t}`;
@@ -750,7 +750,7 @@
   $('myDon').addEventListener('click', () => {
     if (G.pending || G.active !== MY) return;
     if (selMode && selMode.mode === 'don') { selMode = null; clearHighlights(); renderHints(); return; }
-    if (O.usableDons(G.players[MY]) < 1) { showHintFlash('没有能花的费用豆了——都已附着或消耗，下回合开始自动补满'); return; }
+    if (O.usableDons(G.players[MY]) < 1) { showHintFlash('没有能花的贝里了——都已附着或消耗，下回合开始自动补满'); return; }
     selMode = { mode: 'don' };
     highlightDonTargets();
     renderHints();
@@ -1119,17 +1119,17 @@
   function fillHelp() {
     const secs = [
       { ic: 'trophy', t: '胜利目标（积分制）', p: '双方船长各有 <b>LP 10000 积分</b>。攻击造成的伤害按<b>战力差额</b>扣对方 LP，<b>把对方 LP 扣到 0 即获胜</b>；对方牌库抽空也会判负。' },
-      { ic: 'layers', t: '回合流程', p: '你的回合：<b>费用区自动补 2 颗费用豆</b>（上回合附着的自动脱落回来）→ 抽 1 张牌 → 出牌 / 攻击 / 附着 → 点「结束回合」。费用区里<b>未附着的费用豆就是能花的钱</b>，附着到卡上的算已消耗。' },
-      { ic: 'map', t: '出牌', p: '手牌左上角圆标是<b>费用</b>，消耗对应数量费用豆即可打出：角色进场（场上最多 5 名）、事件立即生效、舞台持续支援。<b>刚出场的角色要等下回合才能攻击</b>（带速攻词条的当回合即可）。' },
+      { ic: 'layers', t: '回合流程', p: '你的回合：<b>贝里区自动补 2 枚贝里</b>（上回合附着的自动脱落回来）→ 抽 1 张牌 → 出牌 / 攻击 / 附着 → 点「结束回合」。贝里区里<b>未附着的贝里就是能花的钱</b>，附着到卡上的算已消耗。' },
+      { ic: 'map', t: '出牌', p: '手牌左上角圆标是<b>费用</b>，消耗对应数量贝里即可打出：角色进场（场上最多 5 名）、事件立即生效、舞台持续支援。<b>刚出场的角色要等下回合才能攻击</b>（带速攻词条的当回合即可）。' },
       { ic: 'swords', t: '攻击：卡片互斗', p: '点己方未行动的角色或船长 → 再点对方卡发起攻击。<b>对方场上有角色时必须先打角色</b>（横竖都可被攻击，不能绕过直攻船长）；对方场上没角色才能<b>直攻船长</b>，伤害 = 攻方战力 − 船长战力，<b>攻不破防线（差 ≤ 0）就是 0 伤害</b>（打出反击牌可以垫高防线免伤）。攻击后攻击者横置。' },
       { ic: 'refresh', t: '竖放与横放', p: '场上卡片<b>竖放＝攻击表示</b>：可以攻击，被攻击时进入<b>互斗</b>——战力高者胜，败方被击沉并按差额扣其主人 LP，相等同归于尽。<b>横放＝守备表示</b>：本回合已行动，被攻击时只比战力——攻方战力更高才被击沉，守方不损失 LP。己方回合开始时横放的卡自动转回竖放。鼠标悬停任意卡片（手机长按）可看完整信息。' },
       { ic: 'heart', t: '反击', p: '对方攻击时进入<b>反击窗口</b>：手牌中带<b>「反击 +NK」角标</b>的卡可打出为防守<b>垫战力</b>——直攻时垫高船长防线可免伤，互斗时反超战力可反杀攻方。<b>手里没有反击角标的卡时会自动结算，不打扰你</b>；也可勾选「本局不再询问」永久自动。' },
       { ic: 'shield', t: '坚壁', p: '带<span class="kw">坚壁</span>词条的角色是硬盾：<b>被攻击时防御战力 +1K</b>（横放竖放都生效），更难被击沉——很适合守家。' },
-      { ic: 'anchor', t: '费用豆附着', p: '点左下费用区 → 点己方角色或船长，附着 1 颗费用豆 <b>+1000 战力</b>，攻防皆受益（互斗、守备、直攻差额都算）。附着后的费用豆本回合不可再用，规划好节奏。' },
+      { ic: 'anchor', t: '贝里附着', p: '点左下贝里区 → 点己方角色或船长，附着 1 枚贝里 <b>+1000 战力</b>，攻防皆受益（互斗、守备、直攻差额都算）。附着后的贝里本回合不可再用，规划好节奏。' },
       { ic: 'sparkles', t: '关键词', p: '<span class="kw">速攻</span>：出场当回合即可攻击；<span class="kw">双击</span>：直攻船长的 LP 伤害 ×2；<span class="kw">猛击</span>：直攻船长 LP 伤害额外 +2K；<span class="kw">坚壁</span>：被攻击时防御 +1K。' },
       { ic: 'flame', t: '恶魔果实克制', p: '带果实角标的卡有系别：<b>超人系克自然系、自然系克动物系、动物系克超人系</b>（循环）。<b>攻击被自己克制的目标时战力 +1K</b>（打角色、直攻船长都算）；无果实角标的卡不参与克制。组卡时兼顾「我方输出系别」与「克制对方主力系别」是构筑深度所在。' },
-      { ic: 'shield', t: '武器装备', p: '带「装备」徽章的卡：点击手牌后再点己方一名角色即穿上——<b>武器加攻击（+1K~+3K）</b>，<b>甲胄加攻击并获「坚壁」（被攻击时防御 +1K）</b>。每角色限穿 1 件（再穿=替换旧的进墓场），装备加成永久生效（不像费用豆每回合脱落），角色被击沉时装备随之进墓场。' },
-      { ic: 'crown', t: '船长技能', p: '六位船长各有专属技能（选将时悬停船长卡可看详情）：<b>路飞</b>船长攻击时战力 +1K；<b>娜美</b>费用 ≥3 的角色登场就抽 1 张；<b>索隆</b>5 费以上的角色登场永久 +1K；<b>山治</b>己方角色阵亡时回复 1K 积分；<b>罗</b>己方角色被击沉时抽 1 张；<b>香克斯</b>每回合开始多翻 1 颗费用豆。' },
+      { ic: 'shield', t: '武器装备', p: '带「装备」徽章的卡：点击手牌后再点己方一名角色即穿上——<b>武器加攻击（+1K~+3K）</b>，<b>甲胄加攻击并获「坚壁」（被攻击时防御 +1K）</b>。每角色限穿 1 件（再穿=替换旧的进墓场），装备加成永久生效（不像贝里每回合脱落），角色被击沉时装备随之进墓场。' },
+      { ic: 'crown', t: '船长技能', p: '六位船长各有专属技能（选将时悬停船长卡可看详情）：<b>路飞</b>船长攻击时战力 +1K；<b>娜美</b>费用 ≥3 的角色登场就抽 1 张；<b>索隆</b>5 费以上的角色登场永久 +1K；<b>山治</b>己方角色阵亡时回复 1K 积分；<b>罗</b>己方角色被击沉时抽 1 张；<b>香克斯</b>每回合开始多翻 1 枚贝里。' },
       { ic: 'compass', t: '两种模式', p: '<b>天梯排位</b>：胜 +25 分、败 −15 分，分数升段位、敌将变强；<b>生存挑战</b>：连胜不断升档，一败归零、记录最佳连胜。' },
     ];
     $('helpBody').innerHTML = secs.map((s) =>
@@ -1218,7 +1218,7 @@
       'onPlay:koWeakest': '打出时：击沉敌方场上战力最低的角色',
       'onPlay:restEnemy': '打出时：横置敌方一名角色（其本回合不能再攻击或阻挡）',
       'onPlay:draw': `打出时：抽 ${op.n || 1} 张牌`,
-      'onPlay:gainDon': `打出时：从费用库翻 ${op.n || 1} 颗进费用区（本回合就能花）`,
+      'onPlay:gainDon': `打出时：从贝里库翻 ${op.n || 1} 枚进贝里区（本回合就能花）`,
     };
     return M[e.hook + ':' + op.k] || null;
   }
@@ -1270,12 +1270,12 @@
     if (inCodex) st.push('<b>图鉴浏览</b>：点击卡片可放大看卡面插画与完整说明');
     else if (inHand) {
       const usable = G ? O.usableDons(G.players[MY]) : 0;
-      st.push(`<b>在手牌</b>：点击打出，花费 ${def.cost} 颗费用豆（=费用区未附着的费用豆，当前能花 ${usable} 颗）；带「反击」角标的还可在对方攻击时打出作反击（垫高防守战力：直攻可免伤、互斗可反杀）`);
+      st.push(`<b>在手牌</b>：点击打出，花费 ${def.cost} 枚贝里（=贝里区未附着的贝里，当前能花 ${usable} 枚）；带「反击」角标的还可在对方攻击时打出作反击（垫高防守战力：直攻可免伤、互斗可反杀）`);
     }
     else if (def.type === 'stage') st.push(`<b>${who}舞台</b>：打出后持续在场生效，不参与战斗`);
     else if (rested) st.push(`<b>横放＝守备表示</b>：${who}${def.type === 'leader' ? '船长本回合已攻击过' : '角色本回合已行动或被效果横置，不能再攻击'}；被攻击时只比战力——攻方战力更高才被击沉，守方不损失积分${(def.keywords || []).includes('blocker') ? '（坚壁：防御战力仍 +1K）' : ''}；${ownerTurn}开始时转回竖放`);
     else st.push(`<b>竖放＝攻击表示</b>：${who}${def.type === 'leader' ? '船长可发起攻击（对方场上无角色时可直攻，伤害=双方战力差额，攻不破=0 伤害）' : '角色可发起攻击（刚登场要等下回合，速攻词条除外）'}；被攻击时进入互斗——战力低者被击沉并按差额扣积分（LP），相等同归于尽`);
-    if (dons > 0) st.push(`<b>已附着 ${dons} 颗费用豆</b>：战力 +${dons}K，攻防都算；${ownerTurn}开始时自动脱落回费用区`);
+    if (dons > 0) st.push(`<b>已附着 ${dons} 枚贝里</b>：战力 +${dons}K，攻防都算；${ownerTurn}开始时自动脱落回贝里区`);
     parts.push(`<div class="ct-state">${st.map((s) => `<div>${s}</div>`).join('')}</div>`);
     return parts.join('');
   }

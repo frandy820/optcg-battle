@@ -27,7 +27,7 @@
     },
     {
       icon: 'layers', title: '第 3 步 · 认识牌桌',
-      text: '对局开始后：屏幕下方是你的手牌；左下角的圆点是费用豆区，出牌要消耗它；行动完毕点「结束回合」交给对方。',
+      text: '对局开始后：屏幕下方是你的手牌；左下角的圆点是贝里区，出牌要消耗它；行动完毕点「结束回合」交给对方。',
       map: ['hand', 'don', 'end'],
     },
     {
@@ -41,7 +41,7 @@
   ];
   const MAP_META = {
     hand: { icon: 'layers', label: '手牌：点卡出牌' },
-    don: { icon: 'star', label: '费用豆区：出牌的燃料' },
+    don: { icon: 'star', label: '贝里区：出牌的燃料' },
     end: { icon: 'flag', label: '结束回合：行动完毕后点击' },
   };
 

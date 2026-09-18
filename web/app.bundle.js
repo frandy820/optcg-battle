@@ -1086,7 +1086,7 @@ const POOL = {
       "art": "captains/shanks",
       "fruit": null,
       "skill": "霸王的威压",
-      "skillDesc": "己方回合开始时，额外翻 1 颗费用豆"
+      "skillDesc": "己方回合开始时，额外翻 1 枚贝里"
     }
   ],
   "cards": [

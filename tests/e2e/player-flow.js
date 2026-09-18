@@ -173,7 +173,7 @@
     step('当前回合归属明确', $('phaseBadge').textContent.includes('你的回合'), $('phaseBadge').textContent);
     const hand = document.querySelectorAll('#myHand .card').length;
     step('手牌可见', hand > 0, hand + ' 张');
-    step('费用区可见', document.querySelectorAll('#myDon .don').length > 0, document.querySelectorAll('#myDon .don').length + ' 颗 DON');
+    step('贝里区可见', document.querySelectorAll('#myDon .don').length > 0, document.querySelectorAll('#myDon .don').length + ' 枚 DON');
     step('行动提示条有内容', !!($('hint') && $('hint').textContent.length > 0), $('hint') ? $('hint').textContent : '');
 
     // ===== 出牌（成功=手牌减/场上增/墓地增——事件卡打出即入墓不占 board）=====
@@ -203,17 +203,17 @@
         + ' diag:' + JSON.stringify((OPTCG_GAME._diag && OPTCG_GAME._diag()) || null)));
     } else step('存在可出手牌', true, '首回合起手无低费卡（正常随机），出牌验证移至全场累计断言');
 
-    // ===== 费用豆附着（回归：点费用区→点场上卡，战力角标须实时 +1K；曾因 selMode 类型误判掉进攻击选择）=====
+    // ===== 贝里附着（回归：点贝里区→点场上卡，战力角标须实时 +1K；曾因 selMode 类型误判掉进攻击选择）=====
     const donFree = () => document.querySelector('#myDon .don:not(.rest):not(.attached)');
     const attachDon = async () => {
       const u = document.querySelector('#myBoard .card:not(.rest)');
       if (!u || !donFree()) return null; // 无条件可测
       const uid = u.dataset.cardId;
       const p0 = +u.querySelector('.power').textContent.replace('K', '');
-      await clickAt($('myDon'), '点击费用区进入附着模式');
+      await clickAt($('myDon'), '点击贝里区进入附着模式');
       const inDonMode = await waitFor(() => /附着目标/.test($('hint').textContent), 1500);
       const tgt = document.querySelector('#myBoard .card:not(.rest)'); // renderAll 后元素已换，重取
-      if (tgt) await clickAt(tgt, '点击场上单位附着费用豆');
+      if (tgt) await clickAt(tgt, '点击场上单位附着贝里');
       const donOk = await waitFor(() => {
         const el = document.querySelector('#myBoard .card[data-card-id="' + uid + '"]');
         return el && +el.querySelector('.power').textContent.replace('K', '') === p0 + 1;
@@ -249,8 +249,8 @@
       if (visible('responsePanel')) { $('btnPass').click(); return false; }
       return $('btnEnd').classList.contains('can-act');
     }, 15000);
-    if (donResult === null) step('费用豆附着后战力角标+1K', true, '场上无卡或无可用豆（跳过）');
-    else step('费用豆附着后战力角标+1K', donResult === true, donResult === true ? '' : String(donResult));
+    if (donResult === null) step('贝里附着后战力角标+1K', true, '场上无卡或无可用豆（跳过）');
+    else step('贝里附着后战力角标+1K', donResult === true, donResult === true ? '' : String(donResult));
 
     // ===== 悬停信息卡（卡面全量信息 + 竖/横语义）=====
     if (window.matchMedia && matchMedia('(hover: hover)').matches) {
