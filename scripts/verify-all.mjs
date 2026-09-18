@@ -6,7 +6,7 @@
 // 断网（offline）阶段用 file:// 直开 e2e.html：无任何 HTTP server，modes.js 云探测立即失败→静默离线，
 // 完整对局照常打完 = 「断网可玩」的直接证据（所有资源本地，fetch file:// 被 Chrome 禁止→catch 路径）。
 import { execFileSync, spawnSync } from 'node:child_process';
-import { readdirSync, statSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, readdirSync, statSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -28,9 +28,12 @@ function findChrome() {
     'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
     process.env.CHROME_BIN, 'chrome', 'google-chrome',
   ].filter(Boolean);
+  // 禁止用「chrome --version」启动探测：裸 chrome.exe 调用会被正在运行的浏览器实例转发
+  // = 弹新窗口 + execFileSync 永等（用户 Chrome 开着时 verify 卡死事故）。改查文件存在性/PATH。
   for (const c of cands) {
-    try { execFileSync(c, ['--version'], { stdio: 'pipe' }); return c; }
-    catch (e) { /* 下一个 */ }
+    if (/[\\/]/.test(c)) { if (existsSync(c)) return c; continue; } // 带路径分隔符：存在即可用
+    try { execFileSync('where', [c], { stdio: 'pipe' }); return c; } // 裸名：where/which 查 PATH（不启动 Chrome）
+    catch (e) { try { execFileSync('which', [c], { stdio: 'pipe' }); return c; } catch (e2) { /* 下一个 */ } }
   }
   throw new Error('Chrome 未找到（可设 CHROME_BIN）');
 }

@@ -4,7 +4,7 @@
 // 用法：node tests/e2e/run.mjs [--only main|rounds|edge] [--keep] [--timeout 600]
 //   --timeout Chrome 单模式真实时间上限秒（默认 300，CPU 拥塞期可放宽）
 import { execFileSync } from 'node:child_process';
-import { writeFile, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, writeFile, mkdtempSync, rmSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -19,8 +19,12 @@ function findChrome() {
     'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
     process.env.CHROME_BIN, 'chrome', 'google-chrome',
   ].filter(Boolean);
+  // 禁止用「chrome --version」启动探测：裸 chrome.exe 会被正在运行的浏览器实例转发=弹新窗口+
+  // execFileSync 永等（用户 Chrome 开着时卡死事故）。改查文件存在性/PATH。
   for (const c of cands) {
-    try { execFileSync(c, ['--version'], { stdio: 'pipe' }); return c; } catch (e) { /* 下一个 */ }
+    if (/[\\/]/.test(c)) { if (existsSync(c)) return c; continue; }
+    try { execFileSync('where', [c], { stdio: 'pipe' }); return c; }
+    catch (e) { try { execFileSync('which', [c], { stdio: 'pipe' }); return c; } catch (e2) { /* 下一个 */ } }
   }
   throw new Error('Chrome 未找到（可设 CHROME_BIN）');
 }
