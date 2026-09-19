@@ -3,7 +3,7 @@
 // Chrome 合规：--headless（非 =new）+ 独立 user-data-dir + 随机调试端口（9300+rand）；退出按自启 PID 精确杀。
 import { spawn, execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { tmpdir, devNull } from 'node:os';
 import { join } from 'node:path';
 
 const URL_BASE = process.argv[2] || 'https://frandy820.github.io/optcg-battle/';
@@ -102,7 +102,8 @@ try {
   console.log(result);
   // PWA 静态资源 HTTP 200 断言（manifest/sw/图标）
   for (const f of ['manifest.webmanifest', 'sw.js', 'icon-192.png', 'icon-512.png']) {
-    const r = execFileSync('curl', ['-s', '-o', '/dev/null', '-w', '%{http_code}', URL_BASE + f], { encoding: 'utf8' }).trim();
+    // Windows 原生 curl 不识别 /dev/null（CURLE_WRITE_ERROR 23），用 os.devNull 跨平台
+    const r = execFileSync('curl', ['-s', '-o', devNull, '-w', '%{http_code}', URL_BASE + f], { encoding: 'utf8' }).trim();
     console.log(`pwa ${f}: ${r}`);
     if (r !== '200') { console.error('SMOKE-FAIL（PWA 资源缺失）'); process.exit(1); }
   }
