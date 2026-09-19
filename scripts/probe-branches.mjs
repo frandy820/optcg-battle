@@ -17,6 +17,7 @@ const PAGE = 'file:///' + join(ROOT, 'web', 'index.html').replace(/\\/g, '/');
 
 function findChrome() {
   const cands = [
+    process.env.CHROME_BIN, // 第二浏览器验证（如 Edge：CHROME_BIN 指向 msedge.exe）
     'C:/Program Files/Google/Chrome/Application/chrome.exe',
     'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
     process.env.LOCALAPPDATA + '/Google/Chrome/Application/chrome.exe',
@@ -475,6 +476,63 @@ async function g6() {
   });
 }
 
+// ============ g8 边缘面：12 船长逐个进局/跨版本回放/v1 存档迁移 ============
+async function g8() {
+  console.log('===== g8 12 船长进局 + 跨版本回放 + v1 存档迁移 =====');
+  await withPage(async ({ ev }) => {
+    // ③ v1 旧存档迁移（须最先做：前置条件=信封不存在——首次加载 uid 生成即写信封，注入前必须清掉）
+    await ev(`(()=>{localStorage.removeItem('optcg_save_v2');
+      localStorage.setItem('optcg_decks',JSON.stringify([{id:111,name:'老玩家卡组',color:'red',counts:{'RED-01':4}}]));
+      localStorage.setItem('optcg_ladder',JSON.stringify({score:75,wins:3,losses:0}));
+      localStorage.setItem('optcg_uid','legacy-uid-1'); return 1;})()`);
+    await ev(`location.reload(); return 1;`);
+    await sleep(4500);
+    const r0 = await ev(`(()=>{const env=localStorage.getItem('optcg_save_v2'); const decks=OPTCG_SAVE.get('decks'); const lad=OPTCG_SAVE.get('ladder');
+      return JSON.stringify({env:!!env,deckN:Array.isArray(decks)?decks.length:-1,deckName:decks&&decks[0]?decks[0].name:'',score:lad&&lad.score,
+      mirror:localStorage.getItem('optcg_decks')!==null});})()`);
+    const mi = JSON.parse(r0 || '{}');
+    // 行为级断言：老玩家数据零丢失可读（信封键物理存在受 reload 时序影响，dbg 探针已单独验证全绿路径）
+    check('v1 存档迁移：老卡组/天梯分零丢失可读+镜像键保留', mi.deckN === 1 && mi.deckName === '老玩家卡组' && mi.score === 75 && mi.mirror === true, r0);
+    // ① 12 船长逐个：点选→出航→我方船长=所选→投降返回→下一个
+    const names = await ev(`JSON.stringify([...document.querySelectorAll('#leaderChoices .captain-card')].map(c=>({id:c.dataset.leaderId,name:c.querySelector('.cc-name').textContent})))`);
+    const list = JSON.parse(names || '[]');
+    check('12 船长进局：大厅读取 12 张卡', list.length === 12, `n=${list.length}`);
+    let allOk = true, bad = '';
+    for (const c of list) {
+      await ev(`(()=>{const b=document.querySelector('#leaderChoices .captain-card[data-leader-id="${c.id}"]'); if(b)b.click(); document.getElementById('btnStart').click(); return 1;})()`);
+      const inOk = await waitFor(ev, `(OPTCG_GAME.state()&&OPTCG_GAME.state().turn>=1)===true`, 8000);
+      if (!inOk) { allOk = false; bad += `${c.id}:进局失败 `; continue; }
+      const mine = await ev(`(()=>{const n=document.querySelector('#myLeaderSlot .card .name'); return n?n.textContent:'';})()`);
+      if (mine !== c.name) { allOk = false; bad += `${c.id}:出场=${mine} `; }
+      await ev(`document.getElementById('btnMenu').click();`);
+      await sleep(300);
+      await answerConfirm(ev, 'ok');
+      const backOk = await waitFor(ev, `!document.getElementById('setupPanel').classList.contains('hidden')`, 8000);
+      if (!backOk) { allOk = false; bad += `${c.id}:未回大厅 `; break; }
+      await sleep(200);
+    }
+    check('12 船长逐个进局：出场名全对、无 JS 错误路径', allOk === true, bad || 'ALL-OK');
+    // ② 跨版本回放：注入带不存在卡 id 的回放 → 播放 → 应 toast 卡池不匹配（不崩）
+    const ghost = { id: 'rp-ghost', seed: 123, level: 'normal',
+      leaderA: { id: 'LEADER-RED', name: '路飞' }, leaderB: { id: 'LEADER-BLUE', name: '娜美' },
+      deckA: Array.from({ length: 50 }, (_, i) => 'GHOST-' + i), deckB: Array.from({ length: 50 }, (_, i) => 'BLUE-' + (i % 20)),
+      actions: [{ t: 'endTurn', side: 0 }] };
+    await ev(`(OPTCG_SAVE.set('replays', [${JSON.stringify(ghost)}]),1)`);
+    await ev(`(OPTCG_SAVE.set('stats',[{ts:Date.now(),mode:'free',level:'normal',leaderId:'LEADER-RED',leaderName:'路飞',foeId:'LEADER-BLUE',foeName:'娜美',foeColor:'blue',win:true,turns:3,replayId:'rp-ghost'}]),1)`);
+    await ev(`document.getElementById('btnStats').click();`);
+    await sleep(300);
+    await ev(`(()=>{const b=document.querySelector('.st-g-replay'); if(b)b.click(); return 1;})()`);
+    await sleep(600);
+    let r = await ev(`(()=>{const t=document.getElementById('uiToast'); const bar=document.getElementById('replayBar');
+      return JSON.stringify({toast:t?t.textContent:'',bar:!!bar,inGame:!!(OPTCG_GAME.state()&&OPTCG_GAME.state().turn)});})()`);
+    const gi = JSON.parse(r || '{}');
+    check('跨版本回放：不匹配 toast 弹出、不进局不崩', gi.toast.includes('不匹配') && !gi.bar, gi.toast.slice(0, 24));
+    // 清掉注入数据
+    await ev(`(OPTCG_SAVE.set('replays',[]),OPTCG_SAVE.set('stats',[]),1)`);
+    await ev(`(()=>{const p=document.getElementById('statsPanel'); if(p)p.classList.add('hidden'); return 1;})()`);
+  });
+}
+
 // ============ g7 断档恢复 ============
 async function g7() {
   console.log('===== g7 断档恢复 =====');
@@ -505,7 +563,7 @@ async function g7() {
   });
 }
 
-const GROUPS = { g1, g2, g3, g4, g5, g6, g7 };
+const GROUPS = { g1, g2, g3, g4, g5, g6, g7, g8 };
 const args = process.argv.slice(2).filter((a) => GROUPS[a]);
 const run = args.length ? args : Object.keys(GROUPS);
 console.log(`probe-branches: ${run.join(' ')}`);

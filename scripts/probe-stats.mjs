@@ -12,6 +12,7 @@ const PAGE = 'file:///' + join(ROOT, 'web', 'index.html').replace(/\\/g, '/');
 
 function findChrome() {
   const cands = [
+    process.env.CHROME_BIN, // 第二浏览器验证（如 Edge：CHROME_BIN 指向 msedge.exe）
     'C:/Program Files/Google/Chrome/Application/chrome.exe',
     'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
     process.env.LOCALAPPDATA + '/Google/Chrome/Application/chrome.exe',
