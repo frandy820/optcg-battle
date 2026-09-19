@@ -18,6 +18,11 @@ try {
   const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
   const msg = `deploy: ${pkg.name || 'optcg-battle'} ${pkg.version || ''} (web static)`.trim();
 
+  // 自愈：上次崩在半路留下的本地 gh-pages 会让 checkout --orphan 必崩（已三次实战）。
+  // 先清死链 worktree 再删分支；删不掉（占用）才硬失败暴露问题。
+  try { git('worktree prune'); } catch (e) { /* 无残留 */ }
+  try { git('branch -D gh-pages'); } catch (e) { /* 无残留分支=正常首跑 */ }
+
   git(`worktree add --detach "${TMP}"`);          // 临时 worktree（不动当前分支）
   git('checkout --orphan gh-pages', TMP);         // 孤儿分支：无父母单提交历史
   try { git('rm -rf -q .', TMP); } catch (e) { /* 空树 */ }
@@ -31,7 +36,12 @@ try {
     const sha = execSync('git rev-parse --short HEAD', { cwd: TMP, encoding: 'utf8' }).trim();
     console.log(`[dry] gh-pages 本地构建于 ${TMP}（HEAD=${sha}），未推送`);
   } else {
-    git('push -u origin gh-pages --force', TMP);
+    try {
+      git('push -u origin gh-pages --force', TMP);
+    } catch (e) {
+      // github.com 直连常被墙（Connection reset）；本机 V2Ray HTTP 10809 兜底重试一次
+      git('-c http.proxy=http://127.0.0.1:10809 push -u origin gh-pages --force', TMP);
+    }
     console.log('gh-pages 已推送 → GitHub Pages');
   }
 } finally {
