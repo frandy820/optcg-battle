@@ -180,7 +180,7 @@
       <div class="sub">${def.sub || ''}</div>
       ${shownPower ? `<div class="power"${opts.livePower != null && opts.livePower !== def.power ? ' title="含贝里/装备/增益的当前战力"' : ''}>${shownPower / 1000}K</div>` : ''}
       ${def.type === 'gear' && def.gear ? `<div class="power gear-atk">+${def.gear.atk / 1000}K</div>` : ''}
-      ${def.counter ? `<div class="counter-badge">反击 ${def.counter / 1000}K</div>` : ''}
+      ${def.counter ? `<div class="counter-badge"><span class="cb-t">反击 </span>${def.counter / 1000}K</div>` : ''}
     `;
     // 悬停详情交给 #cardTip（initCardTip）；原生 title 移除避免与富信息卡双弹
     if ((def.keywords || []).length) el.setAttribute('aria-label', el.getAttribute('aria-label') + '，' + def.keywords.map((k) => KW_LABEL[k] || k).join('/'));

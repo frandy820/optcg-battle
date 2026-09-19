@@ -287,19 +287,20 @@ body {
   text-align: center; font-size: 8px; color: #5c4d22; letter-spacing: 1px;
 }
 .card .power {
-  position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
-  min-width: 44px; padding: 0 6px; text-align: center;
+  position: absolute; bottom: -2px; left: 0;
+  min-width: 32px; padding: 0 3px; text-align: center;
   background: linear-gradient(180deg, #c99b2e, #9a720e);
   color: #fff8e0; font-weight: 900; font-size: 11px;
   border-radius: 6px 6px 0 0; border: 1px solid #f5d76e; border-bottom: none;
   text-shadow: 0 1px 2px rgba(0,0,0,.5);
 }
 .card .counter-badge {
-  position: absolute; bottom: -5px; right: -6px;
+  position: absolute; bottom: -5px; right: -2px;
   background: radial-gradient(circle at 35% 30%, #8fd3ff, #1d6fb8 70%);
   border: 1px solid #cfeaff; color: #fff;
   font-size: 8.5px; font-weight: 800; border-radius: 8px;
-  padding: 1px 5px; box-shadow: 0 0 7px rgba(61,139,253,.8); z-index: 3;
+  padding: 1px 3px; box-shadow: 0 0 7px rgba(61,139,253,.8); z-index: 3;
+  white-space: nowrap;
 }
 .card .kw-badges { position: absolute; top: 3px; right: 3px; display: flex; flex-direction: column; gap: 2px; z-index: 2; }
 .kw-badge {
@@ -926,7 +927,10 @@ button:disabled {
   .don-zone { max-width: 120px; }
   #logPanel { display: none; }
   .card .name { font-size: 8.5px; }
-  .card .power { font-size: 9.5px; min-width: 36px; }
+  .card .power { font-size: 9.5px; min-width: 30px; padding: 0 3px; }
+  /* 反击徽章缩写：小卡宽下「反击 1K」会压住左下战力，收成「1K」（长按信息卡仍看全称）*/
+  .card .counter-badge .cb-t { display: none; }
+  .card .counter-badge { padding: 1px 3px; font-size: 8px; }
   /* 手牌：不溢出时居中（safe center 溢出时自动回退可滚动起点——老浏览器不识别整条失效，
      保留 flex-start 兜底），修 390 档整体偏左（实测内容中心 119 vs 容器中心 195）*/
   .hand-row { overflow-x: auto; justify-content: flex-start; justify-content: safe center; }
