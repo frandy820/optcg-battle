@@ -69,6 +69,26 @@ TASKS = [
   ('YELLOW-S1', ['Amazon_Lily_Infobox.png', 'Amazon_Lily.png']),
   ('PURPLE-S1', ['Polar_Tang_Infobox.png', 'Polar_Tang.png']),
   ('BLACK-S1',  ['Impel_Down_Infobox.png', 'Impel_Down.png']),
+  # ===== OP-02：6 新船长（语义化命名，cards.json art = captains/<name>）=====
+  ('captains/ace',         P('Portgas_D._Ace')),
+  ('captains/robin',       P('Nico_Robin')),
+  ('captains/kaido',       P('Kaidou')),
+  ('captains/hancock',     P('Boa_Hancock')),
+  ('captains/doflamingo',  P('Donquixote_Doflamingo')),
+  ('captains/mihawk',      P('Dracule_Mihawk')),
+  # ===== OP-02：24 新角色卡 =====
+  ('RED-20', P('Emporio_Ivankov')), ('RED-21', P('Koala')), ('RED-22', P('Thatch')), ('RED-23', P('Sentomaru')),
+  ('BLUE-20', P('Brook')), ('BLUE-21', P('Kalifa')), ('BLUE-22', P('Helmeppo')), ('BLUE-23', P('Jango')),
+  ('GREEN-20', P('Kyros')), ('GREEN-21', P('Kurozumi_Tama')),
+  ('GREEN-22', P('Kikunojo')), ('GREEN-23', P('Shinobu')),
+  ('YELLOW-20', P('Charlotte_Smoothie')), ('YELLOW-21', P('Charlotte_Pudding')),
+  ('YELLOW-22', P('Charlotte_Oven')), ('YELLOW-23', P('Sugar')),
+  ('PURPLE-20', P('Vegapunk')), ('PURPLE-21', ['Charlotte_Brûlée_Anime_Infobox.png'] + P('Charlotte_Brulee')),
+  ('PURPLE-22', ['Gan_Fall_Anime_Infobox.png', 'Ganfall_Anime_Infobox.png', 'Gan_Fall_Infobox.png', 'Gan_Fall.png']),
+  ('PURPLE-23', P('Viola')),
+  ('BLACK-20', P('Onigumo')), ('BLACK-21', P('Momonga')),
+  ('BLACK-22', ['Yarisugi_Anime_Infobox.png', 'Yarisugi_Infobox.png', 'Yarisugi.png']),
+  ('BLACK-23', ['Vander_Decken_IX_Anime_Infobox.png'] + P('Vander_Decken_IX')),
 ]
 
 def url_of(name):
@@ -86,6 +106,9 @@ def main():
     os.makedirs(OUT_CAP, exist_ok=True)
     ok, miss = [], []
     for out, cands in TASKS:
+        webp = os.path.join(OUT_CARD, out + '.webp')
+        if os.path.exists(webp) and os.path.getsize(webp) > 2000:
+            ok.append(out); continue  # 已抓过：跳过（幂等重跑只补缺）
         hit = None
         for name in cands:
             u = url_of(name)

@@ -22,8 +22,8 @@ test('bundle 冒烟：eval 后用 OPTCG 跑一局 AI 对 AI 完整终局', () =>
   assert.ok(O, 'OPTCG 未挂载');
   assert.equal(typeof O.newGame, 'function');
   assert.equal(typeof O.createAI, 'function');
-  assert.equal(O.POOL.cards.length, 162);
-  assert.equal(O.POOL.leaders.length, 6);
+  assert.equal(O.POOL.cards.length, 192); // OP-02 扩池后
+  assert.equal(O.POOL.leaders.length, 12);
 
   // 随机对局（同 fuzz 逻辑）
   const deckOf = (color) => {

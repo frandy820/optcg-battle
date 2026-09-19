@@ -31,12 +31,16 @@
   let selMode = null;          // 'attack' | 'don' | {attacker} 等
   let logSeen = 0;
   let myLeaderColor = null;
+  let myLeaderId = null;      // 12 船长（OP-02）精确选将；色仍保留（构筑器按色锁）
   let hint = null;
   let gameCtx = null;          // { mode:'free'|'ladder'|'survival', ... } 模式层结算用
   let ended = false;           // 终局结算只弹一次
   let gen = 0;                 // 对局代际号：跨局 setTimeout/autoplay 幽灵调用防护
   let autoTimer = null;        // autoplay 调试定时器引用（restart/backToMenu 必清）
   let hintTimer = null;        // 提示条闪现还原定时器
+  let replayCtx = null;        // 回放录制：{id, seed, leaderA/B, deckA/B, level, actions[]}（restore 局不录）
+  let replayMode = false;      // 回放播放中：玩家交互全锁
+  let replayRun = null;        // 播放控制器 {i, paused, speed, want}
 
   // ===== 防御式外部调用 =====
   function sfx(name) {
@@ -498,6 +502,9 @@
     selMode = null;
     try {
       O.applyAction(G, action);
+      if (replayCtx && !replayMode) {
+        try { replayCtx.actions.push(JSON.parse(JSON.stringify(action))); } catch (e) { replayCtx = null; }
+      }
       addLogLine(action);
       await playEvents();
       renderAll();
@@ -671,6 +678,7 @@
 
   // ===== 交互绑定 =====
   $('myHand').addEventListener('click', (e) => {
+    if (replayMode) return;
     const card = e.target.closest('.card'); if (!card) return;
     const idx = +card.dataset.handIdx;
     const c = G && G.players[MY] && G.players[MY].hand[idx];
@@ -688,6 +696,7 @@
   });
 
   $('myBoard').addEventListener('click', (e) => {
+    if (replayMode) return;
     const card = e.target.closest('.card'); if (!card) return;
     if (G.pending || G.active !== MY) return;
     if (selMode && selMode.mode === 'gear') {
@@ -711,6 +720,7 @@
   });
 
   $('enemyBoard').addEventListener('click', (e) => {
+    if (replayMode) return;
     const card = e.target.closest('.card'); if (!card) return;
     if (!selMode || selMode.mode !== 'attack') return;
     const idx = +card.dataset.foeIdx;
@@ -723,6 +733,7 @@
   });
 
   $('enemyLeaderSlot').addEventListener('click', () => {
+    if (replayMode) return;
     if (!selMode || selMode.mode !== 'attack') return;
     if (G.players[FOE].board.length > 0) { showHintFlash('对方场上有角色——先击败角色，才能直攻船长'); return; }
     const a = { t: 'attack', side: MY, attacker: selMode.attacker, target: 'leader' };
@@ -732,6 +743,7 @@
   });
 
   $('myLeaderSlot').addEventListener('click', () => {
+    if (replayMode) return;
     if (G.pending || G.active !== MY) return;
     if (selMode && selMode.mode === 'don') {
       doAction({ t: 'giveDon', side: MY, to: { type: 'leader' }, count: 1 });
@@ -748,6 +760,7 @@
   });
 
   $('myDon').addEventListener('click', () => {
+    if (replayMode) return;
     if (G.pending || G.active !== MY) return;
     if (selMode && selMode.mode === 'don') { selMode = null; clearHighlights(); renderHints(); return; }
     if (O.usableDons(G.players[MY]) < 1) { showHintFlash('没有能花的贝里了——都已附着或消耗，下回合开始自动补满'); return; }
@@ -791,6 +804,7 @@
   }
 
   $('btnEnd').onclick = () => {
+    if (replayMode) return;
     if (G && !G.pending && G.active === MY) { sfx('click'); doAction({ t: 'endTurn', side: MY }); }
   };
 
@@ -857,13 +871,15 @@
     const grid = $('leaderChoices');
     const capList = CAP().LIST;
     capList.forEach((c) => {
-      const leader = O.POOL.leaders.find((l) => l.color === c.color);
+      const leader = O.POOL.leaders.find((l) => l.id === c.leaderId)
+        || O.POOL.leaders.find((l) => l.color === c.color); // 兜底：配置缺 leaderId 时按色取第一位
       if (!leader) return;
       const rar = CAP().RARITY[c.rarity] || CAP().RARITY.common;
       const pick = document.createElement('button');
       pick.type = 'button';
       pick.className = `captain-card r-${c.rarity}`;
       pick.dataset.color = c.color;
+      pick.dataset.leaderId = leader.id;
       pick.style.setProperty('--fc', c.factionColor);
       pick.style.setProperty('--ac', c.accentColor);
       pick.innerHTML = `
@@ -888,7 +904,7 @@
           <span class="cc-life">LP ${c.life * 2000}</span>
           <span class="cc-on">${CAP().icon('check')} 出战</span>
         </span>`;
-      pick.onclick = () => { sfx('click'); setLeaderColor(c.color); };
+      pick.onclick = () => { sfx('click'); setLeader(leader.id); };
       grid.appendChild(pick);
     });
     $('btnStart').onclick = () => {
@@ -908,6 +924,7 @@
     $('btnMenu').setAttribute('aria-label', '返回港口');
     $('btnRestart').onclick = async () => {
       sfx('click');
+      if (replayMode) { toast('回放中——先退出回放'); return; }
       if (G && G.winner === null && !(await uiConfirm('放弃当前对局，重新开局？', { okText: '重新开局' }))) return;
       restartGame();
     };
@@ -916,6 +933,7 @@
     $('btnHelpClose').onclick = () => { sfx('click'); $('helpPanel').classList.add('hidden'); };
     $('btnMenu').onclick = async () => {
       sfx('click');
+      if (replayMode) { stopReplay(); return; } // 回放中返回=直接退出回放，不判负不询问
       if (G && G.winner === null && !(await uiConfirm('投降并返回港口？当前对局将判负', { okText: '投降返回' }))) return;
       // 投降=判负：天梯/生存走 settle 计败局（试玩反馈：投降静默判负，天梯逃过 -15、生存连胜不归零）
       if (G && G.winner === null && gameCtx && gameCtx.mode !== 'free' && window.OPTCG_MODES) {
@@ -933,7 +951,7 @@
       const ctx = gameCtx;
       $('endPanel').classList.add('hidden');
       if (!ctx) { startGame(); return; }
-      if (ctx.mode === 'free') startGame({ leaderColor: ctx.leaderColor, deck: ctx.deckRef });
+      if (ctx.mode === 'free') startGame({ leaderId: ctx.leaderId, leaderColor: ctx.leaderColor, deck: ctx.deckRef });
       else if (window.OPTCG_MODES) window.OPTCG_MODES.restart(ctx);
       else startGame();
     };
@@ -960,30 +978,51 @@
   }
 
   function startGame(opts = {}) {
-    let color = opts.leaderColor || myLeaderColor;
-    if (!color) {
+    let myLeader = null;
+    if (opts.leaderId) myLeader = O.POOL.leaders.find((l) => l.id === opts.leaderId);
+    if (!myLeader && (opts.leaderColor || myLeaderColor)) {
+      const c = opts.leaderColor || myLeaderColor;
+      myLeader = (myLeaderId && O.POOL.leaders.find((l) => l.id === myLeaderId && l.color === c))
+        || O.POOL.leaders.find((l) => l.color === c);
+    }
+    if (!myLeader && myLeaderId) myLeader = O.POOL.leaders.find((l) => l.id === myLeaderId);
+    if (!myLeader) {
       // 新玩家未选船长：默认船长直接可玩（可玩性优先，不设前置门槛）
-      color = (O.POOL.leaders[0] || {}).color || 'red';
-      setLeaderColor(color);
+      myLeader = O.POOL.leaders[0] || {};
+      setLeader(myLeader.id);
       toast('未选船长，已为你出战默认船长');
     }
+    const color = myLeader.color;
     const deckA = opts.deck && opts.deck.length === 50 ? opts.deck : deckOf(color);
-    const foeColors = O.POOL.leaders.map((l) => l.color).filter((c) => c !== color);
-    const foeColor = opts.foeColor || foeColors[Math.floor(Math.random() * foeColors.length)];
-    const myLeader = O.POOL.leaders.find((l) => l.color === color);
-    const foeLeader = O.POOL.leaders.find((l) => l.color === foeColor);
+    // 对手从全部船长随机（排除自己所选；同色对手允许——艾斯 vs 路飞）
+    const foePool = O.POOL.leaders.filter((l) => l.id !== myLeader.id);
+    const foeLeader = (opts.foeLeaderId && O.POOL.leaders.find((l) => l.id === opts.foeLeaderId))
+      || foePool[Math.floor(Math.random() * foePool.length)];
+    const seedUsed = (Date.now() % 100000) + 1;
     G = O.newGame({
       leaderA: myLeader, deckA,
-      leaderB: foeLeader, deckB: deckOf(foeColor),
-      seed: (Date.now() % 100000) + 1,
+      leaderB: foeLeader, deckB: deckOf(foeLeader.color),
+      seed: seedUsed,
     });
     aiErrs = 0;
     ai = O.createAI(opts.level || $('aiLevel').value);
-    gameCtx = opts.ctx || { mode: 'free', leaderColor: color, deckRef: deckA };
+    // 回放录制：确定性重建三要素（seed + 双方卡组 id 序 + 全动作序列）
+    replayCtx = {
+      id: 'rp' + Date.now().toString(36),
+      seed: seedUsed,
+      leaderA: { id: myLeader.id, name: myLeader.name },
+      leaderB: { id: foeLeader.id, name: foeLeader.name },
+      deckA: deckA.map((c) => c.id),
+      deckB: deckOf(foeLeader.color).map((c) => c.id),
+      level: ai ? ai.level : 'normal',
+      actions: [],
+    };
+    gameCtx = opts.ctx || { mode: 'free', leaderColor: color, leaderId: myLeader.id, deckRef: deckA };
     ended = false;
     autoPassSession = false; // 「本局不再询问」随新局重置
     logSeen = G.log.length;
     myLeaderColor = color;
+    myLeaderId = myLeader.id;
     selMode = null;
     gen++;                 // 新对局代际：旧局定时器/autoplay 全部失效
     stopAutoplayTimer();
@@ -993,7 +1032,7 @@
     renderAll();
     // 开局即报模式（试玩反馈：点天梯/生存后无任何反馈，打完一局才知道模式是否生效）
     const MODE_NAME = { ladder: '天梯排位', survival: '生存挑战', free: '自由对战' };
-    showHintFlash(`${MODE_NAME[(gameCtx && gameCtx.mode) || 'free']} · 对手：${foeLeader.name}（${COLOR_NAME[foeColor]}）`, 'info');
+    showHintFlash(`${MODE_NAME[(gameCtx && gameCtx.mode) || 'free']} · 对手：${foeLeader.name}（${COLOR_NAME[foeLeader.color]}）`, 'info');
     autosaveNow(); // 开局即留档：AI 回合中崩溃/关页也可恢复
     requestAnimationFrame(fitTableView); // 进局后按当前视口重适配（banner/hand 渲染完）
   }
@@ -1002,6 +1041,8 @@
     gen++;
     stopAutoplayTimer();
     G = null; ai = null; gameCtx = null; ended = false; selMode = null;
+    replayCtx = null;
+    if (replayMode) stopReplay(); // 兜底：任何路径退回大厅都拆回放态
     ['endPanel', 'responsePanel', 'helpPanel'].forEach((id) => $(id).classList.add('hidden'));
     $('setupPanel').classList.remove('hidden');
     try { window.OPTCG_SAVE && typeof window.OPTCG_SAVE.autosave === 'function' && window.OPTCG_SAVE.autosave(null); } catch (e) { /* 静默 */ }
@@ -1013,6 +1054,21 @@
   function showEndPanel() {
     if (!G || G.winner === null) return;
     const win = G.winner === MY;
+    // 战绩记录（stats.js 缺失时静默跳过；回放数据随局带上，恢复局 replayCtx=null 只记战绩）
+    try {
+      if (window.OPTCG_STATS && !replayMode) {
+        window.OPTCG_STATS.record({
+          ts: Date.now(),
+          mode: (gameCtx && gameCtx.mode) || 'free',
+          level: ai ? ai.level : 'normal',
+          leaderId: G.players[MY].leader.id, leaderName: G.players[MY].leader.name,
+          foeId: G.players[FOE].leader.id, foeName: G.players[FOE].leader.name,
+          foeColor: G.players[FOE].leader.color,
+          win, turns: G.turn,
+          replay: (replayCtx && replayCtx.actions.length >= 4) ? { ...replayCtx } : null,
+        });
+      }
+    } catch (e) { /* 统计异常不阻断结算 */ }
     let detail = `历时 ${G.turn} 回合 · 我方剩余 LP ${Math.max(0, G.players[MY].lp)} · 对方剩余 LP ${Math.max(0, G.players[FOE].lp)}`;
     if (gameCtx && window.OPTCG_MODES) {
       const s = window.OPTCG_MODES.settle(gameCtx, win);
@@ -1025,17 +1081,23 @@
     try { window.OPTCG_SAVE && typeof window.OPTCG_SAVE.autosave === 'function' && window.OPTCG_SAVE.autosave(null); } catch (e) { /* 静默 */ }
   }
 
-  function setLeaderColor(c) {
-    myLeaderColor = c;
+  // 选将：优先 leaderId 精确匹配（12 船长）；传色则取该色第一位（modes.js 构筑器兼容路径）
+  function setLeader(idOrColor) {
+    const l = O.POOL.leaders.find((x) => x.id === idOrColor)
+      || O.POOL.leaders.find((x) => x.color === idOrColor);
+    if (!l) return;
+    myLeaderId = l.id;
+    myLeaderColor = l.color;
     document.querySelectorAll('#leaderChoices .captain-card')
-      .forEach((x) => x.classList.toggle('pick', x.dataset.color === c));
+      .forEach((x) => x.classList.toggle('pick', x.dataset.leaderId === l.id));
   }
+  const setLeaderColor = setLeader; // 旧名兼容（modes.js / 外部调用仍用色）
 
   // ===== 重新开局：按当前配置（船长/难度/模式）再打一局 =====
   function restartGame() {
     if (!myLeaderColor) { backToMenu(); return; }
     if (gameCtx && gameCtx.mode !== 'free' && window.OPTCG_MODES) { window.OPTCG_MODES.restart(gameCtx); return; }
-    startGame({ leaderColor: myLeaderColor, level: $('aiLevel').value, ctx: gameCtx });
+    startGame({ leaderId: myLeaderId, leaderColor: myLeaderColor, level: $('aiLevel').value, ctx: gameCtx });
   }
 
   // ===== 对局快照（断档恢复契约，save.js 回调）=====
@@ -1091,12 +1153,16 @@
       if (g.winner !== null) return false; // 已终局的快照没有恢复意义
       gen++;
       stopAutoplayTimer();
+      replayCtx = null; // 中途恢复的局动作序列不完整：不录回放（战绩照记）
       G = g;
       ai = O.createAI(AI_LEVELS.includes(snap.level) ? snap.level : 'normal');
       gameCtx = snap.ctx == null ? null : JSON.parse(JSON.stringify(snap.ctx));
       ended = false; selMode = null; busy = false; autoPassSession = false;
       logSeen = Array.isArray(g.log) ? g.log.length : 0;
-      if (g.players[MY].leader && g.players[MY].leader.color) myLeaderColor = g.players[MY].leader.color;
+      if (g.players[MY].leader && g.players[MY].leader.color) {
+        myLeaderColor = g.players[MY].leader.color;
+        myLeaderId = g.players[MY].leader.id || myLeaderId;
+      }
       $('logBody').innerHTML = '';
       rebuildLog(g); // 恢复战报脉络（简版：最近 18 条动作）
       ['setupPanel', 'endPanel', 'responsePanel', 'helpPanel', 'builderPanel'].forEach((id) => $(id).classList.add('hidden'));
@@ -1130,7 +1196,7 @@
       { ic: 'sparkles', t: '关键词', p: '<span class="kw">速攻</span>：出场当回合即可攻击；<span class="kw">双击</span>：直攻船长的 LP 伤害 ×2；<span class="kw">猛击</span>：直攻船长 LP 伤害额外 +2K；<span class="kw">坚壁</span>：被攻击时防御 +1K。' },
       { ic: 'flame', t: '恶魔果实克制', p: '带果实角标的卡有系别：<b>超人系克自然系、自然系克动物系、动物系克超人系</b>（循环）。<b>攻击被自己克制的目标时战力 +1K</b>（打角色、直攻船长都算）；无果实角标的卡不参与克制。组卡时兼顾「我方输出系别」与「克制对方主力系别」是构筑深度所在。' },
       { ic: 'shield', t: '武器装备', p: '带「装备」徽章的卡：点击手牌后再点己方一名角色即穿上——<b>武器加攻击（+1K~+3K）</b>，<b>甲胄加攻击并获「坚壁」（被攻击时防御 +1K）</b>。每角色限穿 1 件（再穿=替换旧的进墓场），装备加成永久生效（不像贝里每回合脱落），角色被击沉时装备随之进墓场。' },
-      { ic: 'crown', t: '船长技能', p: '六位船长各有专属技能（选将时悬停船长卡可看详情）：<b>路飞</b>船长攻击时战力 +1K；<b>娜美</b>费用 ≥2 的角色登场就抽 1 张；<b>索隆</b>费用 ≥7 的角色登场永久 +1K；<b>山治</b>己方角色阵亡时回复 1K 积分；<b>罗</b>船长击沉对方角色时抽 1 张；<b>香克斯</b>每回合开始多翻 1 枚贝里。' },
+      { ic: 'crown', t: '船长技能', p: '十二位船长各有专属技能（悬停船长卡可看详情）：<b>路飞</b>船长攻击时 +1K，<b>艾斯</b>/<b>鹰眼</b>攻击时 +2K 但血量更薄；<b>娜美</b>费用 ≥2、<b>罗宾</b>费用 ≥4 的角色登场就抽牌；<b>索隆</b>费用 ≥7 +1K、<b>凯多</b>费用 ≥5 +2K 把大怪越养越凶；<b>山治</b>阵亡回 1K、<b>汉库珂</b>阵亡回 2K 积分；<b>罗</b>船长击沉对方角色时抽 1 张；<b>明戈</b>每回合开始抽 1 张；<b>香克斯</b>每回合开始多翻 1 枚贝里。' },
       { ic: 'compass', t: '两种模式', p: '<b>天梯排位</b>：胜 +25 分、败 −15 分，分数升段位、敌将变强；<b>生存挑战</b>：连胜不断升档，一败归零、记录最佳连胜。' },
     ];
     $('helpBody').innerHTML = secs.map((s) =>
@@ -1138,9 +1204,98 @@
   }
   function openHelp() { fillHelp(); $('helpPanel').classList.remove('hidden'); }
 
+  // ===== 回放播放器（stats.js 战绩面板触发；确定性重演：seed + 卡组 id 序 + 动作序列）=====
+  function buildReplayBar(total) {
+    let bar = $('replayBar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'replayBar';
+      document.body.appendChild(bar);
+    }
+    bar.innerHTML = '<span class="rb-mode">▶ 回放</span>'
+      + '<button type="button" id="rpToggle" class="rb-btn">暂停</button>'
+      + '<button type="button" id="rpStep" class="rb-btn">单步</button>'
+      + '<button type="button" id="rpSpeed" class="rb-btn">1×</button>'
+      + '<span class="rb-prog" id="rpProg">0/' + total + '</span>'
+      + '<button type="button" id="rpExit" class="rb-btn rb-exit">退出回放</button>';
+    $('rpToggle').onclick = () => {
+      if (!replayRun) return;
+      sfx('click');
+      replayRun.paused = !replayRun.paused;
+      $('rpToggle').textContent = replayRun.paused ? '继续' : '暂停';
+    };
+    $('rpStep').onclick = () => {
+      if (!replayRun || replayRun.i >= total) return;
+      sfx('click');
+      replayRun.paused = false; replayRun.want = 'step';
+      $('rpToggle').textContent = '继续';
+    };
+    $('rpSpeed').onclick = () => {
+      if (!replayRun) return;
+      sfx('click');
+      replayRun.speed = replayRun.speed === 1 ? 2 : replayRun.speed === 2 ? 4 : 1;
+      $('rpSpeed').textContent = replayRun.speed + '×';
+    };
+    $('rpExit').onclick = () => { sfx('click'); stopReplay(); };
+  }
+  function updateReplayBar(i, total, done) {
+    const p = $('rpProg'); if (p) p.textContent = done ? `播完 ${total} 步` : `${i}/${total}`;
+  }
+  function stopReplay() {
+    replayMode = false;
+    replayRun = null;
+    const bar = $('replayBar'); if (bar) bar.remove();
+    backToMenu();
+  }
+  async function startReplay(rp) {
+    if (!rp || !Array.isArray(rp.actions)) { toast('回放数据无效', 'error'); return; }
+    const byId = (id) => O.POOL.leaders.find((l) => l.id === id);
+    const expand = (ids) => ids.map((id) => O.POOL.cards.find((c) => c.id === id)).filter(Boolean);
+    const la = byId(rp.leaderA && rp.leaderA.id);
+    const lb = byId(rp.leaderB && rp.leaderB.id);
+    const deckA = expand(rp.deckA), deckB = expand(rp.deckB);
+    if (!la || !lb || deckA.length !== 50 || deckB.length !== 50) {
+      toast('回放与当前卡池不匹配（版本更新后旧回放可能失效）', 'error');
+      return;
+    }
+    gen++; stopAutoplayTimer();
+    G = O.newGame({ leaderA: la, deckA, leaderB: lb, deckB, seed: rp.seed });
+    ai = null; gameCtx = null; ended = false; selMode = null; busy = false; autoPassSession = false;
+    replayCtx = null;   // 播放不录制
+    replayMode = true;
+    myLeaderId = la.id; myLeaderColor = la.color;
+    logSeen = G.log.length;
+    $('logBody').innerHTML = '';
+    ['setupPanel', 'endPanel', 'responsePanel', 'helpPanel', 'builderPanel'].forEach((id) => $(id).classList.add('hidden'));
+    showBanner('回放', '');
+    renderAll();
+    buildReplayBar(rp.actions.length);
+    const myRun = { i: 0, paused: false, speed: 1, want: null };
+    replayRun = myRun;
+    showHintFlash(`回放：${rp.leaderA && rp.leaderA.name} vs ${rp.leaderB && rp.leaderB.name} · ${rp.actions.length} 步`, 'info');
+    while (G && replayMode && replayRun === myRun && myRun.i < rp.actions.length) {
+      if (myRun.paused) { await sleep(200); continue; }
+      if (myRun.want === 'step') { myRun.want = null; myRun.paused = true; }
+      const a = rp.actions[myRun.i++];
+      try { O.applyAction(G, a); } catch (e) {
+        toast('回放中断：动作与状态不一致（卡池版本变化？）', 'error');
+        break;
+      }
+      logSeen = G.log.length; // 播放不走 doAction：手动消费事件流
+      await playEvents();
+      renderAll();
+      updateReplayBar(myRun.i, rp.actions.length, false);
+      await sleep(myRun.speed >= 4 ? 0 : myRun.speed === 2 ? 60 : 240);
+    }
+    if (G && replayMode && replayRun === myRun && myRun.i >= rp.actions.length) {
+      if (G.winner !== null && !ended) { ended = true; showBanner(G.winner === MY ? '胜利！' : '战败', ''); }
+      updateReplayBar(myRun.i, rp.actions.length, true);
+    }
+  }
+
   // 模式层入口（modes.js 使用；free 局直接用 startGame）
   window.OPTCG_GAME = {
-    startGame, backToMenu, setLeaderColor,
+    startGame, backToMenu, setLeaderColor, startReplay,
     leaderColor: () => myLeaderColor,
     cardEl,
     state: () => (G && {

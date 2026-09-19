@@ -624,6 +624,12 @@ button:disabled {
 .leader-grid .captain-card:nth-child(4) { animation-delay: .36s; }
 .leader-grid .captain-card:nth-child(5) { animation-delay: .44s; }
 .leader-grid .captain-card:nth-child(6) { animation-delay: .52s; }
+.leader-grid .captain-card:nth-child(7) { animation-delay: .58s; }
+.leader-grid .captain-card:nth-child(8) { animation-delay: .64s; }
+.leader-grid .captain-card:nth-child(9) { animation-delay: .7s; }
+.leader-grid .captain-card:nth-child(10) { animation-delay: .76s; }
+.leader-grid .captain-card:nth-child(11) { animation-delay: .82s; }
+.leader-grid .captain-card:nth-child(12) { animation-delay: .88s; }
 .captain-card:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
 
 /* 斜向高光扫过 */
@@ -1226,3 +1232,45 @@ html.reduced-motion #onboard .ob-hole { transition: none; }
   .ob-btns .btn-primary { flex: 1; }
 }
 
+
+/* ===== 战绩与回放（stats.js）===== */
+.stats-card { max-width: 640px; }
+.stats-body { max-height: min(58vh, 560px); overflow-y: auto; padding-right: 4px; }
+.stats-body h4 { margin: 18px 0 8px; color: #e8d9a8; font-size: 14px; letter-spacing: 1px; border-bottom: 1px solid rgba(217,170,69,.22); padding-bottom: 6px; }
+.stats-body h4:first-child { margin-top: 4px; }
+.st-empty { color: #8fa0bd; font-size: 13px; text-align: center; padding: 40px 0; line-height: 2; }
+.st-overview { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.st-ov { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 4px; background: rgba(16,29,56,.55); border: 1px solid rgba(217,170,69,.25); border-radius: 10px; }
+.st-ov b { font-size: 20px; color: var(--gold-bright, #f6d26b); }
+.st-ov span { font-size: 11px; color: #8fa0bd; letter-spacing: 1px; }
+.st-rows { display: flex; flex-direction: column; gap: 6px; }
+.st-row { display: grid; grid-template-columns: 108px 1fr 92px; align-items: center; gap: 10px; font-size: 12.5px; }
+.st-name { color: #cbb98a; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.st-bar { display: block; height: 10px; border-radius: 5px; background: rgba(6,13,30,.85); overflow: hidden; border: 1px solid rgba(44,58,85,.8); }
+.st-bar i { display: block; height: 100%; border-radius: 5px; }
+.st-val { color: #8fa0bd; font-size: 11.5px; white-space: nowrap; }
+.st-games { display: flex; flex-direction: column; gap: 6px; }
+.st-game { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; background: rgba(16,29,56,.5); border: 1px solid rgba(44,58,85,.7); }
+.st-g-res { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.st-game.win .st-g-res { background: rgba(126,240,162,.14); color: #7ef0a2; border: 1px solid rgba(126,240,162,.4); }
+.st-game.lose .st-g-res { background: rgba(232,86,63,.12); color: #ff9d8a; border: 1px solid rgba(232,86,63,.4); }
+.st-g-main { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: #e8d9a8; min-width: 0; }
+.st-g-main small { color: #8fa0bd; font-size: 11px; }
+.st-g-acts { display: flex; gap: 6px; }
+.st-g-acts .btn-ghost { padding: 5px 10px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; }
+.st-g-acts .icn { width: 13px; height: 13px; }
+
+/* 回放控制条（fixed 底部，回放播放时出现） */
+#replayBar { position: fixed; left: 50%; transform: translateX(-50%); bottom: 14px; z-index: 190; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px; background: rgba(10,20,38,.96); border: 1px solid rgba(217,170,69,.5); box-shadow: 0 8px 28px rgba(0,0,0,.6); }
+#replayBar .rb-mode { color: #ffe9b8; font-size: 12.5px; letter-spacing: 1px; padding: 0 4px; }
+#replayBar .rb-btn { border: 1px solid rgba(217,170,69,.4); background: rgba(217,170,69,.08); color: #ffe9b8; border-radius: 8px; padding: 5px 12px; font-size: 12.5px; cursor: pointer; }
+#replayBar .rb-btn:hover { background: rgba(217,170,69,.18); }
+#replayBar .rb-exit { border-color: rgba(232,86,63,.5); color: #ffb4a6; }
+#replayBar .rb-prog { color: #8fa0bd; font-size: 11.5px; min-width: 56px; text-align: center; }
+
+@media (max-width: 640px) {
+  .st-overview { grid-template-columns: repeat(3, 1fr); }
+  .st-row { grid-template-columns: 84px 1fr 88px; }
+  .st-g-main small { display: none; }
+  #replayBar { bottom: 8px; flex-wrap: wrap; justify-content: center; max-width: 94vw; }
+}

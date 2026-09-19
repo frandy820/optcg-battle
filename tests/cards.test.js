@@ -6,7 +6,7 @@ import { validateDeck } from '../engine/index.js';
 
 const pool = JSON.parse(readFileSync(new URL('../data/cards.json', import.meta.url), 'utf8'));
 const COLORS = ['red', 'blue', 'green', 'yellow', 'purple', 'black'];
-const OPS = ['draw', 'powerSelf', 'powerLeader', 'gainDon', 'koWeakest', 'restEnemy'];
+const OPS = ['draw', 'powerSelf', 'powerLeader', 'gainDon', 'koWeakest', 'restEnemy', 'healLP'];
 const HOOKS = ['onPlay', 'whenAttacking', 'onKO', 'trigger'];
 const KW = ['rush', 'blocker', 'doubleAttack', 'banish'];
 const FRUITS = ['paramecia', 'logia', 'zoan'];
@@ -15,7 +15,7 @@ test('卡池 schema：id 唯一、类型/颜色合法、字段完整', () => {
   const all = [...pool.leaders, ...pool.cards];
   const ids = new Set(all.map((c) => c.id));
   assert.equal(ids.size, all.length, 'id 必须唯一');
-  assert.equal(pool.leaders.length, 6);
+  assert.equal(pool.leaders.length, 12); // OP-01 六船长 + OP-02 六新船长
   for (const c of all) {
     assert.ok(c.fruit === null || FRUITS.includes(c.fruit), `bad fruit ${c.id}: ${c.fruit}`);
   }
@@ -45,12 +45,12 @@ test('卡池 schema：id 唯一、类型/颜色合法、字段完整', () => {
   }
 });
 
-test('卡池规模：六色各 20+ 张、总数 140-180（批1 扩池）', () => {
+test('卡池规模：六色各 20+ 张、总数 140-200（批1 扩池 + OP-02）', () => {
   for (const col of COLORS) {
     const n = pool.cards.filter((c) => c.color === col).length;
     assert.ok(n >= 20, `${col} only ${n} cards`);
   }
-  assert.ok(pool.cards.length >= 140 && pool.cards.length <= 180);
+  assert.ok(pool.cards.length >= 140 && pool.cards.length <= 200);
 });
 
 test('装备（批2）：每色 ≥2 件、武器/甲胄两类齐备', () => {

@@ -47,6 +47,13 @@ const PROBE = `(window.__smoke = async () => {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const waitFor = async (f, ms) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { const v = f(); if (v) return v; await sleep(200); } return null; };
   out.push(['engine', !!window.OPTCG]);
+  // PWA 资源：manifest 链接 + SW 注册成功（https 线上才注册；file:// 探针环境跳过）
+  const mf = document.querySelector('link[rel="manifest"]');
+  out.push(['manifest', !!mf]);
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    out.push(['sw', !!reg, reg ? 'act=' + (reg.active ? 1 : 0) : '']);
+  } catch (e) { out.push(['sw', false, 'no-sw-api']); }
   out.push(['pool', !!(window.OPTCG && OPTCG.POOL && OPTCG.POOL.cards.length > 100), window.OPTCG ? OPTCG.POOL.cards.length : 0]);
   out.push(['captains', !!window.OPTCG_CAPTAINS]);
   const ob = document.getElementById('onboard');
@@ -93,6 +100,12 @@ try {
   }
   if (!result) { console.error('SMOKE-NO-RESULT（探针 60s 未产出）'); process.exit(1); }
   console.log(result);
+  // PWA 静态资源 HTTP 200 断言（manifest/sw/图标）
+  for (const f of ['manifest.webmanifest', 'sw.js', 'icon-192.png', 'icon-512.png']) {
+    const r = execFileSync('curl', ['-s', '-o', '/dev/null', '-w', '%{http_code}', URL_BASE + f], { encoding: 'utf8' }).trim();
+    console.log(`pwa ${f}: ${r}`);
+    if (r !== '200') { console.error('SMOKE-FAIL（PWA 资源缺失）'); process.exit(1); }
+  }
   const bad = /false|jsErrors:[1-9]/.test(result);
   console.log(bad ? 'SMOKE-FAIL' : 'SMOKE-PASS');
   ws.close();
