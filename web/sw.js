@@ -5,7 +5,7 @@
 //   卡图 art/**：cache-first —— 图不变，命中即返，未命中去网络并落缓存。
 //   其他同源 GET：透传（不打扰）。
 // 版本清理：CACHE 内嵌构建标记（手动 bump，或发布时 deploy 脚本替换）；activate 时清非当前版本。
-const VERSION = 'optcg-v0.7.0-g1g5';
+const VERSION = 'optcg-v0.7.1-g6g9';
 const CACHE = 'optcg-battle-' + VERSION;
 const SHELL = [
   './', './index.html', './style.css',

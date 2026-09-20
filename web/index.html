@@ -21,6 +21,31 @@
     <div class="bg-waves"></div>
     <div class="bg-stars"></div>
     <div class="bg-glow"></div>
+    <!-- 场景层：模式选择（伟大航路开幕）／故事之旅（航海日志）——body.scene-* 类控制显隐 -->
+    <div class="bg-scene bg-scene-select" aria-hidden="true">
+      <div class="bss-veil"></div>
+      <svg class="bss-compass" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="96" class="ring r1"/>
+        <circle cx="100" cy="100" r="78" class="ring r2"/>
+        <circle cx="100" cy="100" r="58" class="ring r3"/>
+        <g class="rose"><path d="M100 14 L112 88 L100 100 L88 88 Z" class="needle n-n"/><path d="M100 186 L112 112 L100 100 L88 112 Z" class="needle n-s"/><path d="M14 100 L88 88 L100 100 L88 112 Z" class="needle n-w"/><path d="M186 100 L112 88 L100 100 L112 112 Z" class="needle n-e"/></g>
+        <g class="ticks"></g>
+      </svg>
+      <div class="bss-horizon"></div>
+      <div class="bss-meteors"><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="bg-scene bg-scene-story" aria-hidden="true">
+      <div class="bst-paper"></div>
+      <svg class="bst-route" viewBox="0 0 1200 800" preserveAspectRatio="none">
+        <path class="brt-line" d="M-40 660 C 180 560, 260 700, 430 600 S 640 420, 780 470 S 980 380, 1240 240"/>
+        <circle class="brt-dot d1" cx="150" cy="640" r="7"/>
+        <circle class="brt-dot d2" cx="450" cy="600" r="7"/>
+        <circle class="brt-dot d3" cx="800" cy="465" r="7"/>
+        <path class="brt-flag" d="M1120 262 l0 -34 l26 9 l-26 9"/>
+        <line class="brt-flagpole" x1="1120" y1="262" x2="1120" y2="228"/>
+      </svg>
+      <div class="bst-isles"><i></i><i></i><i></i></div>
+    </div>
   </div>
   <canvas id="fx"></canvas>
 
@@ -102,12 +127,50 @@
     <div id="logBody"></div>
   </aside>
 
-  <!-- 出航准备（船长大厅） -->
-  <div id="setupPanel" class="modal">
+  <!-- 首页：航路选择（对战 / 故事） -->
+  <div id="modeSelectPanel" class="modal">
+    <div class="modal-card mode-select-card">
+      <header class="hall-head">
+        <span class="hall-crest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/><circle cx="12" cy="12" r="10"/></svg></span>
+        <h3>航海王 · 卡牌对战</h3>
+        <p class="hall-sub">扬帆起航 · 选择你的航路</p>
+        <div class="hall-rule"></div>
+      </header>
+      <div class="mode-select-row">
+        <button id="msBattle" class="ms-card battle" title="进入对战模式：选择船长，天梯排位 / 生存挑战 / 自由对战">
+          <span class="ms-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 10"/><line x1="5" y1="14" x2="9" y2="18"/><line x1="7" y1="17" x2="4" y2="20"/><line x1="3" y1="19" x2="5" y2="21"/></svg></span>
+          <span class="ms-body">
+            <span class="ms-name">对战模式</span>
+            <span class="ms-desc">选择船长出战 · 天梯排位 / 生存挑战</span>
+            <span class="ms-sub">12 位船长 · 自由构筑卡组</span>
+          </span>
+          <span class="ms-go">出航 →</span>
+        </button>
+        <button id="msStory" class="ms-card story" title="进入故事之旅：跟着海贼王剧情过关斩将，收集卡片">
+          <span class="ms-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span>
+          <span class="ms-body">
+            <span class="ms-name">故事之旅</span>
+            <span class="ms-desc">东海篇 10 关 · 跟着剧情过关收集卡片</span>
+            <span class="ms-sub" id="msStoryBadge">从风车村出航</span>
+          </span>
+          <span class="ms-go">启程 →</span>
+        </button>
+      </div>
+      <div class="hall-help-row">
+        <button id="btnHallHelp2" class="btn-ghost hall-help-btn">新手指南 · 玩法说明</button>
+        <button id="btnCodex2" class="btn-ghost hall-help-btn">卡牌图鉴</button>
+      </div>
+      <button id="btnResume" class="btn-ghost btn-resume hidden"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>继续上次对局</button>
+    </div>
+  </div>
+
+  <!-- 出航准备（船长大厅，对战模式二级页） -->
+  <div id="setupPanel" class="modal hidden">
+
     <div class="modal-card setup hall">
       <header class="hall-head">
         <span class="hall-crest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
-        <h3>选择你的船长</h3>
+        <h3>对战 · 选择你的船长</h3>
         <p class="hall-sub">命运的潮汐正在召唤新的指挥官</p>
         <div class="hall-rule"></div>
         <div class="hall-help-row">
@@ -152,7 +215,7 @@
           </label>
           <button id="btnStart" class="btn-primary btn-voyage"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>出航！</button>
         </div>
-        <button id="btnResume" class="btn-ghost btn-resume hidden"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>继续上次对局</button>
+        <button id="btnBackMode" class="btn-ghost btn-backmode"><svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>返回航路选择</button>
       </div>
     </div>
   </div>

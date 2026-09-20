@@ -85,13 +85,33 @@ async function main() {
     return 1;
   })()`);
 
-  // ===== ① 大厅入口断言：第三模式卡 + 副标题冷启动文案 =====
-  const hall = await ev(`(()=>{
-    const b=document.getElementById('btnStory');
-    return { has: !!b, badge: (document.getElementById('storyBadge')||{}).textContent||'', hidden: b? b.classList.contains('hidden'):true };
+  // ===== ① 首屏=航路选择（G6）：模式页可见·船长页隐藏·开幕场景；对战路径往返；故事卡副标题 =====
+  const ms0 = await ev(`(()=>{
+    const ms=document.getElementById('modeSelectPanel'), sp=document.getElementById('setupPanel');
+    return { msShown: !!ms && !ms.classList.contains('hidden'),
+      setupHidden: !!sp && sp.classList.contains('hidden'),
+      scene: document.body.classList.contains('scene-select'),
+      msStory: !!document.getElementById('msStory'),
+      badge: (document.getElementById('msStoryBadge')||{}).textContent||'' };
   })()`);
-  check('大厅第三模式卡「故事之旅」存在且可见', hall && hall.has === true && hall.hidden === false);
-  check('冷启动副标题文案（东海篇）', hall && /东海篇/.test(hall.badge || ''), JSON.stringify(hall && hall.badge));
+  check('冷启动=航路选择页（模式页可见·船长大厅隐藏·开幕场景）',
+    ms0 && ms0.msShown && ms0.setupHidden && ms0.scene && ms0.msStory, JSON.stringify(ms0));
+  check('冷启动故事卡副标题文案（东海篇）', ms0 && /东海篇/.test(ms0.badge || ''), JSON.stringify(ms0 && ms0.badge));
+  // 对战路径（G7）：模式页 → 船长大厅（船长网格）→ 返回航路选择
+  const battleNav = await ev(`(()=>{
+    document.getElementById('msBattle').click();
+    const sp=document.getElementById('setupPanel'), ms=document.getElementById('modeSelectPanel');
+    const okHall = !sp.classList.contains('hidden') && ms.classList.contains('hidden')
+      && document.querySelectorAll('#leaderChoices .captain-card').length >= 10
+      && !document.body.classList.contains('scene-select');
+    document.getElementById('btnBackMode').click();
+    const okBack = !document.getElementById('modeSelectPanel').classList.contains('hidden')
+      && document.getElementById('setupPanel').classList.contains('hidden')
+      && document.body.classList.contains('scene-select');
+    return { okHall, okBack };
+  })()`);
+  check('对战路径：模式页→船长大厅（≥10 船长）→返回航路选择', battleNav && battleNav.okHall && battleNav.okBack,
+    JSON.stringify(battleNav));
 
   // ===== ② 图鉴冷启动：稀有度角标 + 收藏筛选行 + 初始收藏对账 =====
   const codex0 = await ev(`(()=>{
@@ -130,9 +150,10 @@ async function main() {
     `显示 ${miss0 && miss0.n} 张（预期 ${expectMiss}）`);
   await ev(`OPTCG_GALLERY.close(); 1`);
 
-  // ===== ③ 真实 UI 点击流：点模式卡 → 关卡面板 → 点第 1 关进局 =====
-  await ev(`document.getElementById('btnStory').click()`);
+  // ===== ③ 真实 UI 点击流：模式页点「故事之旅」→ 关卡面板（航海日志场景）→ 点第 1 关进局 =====
+  await ev(`document.getElementById('msStory').click()`);
   await sleep(300);
+  check('故事入口=航海日志场景（body.scene-story）', await ev(`document.body.classList.contains('scene-story')`) === true);
   const panelInfo = await ev(`(()=>{
     const p=document.getElementById('storyPanel');
     const stages=[...p.querySelectorAll('.story-stage')];
@@ -281,6 +302,43 @@ async function main() {
   })()`);
   check('胜利结算面板：获得卡列表渲染 + 「获得新卡」横幅', settleCheck && settleCheck.w === 0 && settleCheck.cards >= 1 && settleCheck.banner === true,
     JSON.stringify(settleCheck));
+
+  // ===== ⑤b G9 倒计时：胜利后「进入下一关」5 秒倒计时 → 点击取消 → 再点立即进 =====
+  // （沿用上一局已成长的卡组重访第 1 关再打一局拿胜利面板；autoplay 停止后倒计时是真实 1s 节拍）
+  const g9 = await ev(`(async () => {
+    OPTCG_STORY.startStage(1);
+    window.__OPTCG_SPEED = 8;
+    OPTCG_GAME.autoplay(999999, 25, 'normal');
+    const t0 = Date.now();
+    while (Date.now() - t0 < 240000) {
+      const st = OPTCG_GAME.state();
+      const ep = document.getElementById('endPanel');
+      if (st && st.winner !== null && ep && !ep.classList.contains('hidden')) break;
+      if (!st) return { err: 'no-state' };
+      await new Promise(r => setTimeout(r, 100));
+    }
+    if (OPTCG_GAME.state().winner !== 0) return { err: 'lose-retry', w: OPTCG_GAME.state().winner };
+    const btn = document.getElementById('btnNextStage');
+    if (!btn) return { err: 'no-next-btn' };
+    const t1 = btn.textContent;
+    const n1 = parseInt((btn.querySelector('.ns-count')||{textContent:'?'}).textContent, 10);
+    await new Promise(r => setTimeout(r, 2100));
+    const n2 = parseInt((btn.querySelector('.ns-count')||{textContent:'?'}).textContent, 10);
+    btn.click(); // 第一次点击=取消自动进入
+    const holdOk = btn.classList.contains('hold') && !btn.querySelector('.ns-count');
+    await new Promise(r => setTimeout(r, 2300));
+    const stillEnd = !document.getElementById('endPanel').classList.contains('hidden'); // 取消后不自动进
+    btn.click(); // 第二次点击=立即进入
+    await new Promise(r => setTimeout(r, 900));
+    const st2 = OPTCG_GAME.state();
+    const inNext = document.getElementById('endPanel').classList.contains('hidden')
+      && st2 && st2.winner === null && st2.turn >= 1
+      && document.body.classList.contains('scene-story');
+    return { t1, n1, n2, holdOk, stillEnd, inNext };
+  })()`);
+  check('G9 倒计时：5 秒倒数递减 → 点击取消 → 再点立即进下一关（保持故事场景）',
+    g9 && g9.n1 === 5 && g9.n2 < g9.n1 && g9.holdOk === true && g9.stillEnd === true && g9.inNext === true,
+    JSON.stringify(g9));
 
   // ===== ⑥ 无 JS 错误 =====
   const errs = await ev(`JSON.stringify(window.__errs)`);

@@ -1620,3 +1620,206 @@ html.reduced-motion .story-get, html.reduced-motion .story-reward .card { animat
 .codex-mark.have::before { content: "✓"; }
 .codex-mark.miss { background: #2c3a55; color: #9fb2d4; }
 .codex-mark.miss::before { content: "？"; }
+
+/* ============================================================
+   四轮反馈（G6-G9）：模式选择首页 + 分场景背景 + 故事倒计时
+   ============================================================ */
+/* ---- 场景层通用：默认全隐，body.scene-* 点亮 ---- */
+.bg-scene { position: absolute; inset: 0; opacity: 0; transition: opacity .5s ease; pointer-events: none; }
+body.scene-select .bg-scene-select { opacity: 1; }
+body.scene-story .bg-scene-story { opacity: 1; }
+/* 模式选择/故事面板：轻遮罩——场景层（罗盘/航路/波浪）须透出才有"开幕感"，
+   卡片自身深底(.88+)保证可读性不受影响（VLM 三轮取证：78% 遮罩+blur 把场景压到不可见；
+   blur 对 1-3px 细线是毁灭性的，场景面板一律不 blur） */
+#modeSelectPanel, #storyPanel { background: rgba(3, 8, 18, .3); backdrop-filter: none; }
+
+/* ---- 场景一：模式选择·伟大航路开幕（深空海面 + 旋转罗盘 + 流星）---- */
+.bss-veil {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(110% 80% at 50% 115%, rgba(30,100,185,.55), transparent 55%),
+    radial-gradient(70% 55% at 82% 18%, rgba(60,120,220,.3), transparent 65%),
+    linear-gradient(180deg, #040a1c 0%, #071633 46%, #0a2148 78%, #14387e 100%);
+}
+/* 开幕星点：场景层自带（底层 bg-stars 会被遮罩吃掉，场景内重画一圈亮星） */
+.bss-veil::before {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    radial-gradient(1.8px 1.8px at 14% 16%, rgba(255,255,255,.9), transparent 100%),
+    radial-gradient(1.3px 1.3px at 26% 34%, rgba(220,235,255,.75), transparent 100%),
+    radial-gradient(1.6px 1.6px at 40% 10%, rgba(255,250,225,.8), transparent 100%),
+    radial-gradient(1.2px 1.2px at 55% 26%, rgba(255,255,255,.65), transparent 100%),
+    radial-gradient(2px 2px at 68% 8%, rgba(255,244,214,.9), transparent 100%),
+    radial-gradient(1.4px 1.4px at 80% 30%, rgba(220,238,255,.7), transparent 100%),
+    radial-gradient(1.7px 1.7px at 90% 12%, rgba(255,255,255,.85), transparent 100%),
+    radial-gradient(1.2px 1.2px at 8% 52%, rgba(255,255,255,.55), transparent 100%),
+    radial-gradient(1.5px 1.5px at 33% 60%, rgba(220,238,255,.5), transparent 100%),
+    radial-gradient(1.3px 1.3px at 62% 55%, rgba(255,248,220,.55), transparent 100%);
+  animation: twinkle 4.5s ease-in-out infinite alternate;
+}
+.bss-compass {
+  position: absolute; right: -180px; top: 34%;
+  width: min(96vh, 800px); height: min(96vh, 800px);
+  transform: translateY(-50%);
+  filter: drop-shadow(0 0 50px rgba(212,175,55,.5));
+}
+.bss-compass .ring { fill: none; stroke: rgba(236,200,100,.72); stroke-width: 1.4; }
+.bss-compass .ring.r2 { stroke-dasharray: 3 5; stroke: rgba(236,200,100,.55); }
+.bss-compass .ring.r3 { stroke: rgba(150,200,255,.4); }
+.bss-compass .rose { transform-origin: 100px 100px; animation: bssSpin 64s linear infinite; }
+.bss-compass .needle { fill: none; stroke: rgba(250,224,140,.95); stroke-width: 2; }
+.bss-compass .needle.n-n { fill: rgba(226,186,80,.24); }
+.bss-compass .needle.n-s { fill: rgba(150,195,255,.12); }
+@keyframes bssSpin { to { transform: rotate(1turn); } }
+.bss-horizon {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 34%;
+  background:
+    radial-gradient(140% 100% at 50% 0%, rgba(245,215,110,.45), transparent 60%),
+    repeating-linear-gradient(180deg, rgba(90,160,255,.16) 0 2px, transparent 2px 26px);
+  mask-image: linear-gradient(180deg, transparent, #000 40%);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 40%);
+}
+/* 海面波浪：两条正弦波横移（开幕场景的"活"感） */
+.bss-waves {
+  position: absolute; left: -10%; right: -10%; bottom: 5%; height: 110px; width: 120%;
+  background-repeat: repeat-x; background-size: 520px 110px; background-position: bottom;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 110'%3E%3Cpath d='M0 64 Q 65 42 130 64 T 260 64 T 390 64 T 520 64' fill='none' stroke='rgba(140,195,255,.55)' stroke-width='2.5'/%3E%3Cpath d='M0 86 Q 65 66 130 86 T 260 86 T 390 86 T 520 86' fill='none' stroke='rgba(245,215,110,.42)' stroke-width='2'/%3E%3C/svg%3E");
+  animation: bssWaves 11s linear infinite;
+  opacity: .9;
+}
+@keyframes bssWaves { to { background-position-x: 520px; } }
+.bss-meteors i {
+  position: absolute; top: -6%; width: 150px; height: 3px; border-radius: 3px;
+  background: linear-gradient(90deg, transparent, rgba(205,230,255,.95));
+  box-shadow: 0 0 8px 1px rgba(170,210,255,.5);
+  transform: rotate(24deg);
+  animation: bssMeteor 7s ease-in infinite;
+}
+.bss-meteors i:nth-child(1) { left: 12%; animation-delay: 0s; }
+.bss-meteors i:nth-child(2) { left: 34%; width: 90px; animation-delay: 2.4s; }
+.bss-meteors i:nth-child(3) { left: 58%; animation-delay: 4.8s; }
+.bss-meteors i:nth-child(4) { left: 74%; width: 110px; animation-delay: 1.4s; }
+.bss-meteors i:nth-child(5) { left: 88%; width: 70px; animation-delay: 5.8s; }
+@keyframes bssMeteor {
+  0% { transform: rotate(24deg) translateX(0); opacity: 0; }
+  6% { opacity: .95; }
+  30% { transform: rotate(24deg) translateX(46vh); opacity: 0; }
+  100% { transform: rotate(24deg) translateX(46vh); opacity: 0; }
+}
+
+/* ---- 场景二：故事之旅·航海日志（旧纸暖褐 + 航路虚线流动 + 岛屿剪影）---- */
+.bst-paper {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(120,78,30,.28), transparent 55%),
+    radial-gradient(100% 80% at 85% 100%, rgba(90,58,20,.32), transparent 58%),
+    linear-gradient(168deg, #231507 0%, #2e1e0b 40%, #1d1206 100%);
+}
+.bst-paper::before {
+  content: ""; position: absolute; inset: 0; opacity: .5;
+  background: repeating-linear-gradient(92deg, rgba(255,225,160,.028) 0 3px, transparent 3px 9px);
+}
+.bst-paper::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(60% 46% at 50% 42%, rgba(255,214,130,.09), transparent 70%);
+}
+.bst-route { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bst-route .brt-line {
+  fill: none; stroke: rgba(240,200,120,.5); stroke-width: 3;
+  stroke-linecap: round; stroke-dasharray: 14 12;
+  filter: drop-shadow(0 0 6px rgba(240,200,120,.35));
+  animation: brtFlow 30s linear infinite;
+}
+@keyframes brtFlow { to { stroke-dashoffset: -312; } }
+.bst-route .brt-dot { fill: rgba(60,38,12,.9); stroke: rgba(240,200,120,.75); stroke-width: 2.5; }
+.bst-route .brt-flag { fill: rgba(214,69,58,.85); stroke: none; }
+.bst-route .brt-flagpole { stroke: rgba(240,200,120,.7); stroke-width: 2.5; }
+.bst-isles i {
+  position: absolute; border-radius: 50% 50% 46% 46%;
+  background: linear-gradient(180deg, rgba(46,30,12,.85), rgba(24,15,6,.9));
+  box-shadow: inset 0 3px 0 rgba(255,215,130,.14);
+}
+.bst-isles i:nth-child(1) { width: 190px; height: 64px; right: -60px; top: 16%; }
+.bst-isles i:nth-child(2) { width: 120px; height: 44px; left: -34px; top: 46%; }
+.bst-isles i:nth-child(3) { width: 250px; height: 78px; left: 30%; bottom: -30px; }
+
+/* ---- 模式选择面板 ---- */
+.mode-select-card { max-width: 860px; }
+.mode-select-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0 6px; }
+.ms-card {
+  --msc: #4fb6e8;
+  position: relative; display: flex; flex-direction: column; gap: 10px; text-align: left;
+  cursor: pointer; font-family: inherit; color: var(--sea-cream);
+  padding: 22px 22px 18px; border-radius: var(--r-lg); overflow: hidden;
+  background: linear-gradient(165deg, rgba(14,40,74,.88), rgba(6,16,34,.94));
+  border: 1px solid color-mix(in srgb, var(--msc) 46%, #22344e);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 10px 26px rgba(0,0,0,.5);
+  transition: transform .22s cubic-bezier(.2,.8,.3,1), border-color .2s, box-shadow .25s;
+  animation: hallCard .45s cubic-bezier(.2,.8,.3,1) both;
+}
+.ms-card.story { --msc: #e0a94f; animation-delay: .1s; }
+.ms-card::before {
+  content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity .25s; pointer-events: none;
+  background: radial-gradient(90% 120% at 18% 12%, color-mix(in srgb, var(--msc) 22%, transparent), transparent 62%);
+}
+.ms-card:hover { transform: translateY(-5px); border-color: var(--msc); }
+.ms-card:hover::before { opacity: 1; }
+.ms-card:hover { box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 16px 34px rgba(0,0,0,.6), 0 0 24px color-mix(in srgb, var(--msc) 24%, transparent); }
+.ms-card:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+.ms-card .ms-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; border-radius: 12px; color: var(--msc);
+  background: linear-gradient(170deg, color-mix(in srgb, var(--msc) 17%, #0a1628), rgba(8,18,34,.9));
+  border: 1px solid color-mix(in srgb, var(--msc) 48%, transparent);
+  box-shadow: inset 0 0 12px color-mix(in srgb, var(--msc) 20%, transparent);
+}
+.ms-card .ms-icon svg { width: 24px; height: 24px; }
+.ms-card .ms-name { font-size: 20px; font-weight: 900; letter-spacing: 4px; color: var(--gold-bright); }
+.ms-card .ms-desc { font-size: 12.5px; color: #9fb2d4; letter-spacing: 1px; line-height: 1.6; }
+.ms-card .ms-sub { font-size: 11px; color: color-mix(in srgb, var(--msc) 78%, #cfd9ec); letter-spacing: .5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ms-card .ms-go {
+  margin-top: 2px; align-self: flex-end; font-size: 12px; font-weight: 800; letter-spacing: 2px;
+  color: #0e1e0c; background: linear-gradient(180deg, #ffe9a8, #d9aa45);
+  border-radius: var(--r-sm); padding: 5px 14px;
+  box-shadow: 0 0 12px rgba(217,170,69,.4);
+  transition: transform .15s, box-shadow .2s;
+}
+.ms-card:hover .ms-go { transform: translateX(3px); box-shadow: 0 0 18px rgba(217,170,69,.65); }
+@media (max-width: 640px) {
+  .mode-select-row { grid-template-columns: 1fr; gap: 10px; margin: 12px 0 4px; }
+  .ms-card { padding: 15px 16px 13px; gap: 7px; }
+  .ms-card .ms-name { font-size: 17px; letter-spacing: 3px; }
+  .ms-card .ms-icon { width: 38px; height: 38px; border-radius: 10px; }
+  .ms-card .ms-icon svg { width: 20px; height: 20px; }
+}
+
+/* ---- 对战大厅「返回航路选择」---- */
+.btn-backmode { width: 100%; margin-top: 8px; color: #9fb2d4; letter-spacing: 2px; }
+.btn-backmode:hover { border-color: var(--gold); }
+
+/* ---- 故事之旅：胜利倒计时自动进下一关 ---- */
+.btn-nextstage {
+  position: relative; overflow: hidden;
+  background: linear-gradient(180deg, #ffe9a8, #f6d26b 40%, #d9aa45);
+  color: #2a1c04; border: 1px solid #fff3c9;
+  padding: 11px 26px; font-size: 15px; letter-spacing: 1.5px;
+  border-radius: var(--r-md); cursor: pointer; font-weight: 800;
+  box-shadow: 0 0 18px rgba(212,175,55,.5);
+  animation: nextStagePulse 1s ease-in-out infinite;
+}
+.btn-nextstage:hover { transform: translateY(-2px); box-shadow: 0 0 26px rgba(212,175,55,.75); }
+.btn-nextstage.hold { animation: none; } /* 已取消自动：等待玩家手动点 */
+.btn-nextstage .ns-count {
+  display: inline-block; min-width: 22px; text-align: center; margin-left: 2px;
+  font-variant-numeric: tabular-nums;
+}
+@keyframes nextStagePulse {
+  0%,100% { box-shadow: 0 0 10px rgba(212,175,55,.4); }
+  50% { box-shadow: 0 0 24px rgba(212,175,55,.8); }
+}
+/* 动效弱化：场景动画与流星静止 */
+@media (prefers-reduced-motion: reduce) {
+  .bss-compass .rose, .bst-route .brt-line, .bss-meteors i, .ms-card, .btn-nextstage { animation: none !important; }
+}
+html.reduced-motion .bss-compass .rose, html.reduced-motion .bst-route .brt-line,
+html.reduced-motion .bss-meteors i, html.reduced-motion .ms-card, html.reduced-motion .btn-nextstage { animation: none !important; }

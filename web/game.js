@@ -1071,7 +1071,7 @@
   };
 
   // ===== 键盘与焦点管理 =====
-  const MODAL_IDS = ['setupPanel', 'responsePanel', 'helpPanel', 'builderPanel', 'endPanel'];
+  const MODAL_IDS = ['modeSelectPanel', 'setupPanel', 'responsePanel', 'helpPanel', 'builderPanel', 'endPanel'];
   let focusReturn = null;
   const isVisible = (id) => { const el = $(id); return !!el && !el.classList.contains('hidden'); };
 
@@ -1233,6 +1233,24 @@
       } catch (e) { okResume = false; }
       if (!okResume) refreshResume(); // 恢复失败（坏档已被 save 层清除）→ 刷新按钮可见性
     };
+
+    // 模式选择首页（四轮反馈 G6/G7）：对战→船长大厅；故事→关卡面板（story.js 接管场景）
+    $('msBattle').onclick = () => {
+      sfx('click');
+      $('modeSelectPanel').classList.add('hidden');
+      document.body.classList.remove('scene-select', 'scene-story');
+      $('setupPanel').classList.remove('hidden');
+    };
+    $('msStory').onclick = () => {
+      sfx('click');
+      $('modeSelectPanel').classList.add('hidden');
+      document.body.classList.remove('scene-select');
+      if (window.OPTCG_STORY) window.OPTCG_STORY.openPanel(); // onStoryPanel(true) 内挂 scene-story
+      else document.body.classList.add('scene-story');
+    };
+    $('btnBackMode').onclick = () => { sfx('click'); backToMenu(); };
+    $('btnHallHelp2').onclick = () => { sfx('click'); openHelp(); };
+    $('btnCodex2').onclick = () => { sfx('click'); if (window.OPTCG_GALLERY) window.OPTCG_GALLERY.open(); };
   }
 
   // 大厅「继续上次对局」按钮可见性：save 层有断档才显示
@@ -1243,6 +1261,31 @@
       has = !!(window.OPTCG_SAVE && typeof window.OPTCG_SAVE.hasUnfinished === 'function' && window.OPTCG_SAVE.hasUnfinished());
     } catch (e) { has = false; }
     b.classList.toggle('hidden', !has);
+  }
+
+  // ===== 航路选择首页（四轮反馈 G6/G7：模式页 → 对战船长大厅 / 故事关卡面板 两级导航）=====
+  function showModeSelect() {
+    clearNextStageTimer();
+    ['setupPanel', 'endPanel', 'responsePanel', 'helpPanel', 'builderPanel'].forEach((id) => $(id).classList.add('hidden'));
+    const sp = document.getElementById('storyPanel');
+    if (sp) sp.classList.add('hidden');
+    $('modeSelectPanel').classList.remove('hidden');
+    document.body.classList.add('scene-select');    // 伟大航路开幕场景
+    document.body.classList.remove('scene-story');
+    if (window.OPTCG_MODES) window.OPTCG_MODES.refreshMenu();
+    if (window.OPTCG_STORY) window.OPTCG_STORY.refreshBadge();
+    refreshResume();
+  }
+  // storyPanel 开关回调（story.js 调）：开=隐模式页+航海日志场景（G8）；关且无对局=回航路选择页
+  function onStoryPanel(visible) {
+    if (visible) {
+      $('modeSelectPanel').classList.add('hidden');
+      document.body.classList.remove('scene-select');
+      document.body.classList.add('scene-story');
+    } else if (!G && $('modeSelectPanel').classList.contains('hidden')
+      && $('setupPanel').classList.contains('hidden') && $('endPanel').classList.contains('hidden')) {
+      showModeSelect();
+    }
   }
 
   function startGame(opts = {}) {
@@ -1293,6 +1336,10 @@
       actions: [],
     };
     gameCtx = opts.ctx || { mode: 'free', leaderColor: color, leaderId: myLeader.id, deckRef: deckA };
+    // 分场景背景（G8）：故事之旅对局=航海日志；对战=默认深海
+    document.body.classList.remove('scene-select');
+    document.body.classList.toggle('scene-story', !!(gameCtx && gameCtx.mode === 'story'));
+    clearNextStageTimer();
     ended = false;
     autoPassSession = false; // 「本局不再询问」随新局重置
     logSeen = G.log.length;
@@ -1322,14 +1369,69 @@
     closeFusePanel();
     fuseSummonPending = null;
     if (replayMode) stopReplay(); // 兜底：任何路径退回大厅都拆回放态
-    ['endPanel', 'responsePanel', 'helpPanel'].forEach((id) => $(id).classList.add('hidden'));
-    $('setupPanel').classList.remove('hidden');
     try { window.OPTCG_SAVE && typeof window.OPTCG_SAVE.autosave === 'function' && window.OPTCG_SAVE.autosave(null); } catch (e) { /* 静默 */ }
-    if (window.OPTCG_MODES) window.OPTCG_MODES.refreshMenu();
-    refreshResume();
+    showModeSelect(); // 返回港口=回航路选择首页（G6：不再直接落船长大厅）
   }
 
   // 终局结算面板（模式层 settle 在此挂接）
+  // 故事之旅倒计时（G9）：胜利后「进入下一关」按钮 5 秒倒计时自动续关；第一次点击=取消自动，第二次=立即进
+  let nextStageTimer = null;
+  function clearNextStageTimer() {
+    if (nextStageTimer) { clearInterval(nextStageTimer); nextStageTimer = null; }
+  }
+  function mountNextStageButton(win) {
+    clearNextStageTimer();
+    const acts = $('endPanel').querySelector('.end-actions');
+    if (!acts) return;
+    const old = document.getElementById('btnNextStage');
+    if (old) old.remove();
+    if (!(win && gameCtx && gameCtx.mode === 'story' && window.OPTCG_STORY)) return;
+    const stage = +gameCtx.stage || 0;
+    const next = (stage >= 1 && stage < 10) ? stage + 1 : 0; // 第10关通关后=重返关卡列表（不倒计时）
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'btnNextStage';
+    btn.className = 'btn-nextstage';
+    const setLabel = (n) => {
+      btn.innerHTML = next
+        ? `进入下一关（第${next}关 · <span class="ns-count">${n}</span>s）`
+        : '重返关卡列表';
+    };
+    const go = () => {
+      clearNextStageTimer();
+      $('endPanel').classList.add('hidden');
+      if (next) window.OPTCG_STORY.restart({ stage: next });
+      else window.OPTCG_STORY.openPanel();
+    };
+    if (!next) { // 全通关/异常：手动返回关卡列表
+      btn.classList.add('hold');
+      btn.textContent = '重返关卡列表';
+      btn.onclick = go;
+    } else {
+      let n = 5;
+      let hold = false;
+      setLabel(n);
+      btn.onclick = () => {
+        sfx('click');
+        if (!hold) { // 第一次点击=取消自动进入（用户可按按钮取消）
+          hold = true;
+          clearNextStageTimer();
+          btn.classList.add('hold');
+          btn.innerHTML = `进入下一关（第${next}关）`;
+          return;
+        }
+        go(); // 第二次点击=立即进入
+      };
+      nextStageTimer = setInterval(() => {
+        if (!document.getElementById('btnNextStage')) { clearNextStageTimer(); return; }
+        n -= 1;
+        if (n <= 0) { go(); return; }
+        setLabel(n);
+      }, 1000);
+    }
+    acts.insertBefore(btn, acts.firstChild); // 倒计时主按钮排最前（视觉主导）
+  }
+
   function showEndPanel() {
     if (!G || G.winner === null) return;
     const win = G.winner === MY;
@@ -1356,6 +1458,7 @@
     $('endTitle').innerHTML = (win ? CAP().icon('trophy') + ' 胜利！' : CAP().icon('skull') + ' 战败');
     $('endTitle').className = 'end-title' + (win ? '' : ' defeat');
     $('endDetail').innerHTML = detail;
+    mountNextStageButton(win); // G9：故事之旅胜利=5 秒倒计时自动续关（可点击取消）
     $('endPanel').classList.remove('hidden');
     try { window.OPTCG_SAVE && typeof window.OPTCG_SAVE.autosave === 'function' && window.OPTCG_SAVE.autosave(null); } catch (e) { /* 静默 */ }
   }
@@ -1445,6 +1548,8 @@
       G = g;
       ai = O.createAI(AI_LEVELS.includes(snap.level) ? snap.level : 'normal');
       gameCtx = snap.ctx == null ? null : JSON.parse(JSON.stringify(snap.ctx));
+      document.body.classList.remove('scene-select'); // 断档恢复也按模式落场景（G8）
+      document.body.classList.toggle('scene-story', !!(gameCtx && gameCtx.mode === 'story'));
       ended = false; selMode = null; busy = false; autoPassSession = false;
       logSeen = Array.isArray(g.log) ? g.log.length : 0;
       if (g.players[MY].leader && g.players[MY].leader.color) {
@@ -1584,6 +1689,7 @@
   // 模式层入口（modes.js 使用；free 局直接用 startGame）
   window.OPTCG_GAME = {
     startGame, backToMenu, setLeaderColor, startReplay,
+    showModeSelect, onStoryPanel, // 航路选择首页导航（story.js openPanel/closePanel 回调）
     leaderColor: () => myLeaderColor,
     cardEl,
     state: () => (G && {
@@ -1602,6 +1708,7 @@
   setupUI();
   initFocusManager();
   refreshResume();
+  showModeSelect(); // 首屏=航路选择（G6：对战/故事两级入口；modes.js/story.js 后加载的 badge 由各自 init 刷新）
   $('myHand').addEventListener('scroll', updateHandFades, { passive: true });
   addEventListener('resize', updateHandFades);
 

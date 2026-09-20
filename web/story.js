@@ -477,8 +477,14 @@
     document.getElementById('storyDeckInfo').textContent = `当前卡组 ${arr.length} 张 · 均费 ${avg} · 奖励卡自动入组`;
   }
 
-  function openPanel() { renderPanel(); const p = panelEl(); if (p) p.classList.remove('hidden'); }
-  function closePanel() { const p = document.getElementById('storyPanel'); if (p) p.classList.add('hidden'); }
+  function openPanel() {
+    renderPanel(); const p = panelEl(); if (p) p.classList.remove('hidden');
+    try { W.OPTCG_GAME && W.OPTCG_GAME.onStoryPanel && W.OPTCG_GAME.onStoryPanel(true); } catch (e) { /* game.js 缺席（selftest 页） */ }
+  }
+  function closePanel() {
+    const p = document.getElementById('storyPanel'); if (p) p.classList.add('hidden');
+    try { W.OPTCG_GAME && W.OPTCG_GAME.onStoryPanel && W.OPTCG_GAME.onStoryPanel(false); } catch (e) { /* 同上 */ }
+  }
 
   // 大厅模式卡副标题（modes.js refreshMenu 调用；冷启动先落初始收藏）
   function badgeText() {
@@ -490,8 +496,11 @@
   }
   function refreshBadge() {
     if (!DOC) return;
+    const txt = badgeText();
     const el = document.getElementById('storyBadge');
-    if (el) el.textContent = badgeText();
+    if (el) el.textContent = txt;
+    const ms = document.getElementById('msStoryBadge'); // 模式选择首页（G6）同步副标题
+    if (ms) ms.textContent = txt;
   }
 
   // ===== 挂接入口（index.html 有 #btnStory 时绑定；selftest/e2e 页无该按钮则静默跳过）=====
@@ -499,6 +508,7 @@
     if (!DOC) return;
     const btn = document.getElementById('btnStory');
     if (btn) btn.onclick = openPanel;
+    refreshBadge(); // 首屏刷模式选择页副标题（msStoryBadge）
     // 调试钩子：?open=story 直接开关卡面板（probe/回归用）
     try {
       const qs = new URLSearchParams(location.search);

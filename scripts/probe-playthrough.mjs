@@ -378,7 +378,11 @@ async function main() {
   const nCards = await ev(`document.querySelectorAll('.codex-grid .card').length`);
   const cntText = await ev(`document.querySelector('.codex-count')?document.querySelector('.codex-count').textContent:''`);
   // 动态基线：图鉴卡数 = 页面渲染数 = 池卡数+船长数（运营期删卡不硬编码；渲染数与计数徽章互证）
-  check('大厅-图鉴：全量卡渲染（=池卡+船长，徽章互证）', codexOpen === true && +nCards >= 460 && cntText.includes(String(nCards)), `cards=${nCards} ${cntText}`);
+  // 徽章口径=只计卡牌不含船长（G1-G5 卡池清理 490→257 后旧硬编码 ≥460 已失效）
+  const poolInfo = JSON.parse(await ev(`JSON.stringify({cards: OPTCG.POOL.cards.length, leaders: OPTCG.POOL.leaders.length})`) || '{}');
+  check('大厅-图鉴：全量卡渲染（=池卡+船长，徽章互证）',
+    codexOpen === true && +nCards === poolInfo.cards + poolInfo.leaders && cntText.includes(`共 ${poolInfo.cards} 张`),
+    `cards=${nCards} pool=${poolInfo.cards}+${poolInfo.leaders} ${cntText}`);
   await sleep(1800); // 等视口内图片 decode → onload 把 opacity 从 0 提到 1
   const lazy1 = await ev(`(()=>{const im=[...document.querySelectorAll('.codex-grid .card img')];
     const vis1=im.filter(i=>i.style.opacity==='1'&&i.complete&&i.naturalWidth>0).length;
@@ -479,7 +483,7 @@ async function main() {
   const rpWinner = await ev(`(window.OPTCG_GAME&&OPTCG_GAME.state()?OPTCG_GAME.state().winner:null)`);
   check('回放：终局与原局一致（确定性）', rpWinner === resA.winner, `replay=${rpWinner} orig=${resA.winner}`);
   await ev(`(()=>{const b=document.getElementById('rpExit'); if(b)b.click(); return 1;})()`);
-  ok = await waitFor(`!document.getElementById('setupPanel').classList.contains('hidden')`, 8000);
+  ok = await waitFor(`!document.getElementById('modeSelectPanel').classList.contains('hidden')`, 8000);
   check('回放：退出返回大厅', ok === true);
 
   // ============ PHASE 4 局 B：非红船长（天梯）真点通关 ============
@@ -523,7 +527,7 @@ async function main() {
   const lad1 = await ev(`OPTCG_SAVE.get('ladder')`);
   check('投降：天梯判负扣分（-15 且负场+1）', /判负/.test(String(toastTxt)) && lad1.losses === lad0.losses + 1 && lad1.score === Math.max(0, lad0.score - 15),
     `${lad0.score}→${lad1.score} 负${lad0.losses}→${lad1.losses} toast=${String(toastTxt).slice(0, 20)}`);
-  r = await ev(`!document.getElementById('setupPanel').classList.contains('hidden')`);
+  r = await ev(`!document.getElementById('modeSelectPanel').classList.contains('hidden')`);
   check('投降：返回港口（大厅）', r === true);
 
   // ============ PHASE 6 重新开局 / 返回港口（free 局，confirm 两分支） ============
@@ -548,7 +552,7 @@ async function main() {
   await sleep(400);
   await answerConfirm('ok');
   await sleep(600);
-  r = await ev(`!document.getElementById('setupPanel').classList.contains('hidden')`);
+  r = await ev(`!document.getElementById('modeSelectPanel').classList.contains('hidden')`);
   check('返回港口：确认后回大厅', r === true);
 
   // ============ PHASE 7 生存模式（允许 autoplay 快速打底；重试至多 4 局以覆盖胜/负两条结算路径） ============
@@ -593,7 +597,7 @@ async function main() {
   await waitFor(`(window.OPTCG_GAME.state()&&OPTCG_GAME.state().active===0&&!window.OPTCG_GAME.state().pending&&window.OPTCG_GAME.state().winner===null)===true`, 90000, 700);
   await sleep(900); // autosave 落盘
   await reload();
-  ok = await waitFor(`!document.getElementById('setupPanel').classList.contains('hidden')`, 10000);
+  ok = await waitFor(`!document.getElementById('modeSelectPanel').classList.contains('hidden')`, 10000);
   check('断档：刷新后回大厅', ok === true);
   r = await ev(`(()=>{const a=document.getElementById('btnResume'); return a&&!a.classList.contains('hidden')?'VIS':'HIDDEN';})()`);
   check('断档：btnResume 出现', r === 'VIS', r);
