@@ -56,18 +56,18 @@ function fnv(str) {
 }
 
 function deckOf(color) {
-  const cs = O.POOL.cards.filter((c) => c.color === color);
-  const deck = [];
-  for (let i = 0; i < 4; i++) for (const c of cs) deck.push(c); // 轮次交错：全卡型均入组（旧连块×4 会把池序靠后的装备/舞台截出 50 张外，2026-09-18 三处同源同步修）
-  return deck.slice(0, 50);
+  return O.deckOf(O.POOL, color); // engine/deck.js 分层均匀采样（POOL-3 顺序敏感修复）
 }
+
+// F13 融合配方注入（与 web/game.js startGame 同口径：融合卡不进卡组，state 携带配方）
+const FUSIONS = O.POOL.cards.filter((c) => c.fusion);
 
 // 单局驱动：双 AI 轮流决策（含 pending 响应窗口）。异常不炸批：记 error 后终止该局。
 // 附加观测：手牌峰值（满手牌压力）、双方牌库耗尽时刻（空牌库压力）——驱动层采样，不改引擎。
 function playGame({ color0, color1, lvl0, lvl1, seed }) {
   const leader0 = O.POOL.leaders.find((l) => l.color === color0);
   const leader1 = O.POOL.leaders.find((l) => l.color === color1);
-  const s = O.newGame({ leaderA: leader0, deckA: deckOf(color0), leaderB: leader1, deckB: deckOf(color1), seed });
+  const s = O.newGame({ leaderA: leader0, deckA: deckOf(color0), leaderB: leader1, deckB: deckOf(color1), seed, fusions: FUSIONS });
   const ai0 = O.createAI(lvl0, O.makeRng(seed * 2 + 1));
   const ai1 = O.createAI(lvl1, O.makeRng(seed * 2 + 2));
   let steps = 0;

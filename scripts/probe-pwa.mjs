@@ -92,7 +92,7 @@ async function main() {
   r = await call('Runtime.evaluate', { expression: `(function(){return JSON.stringify({engine:!!window.OPTCG,pool:window.OPTCG?OPTCG.POOL.cards.length:0,captains:document.querySelectorAll('#leaderChoices .captain-card').length});})()`, returnByValue: true });
   const off = JSON.parse(r.result.value);
   check('断网 reload：引擎可用', off.engine);
-  check('断网 reload：卡池 192', off.pool === 192, `pool=${off.pool}`);
+  check('断网 reload：卡池 500', off.pool === 500, `pool=${off.pool}`);
   check('断网 reload：大厅 12 船长', off.captains === 12, `captains=${off.captains}`);
   // 断网下卡图可取（SW cache-first）
   r = await call('Runtime.evaluate', { expression: `(async()=>{try{const r2=await fetch('art/RED-01.webp');return r2.status;}catch(e){return 0;}})()`, awaitPromise: true, returnByValue: true });

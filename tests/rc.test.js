@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { newGame, applyAction, powerOfUnit, leaderPower, usableDons } from '../engine/index.js';
+import { newGame, applyAction, powerOfUnit, leaderPower, usableDons, deckOf as deckOfEngine } from '../engine/index.js';
 import { takeDon } from '../engine/phases.js';
 import { listActions } from '../ai/actions.js';
 import { createAI } from '../ai/heuristic.js';
@@ -286,12 +286,7 @@ test('win 事件只发一次（牌库空判负路径）', () => {
 
 // ===== 10. AI 三档终局 =====
 test('AI 三档各 5 局：全部正常终局、不死循环（动作数上限 guard 900）', () => {
-  const deckOf = (color) => {
-    const cs = pool.cards.filter((c) => c.color === color);
-    const deck = [];
-    for (const c of cs) for (let i = 0; i < 4; i++) deck.push(c);
-    return deck.slice(0, 50);
-  };
+  const deckOf = (color) => deckOfEngine(pool, color); // engine/deck.js 分层均匀采样
   const GUARD = 900;
   for (const lvl of ['easy', 'normal', 'hard']) {
     for (let g = 0; g < 5; g++) {

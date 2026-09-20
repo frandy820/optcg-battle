@@ -202,12 +202,18 @@ test('攻击目标：已横置角色可被攻击（守备表示）', () => {
   assert.equal(s.pending.kind, 'counter');
 });
 
-test('Leader 攻击后横置（每回合一次的天然限制）', () => {
+test('Leader 攻击后不横置：attackedTurn 限每回合一次，下回合恢复（v2 试玩反馈）', () => {
   const s = basicGame();
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
   applyAction(s, { t: 'passCounter', side: 1 });
-  assert.equal(s.players[0].leader.rest, true);
-  assert.throws(() => applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' }), /rested/);
+  assert.equal(s.players[0].leader.rest, false); // 视觉常立（试玩反馈：横放看着傻）
+  assert.equal(s.players[0].leader.attackedTurn, s.turn);
+  assert.throws(() => applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' }), /already attacked/);
+  applyAction(s, { t: 'endTurn', side: 0 }); // 换边+自动开局 → 回到 0 号
+  applyAction(s, { t: 'endTurn', side: 1 });
+  // 回合递增后 attackedTurn 不再拦截
+  applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
+  assert.equal(s.pending.kind, 'counter');
 });
 
 test('坚壁（blocker）：被攻击时防御战力 +1000，打不动即无战果', () => {
@@ -327,7 +333,7 @@ test('直攻结算：攻方 power < 防守方 → 伤害 0（攻击者不受损�
   applyAction(s, { t: 'attack', side: 0, attacker: { side: 0, type: 'leader' }, target: 'leader' });
   applyAction(s, { t: 'passCounter', side: 1 });
   assert.equal(s.players[1].lp, 4 * 2000);
-  assert.equal(s.players[0].leader.rest, true); // 但攻击宣告已成立
+  assert.equal(s.players[0].leader.attackedTurn, s.turn); // 攻击宣告已成立（leader 不横置，attackedTurn 记账）
 });
 
 test('守备击沉：攻击已横置角色，打得动即 KO，无 LP 伤害', () => {

@@ -1,0 +1,386 @@
+[
+  {
+    "id": "BLACK-26",
+    "name": "马歇尔·D·蒂奇",
+    "sub": " 黑暗果实·吸收 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "BLACK-26",
+    "fruit": "logia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-31",
+    "name": "麦哲伦",
+    "sub": " 毒龙·地狱审判 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "banish"
+    ],
+    "effect": null,
+    "art": "BLACK-31",
+    "fruit": "paramecia",
+    "rarity": "S"
+  },
+  {
+    "id": "BLACK-33",
+    "name": "耶稣布",
+    "sub": " 神射手 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "BLACK-33",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-36",
+    "name": "范·奥卡",
+    "sub": " 音速弹 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-36",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-40",
+    "name": "巴加斯",
+    "sub": " 格斗冠军 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-40",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-41",
+    "name": "阿巴罗·比萨罗",
+    "sub": " 晴岚之王 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-41",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-45",
+    "name": "圣胡安·恶狼",
+    "sub": " 黑团巨舰 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-45",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-47",
+    "name": "泽法",
+    "sub": " 黑腕·海楼石 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "BLACK-47",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-50",
+    "name": "布鲁诺",
+    "sub": " 空气门 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-50",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-51",
+    "name": "达兹·波涅斯",
+    "sub": " 刀刃人 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-51",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-52",
+    "name": "贝比5",
+    "sub": " 武器果实 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-52",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-54",
+    "name": "黑炭大蛇",
+    "sub": " 八岐大蛇 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-54",
+    "fruit": "zoan",
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-57",
+    "name": "洛克斯·D·吉贝克",
+    "sub": " 神之谷对决 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-57",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-60",
+    "name": "多米诺",
+    "sub": " 监视之眼 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-60",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-61",
+    "name": "斧手蒙卡",
+    "sub": " 东海上校 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-61",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-62",
+    "name": "Mr.4",
+    "sub": " 四号特工 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-62",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-63",
+    "name": "Miss圣诞快乐",
+    "sub": " 巴洛克工作社 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-63",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-64",
+    "name": "Miss双手指",
+    "sub": " 荆棘果实 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-64",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-G3",
+    "name": "雷雨",
+    "sub": " 希留爱用的妖刀 ",
+    "type": "gear",
+    "color": "black",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "BLACK-G3",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-G6",
+    "name": "蒙卡的大斧",
+    "sub": " 斧手蒙卡爱斧 ",
+    "type": "gear",
+    "color": "black",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "BLACK-G6",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "FUSION-BLACK1",
+    "name": "黑团双巨头 蒂奇&希留",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "banish"
+    ],
+    "effect": null,
+    "art": "BLACK-26",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "BLACK-26",
+        "BLACK-08"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-BLACK2",
+    "name": "海底监狱的铁壁 麦哲伦&汉尼拔",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-31",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "BLACK-31",
+        "BLACK-12"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  }
+]

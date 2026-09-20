@@ -1,0 +1,363 @@
+[
+  {
+    "id": "PURPLE-24",
+    "name": "特拉法尔加·罗",
+    "sub": " 北海医生 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-24",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-30",
+    "name": "唐吉诃德·多弗朗明戈",
+    "sub": " 寄生线 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "PURPLE-30",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-32",
+    "name": "霍金斯",
+    "sub": " 占卜 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-32",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-36",
+    "name": "尤斯塔斯·基德",
+    "sub": " 磁力·斥力 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "PURPLE-36",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-41",
+    "name": "乔艾莉·波妮",
+    "sub": " 年龄操控 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "PURPLE-41",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-43",
+    "name": "阿普",
+    "sub": " 长手族DJ ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-43",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-45",
+    "name": "乌尔基",
+    "sub": " 因果报应 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-45",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-46",
+    "name": "X·德雷克",
+    "sub": " 异特龙 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-46",
+    "fruit": "zoan",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-51",
+    "name": "贝加庞克",
+    "sub": " 军事科学家 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-51",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-54",
+    "name": "席尔巴斯·雷利",
+    "sub": " 冥王·三色霸气 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 2000,
+        "until": "battle"
+      }
+    },
+    "art": "PURPLE-54",
+    "fruit": null,
+    "rarity": "SS"
+  },
+  {
+    "id": "PURPLE-57",
+    "name": "唐吉诃德·罗西南迪",
+    "sub": " 白衣的守护 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "PURPLE-57",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-59",
+    "name": "维奥莱特",
+    "sub": " 千里眼 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-59",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-62",
+    "name": "乔拉",
+    "sub": " 艺术果实 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-62",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-63",
+    "name": "Mr.3",
+    "sub": " 蜡烛果实 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-63",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-64",
+    "name": "Miss黄金周",
+    "sub": " 自由画家 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-64",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-G4",
+    "name": "天夜叉的墨镜",
+    "sub": " 多弗朗明戈 ",
+    "type": "gear",
+    "color": "purple",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 1000
+    },
+    "effect": null,
+    "art": "PURPLE-G4",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-G5",
+    "name": "诅咒稻草人",
+    "sub": " 霍金斯的诅咒 ",
+    "type": "gear",
+    "color": "purple",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 1000
+    },
+    "effect": null,
+    "art": "PURPLE-G5",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "FUSION-PURPLE1",
+    "name": "最恶世代 罗与基德",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-24",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "PURPLE-24",
+        "PURPLE-36"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-PURPLE2",
+    "name": "剑士的顶点 米霍克&雷利",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "PURPLE-10",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "PURPLE-10",
+        "PURPLE-19"
+      ],
+      "cost": 2
+    },
+    "rarity": "SSS"
+  }
+]

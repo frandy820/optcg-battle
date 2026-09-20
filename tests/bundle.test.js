@@ -22,16 +22,17 @@ test('bundle 冒烟：eval 后用 OPTCG 跑一局 AI 对 AI 完整终局', () =>
   assert.ok(O, 'OPTCG 未挂载');
   assert.equal(typeof O.newGame, 'function');
   assert.equal(typeof O.createAI, 'function');
-  assert.equal(O.POOL.cards.length, 192); // OP-02 扩池后
+  // 卡池数动态对源（运营期删卡后不硬编码总数，断言=bundle 与 data/cards.json 一致）
+  assert.equal(O.POOL.cards.length, JSON.parse(readFileSync(join(root, 'data/cards.json'), 'utf8')).cards.length);
   assert.equal(O.POOL.leaders.length, 12);
 
-  // 随机对局（同 fuzz 逻辑）
-  const deckOf = (color) => {
-    const cs = O.POOL.cards.filter((c) => c.color === color);
-    const deck = [];
-    for (const c of cs) for (let i = 0; i < 4; i++) deck.push(c);
-    return deck.slice(0, 50);
-  };
+  // 随机对局（同 fuzz 逻辑）；deckOf 走 bundle 内置分层均匀采样（engine/deck.js 同源验证）
+  const deckOf = (color) => O.deckOf(O.POOL, color);
+  for (const col of ['red', 'blue']) {
+    const leader = O.POOL.leaders.find((l) => l.color === col);
+    const errs = O.validateDeck(leader, deckOf(col)); // vm 跨 realm 数组，用 isArray 判（deepStrictEqual 原型不同会假挂）
+    assert.ok(Array.isArray(errs) && errs.length === 0, `${col} default deck invalid: ${errs && errs.join(';')}`);
+  }
   const s = O.newGame({
     leaderA: O.POOL.leaders[0],
     deckA: deckOf('red'),

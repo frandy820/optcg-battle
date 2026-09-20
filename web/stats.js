@@ -7,7 +7,7 @@
   const $ = (id) => document.getElementById(id);
   const CAP = () => window.OPTCG_CAPTAINS;
   const UI = () => window.OPTCG_UI || { toast: (m) => console.log('[toast]', m) };
-  const MODE_NAME = { ladder: '天梯', survival: '生存', free: '自由' };
+  const MODE_NAME = { ladder: '天梯', survival: '生存', story: '故事', free: '自由' };
   const COLOR_NAME = { red: '红', blue: '蓝', green: '绿', yellow: '黄', purple: '紫', black: '黑' };
   const MAX_RECORDS = 60;   // 战绩条数上限
   const MAX_REPLAYS = 20;   // 回放保留局数上限（体积大头）

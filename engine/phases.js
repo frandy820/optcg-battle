@@ -47,6 +47,7 @@ export function endTurn(state) {
     pl.leader.buffs = pl.leader.buffs.filter((b) => b.until !== 'turn');
     for (const u of pl.board) u.buffs = u.buffs.filter((b) => b.until !== 'turn');
   }
+  state.fuseUsed = [false, false]; // F13 每回合限 1 次融合：换边重置（旧快照缺字段=旧局无融合，重置无害）
   logEvent(state, { t: 'endTurn', side: state.active });
   state.firstTurn = false;
   state.active = 1 - state.active;
@@ -109,6 +110,74 @@ export function playGear(state, side, idx, to) {
   target.gears = [card];
   logEvent(state, { t: 'gear', side, cardId: card.id, to: { type: 'char', idx: to.idx } });
 }
+
+// ===== 融合（F13）=====
+// 融合体登场规则：配方素材（己方场上+手牌各取一份，同名多份取一）全部进墓场 → 融合体直接进 board。
+// 融合卡不进卡组（deckOf 跳过 / validateDeck 拒收），只能经 t:'fuse' { side, fusionId } 动作登场。
+
+// 可融合性纯查询（AI 枚举与 UI 按钮共用同一真值源）：返回 null=可融合，否则返回不可融合原因
+export function fuseLockReason(state, side, def) {
+  const me = state.players[side];
+  if (!def || !def.fusion) return '未知融合配方';
+  if (me.board.length >= 5) return '场上已满 5 名角色，无法融合';
+  if (usableDons(me) < def.fusion.cost) return `融合费用不足：需 ${def.fusion.cost} 枚可用贝里（附着贝里=已消耗）`;
+  const used = Array.isArray(state.fuseUsed) ? state.fuseUsed : [false, false]; // 旧快照缺字段兜底
+  if (used[side]) return '每回合限融合 1 次';
+  for (const id of new Set(def.fusion.from)) { // 同名多份取一（配方内重复 id 只需一份）
+    if (!me.board.some((u) => u.id === id) && !me.hand.some((c) => c.id === id)) {
+      return `素材不足：缺 ${id}（场上或手牌均可）`;
+    }
+  }
+  return null;
+}
+
+// 场上素材摘除：与 combat.koUnit 同规则（装备随葬、其后单位索引前移同步修正附着 DON 记账）；
+// 差异：素材自身附着的 DON 直接回收（attached=null 回费用区，可用态）；不触发 onKO/onAllyKO/onKill（融合≠击沉）
+function scrapBoardUnit(pl, idx) {
+  const [unit] = pl.board.splice(idx, 1);
+  if (!unit) return null;
+  if (Array.isArray(unit.gears) && unit.gears.length) {
+    pl.trash.push(...unit.gears);
+    unit.gears = [];
+  }
+  pl.trash.push(unit);
+  for (const d of pl.donArea) {
+    if (!d.attached || d.attached.type !== 'char') continue;
+    if (d.attached.idx === idx) d.attached = null;    // 素材附着贝里回收（勿留悬空指针）
+    else if (d.attached.idx > idx) d.attached.idx--;  // 其后单位索引前移
+  }
+  return unit;
+}
+
+// 融合动作主体：素材判定 → 支付 fusion.cost → 素材进墓场 → 融合体登场（playedTurn=当前回合，rush=当回合可攻）
+export function fuse(state, side, fusionId) {
+  const me = state.players[side];
+  const def = (state.fusions || []).find((c) => c && c.id === fusionId); // 旧快照缺 fusions=无融合可用
+  const why = fuseLockReason(state, side, def);
+  if (why) throw new Error(why);
+  const fromIds = [...new Set(def.fusion.from)];
+  // 定位素材（先场后手）；倒序摘除防索引位移删错卡
+  const boardPicks = [], handPicks = [];
+  for (const id of fromIds) {
+    const bi = me.board.findIndex((u) => u.id === id);
+    if (bi >= 0) boardPicks.push(bi);
+    else handPicks.push(me.hand.findIndex((c) => c.id === id));
+  }
+  payDons(me, def.fusion.cost);
+  for (const bi of boardPicks.sort((a, b) => b - a)) scrapBoardUnit(me, bi);
+  for (const hi of handPicks.sort((a, b) => b - a)) {
+    const [c] = me.hand.splice(hi, 1);
+    if (c) me.trash.push(c);
+  }
+  const unit = { ...def, rest: false, playedTurn: state.turn, dons: 0, buffs: [], gears: [] };
+  me.board.push(unit);
+  state.fuseUsed = Array.isArray(state.fuseUsed) ? state.fuseUsed : [false, false];
+  state.fuseUsed[side] = true;
+  logEvent(state, { t: 'fuse', side, fusionId: def.id, fromIds });
+  runEffect(state, unit, 'onPlay', { side, self: unit });        // 融合体登场效果（buffAll/restEnemy/draw 等）
+  runEffect(state, me.leader, 'onSummon', { side, self: unit }); // 船长「角色登场」钩子（与 playCharacter 同语义）
+}
+
 
 // 附着 DON!!：费用区（未横置未附着）→ 己方 Leader/角色
 export function giveDon(state, side, to, count) {
@@ -178,6 +247,7 @@ export function applyAction(state, action) {
     case 'playGear': playGear(state, side, action.idx, action.to); break;
     case 'giveDon': giveDon(state, side, action.to, action.count || 1); break;
     case 'takeDon': takeDon(state, side, action.from, action.count || 1); break;
+    case 'fuse': fuse(state, side, action.fusionId); break;
     case 'attack': startAttack(state, action); break;
     case 'endTurn': endTurn(state); break;
     default: throw new Error('unknown action: ' + action.t);

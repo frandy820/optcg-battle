@@ -3,17 +3,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { newGame, applyAction } from '../engine/index.js';
+import { newGame, applyAction, deckOf as deckOfEngine } from '../engine/index.js';
 import { listActions } from '../ai/actions.js';
 import { createAI } from '../ai/heuristic.js';
 import { makeRng } from '../engine/rng.js';
 
 const pool = JSON.parse(readFileSync(new URL('../data/cards.json', import.meta.url), 'utf8'));
 function deckOf(color) {
-  const cs = pool.cards.filter((c) => c.color === color);
-  const deck = [];
-  for (let i = 0; i < 4; i++) for (const c of cs) deck.push(c);
-  return deck.slice(0, 50);
+  return deckOfEngine(pool, color); // engine/deck.js 分层均匀采样（与 game.js/balance-sim.js 同源）
 }
 
 test('回放确定性：AI 对 AI 三局，重放终态（winner/双方 LP/动作数）与原局一致', () => {

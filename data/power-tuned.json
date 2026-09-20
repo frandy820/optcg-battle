@@ -1,0 +1,31 @@
+{
+  "note": "F12 战力系统重排后的平衡微调表（2026-09-20）。微调=在新公式窗口 [cost*1000,(cost+1)*1000] 内对单卡 power ±1000。原 F12 批 10 张中 4 张（BLUE-26/BLUE-29/BLUE-32/RED-18）随 G1a 同名去重退役；G1a 删 event54/stage15+去重164 后速攻化（5-7回合LP终局）绿黄碾压紫红。本轮 G1a 批追加 20 张=任务额度上限，两轮分配：①绿降7/黄降7/紫升6 → 越带 9→4（绿v紫仍90）；②重排为绿降10/黄降4/紫升5 主攻绿霸权。真值源：scripts/check-pool3.js 与 tests/cards.test.js 均读本文件放行；动因与跨 seed 数据见交付报告。",
+  "tuned": {
+    "BLUE-04": { "power": 3000, "reason": "F12批：蓝v黄/蓝v黑 崩盘补偿 2费抽牌 2K→3K（贴窗上限）" },
+    "BLUE-41": { "power": 3000, "reason": "F12批：蓝v黄/蓝v黑 崩盘补偿 2费抽牌 2K→3K（贴窗上限）" },
+    "BLUE-08": { "power": 6000, "reason": "F12批：蓝v黄/蓝v黑 崩盘补偿 5费 gainDon 5K→6K" },
+    "BLUE-59": { "power": 6000, "reason": "F12批：蓝v黄/蓝v黑 崩盘补偿 5费 blocker+healLP 5K→6K" },
+    "BLUE-10": { "power": 8000, "reason": "F12批：蓝v黄/蓝v黑 崩盘补偿 7费 restEnemy 7K→8K" },
+    "RED-39": { "power": 8000, "reason": "F12批：红v黄 拉回带内 7费 doubleAttack 7K→8K" },
+    "GREEN-13": { "power": 4000, "reason": "G1a批：绿霸权(v紫90) 4费白板5K窗顶→4K贴底（4费段10张过厚）" },
+    "GREEN-20": { "power": 4000, "reason": "G1a批：绿霸权(v紫90) 4费白板5K窗顶→4K贴底" },
+    "GREEN-43": { "power": 4000, "reason": "G1a批：绿霸权(v紫90) 4费白板5K窗顶→4K贴底" },
+    "GREEN-44": { "power": 4000, "reason": "G1a批：绿霸权(v紫90) 4费白板5K窗顶→4K贴底" },
+    "GREEN-55": { "power": 4000, "reason": "G1a批：绿霸权(v紫90) 4费白板5K窗顶→4K贴底" },
+    "GREEN-05": { "power": 5000, "reason": "G1a批：绿中费压制 5费白板6K窗顶→5K贴底" },
+    "GREEN-18": { "power": 5000, "reason": "G1a批：绿中费压制 5费白板6K窗顶→5K贴底" },
+    "GREEN-03": { "power": 3000, "reason": "G1a批R2：绿低费密度 3费白板4K窗顶→3K贴底（速攻局第3回合主力）" },
+    "GREEN-22": { "power": 3000, "reason": "G1a批R2：绿低费密度 3费白板4K窗顶→3K贴底" },
+    "GREEN-23": { "power": 3000, "reason": "G1a批R2：绿低费密度 3费白板4K窗顶→3K贴底" },
+    "YELLOW-05": { "power": 4000, "reason": "G1a批：黄v黑80 4费白板5K窗顶→4K贴底（4费段13张过厚）" },
+    "YELLOW-18": { "power": 4000, "reason": "G1a批：黄v黑80 4费白板5K窗顶→4K贴底" },
+    "YELLOW-20": { "power": 4000, "reason": "G1a批：黄v黑80 4费白板5K窗顶→4K贴底" },
+    "YELLOW-22": { "power": 4000, "reason": "G1a批：黄v黑80 4费白板5K窗顶→4K贴底" },
+    "YELLOW-14": { "power": 5000, "reason": "G1a批：黄中费压制 5费白板6K窗顶→5K贴底" },
+    "PURPLE-06": { "power": 5000, "reason": "G1a批：紫垫底 4费rush 4K→5K贴窗顶" },
+    "PURPLE-07": { "power": 5000, "reason": "G1a批：紫垫底 4费restEnemy 4K→5K贴窗顶" },
+    "PURPLE-12": { "power": 5000, "reason": "G1a批：紫垫底 4费blocker 4K→5K贴窗顶" },
+    "PURPLE-59": { "power": 5000, "reason": "G1a批：紫垫底 4费draw 4K→5K贴窗顶" },
+    "PURPLE-30": { "power": 6000, "reason": "G1a批：紫垫底 5费restEnemy 5K→6K贴窗顶" }
+  }
+}

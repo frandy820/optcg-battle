@@ -8,7 +8,8 @@ export const DON_CAP = 10;     // 全场 DON!! 上限
 
 // leaderDef / cardDef 均为 data 层的静态定义（见 data/cards.json）
 // 卡上 effect 为声明式对象：{ hook: 'onPlay'|'whenAttacking'|'onKO'|'trigger', op: {...} }
-export function createGame({ leaderA, deckA, leaderB, deckB, seed = 1 }) {
+// fusions（F13 融合）：融合卡定义数组——不进卡组，由 state 携带配方供 fuse 动作消费；缺省空=融合不可用
+export function createGame({ leaderA, deckA, leaderB, deckB, seed = 1, fusions = [] }) {
   if (deckA.length !== 50 || deckB.length !== 50) throw new Error('deck must be 50 cards');
   const rng = makeRng(seed);
   const players = [
@@ -23,6 +24,9 @@ export function createGame({ leaderA, deckA, leaderB, deckB, seed = 1 }) {
     active: 0,             // 先手固定 0 号（联机时由房间分配）
     firstTurn: true,       // 全局第一回合：先手 DON!! 阶段只 +1
     pending: null,         // 响应窗口 { kind:'block'|'counter', ... }
+    onceMark: {},          // 每回合1次阀门记账：`${side}:${来源id}:${hook}:${技能名}` -> turn
+    fusions,               // F13 融合配方（纯数据，快照/克隆随行；旧快照缺字段=旧局无融合）
+    fuseUsed: [false, false], // F13 每回合限 1 次融合记账（endTurn 重置；旧快照缺字段时使用处兜底）
     winner: null,
     winReason: null,
     players,
@@ -36,7 +40,7 @@ function mkPlayer(id, leaderDef, deckDefs, rng) {
   deck = deck.slice(START_HAND);
   return {
     id,
-    leader: { ...leaderDef, rest: false, dons: 0, buffs: [] },
+    leader: { ...leaderDef, rest: false, attackedTurn: 0, dons: 0, buffs: [] },
     lp: leaderDef.life * 2000, // LP 积分（游戏王式：原生命卡 ×2000 折算，LP≤0 判负）
     deck,                  // 牌组（顶在尾部 pop）
     hand,                  // 手牌

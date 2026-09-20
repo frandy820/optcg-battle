@@ -1,0 +1,2599 @@
+[
+  {
+    "id": "BLACK-26",
+    "name": "马歇尔·D·蒂奇",
+    "sub": " 黑暗果实·吸收 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "BLACK-26",
+    "fruit": "logia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-31",
+    "name": "麦哲伦",
+    "sub": " 毒龙·地狱审判 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "banish"
+    ],
+    "effect": null,
+    "art": "BLACK-31",
+    "fruit": "paramecia",
+    "rarity": "S"
+  },
+  {
+    "id": "BLACK-33",
+    "name": "耶稣布",
+    "sub": " 神射手 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "BLACK-33",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-36",
+    "name": "范·奥卡",
+    "sub": " 音速弹 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-36",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-40",
+    "name": "巴加斯",
+    "sub": " 格斗冠军 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-40",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-41",
+    "name": "阿巴罗·比萨罗",
+    "sub": " 晴岚之王 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-41",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-45",
+    "name": "圣胡安·恶狼",
+    "sub": " 黑团巨舰 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-45",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-47",
+    "name": "泽法",
+    "sub": " 黑腕·海楼石 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "BLACK-47",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-50",
+    "name": "布鲁诺",
+    "sub": " 空气门 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-50",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-51",
+    "name": "达兹·波涅斯",
+    "sub": " 刀刃人 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-51",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-52",
+    "name": "贝比5",
+    "sub": " 武器果实 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-52",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-54",
+    "name": "黑炭大蛇",
+    "sub": " 八岐大蛇 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-54",
+    "fruit": "zoan",
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-57",
+    "name": "洛克斯·D·吉贝克",
+    "sub": " 神之谷对决 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-57",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-60",
+    "name": "多米诺",
+    "sub": " 监视之眼 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-60",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-61",
+    "name": "斧手蒙卡",
+    "sub": " 东海上校 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-61",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-62",
+    "name": "Mr.4",
+    "sub": " 四号特工 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-62",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-63",
+    "name": "Miss圣诞快乐",
+    "sub": " 巴洛克工作社 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-63",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-64",
+    "name": "Miss双手指",
+    "sub": " 荆棘果实 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-64",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "BLACK-G3",
+    "name": "雷雨",
+    "sub": " 希留爱用的妖刀 ",
+    "type": "gear",
+    "color": "black",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "BLACK-G3",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLACK-G6",
+    "name": "蒙卡的大斧",
+    "sub": " 斧手蒙卡爱斧 ",
+    "type": "gear",
+    "color": "black",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "BLACK-G6",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-25",
+    "name": "娜美",
+    "sub": " 天候棒·雷云 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-25",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-30",
+    "name": "波尔萨利诺",
+    "sub": " 天丛云剑 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "BLUE-30",
+    "fruit": "logia",
+    "rarity": "S"
+  },
+  {
+    "id": "BLUE-34",
+    "name": "斯摩格",
+    "sub": " 海军G-5支部 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-34",
+    "fruit": "logia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-36",
+    "name": "战国",
+    "sub": " 佛之推波 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 1000,
+        "until": "turn"
+      }
+    },
+    "art": "BLUE-36",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-41",
+    "name": "克比",
+    "sub": " 海军大佐 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-41",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-46",
+    "name": "乙姬",
+    "sub": " 王妃的祈愿 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-46",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-47",
+    "name": "冰山",
+    "sub": " 水之都市长 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-47",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLUE-48",
+    "name": "顿·克利克",
+    "sub": " 无敌舰队 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-48",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLUE-49",
+    "name": "阿金",
+    "sub": " 鬼人 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-49",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLUE-50",
+    "name": "妮可·罗宾",
+    "sub": " 万紫千红 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "BLUE-50",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-59",
+    "name": "马尔科",
+    "sub": " 再生之炎 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-59",
+    "fruit": "paramecia",
+    "rarity": "S"
+  },
+  {
+    "id": "BLUE-61",
+    "name": "寇布拉",
+    "sub": " 阿拉巴斯坦国王 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-61",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLUE-62",
+    "name": "伊卡莱姆",
+    "sub": " 侍卫队长 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-62",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLUE-63",
+    "name": "布鲁克",
+    "sub": " 灵魂之王 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-63",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-G3",
+    "name": "花州",
+    "sub": " 达斯琪的名刀 ",
+    "type": "gear",
+    "color": "blue",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "BLUE-G3",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-G4",
+    "name": "冰军刀",
+    "sub": " 青雉的冰刃 ",
+    "type": "gear",
+    "color": "blue",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "BLUE-G4",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-G5",
+    "name": "海军披风",
+    "sub": " 正义之袍 ",
+    "type": "gear",
+    "color": "blue",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 1000
+    },
+    "effect": null,
+    "art": "BLUE-G5",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-25",
+    "name": "罗罗诺亚·索隆",
+    "sub": " 三刀流·鬼气 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "GREEN-25",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "GREEN-28",
+    "name": "乌索普",
+    "sub": " 狙击之王 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-28",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "GREEN-32",
+    "name": "托尼托尼·乔巴",
+    "sub": " 暴走魔兽 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "banish"
+    ],
+    "effect": null,
+    "art": "GREEN-32",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "GREEN-33",
+    "name": "蒙奇·D·龙",
+    "sub": " 革命军领袖 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "strongest"
+      }
+    },
+    "art": "GREEN-33",
+    "fruit": null,
+    "rarity": "S"
+  },
+  {
+    "id": "GREEN-37",
+    "name": "大和",
+    "sub": " 大口真神 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-37",
+    "fruit": "zoan",
+    "rarity": "S"
+  },
+  {
+    "id": "GREEN-38",
+    "name": "奎因",
+    "sub": " 疫灾·腕龙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-38",
+    "fruit": "zoan",
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-41",
+    "name": "佐佐木",
+    "sub": " 三角龙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-41",
+    "fruit": "zoan",
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-42",
+    "name": "黑色玛利亚",
+    "sub": " 古代蛛 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-42",
+    "fruit": "zoan",
+    "rarity": "B"
+  },
+  {
+    "id": "GREEN-43",
+    "name": "乌尔蒂",
+    "sub": " 肿头龙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-43",
+    "fruit": "zoan",
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-44",
+    "name": "润媞",
+    "sub": " 飞六胞 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-44",
+    "fruit": "zoan",
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-45",
+    "name": "福斯弗",
+    "sub": " 剑齿虎 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-45",
+    "fruit": "zoan",
+    "rarity": "B"
+  },
+  {
+    "id": "GREEN-46",
+    "name": "象主",
+    "sub": " 千年巨象 ",
+    "type": "char",
+    "color": "green",
+    "cost": 8,
+    "power": 9000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-46",
+    "fruit": null,
+    "rarity": "SSS"
+  },
+  {
+    "id": "GREEN-47",
+    "name": "爱德华·纽盖特",
+    "sub": " 丛云刀 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-47",
+    "fruit": "paramecia",
+    "rarity": "S"
+  },
+  {
+    "id": "GREEN-49",
+    "name": "堪十郎",
+    "sub": " 绘画果实 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-49",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-53",
+    "name": "绿牛",
+    "sub": " 荆棘林 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "GREEN-53",
+    "fruit": "logia",
+    "rarity": "S"
+  },
+  {
+    "id": "GREEN-54",
+    "name": "奥兹",
+    "sub": " 传说中的魔人 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-54",
+    "fruit": null,
+    "rarity": "S"
+  },
+  {
+    "id": "GREEN-55",
+    "name": "斯库亚德",
+    "sub": " 大漩涡蜘蛛 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-55",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-58",
+    "name": "龙马",
+    "sub": " 恐怖三桅帆船 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-58",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "GREEN-59",
+    "name": "霍格巴克",
+    "sub": " 僵尸医生 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-59",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-60",
+    "name": "日和",
+    "sub": " 和之国公主 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-60",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-61",
+    "name": "耕四郎",
+    "sub": " 一心流道场 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-61",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-62",
+    "name": "古伊娜",
+    "sub": " 一心流少女 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-62",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-64",
+    "name": "小玉",
+    "sub": " 驯服猛兽 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-64",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "GREEN-G3",
+    "name": "丛云刀",
+    "sub": " 无上大快刀 ",
+    "type": "gear",
+    "color": "green",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 3000
+    },
+    "effect": null,
+    "art": "GREEN-G3",
+    "fruit": null,
+    "rarity": "S"
+  },
+  {
+    "id": "GREEN-G4",
+    "name": "秋水",
+    "sub": " 龙马的遗刀 ",
+    "type": "gear",
+    "color": "green",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "GREEN-G4",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "GREEN-G5",
+    "name": "八卦金棒",
+    "sub": " 凯多的刺棒 ",
+    "type": "gear",
+    "color": "green",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "GREEN-G5",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "GREEN-G6",
+    "name": "黑兜",
+    "sub": " 乌索普的弹弓 ",
+    "type": "gear",
+    "color": "green",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 1000
+    },
+    "effect": null,
+    "art": "GREEN-G6",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-24",
+    "name": "特拉法尔加·罗",
+    "sub": " 北海医生 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-24",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-30",
+    "name": "唐吉诃德·多弗朗明戈",
+    "sub": " 寄生线 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "PURPLE-30",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-32",
+    "name": "霍金斯",
+    "sub": " 占卜 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-32",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-36",
+    "name": "尤斯塔斯·基德",
+    "sub": " 磁力·斥力 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "PURPLE-36",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-41",
+    "name": "乔艾莉·波妮",
+    "sub": " 年龄操控 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "PURPLE-41",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-43",
+    "name": "阿普",
+    "sub": " 长手族DJ ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-43",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-45",
+    "name": "乌尔基",
+    "sub": " 因果报应 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-45",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-46",
+    "name": "X·德雷克",
+    "sub": " 异特龙 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-46",
+    "fruit": "zoan",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-51",
+    "name": "贝加庞克",
+    "sub": " 军事科学家 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-51",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-54",
+    "name": "席尔巴斯·雷利",
+    "sub": " 冥王·三色霸气 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 2000,
+        "until": "battle"
+      }
+    },
+    "art": "PURPLE-54",
+    "fruit": null,
+    "rarity": "SS"
+  },
+  {
+    "id": "PURPLE-57",
+    "name": "唐吉诃德·罗西南迪",
+    "sub": " 白衣的守护 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "PURPLE-57",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-59",
+    "name": "维奥莱特",
+    "sub": " 千里眼 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-59",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-62",
+    "name": "乔拉",
+    "sub": " 艺术果实 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-62",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-63",
+    "name": "Mr.3",
+    "sub": " 蜡烛果实 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-63",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "PURPLE-64",
+    "name": "Miss黄金周",
+    "sub": " 自由画家 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-64",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-G4",
+    "name": "天夜叉的墨镜",
+    "sub": " 多弗朗明戈 ",
+    "type": "gear",
+    "color": "purple",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 1000
+    },
+    "effect": null,
+    "art": "PURPLE-G4",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "PURPLE-G5",
+    "name": "诅咒稻草人",
+    "sub": " 霍金斯的诅咒 ",
+    "type": "gear",
+    "color": "purple",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 1000
+    },
+    "effect": null,
+    "art": "PURPLE-G5",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "RED-27",
+    "name": "蒙奇·D·路飞",
+    "sub": " 五档·尼卡 ",
+    "type": "char",
+    "color": "red",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 2000,
+        "until": "battle"
+      }
+    },
+    "art": "RED-27",
+    "fruit": "zoan",
+    "rarity": "SS"
+  },
+  {
+    "id": "RED-29",
+    "name": "波特卡斯·D·艾斯",
+    "sub": " 炎帝 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "RED-29",
+    "fruit": "logia",
+    "rarity": "S"
+  },
+  {
+    "id": "RED-33",
+    "name": "萨波",
+    "sub": " 烧烧果实继承者 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "RED-33",
+    "fruit": "logia",
+    "rarity": "B"
+  },
+  {
+    "id": "RED-35",
+    "name": "香克斯",
+    "sub": " 霸王色的威压 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "RED-35",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "RED-37",
+    "name": "哥尔·D·罗杰",
+    "sub": " 海贼王 ",
+    "type": "char",
+    "color": "red",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-37",
+    "fruit": null,
+    "rarity": "SS"
+  },
+  {
+    "id": "RED-39",
+    "name": "光月御田",
+    "sub": " 天羽羽斩·双刀流 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "RED-39",
+    "fruit": null,
+    "rarity": "S"
+  },
+  {
+    "id": "RED-41",
+    "name": "光月桃之助",
+    "sub": " 人造青龙果实 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-41",
+    "fruit": "zoan",
+    "rarity": "A"
+  },
+  {
+    "id": "RED-44",
+    "name": "锦卫门",
+    "sub": " 赤鞘九侠 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-44",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "RED-45",
+    "name": "狂死郎",
+    "sub": " 九霞流 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-45",
+    "fruit": null,
+    "rarity": "S"
+  },
+  {
+    "id": "RED-47",
+    "name": "卡文迪许",
+    "sub": " 隆美尔的镰鼬 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-47",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "RED-48",
+    "name": "威布尔",
+    "sub": " 白胡子二世 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-48",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "RED-50",
+    "name": "金狮子史基",
+    "sub": " 飘飘果实 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "RED-50",
+    "fruit": "paramecia",
+    "rarity": "S"
+  },
+  {
+    "id": "RED-52",
+    "name": "爱德华·纽盖特",
+    "sub": " 震震果实 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "RED-52",
+    "fruit": "paramecia",
+    "rarity": "S"
+  },
+  {
+    "id": "RED-53",
+    "name": "巴托洛米奥",
+    "sub": " 屏障·冲撞 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-53",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "RED-55",
+    "name": "瓦尔波",
+    "sub": " 吞吞果实 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-55",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "RED-56",
+    "name": "Mr.5",
+    "sub": " 炸弹果实 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-56",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "RED-57",
+    "name": "洛克斯达",
+    "sub": " 红发的使者 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-57",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "RED-58",
+    "name": "贝洛·贝蒂",
+    "sub": " 激励果实 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 1000,
+        "until": "turn"
+      }
+    },
+    "art": "RED-58",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "RED-60",
+    "name": "东利",
+    "sub": " 青鬼 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-60",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "RED-61",
+    "name": "布罗吉",
+    "sub": " 红鬼 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-61",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "RED-62",
+    "name": "罗布·路奇",
+    "sub": " 六王枪 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-62",
+    "fruit": "zoan",
+    "rarity": "B"
+  },
+  {
+    "id": "RED-63",
+    "name": "卡塔库栗",
+    "sub": " 见闻色·未来视 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "RED-63",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "RED-64",
+    "name": "巴法罗",
+    "sub": " 转转果实 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-64",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "RED-G3",
+    "name": "和道一文字",
+    "sub": " 大快刀二十一工 ",
+    "type": "gear",
+    "color": "red",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "RED-G3",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "RED-G4",
+    "name": "阎魔",
+    "sub": " 御田的爱刀 ",
+    "type": "gear",
+    "color": "red",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 3000
+    },
+    "effect": null,
+    "art": "RED-G4",
+    "fruit": null,
+    "rarity": "S"
+  },
+  {
+    "id": "RED-G5",
+    "name": "雪走",
+    "sub": " 良业物·快刀 ",
+    "type": "gear",
+    "color": "red",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "RED-G5",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "RED-G6",
+    "name": "海楼石手铐",
+    "sub": " 果实封锁 ",
+    "type": "gear",
+    "color": "red",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 1000
+    },
+    "effect": null,
+    "art": "RED-G6",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-24",
+    "name": "山治",
+    "sub": " 见习厨师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-24",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-29",
+    "name": "波雅·汉库珂",
+    "sub": " 甜甜甘风 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "YELLOW-29",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-36",
+    "name": "艾涅尔",
+    "sub": " 放电 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-36",
+    "fruit": "logia",
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-38",
+    "name": "克洛克达尔",
+    "sub": " 沙暴 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "YELLOW-38",
+    "fruit": "logia",
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-39",
+    "name": "犬岚公爵",
+    "sub": " 月狮 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-39",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-40",
+    "name": "猫蝮蛇",
+    "sub": " 月狮 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-40",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-41",
+    "name": "夏洛特·玲玲",
+    "sub": " 魂魂果实 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-41",
+    "fruit": "paramecia",
+    "rarity": "SS"
+  },
+  {
+    "id": "YELLOW-44",
+    "name": "克力架",
+    "sub": " 饼干士兵 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-44",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-46",
+    "name": "玛格丽特",
+    "sub": " 蛇岛弓手 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-46",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-47",
+    "name": "西尔尔克",
+    "sub": " 樱花庸医 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 1000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-47",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-48",
+    "name": "库蕾哈",
+    "sub": " 医婆 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-48",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-49",
+    "name": "巴索罗缪·熊",
+    "sub": " 拍飞 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "YELLOW-49",
+    "fruit": "paramecia",
+    "rarity": "S"
+  },
+  {
+    "id": "YELLOW-50",
+    "name": "月光·莫利亚",
+    "sub": " 影子军团 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-50",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-51",
+    "name": "格拉迪乌斯",
+    "sub": " 泡泡果实 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-51",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-52",
+    "name": "德林杰",
+    "sub": " 人鱼斗士 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-52",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-53",
+    "name": "拉奥G",
+    "sub": " 格斗拳 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-53",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-54",
+    "name": "蕾贝卡",
+    "sub": " 圆顶斗技场 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-54",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-55",
+    "name": "夏洛特·欧文",
+    "sub": " 热热果实 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-55",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-56",
+    "name": "夏洛特·布琳",
+    "sub": " 三眼族 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-56",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-57",
+    "name": "斯莱曼",
+    "sub": " 剑斗士 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-57",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-G4",
+    "name": "九蛇弓",
+    "sub": " 女帝护卫弓 ",
+    "type": "gear",
+    "color": "yellow",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 1000
+    },
+    "effect": null,
+    "art": "YELLOW-G4",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-G6",
+    "name": "威布尔巨斧",
+    "sub": " 白胡子二世战斧 ",
+    "type": "gear",
+    "color": "yellow",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "YELLOW-G6",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "FUSION-RED1",
+    "name": "火之意志 艾斯&萨博",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "red",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "RED-08",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "RED-08",
+        "RED-06"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-RED2",
+    "name": "传承之火 路飞&罗杰",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "red",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "RED-27",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "RED-27",
+        "RED-37"
+      ],
+      "cost": 2
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-BLUE1",
+    "name": "海军的魂 战国&卡普",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-11",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "BLUE-36",
+        "BLUE-11"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-BLUE2",
+    "name": "阳光号的伙伴 娜美&弗兰奇",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 1000,
+        "until": "turn"
+      }
+    },
+    "art": "BLUE-25",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "BLUE-25",
+        "BLUE-08"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-GREEN1",
+    "name": "鬼岛决战 凯多&大和",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "green",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "banish"
+    ],
+    "effect": null,
+    "art": "GREEN-12",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "GREEN-12",
+        "GREEN-37"
+      ],
+      "cost": 2
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-GREEN2",
+    "name": "斩铁之魂 索隆&龙马",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "green",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "GREEN-25",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "GREEN-25",
+        "GREEN-58"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-YELLOW1",
+    "name": "九蛇岛的守护 汉库珂&玛格丽特",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "YELLOW-29",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "YELLOW-29",
+        "YELLOW-46"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-YELLOW2",
+    "name": "万国的威压 玲玲&斯慕吉",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-20",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "YELLOW-20",
+        "YELLOW-41"
+      ],
+      "cost": 2
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-PURPLE1",
+    "name": "最恶世代 罗与基德",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-24",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "PURPLE-24",
+        "PURPLE-36"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-PURPLE2",
+    "name": "剑士的顶点 米霍克&雷利",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "PURPLE-10",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "PURPLE-10",
+        "PURPLE-19"
+      ],
+      "cost": 2
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-BLACK1",
+    "name": "黑团双巨头 蒂奇&希留",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "banish"
+    ],
+    "effect": null,
+    "art": "BLACK-26",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "BLACK-26",
+        "BLACK-08"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-BLACK2",
+    "name": "海底监狱的铁壁 麦哲伦&汉尼拔",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-31",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "BLACK-31",
+        "BLACK-12"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  }
+]

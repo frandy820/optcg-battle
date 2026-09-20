@@ -256,13 +256,14 @@ body {
 
 .card .cost {
   position: absolute; top: -6px; left: -6px;
-  width: 22px; height: 22px; border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, #2b2f6e, #131740 70%);
-  border: 1.5px solid var(--gold-bright);
-  color: #fff; font-weight: 800; font-size: 12px;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 8px rgba(59,76,222,.8); z-index: 3;
+  min-width: 24px; height: 22px; padding: 0 4px; border-radius: 11px;
+  background: radial-gradient(circle at 32% 28%, #ffefb8, #e3b84e 60%, #a87e1e);
+  border: 1.5px solid #fff3c9;
+  color: #3a2b04; font-weight: 800; font-size: 12px;
+  display: flex; align-items: center; justify-content: center; gap: 1px;
+  box-shadow: 0 0 8px rgba(227,184,78,.75); z-index: 3;
 }
+.card .cost .beli { font-size: 9px; font-weight: 700; line-height: 1; opacity: .85; }
 .card .art {
   position: absolute; top: 4px; left: 4px; right: 4px; height: 52%;
   border-radius: 4px; overflow: hidden;
@@ -303,6 +304,10 @@ body {
   white-space: nowrap;
 }
 .card .kw-badges { position: absolute; top: 3px; right: 3px; display: flex; flex-direction: column; gap: 2px; z-index: 2; }
+/* 船长技能点（试玩反馈：文字徽章遮立绘）——每技一点，觉醒=亮金；完整文案走 ?按钮/长按/图鉴放大 */
+.card .skill-dots { position: absolute; top: 4px; right: 4px; z-index: 2; display: flex; gap: 3px; }
+.card .skill-dots .sdot { width: 5px; height: 5px; border-radius: 50%; background: rgba(246,210,107,.55); box-shadow: 0 0 3px rgba(246,210,107,.5); }
+.card .skill-dots .sdot.awaken { background: var(--gold-bright, #f6d26b); box-shadow: 0 0 5px rgba(255,215,120,.95), 0 0 10px rgba(255,196,87,.4); }
 .kw-badge {
   font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 3px;
   color: #fff; letter-spacing: .5px; box-shadow: 0 1px 3px rgba(0,0,0,.4);
@@ -347,9 +352,50 @@ body {
 }
 .card.targetable:hover { transform: scale(1.08); }
 
-/* 横置（rest）*/
-.card.rest { transform: rotate(90deg) scale(.92); filter: saturate(.65) brightness(.85); }
-.card.rest:hover { transform: rotate(90deg) scale(.95); }
+/* 攻击选择：不可攻击对象置灰（点置灰=提示原因） */
+.card.dimmed { filter: grayscale(.85) brightness(.45) saturate(.3); cursor: not-allowed; }
+.card.dimmed::before { opacity: 0 !important; animation: none !important; }
+/* 攻击者中央半透明小剑：攻击意图可视化 */
+.atk-sword {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+  opacity: .8; animation: swordPulse 1.1s ease-in-out infinite;
+}
+.atk-sword svg {
+  width: 55%; height: 55%; filter: drop-shadow(0 0 6px rgba(255,236,158,.95)) drop-shadow(0 0 14px rgba(255,200,80,.6));
+}
+@keyframes swordPulse {
+  0%, 100% { opacity: .55; transform: scale(1); }
+  50% { opacity: .95; transform: scale(1.12); }
+}
+/* 确认攻击：飞剑从攻击者中心飞向目标 */
+.fly-sword {
+  position: fixed; z-index: 75; pointer-events: none;
+  opacity: .92; will-change: transform, opacity;
+}
+.fly-sword svg {
+  width: 34px; height: 34px;
+  filter: drop-shadow(0 0 8px rgba(255,236,158,1)) drop-shadow(0 0 18px rgba(255,180,60,.7));
+}
+
+/* 已行动（原横置）→ 置灰不旋转（试玩反馈三连：横放看着傻，船长→全部卡统一）；
+   灰=守备（本回合已行动，被打只比战力），亮=可行动 */
+.card.rest { filter: saturate(.45) brightness(.7); }
+.card.rest:hover { filter: saturate(.6) brightness(.82); }
+.card:not(.leader).rest::after {
+  content: '守'; position: absolute; top: 38%; left: 50%; transform: translateX(-50%);
+  z-index: 5; font: 700 10px/16px var(--font-main, sans-serif); letter-spacing: 1px;
+  color: #ffe1a8; background: rgba(18,12,2,.88); border: 1px solid rgba(255,215,120,.55);
+  border-radius: 8px; padding: 0 7px; pointer-events: none;
+}
+/* 船长攻击后：不横置（试玩反馈），变暗+角标表达"本回合已攻击" */
+.card.leader.acted { filter: saturate(.62) brightness(.82); }
+.card.leader.acted::after {
+  content: '已攻击'; position: absolute; top: 34%; left: 50%; transform: translateX(-50%);
+  z-index: 5; font: 700 9px/15px var(--font-main, sans-serif); letter-spacing: 1px;
+  color: #ffe1a8; background: rgba(18,12,2,.88); border: 1px solid rgba(255,215,120,.55);
+  border-radius: 8px; padding: 0 7px; pointer-events: none;
+}
 
 /* Leader 卡 */
 .card.leader { width: 82px; height: 112px; }
@@ -482,6 +528,120 @@ body.shake { animation: shake .42s linear; }
   80% { opacity: 1; }
   100% { opacity: 0; transform: scale(.94); }
 }
+
+/* ============ 船长技能发动演出（F11）============ */
+/* 技能名横幅：色系大字（--skc 由 game.js 按船长色注入） */
+.skill-fx {
+  position: fixed; top: 24%; left: 50%; transform: translate(-50%, 0); z-index: 82;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  pointer-events: none;
+  animation: skFxIn 1.35s cubic-bezier(.2,.8,.3,1) both;
+}
+.skill-fx .sk-name {
+  font-size: clamp(22px, 5.5vw, 34px); font-weight: 900; letter-spacing: 7px; text-indent: 7px;
+  color: #fff;
+  text-shadow: 0 0 16px var(--skc), 0 0 42px var(--skc), 0 2px 6px rgba(0,0,0,.85);
+  border-bottom: 2px solid var(--skc);
+  padding: 0 12px 5px;
+}
+.skill-fx .sk-sub {
+  font-size: 11px; font-weight: 700; letter-spacing: 4px; text-indent: 4px;
+  color: var(--skc); text-shadow: 0 1px 4px rgba(0,0,0,.85);
+}
+.skill-fx.awaken .sk-name {
+  background: linear-gradient(90deg, transparent, rgba(255,220,130,.22), transparent);
+  border-radius: 8px;
+}
+/* 同批连发的后续技能：小号快闪（节奏让位） */
+.skill-fx.quick .sk-name { font-size: clamp(16px, 3.6vw, 22px); letter-spacing: 4px; text-indent: 4px; }
+.skill-fx.quick .sk-sub { font-size: 9px; letter-spacing: 2px; }
+@keyframes skFxIn {
+  0%   { opacity: 0; transform: translate(-50%, 16px) scale(.78); }
+  16%  { opacity: 1; transform: translate(-50%, 0) scale(1.07); }
+  24%  { transform: translate(-50%, 0) scale(1); }
+  82%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -12px) scale(.97); }
+}
+/* 船长卡光环脉冲（技能发动来源标记） */
+.card.skill-glow { animation: skGlow 1.1s ease-out; z-index: 21; }
+@keyframes skGlow {
+  0%   { box-shadow: 0 0 0 0 var(--skc), 0 0 22px 6px color-mix(in srgb, var(--skc) 60%, transparent); filter: brightness(1.35); }
+  100% { box-shadow: 0 0 0 20px transparent, 0 0 34px 10px transparent; filter: brightness(1); }
+}
+/* 觉醒技全屏金闪 */
+.skill-flash {
+  position: fixed; inset: 0; z-index: 81; pointer-events: none;
+  background: radial-gradient(circle at 50% 42%, rgba(255,232,158,.55), rgba(255,215,120,.16) 42%, transparent 74%);
+  animation: skFlash .72s ease-out both;
+}
+@keyframes skFlash {
+  0% { opacity: 0; } 14% { opacity: 1; } 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skill-fx, .card.skill-glow, .skill-flash { animation: none !important; }
+}
+html.reduced-motion .skill-fx, html.reduced-motion .card.skill-glow, html.reduced-motion .skill-flash { animation: none !important; }
+
+/* ============ 融合（F13） ============ */
+/* 手牌区上方金色融合按钮：素材齐+贝里够时由 game.js 点亮 */
+.fuse-cta { display: flex; justify-content: center; min-height: 0; }
+.btn-fuse {
+  font-family: inherit; cursor: pointer; font-weight: 900; letter-spacing: 2px;
+  display: inline-flex; align-items: center; gap: 5px;
+  border-radius: 999px; padding: 3px 16px; font-size: 12.5px; color: #2a1c04;
+  background: linear-gradient(180deg, #ffe9a8, var(--gold-bright) 45%, var(--gold));
+  border: 1px solid #fff3c4;
+  animation: fusePulse 1.8s ease-in-out infinite;
+  transition: transform .15s, filter .2s;
+}
+.btn-fuse .icn { width: 14px; height: 14px; }
+.btn-fuse:hover { transform: translateY(-1px); filter: brightness(1.08); }
+@keyframes fusePulse {
+  0%,100% { box-shadow: 0 0 8px rgba(245,215,110,.35), inset 0 1px 0 rgba(255,255,255,.5); }
+  50% { box-shadow: 0 0 20px rgba(245,215,110,.8), inset 0 1px 0 rgba(255,255,255,.5); }
+}
+/* 可用素材卡金光（场上/手牌素材，配方齐备时点亮） */
+.card.fuse-ready { outline: 2px solid var(--gold-bright); outline-offset: -2px; }
+.card.fuse-ready::after {
+  content: ''; position: absolute; inset: 0; border-radius: var(--r-card);
+  pointer-events: none; z-index: 3;
+  box-shadow: 0 0 12px rgba(245,215,110,.65), inset 0 0 10px rgba(245,215,110,.28);
+  animation: fuseGlow 1.6s ease-in-out infinite;
+}
+@keyframes fuseGlow { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+/* 融合面板：素材小图 → 融合体预览 + 融合费用 */
+.fuse-card { max-width: 600px; }
+.fuse-sub { color: #cbb98a; font-size: 12.5px; line-height: 1.7; margin: 4px 0 14px; }
+.fuse-list { display: flex; flex-direction: column; gap: 10px; max-height: 52vh; overflow-y: auto; padding: 2px; }
+.fuse-opt {
+  display: flex; align-items: center; gap: 12px; cursor: pointer; text-align: left;
+  font-family: inherit; color: inherit;
+  background: rgba(10,20,38,.6); border: 1px solid rgba(212,175,55,.3); border-radius: var(--r-md);
+  padding: 8px 12px; transition: border-color .15s, box-shadow .15s;
+}
+.fuse-opt:hover { border-color: var(--gold-bright); }
+.fuse-opt.on { border-color: var(--gold-bright); box-shadow: 0 0 14px rgba(245,215,110,.4); }
+.fuse-mats { display: flex; align-items: center; gap: 7px; flex: 1; min-width: 0; flex-wrap: wrap; }
+.fuse-mat {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(0,0,0,.35); border-radius: var(--r-sm); padding: 3px 8px;
+}
+.fuse-mat img { width: 26px; height: 37px; object-fit: cover; object-position: center 20%; border-radius: 4px; }
+.fuse-mat b { font-size: 11.5px; color: var(--sea-cream); }
+.fuse-arrow { color: var(--gold-bright); font-weight: 900; font-size: 15px; }
+.fuse-result { position: relative; flex-shrink: 0; }
+.fuse-cost {
+  position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%); z-index: 4;
+  font-size: 11px; font-weight: 900; color: #2a1c04; white-space: nowrap;
+  background: linear-gradient(180deg, #ffe9a8, var(--gold)); border-radius: 999px; padding: 1px 9px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.5);
+}
+/* 融合卡配方徽章（悬停信息卡/图鉴放大视图） */
+.kw-badge.kw-fuse { background: linear-gradient(135deg, #b8860b, #ffd76a); color: #2a1c04; }
+@media (prefers-reduced-motion: reduce) {
+  .btn-fuse, .card.fuse-ready::after { animation: none !important; }
+}
+html.reduced-motion .btn-fuse, html.reduced-motion .card.fuse-ready::after { animation: none !important; }
 
 /* ============ 面板与按钮 ============ */
 .modal {
@@ -794,6 +954,7 @@ button:disabled {
 /* ---- 卡片悬停信息卡（试玩反馈：卡面全量信息 + 竖/横语义）---- */
 #cardTip {
   position: fixed; z-index: 9990; max-width: 300px; pointer-events: none;
+  max-height: 84vh; overflow-y: auto; /* 长内容封顶可滚（顶部截断根治）*/
   background: linear-gradient(170deg, rgba(16,29,56,.96), rgba(10,20,38,.98));
   border: 1px solid rgba(212,175,55,.55); border-radius: 12px;
   padding: 10px 12px; font-size: 12px; line-height: 1.55; color: #cfd9ec;
@@ -819,8 +980,10 @@ button:disabled {
 #cardTip .ct-state { margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(143,160,189,.3); color: #a8c7e8; font-size: 11.5px; display: flex; flex-direction: column; gap: 2px; }
 #cardTip .ct-state b { color: #f0d68a; }
 @media (max-width: 640px) {
-  /* 触屏长按：固定底部条（跟随手指位置太窄），不遮手牌行可滑动判断 */
-  #cardTip { left: 50% !important; top: auto !important; bottom: 96px; transform: translateX(-50%); max-width: 86vw; }
+  /* 触屏长按：固定底部条（跟随手指位置太窄），不遮手牌行可滑动判断；
+     高度封顶+可滚（试玩反馈：船长介绍太长顶部显示不全）*/
+  #cardTip { left: 50% !important; top: auto !important; bottom: 96px; transform: translateX(-50%); max-width: 86vw; max-height: 54vh; overflow-y: auto; pointer-events: auto; }
+  #cardTip .ct-art { max-height: 26vh; }
 }
 
 /* ---- 卡牌图鉴（gallery.js）---- */
@@ -950,6 +1113,32 @@ button:disabled {
      （nameSubOverlap 10px、sub 与 power 又叠 3px）——副标题让位（长按信息卡/图鉴仍可看全），保名字+战力 */
   .card .sub { display: none; }
   .card .name { top: calc(52% + 9px); }
+
+  /* ===== F9 移动布局重设计（试玩反馈：拥挤不美观）——核心=降密度、增呼吸感 ===== */
+  /* 1) 敌方手牌行：5 张全尺寸卡背占整行 → 小卡背重叠+计数徽章（信息不丢、行高骤降） */
+  .card-back { width: 20px; height: 29px; border-radius: 3px; margin: 0 -5px; opacity: .8; border-width: 1px; }
+  .enemy-hand { gap: 0; min-height: 24px; }
+  .hand-count { font-size: 9px; padding: 2px 6px; margin-left: 4px; }
+  /* 2) 空舞台槽不占位（有卡时 game.js 填充自动恢复显示） */
+  .stage-slot:empty { display: none; }
+  /* 3) LP 徽章瘦身：标签小字+数字为主+细条 */
+  .lp-badge { padding: 2px 7px; gap: 4px; }
+  .lp-badge .lp-label { font-size: 8.5px; }
+  .lp-badge .lp-num { font-size: 13px; }
+  .lp-badge .lp-bar { height: 3px; }
+  /* 4) 贝里圆点收紧（可点语义不变，热区由父级 don-zone 承担） */
+  .don { width: 12px; height: 12px; }
+  .don-zone { gap: 2px; max-width: 104px; padding: 3px 5px; }
+  /* 5) 墓场/战场线/行距降噪 */
+  .grave { font-size: 9px; padding: 2px 4px; }
+  #battleLine .line-glow { opacity: .55; }
+  #app { gap: 3px; }
+  .zone .row { gap: 4px; }
+  /* 6) 结束回合按钮：占位收窄（金框保亮度，指尖热区不减反稳） */
+  .btn-end { padding: 7px 10px; font-size: 12px; letter-spacing: 1px; }
+  /* 7) 顶栏行高与徽章微收 */
+  #topbar { height: 36px; }
+  .phase-badge { font-size: 10px; padding: 2px 7px; }
 }
 /* 390 档：顶栏三按钮收窄为图标按钮（文字隐藏，aria-label/标题由 game.js 提供）*/
 @media (max-width: 430px) {
@@ -1135,6 +1324,7 @@ button:disabled {
   .card::before { animation: none !important; }
   body.shake { animation: none !important; }
   .card.targetable { animation: none !important; box-shadow: 0 0 0 2px #ff5f5f; }
+  .atk-sword { animation: none !important; opacity: .75; }
   .line-glow, .bg-waves, .bg-stars { animation: none !important; }
   .btn-end.can-act { animation: none !important; }
   #onboard .ob-card { animation: none !important; }
@@ -1150,6 +1340,7 @@ html.reduced-motion .captain-card:hover .cc-art img { transform: none !important
 html.reduced-motion .card::before { animation: none !important; }
 html.reduced-motion body.shake { animation: none !important; }
 html.reduced-motion .card.targetable { animation: none !important; box-shadow: 0 0 0 2px #ff5f5f; }
+html.reduced-motion .atk-sword { animation: none !important; opacity: .75; }
 html.reduced-motion .line-glow, html.reduced-motion .bg-waves, html.reduced-motion .bg-stars { animation: none !important; }
 html.reduced-motion .btn-end.can-act { animation: none !important; }
 html.reduced-motion #onboard .ob-card { animation: none !important; }
@@ -1278,3 +1469,154 @@ html.reduced-motion #onboard .ob-hole { transition: none; }
   .st-g-main small { display: none; }
   #replayBar { bottom: 8px; flex-wrap: wrap; justify-content: center; max-width: 94vw; }
 }
+
+/* ===== v2 船长分化：LP 三档 × 技能说明 ===== */
+.kw-badge.kw-skill { max-width: 108px; } /* v2 多技短名放宽（原 72px 截断） */
+.kw-badge.kw-awaken { background: linear-gradient(135deg,#a0611a,#d4881f); box-shadow: 0 0 6px rgba(255,196,87,.55); }
+.kw-badge.kw-lp { background: #4a5568; }
+.kw-badge.kw-lp.low { background: #b3452f; }
+.kw-badge.kw-lp.high { background: #2f6b46; }
+.card-info-btn {
+  position: absolute; top: -7px; right: -7px; z-index: 6;
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid rgba(255,222,140,.8); cursor: pointer;
+  background: radial-gradient(circle at 35% 30%, #4b3a12, #241a05);
+  color: #ffe1a8; font: 700 13px/20px var(--font-main, inherit); text-align: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,.5), 0 0 8px rgba(255,200,80,.25);
+  padding: 0;
+}
+.card-info-btn:hover { background: radial-gradient(circle at 35% 30%, #6b511a, #3a2a08); box-shadow: 0 1px 6px rgba(0,0,0,.6), 0 0 12px rgba(255,210,100,.5); }
+.captain-card .cc-skills { display: flex; flex-wrap: wrap; gap: 3px; margin: 2px 0; }
+.captain-card .cc-skill {
+  font-style: normal; font-size: 10px; line-height: 16px; padding: 0 6px; border-radius: 8px;
+  background: linear-gradient(135deg,#8a6d1d,#b8860b); color: #fff; max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.captain-card .cc-skill.awaken { background: linear-gradient(135deg,#a0611a,#d4881f); box-shadow: 0 0 5px rgba(255,196,87,.45); }
+.captain-card .cc-life.tier { color: #ffd98a; font-weight: 800; }
+
+/* ============================================================
+   故事之旅（story.js）：模式卡 / 关卡选择 / 稀有度角标 / 收藏联动 / 发卡演出
+   ============================================================ */
+/* ---- 大厅第三模式卡 ---- */
+.mode-card.story { --mc: #d9aa45; --mc-deep: #3a2e10; }
+
+/* ---- 卡面稀有度角标（G3：A 灰 / B 绿 / S 蓝 / SS 紫 / SSS 金，右上角；船长卡无）---- */
+.rar-badge {
+  position: absolute; top: -6px; right: -6px; z-index: 4;
+  min-width: 18px; height: 16px; padding: 0 4px; border-radius: 8px;
+  font: 800 9px/16px var(--font-main, inherit); text-align: center; letter-spacing: .5px;
+  border: 1px solid rgba(255,255,255,.35); box-shadow: 0 1px 4px rgba(0,0,0,.5);
+  pointer-events: none;
+}
+.rar-badge.r-A   { background: linear-gradient(160deg, #9aa7bd, #5c6b84); color: #f2f5fa; }
+.rar-badge.r-B   { background: linear-gradient(160deg, #6fd39b, #2f8f5b); color: #08281a; }
+.rar-badge.r-S   { background: linear-gradient(160deg, #7cb6ff, #2f6cd8); color: #07172e; }
+.rar-badge.r-SS  { background: linear-gradient(160deg, #c79bff, #7b3fd4); color: #1b0a30; }
+.rar-badge.r-SSS { background: linear-gradient(160deg, #ffe9a8, #d9aa45 60%, #a87c22); color: #3a2b04; border-color: #fff3c9; }
+
+/* ---- 关卡选择面板 ---- */
+.story-card-panel { max-width: 760px; display: flex; flex-direction: column; max-height: 88vh; }
+.story-head { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(212,175,55,.25); padding-bottom: 8px; }
+.story-head h3 { color: var(--gold-bright); letter-spacing: 3px; margin-bottom: 0; border-bottom: none; padding-bottom: 0; flex: 1; }
+.story-prog { font-size: 12px; color: #8fa0bd; letter-spacing: 1px; }
+.story-sub { color: #7488ab; font-size: 12px; margin: 10px 0 4px; letter-spacing: .5px; }
+.story-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(216px, 1fr)); gap: 10px;
+  overflow-y: auto; flex: 1 1 auto; min-height: 0; padding: 8px 2px;
+}
+.story-stage {
+  --sc: #d9aa45;
+  display: flex; flex-direction: column; gap: 5px; text-align: left; cursor: pointer;
+  font-family: inherit; padding: 10px 12px; border-radius: 12px; position: relative; overflow: hidden;
+  color: var(--sea-cream); background: linear-gradient(160deg, rgba(16,48,78,.85), rgba(8,20,38,.92));
+  border: 1px solid color-mix(in srgb, var(--sc) 40%, #2c3a55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 5px 14px rgba(0,0,0,.45);
+  transition: transform .2s cubic-bezier(.2,.8,.3,1), border-color .2s, box-shadow .25s;
+}
+.story-stage:hover { transform: translateY(-3px); border-color: var(--sc); }
+.story-stage.current { border-color: var(--gold-bright); box-shadow: 0 0 0 1px var(--gold-dim), 0 0 18px rgba(217,170,69,.35), inset 0 1px 0 rgba(255,255,255,.08); }
+.story-stage.current::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(90% 120% at 50% 0%, rgba(217,170,69,.14), transparent 60%);
+}
+.story-stage.locked { opacity: .48; cursor: not-allowed; filter: saturate(.55); }
+.story-stage .st-top { display: flex; align-items: center; justify-content: space-between; }
+.story-stage .st-no { font-size: 12px; color: var(--sc); letter-spacing: 2px; font-weight: 800; }
+.story-stage .st-state { font-size: 10.5px; color: #9fb2d4; letter-spacing: 1px; }
+.story-stage .st-stars { color: var(--gold-bright); letter-spacing: 1px; }
+.story-stage .st-name { font-size: 14px; font-weight: 900; color: var(--gold-bright); letter-spacing: 1.5px; }
+.story-stage .st-boss { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #cbb98a; }
+.story-stage .st-boss img { width: 26px; height: 37px; object-fit: cover; border-radius: 4px; border: 1px solid var(--gold-dim); }
+.story-stage .st-meta { font-size: 10.5px; color: #7488ab; letter-spacing: .5px; }
+.story-stage .st-reward { font-size: 10.5px; color: #8fd3ff; letter-spacing: .3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.story-stage .st-go { position: absolute; right: 12px; bottom: 9px; font-size: 11px; font-weight: 800; color: #ffe9a8; letter-spacing: 1px; }
+.story-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid rgba(212,175,55,.2); padding-top: 10px; margin-top: 6px; }
+.story-foot span { font-size: 11.5px; color: #8fa0bd; letter-spacing: .5px; }
+
+/* ---- 发卡演出：中央横幅 + 结算面板内卡片飞入 ---- */
+.story-get {
+  position: fixed; left: 50%; top: 38%; transform: translate(-50%, -50%); z-index: 180;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none;
+  padding: 14px 44px; border-radius: 14px;
+  background: linear-gradient(170deg, rgba(24,20,6,.94), rgba(12,10,4,.96));
+  border: 1px solid rgba(217,170,69,.65); box-shadow: 0 0 34px rgba(217,170,69,.4), 0 10px 30px rgba(0,0,0,.6);
+  animation: storyGetIn .5s cubic-bezier(.2,.9,.3,1.35), storyGetOut .4s ease-in 1.6s forwards;
+}
+.story-get .sg-name {
+  font-size: clamp(20px, 4vw, 30px); font-weight: 900; letter-spacing: 6px; text-indent: 6px;
+  background: linear-gradient(180deg, #fff6d8, var(--gold-bright) 45%, #b8860b);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.story-get .sg-sub { font-size: 12px; color: #ffe9b8; letter-spacing: 3px; }
+@keyframes storyGetIn { 0% { transform: translate(-50%,-50%) scale(2.4); opacity: 0; } 60% { transform: translate(-50%,-50%) scale(.96); opacity: 1; } 100% { transform: translate(-50%,-50%) scale(1); opacity: 1; } }
+@keyframes storyGetOut { to { transform: translate(-50%,-58%) scale(.9); opacity: 0; } }
+/* 结算面板：本关获得卡列表（endPanel endDetail 内），逐张延迟飞入 */
+.story-reward { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 8px 0 2px; }
+.story-reward .card { cursor: default; animation: rewardFly .55s cubic-bezier(.2,.8,.3,1.3) backwards; }
+.story-reward .card:nth-child(1) { animation-delay: .12s; }
+.story-reward .card:nth-child(2) { animation-delay: .24s; }
+.story-reward .card:nth-child(3) { animation-delay: .36s; }
+.story-reward .card:nth-child(4) { animation-delay: .48s; }
+.story-reward .card:nth-child(n+5) { animation-delay: .6s; }
+@keyframes rewardFly {
+  0% { transform: translate(var(--fx, 0), -46vh) scale(2.6) rotate(8deg); opacity: 0; }
+  55% { opacity: 1; }
+  100% { transform: translate(0, 0) scale(1) rotate(0); opacity: 1; }
+}
+.story-perfect { color: #ffe9a8; letter-spacing: 2px; margin: 0 4px; }
+html.reduced-motion .story-get, html.reduced-motion .story-reward .card { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .story-get, .story-reward .card { animation: none !important; } }
+@media (max-width: 640px) {
+  .story-grid { grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 8px; }
+  .story-card-panel { max-height: 92vh; }
+}
+
+/* ---- 图鉴收藏联动（gallery.js × story.js）：筛选行 + 已收集/未收集标记 ---- */
+.codex-filters { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.codex-filters.hidden { display: none; }
+.codex-filter {
+  font: 600 11.5px/1 var(--font-main, inherit); letter-spacing: 1px; cursor: pointer;
+  padding: 6px 14px; border-radius: 16px; color: #9fb2d4;
+  background: rgba(16,29,56,.6); border: 1px solid #2c3a55; transition: all .18s;
+}
+.codex-filter:hover { border-color: var(--gold); color: #ffe9b8; }
+.codex-filter.on {
+  color: #3a2b04; background: radial-gradient(circle at 35% 30%, #ffe9a8, var(--gold) 65%);
+  border-color: #fff3c9; box-shadow: 0 0 10px rgba(217,170,69,.4);
+}
+.codex-grid .card { position: relative; }
+.codex-grid .card.codex-have { box-shadow: 0 0 0 1px var(--gold-dim), 0 0 10px rgba(217,170,69,.3), 0 4px 10px rgba(0,0,0,.55); }
+.codex-grid .card.codex-miss { filter: grayscale(.85) brightness(.62); }
+.codex-grid .card.codex-miss img { opacity: .5; }
+.codex-grid .card.codex-miss:hover { filter: grayscale(.5) brightness(.85); }
+.codex-mark {
+  position: absolute; bottom: -4px; right: -4px; z-index: 5;
+  min-width: 16px; height: 16px; border-radius: 9px; text-align: center;
+  font: 800 10px/16px var(--font-main, inherit); pointer-events: none;
+  border: 1px solid rgba(255,255,255,.35); box-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+.codex-mark.have { background: radial-gradient(circle at 35% 30%, #ffe9a8, #d9aa45 65%); color: #3a2b04; }
+.codex-mark.have::before { content: "✓"; }
+.codex-mark.miss { background: #2c3a55; color: #9fb2d4; }
+.codex-mark.miss::before { content: "？"; }

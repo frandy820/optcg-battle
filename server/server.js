@@ -103,7 +103,15 @@ export async function createApp(opts = {}) {
     if (route === 'GET /api/decks') {
       const user = q.get('user') || '';
       if (!USER_RE.test(user)) { send(res, 400, { error: 'bad user' }); return; }
-      send(res, 200, { decks: db.listDecks(user) });
+      // 缺卡过滤兜底：store.json 旧存档可能引用已删卡 id（RED-07/E1/S1 等）——
+      // 按当前卡池剔除，防止旧云端卡组在客户端展开时带着死 id（前端 expandDeck 另有二次过滤）
+      const poolIds = new Set(globalThis.OPTCG.POOL.cards.map((c) => c.id));
+      const decks = db.listDecks(user).map((d) => {
+        const counts = {};
+        for (const [id, n] of Object.entries(d.counts || {})) if (poolIds.has(id)) counts[id] = n;
+        return { ...d, counts };
+      });
+      send(res, 200, { decks });
       return;
     }
     if (route === 'POST /api/decks') {
@@ -144,7 +152,7 @@ export async function createApp(opts = {}) {
       const b = await readBody(req);
       const user = String(b.user || '');
       if (!USER_RE.test(user)) { send(res, 400, { error: 'bad user' }); return; }
-      const mode = ['free', 'ladder', 'survival'].includes(b.mode) ? b.mode : 'free';
+      const mode = ['free', 'ladder', 'survival', 'story'].includes(b.mode) ? b.mode : 'free';
       db.addMatch({ user, mode, win: !!b.win, turn: Math.max(0, Math.min(999, b.turn | 0)) });
       send(res, 200, { ok: true });
       return;

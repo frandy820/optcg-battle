@@ -5,7 +5,7 @@
 //   卡图 art/**：cache-first —— 图不变，命中即返，未命中去网络并落缓存。
 //   其他同源 GET：透传（不打扰）。
 // 版本清理：CACHE 内嵌构建标记（手动 bump，或发布时 deploy 脚本替换）；activate 时清非当前版本。
-const VERSION = 'optcg-v0.3.0-op02';
+const VERSION = 'optcg-v0.7.0-g1g5';
 const CACHE = 'optcg-battle-' + VERSION;
 const SHELL = [
   './', './index.html', './style.css',
@@ -39,17 +39,25 @@ self.addEventListener('fetch', (e) => {
   const isShell = !isArt;
 
   if (isArt) {
-    // cache-first：卡图不可变
+    // cache-first：卡图不可变。图鉴一次滚出上百张图，GitHub Pages 对瞬时高并发会限流/掐连接
+    // （线上实测 204 并发经 SW 后 179 张 onerror）——失败自动重试一次，成功落缓存由 waitUntil 保住
     e.respondWith((async () => {
       const hit = await caches.match(req);
       if (hit) return hit;
-      try {
-        const r = await fetch(req);
-        if (r.ok) { const c = await caches.open(CACHE); c.put(req, r.clone()); }
-        return r;
-      } catch (err) {
-        return hit || Response.error();
+      let r = null;
+      for (let i = 0; i < 2; i++) {
+        try {
+          r = await fetch(req);
+        } catch (err) { r = null; }
+        if (r && r.ok) break;
+        r = null; // 非 ok（429 限流等）也当失败重试
       }
+      if (r && r.ok) {
+        const clone = r.clone();
+        e.waitUntil(caches.open(CACHE).then((c) => c.put(req, clone)).catch(() => {}));
+        return r;
+      }
+      return hit || Response.error();
     })());
     return;
   }

@@ -101,6 +101,24 @@ function scoreAction(state, act) {
       if (c.gear && (c.gear.gives || []).includes('blocker')) s += 10; // 甲胄=坚壁防御位
       return s;
     }
+    case 'fuse': {
+      // F13 融合打分（线性近似）：融合体价值（战力+词条+效果）− 素材当前价值 − 融合费用机会成本
+      const def = (state.fusions || []).find((c) => c && c.id === act.fusionId);
+      if (!def || !def.fusion) return -99;
+      let s = 40 + def.power / 500;
+      for (const kw of def.keywords || []) s += { rush: 8, blocker: 6, doubleAttack: 12, banish: 8 }[kw] || 0;
+      if (def.effect) s += effValue(def.effect, state, side);
+      for (const id of new Set(def.fusion.from)) {
+        const bu = me.board.find((u) => u.id === id);
+        if (bu) s -= powerOfUnit(bu) / 500;                 // 场上素材离场=场面战力损失
+        else {
+          const hc = me.hand.find((c) => c.id === id);
+          s -= 20 + (hc ? hc.cost * 5 + hc.power / 500 : 0); // 手牌素材进墓=资源损失（近似其打出价值）
+        }
+      }
+      s -= def.fusion.cost * 5; // 融合贝里机会成本（与出牌费用同权）
+      return s;
+    }
     case 'giveDon': return 6;
     case 'takeDon': return -99; // AI 不倒腾 DON!!（与 give 互切会死循环）
     case 'attack': return scoreAttack(state, act, me, foe);
@@ -112,15 +130,20 @@ function scoreAction(state, act) {
 function effValue(eff, state, side) {
   if (!eff) return 0;
   const foe = state.players[1 - side];
-  switch (eff.op.k) {
-    case 'draw': return 9 * (eff.op.n || 1);
-    case 'gainDon': return 7 * (eff.op.n || 1);
-    case 'koWeakest': return foe.board.length ? 24 : 2;
-    case 'restEnemy': return foe.board.length ? 8 : 1;
-    case 'powerSelf': return 5;
-    case 'powerLeader': return 5;
-    default: return 4;
+  const ops = Array.isArray(eff.op) ? eff.op : [eff.op]; // v2 复合 op（POOL-3）：逐段求和，不再整条走 default 低估
+  let v = 0;
+  for (const op of ops) {
+    switch (op.k) {
+      case 'draw': v += 9 * (op.n || 1); break;
+      case 'gainDon': v += 7 * (op.n || 1); break;
+      case 'koWeakest': v += foe.board.length ? 24 : 2; break;
+      case 'restEnemy': v += foe.board.length ? 8 : 1; break;
+      case 'powerSelf': v += 5; break;
+      case 'powerLeader': v += 5; break;
+      default: v += 4;
+    }
   }
+  return v;
 }
 
 function scoreAttack(state, act, me, foe) {
@@ -128,9 +151,11 @@ function scoreAttack(state, act, me, foe) {
     ? me.leader : me.board[act.attacker.idx];
   if (!atkUnit) return -99;
   let atk = act.attacker.type === 'leader' ? leaderPower(me) : powerOfUnit(atkUnit);
-  // whenAttacking 增益预估
-  if (atkUnit.effect && atkUnit.effect.hook === 'whenAttacking'
-    && atkUnit.effect.op.k === 'powerSelf') atk += atkUnit.effect.op.x;
+  // whenAttacking 增益预估（复合 op 数组时对 powerSelf 段求和）
+  if (atkUnit.effect && atkUnit.effect.hook === 'whenAttacking') {
+    const ops = Array.isArray(atkUnit.effect.op) ? atkUnit.effect.op : [atkUnit.effect.op];
+    for (const op of ops) if (op.k === 'powerSelf') atk += op.x || 0;
+  }
   const estCounter = foe.hand.filter((c) => c.counter).length * 700; // 反击预期折减
 
   if (act.target === 'leader' || act.target.type === 'leader') {

@@ -23,17 +23,14 @@ const NON_RED = ['blue', 'green', 'yellow', 'purple', 'black'];
 
 // ===== web/game.js deckOf 同款：该色全部卡各 4 张凑 50 =====
 function deckOf(color) {
-  const cs = O.POOL.cards.filter((c) => c.color === color);
-  const deck = [];
-  for (const c of cs) for (let i = 0; i < 4; i++) deck.push(c);
-  return deck.slice(0, 50);
+  return O.deckOf(O.POOL, color); // engine/deck.js 分层均匀采样（POOL-3 顺序敏感修复）
 }
 
 // ===== 单局驱动：双方 AI 轮流决策（含 pending 响应窗口），结构同 tests/ai.test.js aiGame =====
 function playGame({ lvlA = 'hard', lvlB = 'easy', colorB = 'blue', seed = 1, onStep = null }) {
   const leaderA = O.POOL.leaders.find((l) => l.color === 'red');
   const leaderB = O.POOL.leaders.find((l) => l.color === colorB);
-  const s = O.newGame({ leaderA, deckA: deckOf('red'), leaderB, deckB: deckOf(colorB), seed });
+  const s = O.newGame({ leaderA, deckA: deckOf('red'), leaderB, deckB: deckOf(colorB), seed, fusions: O.POOL.cards.filter((c) => c.fusion) });
   const ai0 = O.createAI(lvlA, O.makeRng(seed * 2 + 1));
   const ai1 = O.createAI(lvlB, O.makeRng(seed * 2 + 2));
   let steps = 0;

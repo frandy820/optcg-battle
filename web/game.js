@@ -33,6 +33,7 @@
   let myLeaderColor = null;
   let myLeaderId = null;      // 12 船长（OP-02）精确选将；色仍保留（构筑器按色锁）
   let hint = null;
+  let handSel = null;          // 手牌两段式出牌：第一次点击=选中预览，再点同卡=确认打出（防误碰）
   let gameCtx = null;          // { mode:'free'|'ladder'|'survival', ... } 模式层结算用
   let ended = false;           // 终局结算只弹一次
   let gen = 0;                 // 对局代际号：跨局 setTimeout/autoplay 幽灵调用防护
@@ -158,22 +159,29 @@
     el.setAttribute('role', 'button');
     el.setAttribute('aria-label', def.name + (def.cost != null ? `，费用 ${def.cost}` : '') + (def.power ? `，战力 ${def.power / 1000}K` : '') + (def.fruit ? `，${FRUIT_LABEL[def.fruit]}系` : ''));
     const fruitHtml = def.fruit ? `<span class="kw-badge fr-${def.fruit}">${FRUIT_LABEL[def.fruit]}系</span>` : '';
-    // 船长技能徽章（批3：六色差异化技能，卡面金字标记，悬停看详情）
-    const skillHtml = def.type === 'leader' && def.skill ? `<span class="kw-badge kw-skill" title="${def.skill}">${def.skill}</span>` : '';
+    // 船长技能可视化（试玩反馈：文字徽章遮立绘）→ 轻量技能点：每技一点、觉醒=亮金；
+    // 完整技能文案走三通道：船长「?」按钮 / 长按信息卡 / 图鉴放大视图
+    const skillDotHtml = def.type === 'leader'
+      ? `<div class="skill-dots" aria-hidden="true">${(def.skills || (def.skill ? [{ name: def.skill }] : [])).map((s) => `<span class="sdot${/觉醒/.test(s.name) ? ' awaken' : ''}" title="${s.name}"></span>`).join('')}</div>`
+      : '';
     // 装备：卡面「装备」徽章 + 增益角标（武器纯攻 / 甲胄含坚壁）；已装上的单位在词条区亮出装备名
     const gearDefHtml = def.type === 'gear' && def.gear
       ? `<span class="kw-badge kw-gear">装备</span>${def.gear.gives ? def.gear.gives.map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('') : ''}` : '';
     const unitGearHtml = (def.gears || []).map((g) => `<span class="kw-badge kw-gear-on" title="已装备 ${g.name}">⚔${g.name}</span>`).join('');
-    const kwHtml = gearDefHtml + unitGearHtml + skillHtml + fruitHtml + (def.keywords || []).map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('');
-    const costHtml = def.type === 'leader' ? '' : `<div class="cost">${def.cost}</div>`;
+    const kwHtml = gearDefHtml + unitGearHtml + fruitHtml + (def.keywords || []).map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('');
+    const costHtml = def.type === 'leader' ? '' : `<div class="cost" title="费用：打出这张卡要消耗的贝里数（左下角贝里区支付）"><span class="beli">฿</span>${def.cost}</div>`;
+    // G3 稀有度角标（卡面右上角；A 灰/B 绿/S 蓝/SS 紫/SSS 金；船长卡无 rarity 不加）
+    const rarHtml = (def.rarity && def.type !== 'leader') ? `<span class="rar-badge r-${def.rarity}" title="稀有度 ${def.rarity}">${def.rarity}</span>` : '';
     const artUrl = `art/${def.art || def.id}.webp`;
     el.innerHTML = `
       ${costHtml}
+      ${rarHtml}
+      ${skillDotHtml}
       <div class="kw-badges">${kwHtml}</div>
       <div class="art">
-        <img src="${artUrl}" alt="" style="display:none"
-          onload="this.style.display='block';this.parentNode.querySelector('.fallback').style.display='none'"
-          onerror="this.remove()">
+        <img src="${artUrl}" alt="" loading="lazy" style="opacity:0"
+          onload="this.style.opacity='1';this.parentNode.querySelector('.fallback').style.display='none'"
+          onerror="if(!this.dataset.r){this.dataset.r='1';this.src=this.src+'?retry=1';}else this.remove()">
         <div class="fallback"><span class="glyph">${CAP().icon((CAP().FACTION[def.color] || {}).emblem, 'glyph-emblem')}</span></div>
       </div>
       <div class="name">${def.name}</div>
@@ -188,7 +196,9 @@
   }
 
   function leaderEl(pl, side) {
-    const el = cardEl(pl.leader, { cls: 'leader' + (pl.leader.rest ? ' rest' : ''), livePower: O.leaderPower(pl) });
+    // 船长攻击后不横置（试玩反馈）：用 acted 态（变暗+标记）表达「本回合已攻击」
+    const acted = !pl.leader.rest && pl.leader.attackedTurn === G.turn;
+    const el = cardEl(pl.leader, { cls: 'leader' + (pl.leader.rest ? ' rest' : '') + (acted ? ' acted' : ''), livePower: O.leaderPower(pl) });
     const wrap = document.createElement('div');
     wrap.style.position = 'relative';
     wrap.tabIndex = 0;
@@ -197,6 +207,19 @@
     wrap.appendChild(el);
     el.dataset.dons = pl.leader.dons || 0; // 悬停信息卡读（船长附着 DON 数）
     wrap.dataset.role = 'leader-' + side;
+    // v2 船长分化：「?」技能说明按钮——点击弹信息卡（不占用船长点击=攻击选择的语义）
+    if (Array.isArray(pl.leader.skills) && pl.leader.skills.length) {
+      const info = document.createElement('button');
+      info.type = 'button';
+      info.className = 'card-info-btn';
+      info.setAttribute('aria-label', pl.leader.name + ' 技能说明');
+      info.textContent = '?';
+      info.onclick = (ev) => {
+        ev.stopPropagation();
+        if (cardTipShowRef) cardTipShowRef(el, ev.clientX, ev.clientY);
+      };
+      wrap.appendChild(info);
+    }
     return wrap;
   }
 
@@ -232,6 +255,104 @@
       + `<div class="lp-bar"><i style="width:${pct}%"></i></div></div>`;
   }
 
+  // ===== 融合（F13）=====
+  // 融合卡定义真值源：卡池中带 fusion 字段的卡（不进卡组，deckOf/构筑器均跳过）
+  const fuseDefs = () => O.POOL.cards.filter((c) => c.fusion);
+  // 当前可用配方（素材齐+贝里够+场上未满+本回合未融合；引擎 fuseLockReason 单一真值源）
+  function availFusions() {
+    if (!G || G.winner !== null || G.pending || G.active !== MY) return [];
+    return fuseDefs().filter((def) => {
+      try { return O.fuseLockReason(G, MY, def) === null; } catch (e) { return false; }
+    });
+  }
+  // 可用配方涉及的素材 id 集（手牌/场上素材卡加 fuse-ready 金光）；无可用配方返回 null
+  function fuseMaterialIds() {
+    const avail = availFusions();
+    if (!avail.length) return null;
+    const ids = new Set();
+    for (const def of avail) for (const id of def.fusion.from) ids.add(id);
+    return ids;
+  }
+
+  // 融合面板：可用配方列表（素材小图 → 融合体预览 + 融合费用）→ 选中 → 确认发动
+  let fusePanelSel = null;
+  function openFusePanel() {
+    const avail = availFusions();
+    if (!avail.length) { showHintFlash('当前没有可发动的融合配方（素材需在场上或手牌，且贝里足够）'); return; }
+    closeFusePanel();
+    fusePanelSel = null;
+    const panel = document.createElement('div');
+    panel.id = 'fusePanel';
+    panel.className = 'modal';
+    const card = document.createElement('div');
+    card.className = 'modal-card fuse-card';
+    const h = document.createElement('h3');
+    h.textContent = '融合发动';
+    const sub = document.createElement('p');
+    sub.className = 'fuse-sub';
+    sub.textContent = '素材（场上或手牌）进墓场 → 融合体登场，当回合即可攻击（速攻）；每回合限 1 次';
+    const list = document.createElement('div');
+    list.className = 'fuse-list';
+    for (const def of avail) {
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'fuse-opt';
+      row.dataset.fusionId = def.id;
+      const mats = def.fusion.from.map((id) => {
+        const m = O.POOL.cards.find((c) => c.id === id);
+        return `<span class="fuse-mat"><img src="art/${m ? m.art : id}.webp" alt="" loading="lazy" onerror="this.remove()"><b>${m ? m.name : id}</b></span>`;
+      }).join('<span class="fuse-arrow">→</span>');
+      row.innerHTML = `<span class="fuse-mats">${mats}</span>`
+        + `<span class="fuse-result">${cardEl(def, {}).outerHTML}<span class="fuse-cost"><span class="beli">฿</span>${def.fusion.cost}</span></span>`;
+      row.onclick = () => {
+        sfx('click');
+        fusePanelSel = def.id;
+        panel.querySelectorAll('.fuse-opt').forEach((r) => r.classList.toggle('on', r.dataset.fusionId === fusePanelSel));
+        const go = card.querySelector('.fuse-go');
+        if (go) go.disabled = false;
+      };
+      list.appendChild(row);
+    }
+    const acts = document.createElement('div');
+    acts.className = 'end-actions';
+    const cancel = document.createElement('button');
+    cancel.type = 'button'; cancel.className = 'btn-ghost'; cancel.textContent = '取消';
+    cancel.onclick = () => { sfx('click'); closeFusePanel(); };
+    const go = document.createElement('button');
+    go.type = 'button'; go.className = 'btn-primary fuse-go'; go.textContent = '发动融合'; go.disabled = true;
+    go.onclick = () => {
+      if (!fusePanelSel) return;
+      sfx('click');
+      const fusionId = fusePanelSel;
+      closeFusePanel();
+      doAction({ t: 'fuse', side: MY, fusionId });
+    };
+    acts.appendChild(cancel); acts.appendChild(go);
+    card.appendChild(h); card.appendChild(sub); card.appendChild(list); card.appendChild(acts);
+    panel.appendChild(card);
+    panel.addEventListener('click', (e) => { if (e.target === panel) closeFusePanel(); });
+    document.body.appendChild(panel);
+  }
+  function closeFusePanel() {
+    const p = $('fusePanel');
+    if (p) p.remove();
+    fusePanelSel = null;
+  }
+
+  // 融合体 summon-fx 挂起：fuse 事件在 renderAll 前播放（DOM 尚无融合体卡），渲染后补挂登场特效
+  let fuseSummonPending = null;
+  function applyFuseSummonFx() {
+    const id = fuseSummonPending;
+    fuseSummonPending = null;
+    const el = $('myBoard').querySelector(`[data-card-id="${id}"]`) || $('enemyBoard').querySelector(`[data-card-id="${id}"]`);
+    if (el) {
+      el.classList.add('summon-fx');
+      const r = el.getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top + r.height / 2, '#ffe9a8', 34, 6);
+      setTimeout(() => el.classList.remove('summon-fx'), 700);
+    }
+  }
+
   // ===== 主渲染 =====
   function renderAll() {
     if (!G) return;
@@ -240,7 +361,9 @@
     $('turnNo').textContent = `回合 ${G.turn}`;
     const myTurn = G.active === MY && !G.pending;
     const badge = $('phaseBadge');
-    badge.textContent = G.pending ? '响应!' : (G.active === MY ? '你的回合' : '敌方回合');
+    // 模式标注前缀（故事之旅：gameCtx.badge =「故事 第N关」；其它模式无前缀，行为不变）
+    const btag = (gameCtx && gameCtx.badge) ? gameCtx.badge + ' · ' : '';
+    badge.textContent = btag + (G.pending ? '响应!' : (G.active === MY ? '你的回合' : '敌方回合'));
     badge.className = 'phase-badge' + (G.active === FOE ? ' enemy' : '');
 
     // 对手
@@ -263,6 +386,7 @@
     $('enemyGrave').innerHTML = `墓 <b>${foe.trash.length}</b>`;
 
     // 己方
+    const fuseIds = fuseMaterialIds(); // 可用配方素材集（null=隐藏融合按钮与金光）
     const myLeaderSlot = $('myLeaderSlot');
     myLeaderSlot.innerHTML = ''; myLeaderSlot.appendChild(leaderEl(me, MY));
     $('myLife').innerHTML = lpBar(me);
@@ -271,7 +395,7 @@
     $('myBoard').innerHTML = '';
     me.board.forEach((u, i) => {
       const canAtk = myTurn && !u.rest && (u.playedTurn < G.turn || (u.keywords || []).includes('rush'));
-      const el = cardEl(u, { cls: (u.rest ? 'rest ' : '') + (canAtk ? 'playable' : ''), livePower: O.powerOfUnit(u) });
+      const el = cardEl(u, { cls: (u.rest ? 'rest ' : '') + (canAtk ? 'playable' : '') + (fuseIds && fuseIds.has(u.id) ? ' fuse-ready' : ''), livePower: O.powerOfUnit(u) });
       el.dataset.myIdx = i;
       el.dataset.dons = u.dons || 0; // 悬停信息卡读（附着 DON 数）
       $('myBoard').appendChild(el);
@@ -281,15 +405,20 @@
     $('myHand').innerHTML = '';
     me.hand.forEach((c, i) => {
       const canPlay = handLockReason(c) === null;
-      const el = cardEl(c, { cls: canPlay ? 'playable' : 'unplayable' });
+      const el = cardEl(c, { cls: (canPlay ? 'playable' : 'unplayable') + (handSel === i ? ' selected' : '') + (fuseIds && fuseIds.has(c.id) ? ' fuse-ready' : '') });
       el.dataset.handIdx = i;
       $('myHand').appendChild(el);
     });
     $('myGrave').innerHTML = `墓 <b>${me.trash.length}</b>`;
 
+    // 融合按钮：有可用配方且轮到我方才亮出（容器整体收起，不给布局留空行）；点击开融合面板
+    const fuseCta = document.querySelector('.fuse-cta');
+    if (fuseCta) fuseCta.classList.toggle('hidden', !fuseIds);
+
     $('btnEnd').classList.toggle('can-act', myTurn);
     renderHints();
     updateHandFades();
+    if (fuseSummonPending) applyFuseSummonFx(); // fuse 演出挂起：渲染出融合体卡后补 summon-fx
   }
 
   // 手牌横向滚动渐隐提示（窄屏 6 张以上时可滑动）
@@ -313,9 +442,11 @@
     let text;
     if (G.winner !== null) text = G.winner === MY ? '胜利！' : '战败…';
     else if (G.pending && G.pending.target.side === MY) text = '对方攻击——选择反击牌或放弃（无反击牌时自动结算）';
-    else if (selMode && selMode.mode === 'attack') text = '选择攻击目标（对方场上有角色须先打角色；再点攻击者可取消）';
+    else if (selMode && selMode.mode === 'attack') text = '选择攻击目标：高亮=可攻击，置灰=不可（点置灰对象看原因）；再点攻击者取消';
     else if (selMode && selMode.mode === 'don') text = '选择贝里附着目标（点己方单位，再点贝里区取消）';
     else if (selMode && selMode.mode === 'gear') text = '选择要装备的角色（点己方场上单位；半亮=已带装备，再装会替换旧件；再点该装备卡取消）';
+    else if (handSel !== null && G.active === MY && !G.pending) text = '手牌已选中——再点一次打出 · 长按看详情 · 点其他卡切换';
+    else if (myTurn && availFusions().length) text = '你的回合：点手牌出牌 · 点单位攻击 · 素材齐备可点「融合」（金色高亮卡为可用素材）';
     else if (myTurn) text = '你的回合：点手牌出牌 · 点单位攻击 · 点贝里附着';
     else text = '对方行动中…';
     if (hint.textContent !== text) hint.textContent = text;
@@ -323,11 +454,15 @@
   }
 
   // ===== 演出播放器 =====
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  // 测试提速钩子：window.__OPTCG_SPEED=N 时演出/AI 延时按倍率缩短（玩家路径恒为 1，行为不变）
+  const SPEED = () => Math.max(1, (typeof window !== 'undefined' && +window.__OPTCG_SPEED) || 1);
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms / SPEED()));
   let lastClash = null; // clash→lp 链：结算时浮出「攻K−守K=差K」算式（伤害来源透明化）
+  let skillFxSeq = 0;   // 本批事件内技能演出序号：首个全时长、连续后续快闪（一回合连发不拖节奏）
   function playEvents() {
     const evs = G.log.slice(logSeen);
     logSeen = G.log.length;
+    skillFxSeq = 0;
     return new Promise((resolve) => {
       let done = false;
       const finish = () => { if (!done) { done = true; resolve(); } };
@@ -429,6 +564,37 @@
         await sleep(700);
         break;
       }
+      case 'skill': {
+        await playSkillFx(ev, skillFxSeq++ > 0);
+        break;
+      }
+      case 'fuse': {
+        // F13 融合演出：复用 .skill-fx 横幅通道（金色系，副标「融合发动」）
+        // + 素材位置金色 burst（此刻 DOM 仍是融合前快照，场上/手牌素材尚可见）
+        if (!motionReduced()) {
+          document.querySelectorAll('.skill-fx').forEach((n) => n.remove());
+          const fx = document.createElement('div');
+          fx.className = 'skill-fx';
+          fx.style.setProperty('--skc', '#ffd76a');
+          const fdef = O.POOL.cards.find((c) => c.id === ev.fusionId);
+          fx.innerHTML = `<span class="sk-name">${(fdef && fdef.name) || '融合'}</span><span class="sk-sub">${ev.side === MY ? '我方' : '对方'}融合发动</span>`;
+          document.body.appendChild(fx);
+          setTimeout(() => fx.remove(), 1400);
+          const zone = ev.side === MY ? $('myBoard') : $('enemyBoard');
+          const handZone = ev.side === MY ? $('myHand') : $('enemyHand');
+          for (const id of ev.fromIds || []) {
+            const el = zone.querySelector(`[data-card-id="${id}"]`) || handZone.querySelector(`[data-card-id="${id}"]`) || handZone;
+            if (el) {
+              const r = el.getBoundingClientRect();
+              burst(r.left + r.width / 2, r.top + r.height / 2, '#ffd76a', 24, 6);
+            }
+          }
+          sfx('clash');
+          await sleep(820);
+        }
+        fuseSummonPending = ev.fusionId; // renderAll 渲染出融合体后补 summon-fx（见 applyFuseSummonFx）
+        break;
+      }
       case 'noDamage': {
         // 0 伤害/无战果也必须有反馈（试玩反馈：直攻打不穿防线不掉积分，看起来像攻击失效）
         if (ev.reason !== 'power' && ev.reason !== 'defense') break; // gone：目标已不在场，静默
@@ -495,11 +661,48 @@
     setTimeout(() => b.classList.add('hidden'), 1600);
   }
 
+  // ===== 船长技能发动演出（F11：色系光效 + 技能名横幅 + 船长卡光环；觉醒技金色全屏闪光）=====
+  const SKILL_COLOR = { red: '#ff8a55', blue: '#5fc8ff', green: '#71e08d', yellow: '#f6d26b', purple: '#b98aff', black: '#ff5f6d' };
+  async function playSkillFx(ev, quick) {
+    if (motionReduced()) { await sleep(160); return; }
+    const leader = G && G.players[ev.side] && G.players[ev.side].leader;
+    const col = SKILL_COLOR[(leader && leader.color) || 'yellow'] || '#f6d26b';
+    sfx('clash'); // 复用交锋音：技能发动的能量感
+    // 1) 技能名横幅（色系描边大字 + 我方/对方标注；连发时替换式快闪，不叠加）
+    document.querySelectorAll('.skill-fx').forEach((n) => n.remove());
+    const fx = document.createElement('div');
+    fx.className = 'skill-fx' + (ev.awaken ? ' awaken' : '') + (quick ? ' quick' : '');
+    fx.style.setProperty('--skc', col);
+    fx.innerHTML = `<span class="sk-name">${ev.name}</span><span class="sk-sub">${ev.side === MY ? '我方' : '对方'}船长技能发动</span>`;
+    document.body.appendChild(fx);
+    setTimeout(() => fx.remove(), 1400);
+    // 2) 船长卡光环脉冲 + 色系粒子
+    const slot = ev.side === MY ? $('myLeaderSlot') : $('enemyLeaderSlot');
+    const card = slot && slot.querySelector('.card');
+    if (card) {
+      card.style.setProperty('--skc', col);
+      card.classList.add('skill-glow');
+      setTimeout(() => card.classList.remove('skill-glow'), 1150);
+      const r = card.getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top + r.height / 2, col, ev.awaken ? 40 : 26, 6);
+    }
+    // 3) 觉醒技：全屏金色闪光（残血觉醒的高光时刻）
+    if (ev.awaken) {
+      const flash = document.createElement('div');
+      flash.className = 'skill-flash';
+      document.body.appendChild(flash);
+      setTimeout(() => flash.remove(), 750);
+    }
+    // 首技全时长；同批连发的后续快闪（260ms）——一回合多技不拖节奏
+    await sleep(ev.awaken ? 880 : quick ? 260 : 620);
+  }
+
   // ===== 动作执行 =====
   async function doAction(action) {
     if (busy || !G || G.winner !== null) return;
     busy = true;
     selMode = null;
+    handSel = null; // 动作落地：手牌选中态随场面重置（两段式出牌）
     try {
       O.applyAction(G, action);
       if (replayCtx && !replayMode) {
@@ -562,7 +765,7 @@
   // 代际号守卫的 AI 调度：旧局的定时回调不允许驱动新局
   function scheduleAI(fn, delay) {
     const g = gen;
-    setTimeout(() => { if (g !== gen) return; fn(); }, delay);
+    setTimeout(() => { if (g !== gen) return; fn(); }, delay / SPEED());
   }
 
   // AI 驱动（busy=演出占用时重新调度自己；决策异常时安全弃权——链在任何情况下不可断）
@@ -590,6 +793,7 @@
     const names = {
       playCharacter: '召唤角色', playEvent: '发动事件', playStage: '布置舞台', playGear: '装备武器',
       attack: '发起攻击', block: '阻挡!', counter: '反击!', giveDon: '附着贝里',
+      fuse: '发动融合',
       endTurn: '结束回合', passCounter: '放弃反击',
     };
     line.textContent = `${action.side === MY ? '我方' : '敌方'} · ${names[action.t] || action.t}`;
@@ -653,9 +857,9 @@
         o.innerHTML = `<div class="lbl">${c.name}</div><div class="detail">反击 +${c.counter / 1000}K</div>`;
         o.onclick = () => {
           sfx('click');
-          // 打出反击牌：引擎窗口保持开放（可继续垫）。面板的刷新与收起统一由 doAction 链管理——
-          // afterAction→handleMyPending 负责续垫刷新或自动结算，doAction 收尾在窗口结束时统一收窗
-          // （旧版在 .then 里自行开/关面板：打出最后一张走自动结算路径时无人收窗→面板冻死且「放弃」失效）
+          // 先收面板再走动效（试玩反馈：先播动效再关弹窗观感错序）；窗口仍开放时
+          // doAction 链的 afterAction→handleMyPending 会重开面板供续垫
+          $('responsePanel').classList.add('hidden');
           doAction({ t: 'counter', side: MY, cards: [i] });
         };
         box.appendChild(o);
@@ -683,8 +887,17 @@
     const idx = +card.dataset.handIdx;
     const c = G && G.players[MY] && G.players[MY].hand[idx];
     if (!c) return;
+    if (selMode) { selMode = null; clearHighlights(); renderHints(); } // 手牌=出牌意图：离开攻击/贝里/装备选择
     const why = handLockReason(c);
     if (why) { showHintFlash(why); return; } // 不可出：给出具体原因
+    // 两段式出牌（防误碰）：第一次点击=选中预览+高亮，再点同卡=确认打出；点其他卡=切换选中
+    if (handSel !== idx) {
+      handSel = idx;
+      renderAll();
+      showHintFlash(`${c.name}（费用 ${c.cost}）——再点一次打出；长按可看详情`, 'info');
+      return;
+    }
+    handSel = null;
     if (c.type === 'gear') {
       // 装备：先进选择模式点己方角色（每角色限 1 件，重复装备=替换旧的进墓场）
       selMode = { mode: 'gear', idx, cardId: c.id };
@@ -709,7 +922,11 @@
     }
     const idx = +card.dataset.myIdx;
     const u = G.players[MY].board[idx];
-    if (u.rest) { showHintFlash('该单位已横置'); return; }
+    if (u.rest) { showHintFlash('该单位本回合已行动（守备中），下回合恢复'); return; }
+    // 刚登场无速攻=不可攻击：不给攻击 affordance（无小剑无高亮），只说明原因
+    if (u.playedTurn === G.turn && !(u.keywords || []).includes('rush')) {
+      showHintFlash('刚登场，下回合才能攻击（「速攻」词条除外）', 'info'); return;
+    }
     // 再次点击同一单位 = 取消攻击选择（明确的取消方式）
     if (selMode && selMode.mode === 'attack' && selMode.attacker.type === 'char' && selMode.attacker.idx === idx) {
       selMode = null; clearHighlights(); renderHints(); return;
@@ -725,11 +942,12 @@
     if (!selMode || selMode.mode !== 'attack') return;
     const idx = +card.dataset.foeIdx;
     const u = G.players[FOE].board[idx];
-    // 游戏王式：对方场上角色横竖均可被攻击（竖=互斗，横=守备表示）
+    // 对方场上角色灰亮均可被攻击（亮=互斗，灰=守备表示）
     const a = { t: 'attack', side: MY, attacker: selMode.attacker, target: { type: 'char', idx } };
+    const fromEl = selMode.attacker.type === 'char' ? $('myBoard').children[selMode.attacker.idx] : $('myLeaderSlot').querySelector('.card');
     selMode = null;
     clearHighlights();
-    doAction(a);
+    flySword(fromEl, card, () => doAction(a)); // 剑先飞，落地即结算
   });
 
   $('enemyLeaderSlot').addEventListener('click', () => {
@@ -737,9 +955,10 @@
     if (!selMode || selMode.mode !== 'attack') return;
     if (G.players[FOE].board.length > 0) { showHintFlash('对方场上有角色——先击败角色，才能直攻船长'); return; }
     const a = { t: 'attack', side: MY, attacker: selMode.attacker, target: 'leader' };
+    const fromEl = selMode.attacker.type === 'char' ? $('myBoard').children[selMode.attacker.idx] : $('myLeaderSlot').querySelector('.card');
     selMode = null;
     clearHighlights();
-    doAction(a);
+    flySword(fromEl, $('enemyLeaderSlot').querySelector('.card'), () => doAction(a));
   });
 
   $('myLeaderSlot').addEventListener('click', () => {
@@ -753,7 +972,8 @@
     if (selMode && selMode.mode === 'attack' && selMode.attacker.type === 'leader') {
       selMode = null; clearHighlights(); renderHints(); return; // 再次点击领袖 = 取消
     }
-    if (L.rest) { showHintFlash('领袖已横置'); return; }
+    if (L.rest) { showHintFlash('船长被效果横置，本回合不能攻击'); return; }
+    if (L.attackedTurn === G.turn) { showHintFlash('船长本回合已攻击过（不横置，每回合限一次）', 'info'); return; }
     selMode = { attacker: { side: MY, type: 'leader' }, mode: 'attack' };
     highlightTargets();
     renderHints();
@@ -773,8 +993,9 @@
     clearHighlights();
     const foe = G.players[FOE];
     if (foe.board.length > 0) {
-      // 对方场上有角色：全部角色可选（竖=互斗，横=守备），船长不可直攻
+      // 对方场上有角色：全部角色可选（亮=互斗，灰=守备），船长置灰不可直攻（点置灰=提示原因）
       foe.board.forEach((_, i) => $('enemyBoard').children[i]?.classList.add('targetable'));
+      $('enemyLeaderSlot').querySelector('.card')?.classList.add('dimmed');
     } else {
       $('enemyLeaderSlot').querySelector('.card')?.classList.add('targetable');
     }
@@ -792,20 +1013,61 @@
       $('myBoard').children[i]?.classList.add(...(u.gears && u.gears.length ? ['targetable', 'replaceable'] : ['targetable']));
     });
   }
-  // 攻击者选中标记：选完目标前，攻击者保持明显"已选中"态（可发现性）
+  // 攻击者选中标记：选完目标前，攻击者保持明显"已选中"态 + 中央半透明小剑（攻击意图可视化）
   function markSelected() {
     if (!selMode || selMode.mode !== 'attack' || !selMode.attacker) return;
     if (selMode.attacker.type === 'char') $('myBoard').children[selMode.attacker.idx]?.classList.add('selected');
     else $('myLeaderSlot').querySelector('.card')?.classList.add('selected');
+    const host = selMode.attacker.type === 'char'
+      ? $('myBoard').children[selMode.attacker.idx]
+      : $('myLeaderSlot').querySelector('.card');
+    if (host && !host.querySelector('.atk-sword')) {
+      const sw = document.createElement('span');
+      sw.className = 'atk-sword';
+      sw.innerHTML = CAP().icon('swords');
+      host.appendChild(sw);
+    }
   }
   function clearHighlights() {
     document.querySelectorAll('.targetable').forEach((el) => el.classList.remove('targetable'));
+    document.querySelectorAll('.dimmed').forEach((el) => el.classList.remove('dimmed'));
+    document.querySelectorAll('.atk-sword').forEach((el) => el.remove());
     document.querySelectorAll('.card.selected').forEach((el) => el.classList.remove('selected'));
+  }
+  // 飞剑演出：点击目标确认攻击时，半透明小剑从攻击者中心飞向目标中心（落地即结算）
+  function flySword(fromEl, toEl, done) {
+    if (!fromEl || !toEl) { done && done(); return; }
+    if (motionReduced()) { done && done(); return; }
+    const r1 = fromEl.getBoundingClientRect(), r2 = toEl.getBoundingClientRect();
+    const x1 = r1.left + r1.width / 2, y1 = r1.top + r1.height / 2;
+    const x2 = r2.left + r2.width / 2, y2 = r2.top + r2.height / 2;
+    const s = document.createElement('div');
+    s.className = 'fly-sword';
+    s.innerHTML = CAP().icon('swords');
+    s.style.left = x1 + 'px';
+    s.style.top = y1 + 'px';
+    const ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+    s.style.transform = `translate(-50%,-50%) rotate(${(ang + 45).toFixed(1)}deg) scale(1.5)`;
+    document.body.appendChild(s);
+    requestAnimationFrame(() => {
+      s.style.transition = 'transform .36s cubic-bezier(.55,0,1,.6), opacity .36s ease-in';
+      s.style.transform = `translate(calc(-50% + ${Math.round(x2 - x1)}px), calc(-50% + ${Math.round(y2 - y1)}px)) rotate(${(ang + 45).toFixed(1)}deg) scale(1.1)`;
+      s.style.opacity = '0.2';
+    });
+    setTimeout(() => { s.remove(); done && done(); }, 380);
   }
 
   $('btnEnd').onclick = () => {
     if (replayMode) return;
     if (G && !G.pending && G.active === MY) { sfx('click'); doAction({ t: 'endTurn', side: MY }); }
+  };
+
+  // 融合按钮（F13）：开配方面板（可用性在 availFusions 内再次校验，关闭窗口/终局后点击无害）
+  $('btnFuse').onclick = () => {
+    if (replayMode) return;
+    if (!G || G.pending || G.active !== MY) return;
+    sfx('click');
+    openFusePanel();
   };
 
   // ===== 键盘与焦点管理 =====
@@ -845,10 +1107,13 @@
       const ob = window.OPTCG_ONBOARDING;
       if (ob && typeof ob.active === 'function' && ob.active()) return;
       // 进行中的攻击/DON 选择：Escape 先取消选择（玩家随时可退出半成品操作）
-      if (selMode) { selMode = null; clearHighlights(); renderHints(); return; }
-      // 只关最上层可关面板：helpPanel > builderPanel；
+      if (selMode) { selMode = null; clearHighlights(); renderAll(); return; }
+      // 手牌两段式选中：Escape 取消选中
+      if (handSel !== null) { handSel = null; renderAll(); return; }
+      // 只关最上层可关面板：fusePanel > helpPanel > builderPanel；
       // endPanel 不关（防误触丢结算）；responsePanel 不关（响应必须显式选择）
-      if (isVisible('helpPanel')) { sfx('click'); $('helpPanel').classList.add('hidden'); }
+      if (isVisible('fusePanel')) { sfx('click'); closeFusePanel(); }
+      else if (isVisible('helpPanel')) { sfx('click'); $('helpPanel').classList.add('hidden'); }
       else if (isVisible('builderPanel')) { sfx('click'); $('builderPanel').classList.add('hidden'); }
     });
     // 卡牌键盘可达：Tab 聚焦后 Enter/Space 触发点击（与鼠标同一委托链路）
@@ -861,10 +1126,8 @@
 
   // ===== 开局 =====
   function deckOf(color) {
-    const cs = O.POOL.cards.filter((c) => c.color === color);
-    const deck = [];
-    for (let i = 0; i < 4; i++) for (const c of cs) deck.push(c); // 轮次交错：全卡型均入组（旧连块×4 会把池序靠后的装备/舞台截出 50 张外＝对局中永不可达）
-    return deck.slice(0, 50);
+    // 委托 engine/deck.js（分层均匀采样：char40/event6/stage2/gear2，POOL-3 扩池后顺序敏感修复）
+    return O.deckOf(O.POOL, color);
   }
 
   function setupUI() {
@@ -880,8 +1143,12 @@
       pick.className = `captain-card r-${c.rarity}`;
       pick.dataset.color = c.color;
       pick.dataset.leaderId = leader.id;
+      pick.dataset.cardId = leader.id; // 悬停信息卡（cardTip）按 cardId 查 POOL.leaders → 选将即看 v2 技能全说明
       pick.style.setProperty('--fc', c.factionColor);
       pick.style.setProperty('--ac', c.accentColor);
+      // v2 分化真值：LP/战力/技能一律取引擎 leaders（单一真值源，cards.json 改了这里自动跟）
+      const lpTier = leader.life <= 4 ? '低血多技' : leader.life >= 6 ? '高血少技' : '基准';
+      const skillBadges = (leader.skills || []).map((s) => `<i class="cc-skill${/觉醒/.test(s.name) ? ' awaken' : ''}" title="${s.name}：${s.desc}">${s.name}</i>`).join('');
       pick.innerHTML = `
         <span class="cc-top">
           <span class="cc-emblem">${CAP().icon((CAP().FACTION[c.color] || {}).emblem)}</span>
@@ -892,16 +1159,17 @@
           <img src="${c.image}" alt="${c.name}" loading="lazy" style="object-position:${c.imagePosition || 'center 18%'}"
             onerror="this.src=window.OPTCG_CAPTAINS.fallbackArt('${c.color}')">
           <span class="cc-veil"></span>
-          <span class="cc-hp">${CAP().icon('heart')} ${c.hp / 1000}K</span>
+          <span class="cc-hp">${CAP().icon('heart')} ${leader.power / 1000}K</span>
         </span>
         <span class="cc-body">
           <span class="cc-name">${c.name}</span>
           <span class="cc-title">${c.title}</span>
-          <span class="cc-ability"><b>${c.abilityName}</b>${c.abilityDescription}</span>
+          <span class="cc-skills">${skillBadges}</span>
+          <span class="cc-ability"><b>${lpTier}</b>${c.abilityDescription}</span>
         </span>
         <span class="cc-foot">
           <span class="cc-no">${c.cardNumber}</span>
-          <span class="cc-life">LP ${c.life * 2000}</span>
+          <span class="cc-life${leader.life !== 5 ? ' tier' : ''}">LP ${leader.life * 2000} · ${leader.skills.length}技</span>
           <span class="cc-on">${CAP().icon('check')} 出战</span>
         </span>`;
       pick.onclick = () => { sfx('click'); setLeader(leader.id); };
@@ -994,16 +1262,23 @@
     }
     const color = myLeader.color;
     const deckA = opts.deck && opts.deck.length === 50 ? opts.deck : deckOf(color);
-    // 对手从全部船长随机（排除自己所选；同色对手允许——艾斯 vs 路飞）
+    // 对手从全部船长随机（排除自己所选；同色对手允许——艾斯 vs 路飞）；
+    // opts.foeLeader = 完整合成首领定义（故事之旅 Boss：名字/战力/技能按关卡定制，模式层传入）
     const foePool = O.POOL.leaders.filter((l) => l.id !== myLeader.id);
     const foeLeader = (opts.foeLeaderId && O.POOL.leaders.find((l) => l.id === opts.foeLeaderId))
+      || (opts.foeLeader && opts.foeLeader.color && opts.foeLeader.power ? opts.foeLeader : null)
       || foePool[Math.floor(Math.random() * foePool.length)];
+    // opts.deckB = 模式层定制对手卡组（故事之旅强度曲线）；缺省按对手颜色默认组
+    const deckB = (opts.deckB && opts.deckB.length === 50) ? opts.deckB : deckOf(foeLeader.color);
     const seedUsed = (Date.now() % 100000) + 1;
     G = O.newGame({
       leaderA: myLeader, deckA,
-      leaderB: foeLeader, deckB: deckOf(foeLeader.color),
+      leaderB: foeLeader, deckB,
       seed: seedUsed,
+      fusions: fuseDefs(), // F13 融合配方随局注入（融合卡不进卡组）
     });
+    // 故事之旅 Boss LP 覆写（引擎按 life*2000 折算，Boss 血量 7000 等非整档值在模式层落定）
+    if (Number.isFinite(opts.foeLP) && opts.foeLP > 0) G.players[1].lp = opts.foeLP;
     aiErrs = 0;
     ai = O.createAI(opts.level || $('aiLevel').value);
     // 回放录制：确定性重建三要素（seed + 双方卡组 id 序 + 全动作序列）
@@ -1013,7 +1288,7 @@
       leaderA: { id: myLeader.id, name: myLeader.name },
       leaderB: { id: foeLeader.id, name: foeLeader.name },
       deckA: deckA.map((c) => c.id),
-      deckB: deckOf(foeLeader.color).map((c) => c.id),
+      deckB: deckB.map((c) => c.id),
       level: ai ? ai.level : 'normal',
       actions: [],
     };
@@ -1026,12 +1301,14 @@
     selMode = null;
     gen++;                 // 新对局代际：旧局定时器/autoplay 全部失效
     stopAutoplayTimer();
+    closeFusePanel();      // 旧局残留的融合面板随新局拆除
+    fuseSummonPending = null;
     $('logBody').innerHTML = '';
     ['setupPanel', 'endPanel', 'responsePanel', 'helpPanel', 'builderPanel'].forEach((id) => $(id).classList.add('hidden'));
     showBanner('决斗！', '');
     renderAll();
     // 开局即报模式（试玩反馈：点天梯/生存后无任何反馈，打完一局才知道模式是否生效）
-    const MODE_NAME = { ladder: '天梯排位', survival: '生存挑战', free: '自由对战' };
+    const MODE_NAME = { ladder: '天梯排位', survival: '生存挑战', story: '故事之旅', free: '自由对战' };
     showHintFlash(`${MODE_NAME[(gameCtx && gameCtx.mode) || 'free']} · 对手：${foeLeader.name}（${COLOR_NAME[foeLeader.color]}）`, 'info');
     autosaveNow(); // 开局即留档：AI 回合中崩溃/关页也可恢复
     requestAnimationFrame(fitTableView); // 进局后按当前视口重适配（banner/hand 渲染完）
@@ -1042,6 +1319,8 @@
     stopAutoplayTimer();
     G = null; ai = null; gameCtx = null; ended = false; selMode = null;
     replayCtx = null;
+    closeFusePanel();
+    fuseSummonPending = null;
     if (replayMode) stopReplay(); // 兜底：任何路径退回大厅都拆回放态
     ['endPanel', 'responsePanel', 'helpPanel'].forEach((id) => $(id).classList.add('hidden'));
     $('setupPanel').classList.remove('hidden');
@@ -1117,7 +1396,7 @@
   function rebuildLog(g) {
     const body = $('logBody');
     if (!body || !Array.isArray(g.log)) return;
-    const NAME = { summon: '召唤角色', attack: '发起攻击', counter: '反击!', endTurn: '结束回合' };
+    const NAME = { summon: '召唤角色', attack: '发起攻击', counter: '反击!', fuse: '发动融合', endTurn: '结束回合' };
     const lines = [];
     for (const ev of g.log) {
       if (!(ev.t in NAME)) continue;
@@ -1126,6 +1405,10 @@
       let text = `${side === MY ? '我方' : '敌方'} · ${NAME[ev.t]}`;
       if (ev.t === 'summon' && ev.cardId) {
         const c = O.POOL.cards.find((x) => x.id === ev.cardId);
+        if (c) text += `：${c.name}`;
+      }
+      if (ev.t === 'fuse' && ev.fusionId) {
+        const c = O.POOL.cards.find((x) => x.id === ev.fusionId);
         if (c) text += `：${c.name}`;
       }
       lines.push(text);
@@ -1151,8 +1434,13 @@
         if (typeof pl.lp !== 'number') return false; // 旧生命卡制快照无 LP 字段：拒收（save 层清档重来）
       }
       if (g.winner !== null) return false; // 已终局的快照没有恢复意义
+      // F13 老存档兼容：融合前快照缺 fusions/fuseUsed 字段——按当前卡池补挂（缺省=融合不可用，不崩）
+      if (!Array.isArray(g.fusions)) g.fusions = fuseDefs();
+      if (!Array.isArray(g.fuseUsed)) g.fuseUsed = [false, false];
       gen++;
       stopAutoplayTimer();
+      closeFusePanel();
+      fuseSummonPending = null;
       replayCtx = null; // 中途恢复的局动作序列不完整：不录回放（战绩照记）
       G = g;
       ai = O.createAI(AI_LEVELS.includes(snap.level) ? snap.level : 'normal');
@@ -1188,10 +1476,10 @@
       { ic: 'trophy', t: '胜利目标（积分制）', p: '双方船长各有 <b>LP 10000 积分</b>。攻击造成的伤害按<b>战力差额</b>扣对方 LP，<b>把对方 LP 扣到 0 即获胜</b>；对方牌库抽空也会判负。' },
       { ic: 'layers', t: '回合流程', p: '你的回合：<b>贝里区自动补 2 枚贝里</b>（上回合附着的自动脱落回来）→ 抽 1 张牌 → 出牌 / 攻击 / 附着 → 点「结束回合」。贝里区里<b>未附着的贝里就是能花的钱</b>，附着到卡上的算已消耗。' },
       { ic: 'map', t: '出牌', p: '手牌左上角圆标是<b>费用</b>，消耗对应数量贝里即可打出：角色进场（场上最多 5 名）、事件立即生效、舞台持续支援。<b>刚出场的角色要等下回合才能攻击</b>（带速攻词条的当回合即可）。' },
-      { ic: 'swords', t: '攻击：卡片互斗', p: '点己方未行动的角色或船长 → 再点对方卡发起攻击。<b>对方场上有角色时必须先打角色</b>（横竖都可被攻击，不能绕过直攻船长）；对方场上没角色才能<b>直攻船长</b>，伤害 = 攻方战力 − 船长战力，<b>攻不破防线（差 ≤ 0）就是 0 伤害</b>（打出反击牌可以垫高防线免伤）。攻击后攻击者横置。' },
-      { ic: 'refresh', t: '竖放与横放', p: '场上卡片<b>竖放＝攻击表示</b>：可以攻击，被攻击时进入<b>互斗</b>——战力高者胜，败方被击沉并按差额扣其主人 LP，相等同归于尽。<b>横放＝守备表示</b>：本回合已行动，被攻击时只比战力——攻方战力更高才被击沉，守方不损失 LP。己方回合开始时横放的卡自动转回竖放。鼠标悬停任意卡片（手机长按）可看完整信息。' },
+      { ic: 'swords', t: '攻击：卡片互斗', p: '点己方未行动的角色或船长 → 再点对方卡发起攻击。<b>对方场上有角色时必须先打角色</b>（灰卡亮卡都可被攻击，不能绕过直攻船长；只有装备不算）；对方场上没角色才能<b>直攻船长</b>，伤害 = 攻方战力 − 船长战力，<b>攻不破防线（差 ≤ 0）就是 0 伤害</b>（打出反击牌可以垫高防线免伤）。攻击后的卡<b>置灰进守备</b>（不横放），下回合开始恢复；船长不横放、每回合限攻一次。' },
+      { ic: 'refresh', t: '亮卡与灰卡', p: '场上卡片<b>亮＝可行动</b>：可以攻击，被攻击时进入<b>互斗</b>——战力高者胜，败方被击沉并按差额扣其主人 LP，相等同归于尽。<b>灰（带「守」标）＝守备</b>：本回合已行动不能再攻击，被攻击时只比战力——攻方战力更高才被击沉，守方不损失 LP。己方回合开始时灰卡自动恢复。鼠标悬停任意卡片（手机长按）可看完整信息。' },
       { ic: 'heart', t: '反击', p: '对方攻击时进入<b>反击窗口</b>：手牌中带<b>「反击 +NK」角标</b>的卡可打出为防守<b>垫战力</b>——直攻时垫高船长防线可免伤，互斗时反超战力可反杀攻方。<b>手里没有反击角标的卡时会自动结算，不打扰你</b>；也可勾选「本局不再询问」永久自动。' },
-      { ic: 'shield', t: '坚壁', p: '带<span class="kw">坚壁</span>词条的角色是硬盾：<b>被攻击时防御战力 +1K</b>（横放竖放都生效），更难被击沉——很适合守家。' },
+      { ic: 'shield', t: '坚壁', p: '带<span class="kw">坚壁</span>词条的角色是硬盾：<b>被攻击时防御战力 +1K</b>（守备和可行动状态都生效），更难被击沉——很适合守家。' },
       { ic: 'anchor', t: '贝里附着', p: '点左下贝里区 → 点己方角色或船长，附着 1 枚贝里 <b>+1000 战力</b>，攻防皆受益（互斗、守备、直攻差额都算）。附着后的贝里本回合不可再用，规划好节奏。' },
       { ic: 'sparkles', t: '关键词', p: '<span class="kw">速攻</span>：出场当回合即可攻击；<span class="kw">双击</span>：直攻船长的 LP 伤害 ×2；<span class="kw">猛击</span>：直攻船长 LP 伤害额外 +2K；<span class="kw">坚壁</span>：被攻击时防御 +1K。' },
       { ic: 'flame', t: '恶魔果实克制', p: '带果实角标的卡有系别：<b>超人系克自然系、自然系克动物系、动物系克超人系</b>（循环）。<b>攻击被自己克制的目标时战力 +1K</b>（打角色、直攻船长都算）；无果实角标的卡不参与克制。组卡时兼顾「我方输出系别」与「克制对方主力系别」是构筑深度所在。' },
@@ -1259,7 +1547,7 @@
       return;
     }
     gen++; stopAutoplayTimer();
-    G = O.newGame({ leaderA: la, deckA, leaderB: lb, deckB, seed: rp.seed });
+    G = O.newGame({ leaderA: la, deckA, leaderB: lb, deckB, seed: rp.seed, fusions: fuseDefs() });
     ai = null; gameCtx = null; ended = false; selMode = null; busy = false; autoPassSession = false;
     replayCtx = null;   // 播放不录制
     replayMode = true;
@@ -1301,6 +1589,7 @@
     state: () => (G && {
       winner: G.winner, turn: G.turn, active: G.active,
       pending: G.pending ? { kind: G.pending.kind, targetSide: G.pending.target.side } : null,
+      myLP: G.players[MY].lp, foeLP: G.players[FOE].lp, // 故事之旅满血奖励判定（模式层 settle 读）
     }),
     autoplay, // 调试/自测：自动走 n 步（我方随机、响应自动放弃）
     snapshot, restoreFromSnapshot, // 断档恢复契约（save.js resume 回调）
@@ -1340,17 +1629,31 @@
   function stopAutoplayTimer() {
     if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
   }
-  function autoplay(n, stepMs) {
+  function autoplay(n, stepMs, level) {
     stopAutoplayTimer(); // 并发调用只保留最新一个
     let i = 0;
+    // level 给定时我方动作由该档 AI 代打（故事之旅通关模拟=「普通玩家策略」近似），缺省保持原随机轮询
+    let pilot = null;
+    if (level && AI_LEVELS.includes(level)) { try { pilot = O.createAI(level); } catch (e) { pilot = null; } }
     autoTimer = setInterval(() => {
       if (!G || G.winner !== null) { stopAutoplayTimer(); return; } // 局没了/已终局：自我清理，不空转
       if (busy) return;
-      if (G.pending && G.pending.target.side === MY) { doAction({ t: 'passCounter', side: MY }); return; }
+      // 反击窗口：AI 代打时交 AI 决策（普通玩家也会打反击牌）；随机模式维持自动放弃
+      if (G.pending && G.pending.target.side === MY) {
+        if (pilot) {
+          try { const a = pilot.choose(G, O.listActions(G)); doAction(a || { t: 'passCounter', side: MY }); } catch (e) { doAction({ t: 'passCounter', side: MY }); }
+          return;
+        }
+        doAction({ t: 'passCounter', side: MY });
+        return;
+      }
       if (G.active !== MY) return;
-      const acts = O.listActions(G).filter((a) => a.t !== 'takeDon' && a.t !== 'giveDon');
+      // 随机模式滤 give/takeDon（互切死循环防护）；AI 代打交完整动作表（附着贝里是普通操作，AI 不会互切）
+      const acts = pilot ? O.listActions(G) : O.listActions(G).filter((a) => a.t !== 'takeDon' && a.t !== 'giveDon');
       if (!acts.length) return;
-      doAction(acts[i % acts.length]);
+      let a = null;
+      if (pilot) { try { a = pilot.choose(G, acts); } catch (e) { a = null; } }
+      doAction(a || acts[i % acts.length]);
       if (++i >= n) stopAutoplayTimer();
     }, stepMs || 420); // stepMs 仅测试加速用（虚拟时间快进），玩家路径不传
   }
@@ -1358,10 +1661,10 @@
   // ===== 卡片悬停信息卡（试玩反馈：卡面信息不全、竖/横语义不明）=====
   // 桌面 hover / 触屏长按 550ms → 显示全量卡信息（类型·费用·战力·反击·关键词解释·效果·竖横状态·附着 DON）
   const KW_TIP = {
-    rush: '登场当回合即可攻击（其他角色要等下回合）',
-    blocker: '坚壁之盾：被攻击时防御战力 +1K（横放竖放都生效），更难被击沉',
-    doubleAttack: '直攻船长时积分（LP）伤害 ×2',
-    banish: '猛击：直攻船长时积分（LP）伤害额外 +2K',
+    rush: '登场当回合即可攻击',
+    blocker: '被攻击时防御 +1K，更难被击沉',
+    doubleAttack: '直攻船长伤害 ×2',
+    banish: '直攻船长伤害额外 +2K',
   };
   const TYPE_NAME = { leader: '船长卡', char: '角色卡', event: '事件卡', stage: '舞台卡', gear: '装备卡' };
   function effectText(def) {
@@ -1376,7 +1679,26 @@
       'onPlay:draw': `打出时：抽 ${op.n || 1} 张牌`,
       'onPlay:gainDon': `打出时：从贝里库翻 ${op.n || 1} 枚进贝里区（本回合就能花）`,
     };
-    return M[e.hook + ':' + op.k] || null;
+    if (!Array.isArray(e.op) && M[e.hook + ':' + op.k]) return M[e.hook + ':' + op.k];
+    // v2 通用算子文案（POOL-3 扩卡用）：复合 op 按序拼接（discard 在前=代价语义）
+    const HOOK_PRE = { onPlay: '打出时', whenAttacking: '攻击时', onKO: '被击沉时', trigger: '作为生命翻出时' };
+    const OP_TEXT = {
+      draw: (o) => `抽 ${o.n || 1} 张牌${o.minCost ? `（费用≥${o.minCost} 才生效）` : ''}`,
+      powerSelf: (o) => `自身战力 +${(o.x || 0) / 1000}K`,
+      powerLeader: (o) => `船长战力 +${(o.x || 0) / 1000}K`,
+      gainDon: (o) => `贝里区 +${o.n || 1} 枚（本回合就能花）`,
+      koWeakest: () => '击沉敌方战力最低的角色',
+      restEnemy: (o) => `横置敌方${o.target === 'strongest' ? '战力最高' : o.target === 'weakest' ? '战力最低' : '一名'}角色`,
+      healLP: (o) => `LP 回复 ${(o.x || 1000) / 1000}K`,
+      damageLP: (o) => `对方 LP 直接伤害 ${(o.x || 1000) / 1000}K`,
+      buffAll: (o) => `我方全体角色战力 +${(o.x || 0) / 1000}K`,
+      debuffFoeAll: (o) => `对方全体角色战力 -${(o.x || 0) / 1000}K`,
+      discard: (o) => `弃 ${o.n || 1} 张手牌`,
+    };
+    const ops = Array.isArray(e.op) ? e.op : [e.op];
+    const parts = ops.map((o) => (o && OP_TEXT[o.k]) ? OP_TEXT[o.k](o) : null);
+    if (parts.some((p) => p === null)) return null; // 未知算子：退回白板文案（扩卡门禁不允许，防御兜底）
+    return `${HOOK_PRE[e.hook] || e.hook}：${parts.join('，')}`;
   }
   let cardTipHide = null; // renderAll 重渲染后强制隐藏（悬停中的卡元素已被替换）
   // 卡牌静态信息（悬停信息卡与图鉴放大视图共用同一真值源）
@@ -1385,16 +1707,33 @@
     parts.push(`<div class="ct-head"><b>${def.name}</b><span>${def.sub || ''}</span></div>`);
     parts.push(`<div class="ct-meta">${TYPE_NAME[def.type] || def.type} · ${COLOR_NAME[def.color] || def.color}${def.type === 'leader' ? ` · LP ${def.life * 2000}` : ''}${def.fruit ? ` · ${FRUIT_LABEL[def.fruit]}系` : ''}</div>`);
     if (def.fruit) parts.push(`<div class="ct-kw"><span class="kw-badge fr-${def.fruit}">${FRUIT_LABEL[def.fruit]}系</span><span>${FRUIT_TIP[def.fruit]}</span></div>`);
-    if (def.type === 'leader' && def.skill) parts.push(`<div class="ct-kw"><span class="kw-badge kw-skill">船长技能</span><span><b>${def.skill}</b>：${def.skillDesc}</span></div>`);
+    if (def.type === 'leader' && Array.isArray(def.skills)) {
+      // v2 船长分化：LP 档徽章 + 逐技说明（觉醒技金框，数据自带文案=引擎同源）
+      const lpTier = def.life <= 4 ? '低血多技' : def.life >= 6 ? '高血少技' : '基准';
+      parts.push(`<div class="ct-kw"><span class="kw-badge kw-lp${def.life <= 4 ? ' low' : def.life >= 6 ? ' high' : ''}">LP ${def.life * 2000} · ${lpTier}</span><span>血越少技能越多，觉醒技在 LP≤4000 开启</span></div>`);
+      for (const s of def.skills) {
+        const aw = /觉醒/.test(s.name);
+        parts.push(`<div class="ct-kw"><span class="kw-badge kw-skill${aw ? ' kw-awaken' : ''}">${aw ? '觉醒技' : '技能'}·${s.name}</span><span>${s.desc}</span></div>`);
+      }
+    } else if (def.type === 'leader' && def.skill) parts.push(`<div class="ct-kw"><span class="kw-badge kw-skill">船长技能</span><span><b>${def.skill}</b>：${def.skillDesc}</span></div>`);
     if (def.type === 'gear' && def.gear) {
-      parts.push(`<div class="ct-kw"><span class="kw-badge kw-gear">装备</span><span>附着到己方一名角色（限 1 件）：战力永久 +${def.gear.atk / 1000}K${(def.gear.gives || []).includes('blocker') ? '，并获「坚壁」——被攻击时防御再 +1K' : ''}；角色被击沉时装备随之进墓场</span></div>`);
+      parts.push(`<div class="ct-kw"><span class="kw-badge kw-gear">装备</span><span>附着一名角色（限 1 件）：战力 +${def.gear.atk / 1000}K${(def.gear.gives || []).includes('blocker') ? ' + 坚壁' : ''}；角色沉没装备随之弃</span></div>`);
     }
     if ((def.gears || []).length) {
       const g = def.gears[0];
       parts.push(`<div class="ct-kw"><span class="kw-badge kw-gear-on">已装备 ${g.name}</span><span>战力 +${(g.gear.atk || 0) / 1000}K${(g.gear.gives || []).includes('blocker') ? ' + 坚壁' : ''}（下方的总战力已含装备）</span></div>`);
     }
     const nums = [];
+    // F13 融合卡配方行（图鉴放大视图与悬停信息卡共用本真值源）
+    if (def.fusion) {
+      const matNames = def.fusion.from.map((id) => {
+        const m = O.POOL.cards.find((c) => c.id === id);
+        return m ? m.name : id;
+      });
+      parts.push(`<div class="ct-kw"><span class="kw-badge kw-fuse">融合卡</span><span>素材 ${matNames.join(' + ')} → 融合体，融合费用 ${def.fusion.cost} 贝里（场上或手牌的素材一起进墓场后登场，不进卡组）</span></div>`);
+    }
     if (def.type !== 'leader' && def.cost != null) nums.push(`费用 ${def.cost}`);
+    if (def.rarity && def.type !== 'leader') nums.push(`稀有度 ${def.rarity}`); // G3：图鉴放大视图/悬停信息卡稀有度行
     if (def.power) nums.push(`战力 ${def.power / 1000}K`);
     if (def.counter) nums.push(`反击 +${def.counter / 1000}K`);
     if (nums.length) parts.push(`<div class="ct-nums">${nums.join(' · ')}</div>`);
@@ -1411,30 +1750,37 @@
     if (!def) return null;
     const parts = [
       // 卡面大图（试玩反馈：悬停除文字外还要看大图）；缺图时 onerror 自移除不留空洞
-      `<img class="ct-art" src="art/${def.art || def.id}.webp" alt="" onerror="this.remove()">`,
+      `<img class="ct-art" src="art/${def.art || def.id}.webp" alt="" onerror="if(!this.dataset.r){this.dataset.r='1';this.src=this.src+'?retry=1';}else this.remove()">`,
       cardInfoHtml(def),
     ];
-    // 状态行：竖/横是本游戏核心语义（竖=就绪，横=已休息），每次悬停都解释
+    // 状态行（精简版：一卡一句，长教程只在「说明」面板讲）
     const inCodex = !!el.closest('.codex-panel');
     const rested = el.classList.contains('rest');
+    const acted = el.classList.contains('acted');
     const inHand = !!el.closest('#myHand');
     const isEnemy = !!el.closest('#enemyBoard,#enemyStage,#enemyLeaderSlot');
     const who = isEnemy ? '对方' : '我方';
-    const ownerTurn = isEnemy ? '对方回合' : '你的回合';
     const dons = +(el.dataset.dons || 0) || 0;
+    const foeEmpty = G && G.players[isEnemy ? MY : FOE].board.length === 0;
     const st = [];
-    if (inCodex) st.push('<b>图鉴浏览</b>：点击卡片可放大看卡面插画与完整说明');
+    if (inCodex) st.push('<b>图鉴</b>：点击卡片放大看完整卡面');
     else if (inHand) {
       const usable = G ? O.usableDons(G.players[MY]) : 0;
-      st.push(`<b>在手牌</b>：点击打出，花费 ${def.cost} 枚贝里（=贝里区未附着的贝里，当前能花 ${usable} 枚）；带「反击」角标的还可在对方攻击时打出作反击（垫高防守战力：直攻可免伤、互斗可反杀）`);
+      st.push(`<b>在手牌</b>：花费 ${def.cost} 贝里打出（现有 ${usable}）${def.counter ? `；对方攻击时可作反击垫 +${def.counter / 1000}K` : ''}`);
     }
-    else if (def.type === 'stage') st.push(`<b>${who}舞台</b>：打出后持续在场生效，不参与战斗`);
-    else if (rested) st.push(`<b>横放＝守备表示</b>：${who}${def.type === 'leader' ? '船长本回合已攻击过' : '角色本回合已行动或被效果横置，不能再攻击'}；被攻击时只比战力——攻方战力更高才被击沉，守方不损失积分${(def.keywords || []).includes('blocker') ? '（坚壁：防御战力仍 +1K）' : ''}；${ownerTurn}开始时转回竖放`);
-    else st.push(`<b>竖放＝攻击表示</b>：${who}${def.type === 'leader' ? '船长可发起攻击（对方场上无角色时可直攻，伤害=双方战力差额，攻不破=0 伤害）' : '角色可发起攻击（刚登场要等下回合，速攻词条除外）'}；被攻击时进入互斗——战力低者被击沉并按差额扣积分（LP），相等同归于尽`);
-    if (dons > 0) st.push(`<b>已附着 ${dons} 枚贝里</b>：战力 +${dons}K，攻防都算；${ownerTurn}开始时自动脱落回贝里区`);
+    else if (def.type === 'stage') st.push(`<b>${who}舞台</b>：持续在场生效，不参战`);
+    else if (def.type === 'leader') {
+      if (rested) st.push('<b>已横置（置灰）</b>：被效果横置，本回合不能攻击');
+      else if (acted) st.push('<b>已攻击</b>：船长不横放，每回合限攻一次，下回合恢复');
+      else st.push(`<b>${who}船长</b>：可发起攻击${foeEmpty ? '——对方场上无角色，可直攻船长' : '——对方场上有角色，须先击败角色'}`);
+    }
+    else if (rested) st.push(`<b>灰卡＝守备</b>：本回合已行动不能再攻击；被打只比战力，攻方更高才被击沉，守方不掉积分`);
+    else st.push('<b>亮卡＝可行动</b>：可攻击也可被攻击；互斗战力低者沉并按差额扣积分');
+    if (dons > 0) st.push(`<b>附着 ${dons} 贝里</b>：战力 +${dons}K，回合开始自动收回`);
     parts.push(`<div class="ct-state">${st.map((s) => `<div>${s}</div>`).join('')}</div>`);
     return parts.join('');
   }
+  let cardTipShowRef = null; // 船长「?」按钮/外部调用显示 tip（initCardTip 赋值）
   function initCardTip() {
     const tip = document.createElement('div');
     tip.id = 'cardTip';
@@ -1461,23 +1807,31 @@
       tip.classList.remove('hidden');
       place(x, y);
     };
+    cardTipShowRef = show;
+    const TIP_SEL = '.card, .captain-card'; // 选将卡同享悬停信息卡（v2：选将即看技能说明）
     if (canHover) {
       document.addEventListener('mouseover', (e) => {
-        const el = e.target.closest && e.target.closest('.card');
+        const el = e.target.closest && e.target.closest(TIP_SEL);
         if (el && !el.classList.contains('card-back')) show(el, e.clientX, e.clientY);
         else hide();
       });
       document.addEventListener('mousemove', (e) => {
         if (tip.classList.contains('hidden')) return;
-        const el = e.target.closest && e.target.closest('.card');
+        const el = e.target.closest && e.target.closest(TIP_SEL);
         if (!el || el.classList.contains('card-back')) return hide();
         show(el, e.clientX, e.clientY); // 场面重渲染后也随移动刷新内容
       });
     }
+    // 触屏点击「?」按钮弹出的说明：点其他区域收起
+    document.addEventListener('pointerdown', (e) => {
+      if (tip.classList.contains('hidden')) return;
+      if (e.target.closest && (e.target.closest('#cardTip') || e.target.closest('.card-info-btn'))) return;
+      hide();
+    }, true);
     // 触屏：长按 550ms 看牌；长按后的那次 click 吞掉防误出牌
     document.addEventListener('pointerdown', (e) => {
       if (e.pointerType !== 'touch') return;
-      const el = e.target.closest && e.target.closest('.card');
+      const el = e.target.closest && e.target.closest(TIP_SEL);
       if (!el || el.classList.contains('card-back')) return;
       longPressed = false;
       touchXY = [e.clientX, e.clientY];

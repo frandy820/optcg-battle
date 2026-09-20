@@ -13,6 +13,7 @@ const FILES = [
   'engine/combat.js',
   'engine/phases.js',
   'engine/legality.js',
+  'engine/deck.js',
   'engine/index.js',
   'ai/actions.js',
   'ai/heuristic.js',
@@ -44,8 +45,9 @@ const POOL = ${readFileSync(join(root, 'data/cards.json'), 'utf8')};
 global.OPTCG = {
   newGame, applyAction, cloneGame, validateDeck,
   powerOfUnit, leaderPower, usableDons, hasKeyword,
+  fuse, fuseLockReason,
   listActions, createAI, evaluate, makeRng, shuffle,
-  POOL,
+  deckOf, POOL,
 };
 })(globalThis);
 `);

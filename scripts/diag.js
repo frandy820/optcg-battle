@@ -1,16 +1,13 @@
 // 诊断：hard vs easy 步数分布 / 胜负 / 循环检测
 import { readFileSync } from 'node:fs';
-import { newGame, applyAction } from '../engine/index.js';
+import { newGame, applyAction, deckOf as deckOfEngine } from '../engine/index.js';
 import { listActions } from '../ai/actions.js';
 import { createAI } from '../ai/heuristic.js';
 import { makeRng } from '../engine/rng.js';
 
 const pool = JSON.parse(readFileSync(new URL('../data/cards.json', import.meta.url), 'utf8'));
 function deckOf(color) {
-  const cs = pool.cards.filter((c) => c.color === color);
-  const deck = [];
-  for (const c of cs) for (let i = 0; i < 4; i++) deck.push(c);
-  return deck.slice(0, 50);
+  return deckOfEngine(pool, color); // engine/deck.js 分层均匀采样（POOL-3 顺序敏感修复）
 }
 function aiGame(cA, lvlA, cB, lvlB, seed) {
   const leaderA = pool.leaders.find((l) => l.color === cA);

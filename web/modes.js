@@ -108,7 +108,7 @@
   }
 
   // ===== 继续上次对局（A2：大厅入口，快照数据/恢复动作全在 OPTCG_SAVE）=====
-  const MODE_NAME = { ladder: '天梯排位', survival: '生存挑战', free: '自由对战' };
+  const MODE_NAME = { ladder: '天梯排位', survival: '生存挑战', story: '故事之旅', free: '自由对战' };
   function refreshResumeEntry() {
     const old = document.getElementById('btnResumeMatch');
     if (old) old.remove();
@@ -169,6 +169,9 @@
     $('survivalBadge').innerHTML = S.streak > 0
       ? `${CAP().icon('flame')} ${S.streak}连胜 · 敌将:${LEVEL_NAME[S.level]} · 最佳${S.best}`
       : `最佳纪录 ${S.best} 连胜 · 从${LEVEL_NAME[S.level]}敌将开打`;
+    // 故事之旅副标题（story.js 缺席的测试页无该元素——防御可选）
+    const sb = $('storyBadge');
+    if (sb) sb.textContent = (window.OPTCG_STORY && OPTCG_STORY.badgeText()) || '';
     refreshResumeEntry(); // A2：有 <24h 快照时在模式区上方插「继续上次对局」
   }
 
@@ -244,7 +247,10 @@
   // ===== 终局结算（game.js 终局时调用，返回结算文案） =====
   function settle(ctx, win) {
     let line = '';
-    if (ctx.mode === 'ladder') {
+    if (ctx.mode === 'story') {
+      // 故事之旅：发卡/进度/卡组成长全在 story.js（模式层独立实现），此处只透传
+      line = (window.OPTCG_STORY && OPTCG_STORY.settle(ctx, win)) || '';
+    } else if (ctx.mode === 'ladder') {
       const L = load('optcg_ladder', { score: 0, wins: 0, losses: 0 });
       const delta = win ? 25 : -15;
       L.score = Math.max(0, L.score + delta);
@@ -275,6 +281,7 @@
   function restart(ctx) {
     if (ctx.mode === 'ladder') return startLadderGame();
     if (ctx.mode === 'survival') return startSurvivalGame();
+    if (ctx.mode === 'story' && window.OPTCG_STORY) return OPTCG_STORY.restart(ctx);
     OPTCG_GAME.startGame({ leaderColor: ctx.leaderColor, deck: ctx.deckRef });
   }
 
@@ -310,7 +317,8 @@
       + (total === 50 ? ` ${CAP().icon('check')} 可保存出航` : `（还差 ${50 - total} 张）`);
     const pool = $('builderPool');
     pool.innerHTML = '';
-    OPTCG.POOL.cards.filter((c) => c.color === bColor)
+    // F13：融合卡不进卡组（经融合动作登场），构筑器池排除
+    OPTCG.POOL.cards.filter((c) => c.color === bColor && !c.fusion)
       .sort((a, b) => (a.cost - b.cost) || a.id.localeCompare(b.id)).forEach((c) => {
       const n = bCounts[c.id] || 0;
       const w = document.createElement('div');
@@ -367,7 +375,7 @@
   function builderQuickFill() {
     bCounts = {};
     let left = 50;
-    for (const c of OPTCG.POOL.cards.filter((x) => x.color === bColor)) {
+    for (const c of OPTCG.POOL.cards.filter((x) => x.color === bColor && !x.fusion)) {
       const n = Math.min(4, left);
       bCounts[c.id] = n; left -= n;
       if (!left) break;

@@ -282,6 +282,21 @@ async function g4() {
 }
 
 // ============ g5 对局交互支线 ============
+// 等回我方回合；途中对方攻击我方会弹自然反击窗口——点「放弃」放行（否则死等超时，interact 同款修复）
+async function waitMyTurn(ev, timeout = 90000) {
+  for (let w = 0; w < Math.ceil(timeout / 1500); w++) {
+    await sleep(1500);
+    const st = await ev(`JSON.stringify({a:OPTCG_GAME.state().active,p:!!OPTCG_GAME.state().pending,win:OPTCG_GAME.state().winner})`);
+    const o = JSON.parse(st || '{}');
+    if (o.win !== null) return false;
+    if (o.p) {
+      await ev(`(()=>{const b=document.getElementById('btnPass'); if(b)b.click(); return 1;})()`);
+      continue;
+    }
+    if (o.a === 0) return true;
+  }
+  return false;
+}
 async function g5() {
   console.log('===== g5 对局交互支线 =====');
   await withPage(async ({ call, ev }) => {
@@ -300,24 +315,32 @@ async function g5() {
     check('贝里附着：目标高亮→点船长→战力+1K/dons=1', r === 'OK' && kAfter === kBefore + 1 && lpAfter.includes('dons=1'), `${r} ${lpBefore}→${lpAfter}`);
     // 结束回合→等回我方回合 2（贝里补满+附着的回落，出牌/攻击才有资源）
     await ev(`document.getElementById('btnEnd').click();`);
-    ok = await waitFor(ev, `(OPTCG_GAME.state()&&OPTCG_GAME.state().turn>=2&&OPTCG_GAME.state().active===0&&!OPTCG_GAME.state().pending&&OPTCG_GAME.state().winner===null)===true`, 90000, 500);
+    ok = await waitMyTurn(ev) && await ev(`(OPTCG_GAME.state()&&OPTCG_GAME.state().turn>=2&&OPTCG_GAME.state().active===0&&!OPTCG_GAME.state().pending&&OPTCG_GAME.state().winner===null)===true`);
     check('回合推进：AI 回合后轮到我方（回合 2）', ok === true);
-    // 出牌：等可出手机会（真实卡手场景：手里全是贵牌时 endTurn 换下回合，最多 3 回合）
+    // 出牌：两段式（首点=选中预览，再点=打出）。等可出手机会（真实卡手场景，最多 3 回合）
     let played2 = false, playedInfo = '';
     for (let i = 0; i < 3 && !played2; i++) {
       const hasPlay = await waitFor(ev, `!!document.querySelector('#myHand .card.playable')`, 4000);
       if (hasPlay) {
-        await ev(`(()=>{const c=document.querySelector('#myHand .card.playable'); c.click(); return 1;})()`);
+        const before = await ev(`document.querySelectorAll('#myHand .card').length`);
+        // 选第一张可出的非装备卡（装备卡两段确认后进目标选择模式，手牌不减少）
+        await ev(`(()=>{const c=[...document.querySelectorAll('#myHand .card.playable')].find(el=>{const d=OPTCG.POOL.cards.find(x=>x.id===el.dataset.cardId); return d&&d.type!=='gear';}); if(c)c.click(); return 1;})()`);
+        await sleep(400);
+        // 首点后：未打出（手牌不变）+ 选中态可见 + 提示含「再点一次」
+        const midJ = JSON.parse(await ev(`JSON.stringify({n:document.querySelectorAll('#myHand .card').length,sel:document.querySelectorAll('#myHand .card.selected').length,hint:(document.getElementById('hint')||{textContent:''}).textContent})`) || '{}');
+        const twoStageOk = midJ.n === +before && midJ.sel === 1 && midJ.hint.includes('再点一次');
+        // 第二次点同卡（DOM 已重建，重查 selected 卡）=确认打出
+        await ev(`(()=>{const c=document.querySelector('#myHand .card.selected'); if(c)c.click(); return 1;})()`);
         await sleep(900);
-        const n = await ev(`document.querySelectorAll('#myBoard .card').length`);
-        played2 = +n >= 1; playedInfo = `board=${n}`;
+        const after = await ev(`document.querySelectorAll('#myHand .card').length`);
+        played2 = +after === +before - 1 && twoStageOk; playedInfo = `hand ${before}→${after} sel=${midJ.sel} hint=${twoStageOk ? 'OK' : 'MISS'}`;
       } else {
         await ev(`document.getElementById('btnEnd').click();`);
-        const back = await waitFor(ev, `(OPTCG_GAME.state()&&OPTCG_GAME.state().active===0&&!OPTCG_GAME.state().pending&&OPTCG_GAME.state().winner===null)===true`, 90000, 500);
+        const back = await waitMyTurn(ev);
         if (!back) break;
       }
     }
-    check('出牌：点 playable 手牌→角色上场（跨回合等时机）', played2 === true, playedInfo);
+    check('出牌：两段式（首点选中+提示，再点打出，手牌-1）', played2 === true, playedInfo);
     // 攻击选择与取消（用船长做攻击者：无登场等待期，随时可点）
     r = await ev(`(()=>{const w=document.querySelector('#myLeaderSlot'); if(!w)return 'NO-SLOT';
       if(w.querySelector('.card.rest'))return 'REST'; w.click();
@@ -334,6 +357,7 @@ async function g5() {
       if (+foeN > 0) {
         await ev(`(()=>{const w=document.querySelector('#myLeaderSlot'); const c=w&&w.querySelector('.card'); if(c&&!c.classList.contains('rest'))w.click(); return 1;})()`);
         await sleep(300);
+        // 攻击可视化四件套（选中/小剑/置灰/飞剑）断言归 probe-interact.mjs 真值源，此处只留直攻拒绝
         r = await ev(`(()=>{const l=document.querySelector('#enemyLeaderSlot'); l.click(); const h=document.getElementById('hint');
           return h&&h.textContent.includes('先击败角色');})()`);
         check('直攻拒绝：对方有角色时点船长→提示先打角色', r === true);
@@ -341,7 +365,7 @@ async function g5() {
         directTested = true;
       } else {
         await ev(`document.getElementById('btnEnd').click();`);
-        const back = await waitFor(ev, `(OPTCG_GAME.state()&&OPTCG_GAME.state().active===0&&!OPTCG_GAME.state().pending&&OPTCG_GAME.state().winner===null)===true`, 90000, 500);
+        const back = await waitMyTurn(ev);
         if (!back) break;
       }
     }

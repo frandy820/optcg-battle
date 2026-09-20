@@ -1,0 +1,432 @@
+[
+  {
+    "id": "YELLOW-24",
+    "name": "山治",
+    "sub": " 见习厨师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-24",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-29",
+    "name": "波雅·汉库珂",
+    "sub": " 甜甜甘风 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "YELLOW-29",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-36",
+    "name": "艾涅尔",
+    "sub": " 放电 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-36",
+    "fruit": "logia",
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-38",
+    "name": "克洛克达尔",
+    "sub": " 沙暴 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "YELLOW-38",
+    "fruit": "logia",
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-39",
+    "name": "犬岚公爵",
+    "sub": " 月狮 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-39",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-40",
+    "name": "猫蝮蛇",
+    "sub": " 月狮 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-40",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-41",
+    "name": "夏洛特·玲玲",
+    "sub": " 魂魂果实 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-41",
+    "fruit": "paramecia",
+    "rarity": "SS"
+  },
+  {
+    "id": "YELLOW-44",
+    "name": "克力架",
+    "sub": " 饼干士兵 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-44",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-46",
+    "name": "玛格丽特",
+    "sub": " 蛇岛弓手 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-46",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-47",
+    "name": "西尔尔克",
+    "sub": " 樱花庸医 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 1000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-47",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-48",
+    "name": "库蕾哈",
+    "sub": " 医婆 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-48",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-49",
+    "name": "巴索罗缪·熊",
+    "sub": " 拍飞 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "YELLOW-49",
+    "fruit": "paramecia",
+    "rarity": "S"
+  },
+  {
+    "id": "YELLOW-50",
+    "name": "月光·莫利亚",
+    "sub": " 影子军团 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-50",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "YELLOW-51",
+    "name": "格拉迪乌斯",
+    "sub": " 泡泡果实 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-51",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-52",
+    "name": "德林杰",
+    "sub": " 人鱼斗士 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-52",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-53",
+    "name": "拉奥G",
+    "sub": " 格斗拳 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-53",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-54",
+    "name": "蕾贝卡",
+    "sub": " 圆顶斗技场 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-54",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-55",
+    "name": "夏洛特·欧文",
+    "sub": " 热热果实 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-55",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-56",
+    "name": "夏洛特·布琳",
+    "sub": " 三眼族 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-56",
+    "fruit": "paramecia",
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-57",
+    "name": "斯莱曼",
+    "sub": " 剑斗士 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-57",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-G4",
+    "name": "九蛇弓",
+    "sub": " 女帝护卫弓 ",
+    "type": "gear",
+    "color": "yellow",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 1000
+    },
+    "effect": null,
+    "art": "YELLOW-G4",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "YELLOW-G6",
+    "name": "威布尔巨斧",
+    "sub": " 白胡子二世战斧 ",
+    "type": "gear",
+    "color": "yellow",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "YELLOW-G6",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "FUSION-YELLOW1",
+    "name": "九蛇岛的守护 汉库珂&玛格丽特",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "YELLOW-29",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "YELLOW-29",
+        "YELLOW-46"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-YELLOW2",
+    "name": "万国的威压 玲玲&斯慕吉",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-20",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "YELLOW-20",
+        "YELLOW-41"
+      ],
+      "cost": 2
+    },
+    "rarity": "SSS"
+  }
+]

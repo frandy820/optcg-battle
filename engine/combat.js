@@ -12,7 +12,11 @@ export function startAttack(state, action) {
   const { attacker, target } = action;
   const atk = resolveUnit(state, attacker);
   if (!atk) throw new Error('attacker not found');
-  if (atk.rest) throw new Error('attacker is rested');
+  if (attacker.type === 'leader') {
+    // 船长不横置（视觉常立），每回合限攻一次（试玩反馈：攻击后横放看着傻）
+    if (atk.rest) throw new Error('leader is rested');
+    if (atk.attackedTurn === state.turn) throw new Error('leader already attacked this turn');
+  } else if (atk.rest) throw new Error('attacker is rested');
   if (attacker.type === 'char') {
     const unit = state.players[attacker.side].board[attacker.idx];
     if (unit.playedTurn === state.turn && !hasKeyword(unit, 'rush')) {
@@ -32,11 +36,16 @@ export function startAttack(state, action) {
     targetRef = { side: defSide, type: 'char', idx: target.idx };
   }
 
-  atk.rest = true;
+  // 角色攻击后横置；船长保持立置、记 attackedTurn 限一次（效果横置船长仍生效）
+  if (attacker.type === 'leader') atk.attackedTurn = state.turn;
+  else atk.rest = true;
   logEvent(state, { t: 'attack', attacker, target: targetRef });
 
   // When Attacking 效果（横置后、窗口前）
   runEffect(state, atk, 'whenAttacking', { side: attacker.side, self: atk });
+
+  // When Attacked 效果（防守方船长技能：己方单位成为攻击目标时；窗口前生效）
+  runEffect(state, foe.leader, 'whenAttacked', { side: defSide, self: null });
 
   if (state.winner !== null) return; // 效果可能直接终局
 

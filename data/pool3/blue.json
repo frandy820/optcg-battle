@@ -1,0 +1,380 @@
+[
+  {
+    "id": "BLUE-25",
+    "name": "娜美",
+    "sub": " 天候棒·雷云 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-25",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-30",
+    "name": "波尔萨利诺",
+    "sub": " 天丛云剑 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "BLUE-30",
+    "fruit": "logia",
+    "rarity": "S"
+  },
+  {
+    "id": "BLUE-34",
+    "name": "斯摩格",
+    "sub": " 海军G-5支部 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-34",
+    "fruit": "logia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-36",
+    "name": "战国",
+    "sub": " 佛之推波 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 1000,
+        "until": "turn"
+      }
+    },
+    "art": "BLUE-36",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-41",
+    "name": "克比",
+    "sub": " 海军大佐 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-41",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-46",
+    "name": "乙姬",
+    "sub": " 王妃的祈愿 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-46",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-47",
+    "name": "冰山",
+    "sub": " 水之都市长 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-47",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLUE-48",
+    "name": "顿·克利克",
+    "sub": " 无敌舰队 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-48",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLUE-49",
+    "name": "阿金",
+    "sub": " 鬼人 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-49",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLUE-50",
+    "name": "妮可·罗宾",
+    "sub": " 万紫千红 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "BLUE-50",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-59",
+    "name": "马尔科",
+    "sub": " 再生之炎 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-59",
+    "fruit": "paramecia",
+    "rarity": "S"
+  },
+  {
+    "id": "BLUE-61",
+    "name": "寇布拉",
+    "sub": " 阿拉巴斯坦国王 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-61",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLUE-62",
+    "name": "伊卡莱姆",
+    "sub": " 侍卫队长 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-62",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "BLUE-63",
+    "name": "布鲁克",
+    "sub": " 灵魂之王 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-63",
+    "fruit": "paramecia",
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-G3",
+    "name": "花州",
+    "sub": " 达斯琪的名刀 ",
+    "type": "gear",
+    "color": "blue",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "BLUE-G3",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-G4",
+    "name": "冰军刀",
+    "sub": " 青雉的冰刃 ",
+    "type": "gear",
+    "color": "blue",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 2000
+    },
+    "effect": null,
+    "art": "BLUE-G4",
+    "fruit": null,
+    "rarity": "B"
+  },
+  {
+    "id": "BLUE-G5",
+    "name": "海军披风",
+    "sub": " 正义之袍 ",
+    "type": "gear",
+    "color": "blue",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "gear": {
+      "atk": 1000
+    },
+    "effect": null,
+    "art": "BLUE-G5",
+    "fruit": null,
+    "rarity": "A"
+  },
+  {
+    "id": "FUSION-BLUE1",
+    "name": "海军的魂 战国&卡普",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-11",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "BLUE-36",
+        "BLUE-11"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  },
+  {
+    "id": "FUSION-BLUE2",
+    "name": "阳光号的伙伴 娜美&弗兰奇",
+    "sub": " 融合 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 1000,
+        "until": "turn"
+      }
+    },
+    "art": "BLUE-25",
+    "fruit": null,
+    "fusion": {
+      "from": [
+        "BLUE-25",
+        "BLUE-08"
+      ],
+      "cost": 3
+    },
+    "rarity": "SSS"
+  }
+]

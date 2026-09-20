@@ -107,8 +107,21 @@ def query_thumbs(titles):
 
 
 def main():
+    # POOL-3 扩展映射合并（data/art-map-pool3.json，gen-art-map-pool3.py 生成）
+    try:
+        import os
+        ext_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'art-map-pool3.json')
+        MAP.update(json.load(open(ext_path, encoding='utf8')))
+    except Exception as e:
+        print(f'WARN 扩展映射未加载: {e}', file=sys.stderr)
+
+    import os
+    todo = {cid: t for cid, t in MAP.items()
+            if not os.path.exists(f'{OUT_DIR}/{cid}.webp')}  # 断点重跑：已有图跳过
+    print(f'total {len(MAP)}，待抓 {len(todo)}（已存在跳过）', file=sys.stderr)
+
     title_to_ids = {}
-    for cid, title in MAP.items():
+    for cid, title in todo.items():
         title_to_ids.setdefault(title, []).append(cid)
 
     all_titles = sorted(title_to_ids)
@@ -119,7 +132,7 @@ def main():
         print(f'query {i + len(batch)}/{len(all_titles)}', file=sys.stderr)
 
     ok, miss, fail = [], [], []
-    for cid, title in MAP.items():
+    for cid, title in todo.items():
         url = thumb_of.get(title)
         if not url:
             miss.append((cid, title))

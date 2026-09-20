@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { newGame, applyAction } from '../engine/index.js';
+import { newGame, applyAction, deckOf as deckOfEngine } from '../engine/index.js';
 import { listActions } from '../ai/actions.js';
 import { createAI } from '../ai/heuristic.js';
 import { makeRng } from '../engine/rng.js';
@@ -12,10 +12,7 @@ const COLORS = ['red', 'blue', 'green', 'yellow', 'purple', 'black'];
 const MAX_ACTIONS = 900;
 
 function deckOf(color) {
-  const cs = pool.cards.filter((c) => c.color === color);
-  const deck = [];
-  for (let i = 0; i < 4; i++) for (const c of cs) deck.push(c); // 轮次交错：全卡型均入组（与 game.js/balance-sim.js/balance.test.js 同源）
-  return deck.slice(0, 50);
+  return deckOfEngine(pool, color); // engine/deck.js 分层均匀采样（与 game.js/balance-sim.js 同源）
 }
 
 // AI 对 AI 一局（双方可不同难度）
