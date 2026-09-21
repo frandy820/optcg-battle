@@ -1,0 +1,154 @@
+<div id="r" style="position:fixed;left:0;top:0;z-index:999;color:#0f0;background:#000;font:13px monospace;white-space:pre-wrap;padding:14px;max-width:100vw">running…</div>
+<script>
+(async function () {
+  const out = [];
+  const ok = (c, m) => out.push((c ? 'PASS ' : 'FAIL ') + m);
+  const $ = (id) => document.getElementById(id);
+  const ls = (k) => JSON.parse(localStorage.getItem(k) || 'null');
+  function waitEnd() {
+    return new Promise((res) => {
+      const t = setInterval(() => {
+        const s = OPTCG_GAME.state();
+        if (s && s.winner !== null) { clearInterval(t); res(s); }
+      }, 200);
+    });
+  }
+  // 结算面板等待：winner 置位后还要走完终局演出（playEvents ≤ FX_TIMEOUT 4s）+700ms 才弹面板。
+  // 固定 sleep 是竞态（演出链长短随 seed 变化），必须轮询条件本身。
+  function waitEndPanel(timeout = 9000) {
+    return new Promise((res) => {
+      const t0 = Date.now();
+      const t = setInterval(() => {
+        if (!$('endPanel').classList.contains('hidden')) { clearInterval(t); res(true); }
+        else if (Date.now() - t0 > timeout) { clearInterval(t); res(false); }
+      }, 150);
+    });
+  }
+  const emojiRe = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{2190}-\u{21FF}\u{25A0}-\u{25FF}]/u;
+  try {
+    ok(!!(window.OPTCG && window.OPTCG_GAME && window.OPTCG_MODES), 'globals mounted');
+
+    // -- 0 契约与快照 API（空局/坏数据不抛）--
+    ok(!!(window.OPTCG_SAVE && window.OPTCG_AUDIO), 'SAVE/AUDIO 契约存在');
+    ok(typeof OPTCG_SAVE.autosave === 'function' && typeof OPTCG_SAVE.hasUnfinished === 'function'
+      && typeof OPTCG_SAVE.resume === 'function' && typeof OPTCG_AUDIO.play === 'function', 'SAVE/AUDIO 方法齐');
+    ok(typeof OPTCG_GAME.snapshot === 'function' && typeof OPTCG_GAME.restoreFromSnapshot === 'function', '快照 API 存在');
+    ok(OPTCG_GAME.snapshot() === null, '空局 snapshot=null');
+    let badOk = true;
+    try {
+      badOk = OPTCG_GAME.restoreFromSnapshot(null) === false
+        && OPTCG_GAME.restoreFromSnapshot({}) === false
+        && OPTCG_GAME.restoreFromSnapshot({ g: {} }) === false
+        && OPTCG_GAME.restoreFromSnapshot({ g: { players: [], turn: 1, winner: null } }) === false;
+    } catch (e) { badOk = false; }
+    ok(badOk, '坏快照 restore=false 不抛');
+
+    // -- 1 菜单徽标/下拉 --
+    localStorage.clear();
+    OPTCG_MODES.refreshMenu();
+    ok($('ladderBadge').textContent.indexOf('见习') >= 0, 'ladder badge 见习@0分');
+    ok($('survivalBadge').textContent.indexOf('最佳') >= 0, 'survival badge 初始');
+    ok($('deckSel').options.length === 1, 'deckSel 初始仅默认项');
+
+    // -- 2 构筑器：填充→保存→选中 --
+    OPTCG_GAME.setLeaderColor('red');
+    OPTCG_MODES.openBuilder();
+    ok(!$('builderPanel').classList.contains('hidden'), 'builder 打开');
+    $('btnBuilderFill').click();
+    ok($('builderCount').textContent.indexOf('50') >= 0, '快速填充=50');
+    $('builderName').value = '自测红组';
+    $('btnBuilderSave').click();
+    const ds = ls('optcg_decks');
+    const total = ds && ds[0] && Object.values(ds[0].counts).reduce((a, b) => a + b, 0);
+    ok(ds && ds.length === 1 && total === 50, '卡组已存 50 张');
+    ok(String(ls('optcg_deck_sel')) === String(ds[0].id), '卡组已选中');
+    $('btnBuilderClose').click();
+    ok($('builderPanel').classList.contains('hidden'), 'builder 关闭');
+
+    // -- 3 天梯：开局(0分→easy)→打完→结算 --
+    OPTCG_MODES.startLadderGame();
+    ok($('setupPanel').classList.contains('hidden'), '天梯开局 setup 已隐');
+    OPTCG_GAME.autoplay(500, 50); // 50ms 步进（虚拟时间快进）：42 断言四局串行总预算可控在 60s 内
+    const st1 = await waitEnd();
+    const ep1 = await waitEndPanel(); // 等 showEndPanel（终局演出+700ms）→ settle 已落盘
+    ok(st1.winner !== null, '天梯局终局 (winner=' + st1.winner + ')');
+    const L = ls('optcg_ladder');
+    const expScore = st1.winner === 0 ? 25 : 0;
+    ok(ep1 && L && L.score === expScore && L.wins + L.losses === 1, '天梯落盘 score=' + L.score + ' W' + L.wins + 'L' + L.losses);
+    ok(ep1, '结算面板弹出');
+    ok($('endDetail').textContent.indexOf('排位') >= 0, '结算含排位行');
+    $('btnBackMenu').click();
+    ok(!$('modeSelectPanel').classList.contains('hidden'), '返回菜单=航路首页(G6)');
+    ok(OPTCG_SAVE.hasUnfinished() === false, '终局+返回后断档已清');
+
+    // -- 4 生存：开局→打完→streak 落盘 --
+    OPTCG_MODES.startSurvivalGame();
+    OPTCG_GAME.autoplay(500, 50);
+    const st2 = await waitEnd();
+    const ep2 = await waitEndPanel(); // settle 落盘同样在 showEndPanel 内，轮询而非固定 sleep
+    ok(st2.winner !== null, '生存局终局 (winner=' + st2.winner + ')');
+    const S = ls('optcg_survival');
+    if (st2.winner === 0) ok(ep2 && S.streak === 1 && S.best === 1 && S.level === 'easy', '生存胜 streak=1');
+    else ok(ep2 && S.streak === 0 && S.best === 0 && S.level === 'easy', '生存败 reset');
+    ok($('survivalBadge').textContent.length > 0, '生存徽标已刷新');
+
+    // -- 5 再战（restart 链路）--
+    $('btnRematch').click();
+    ok($('setupPanel').classList.contains('hidden'), '再战已开局');
+    ok(OPTCG_GAME.state() && OPTCG_GAME.state().winner === null, '新局进行中');
+
+    // -- 6 快照保存/恢复 + 断档续战按钮 --
+    await new Promise((r) => setTimeout(r, 400)); // 等新局渲染稳定
+    const snap = OPTCG_GAME.snapshot();
+    ok(!!(snap && snap.g && Array.isArray(snap.g.players) && snap.g.players.length === 2 && snap.level), '对局中 snapshot 非空含 level');
+    OPTCG_GAME.backToMenu();
+    ok(!$('modeSelectPanel').classList.contains('hidden'), '快照测试前回首页(G6)');
+    ok(OPTCG_GAME.restoreFromSnapshot(snap) === true, '快照恢复成功');
+    ok($('setupPanel').classList.contains('hidden') && $('modeSelectPanel').classList.contains('hidden'), '恢复后面板已隐');
+    const st3 = OPTCG_GAME.state();
+    ok(st3 && st3.winner === null, '恢复后对局进行中');
+    ok(OPTCG_SAVE.hasUnfinished() === true, '恢复即重新留档');
+
+    // 断档续战按钮：首页可见性 + 点击恢复（btnResume 挂 modeSelectPanel；backToMenu 会清档，
+    // 故 autosave 留档后用导出的 refreshResume 触发刷新——真实用户路径=重开页面走 showModeSelect）
+    OPTCG_GAME.backToMenu();
+    OPTCG_SAVE.autosave(snap);
+    OPTCG_GAME.refreshResume();
+    await new Promise((r) => setTimeout(r, 100));
+    ok(!$('btnResume').classList.contains('hidden'), '有断档时首页显示继续按钮');
+    $('btnResume').click();
+    await new Promise((r) => setTimeout(r, 100));
+    ok($('setupPanel').classList.contains('hidden') && $('modeSelectPanel').classList.contains('hidden'), '继续按钮触发恢复进局');
+    ok(OPTCG_GAME.state() && OPTCG_GAME.state().winner === null, '断档恢复后对局进行中');
+
+    // -- 7 定时器卫生：backToMenu 后无跨局幽灵驱动 --
+    OPTCG_GAME.autoplay(50, 10);
+    await new Promise((r) => setTimeout(r, 900));
+    OPTCG_GAME.backToMenu();
+    OPTCG_GAME.startGame({ leaderColor: 'red', level: 'easy' });
+    await new Promise((r) => setTimeout(r, 1600));
+    const stA = OPTCG_GAME.state();
+    ok(stA && stA.turn === 1 && stA.winner === null, '无跨局幽灵驱动（新局停在回合1）');
+
+    // -- 8 Escape 关 helpPanel；提示条无 Emoji --
+    OPTCG_GAME.backToMenu();
+    $('btnHallHelp').click();
+    ok(!$('helpPanel').classList.contains('hidden'), '帮助面板打开');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    ok($('helpPanel').classList.contains('hidden'), 'Escape 关闭帮助面板');
+    const hintEl = document.getElementById('hint');
+    ok(!!hintEl, '#hint 已创建');
+    OPTCG_GAME.startGame({ leaderColor: 'red', level: 'easy' });
+    await new Promise((r) => setTimeout(r, 400));
+    ok(hintEl.textContent.length > 0 && !emojiRe.test(hintEl.textContent), '提示条无 Emoji');
+    ok(document.querySelectorAll('#myHand .card').length > 0, '手牌已渲染');
+    const endT = $('endTitle');
+    ok(!emojiRe.test(endT.textContent), '终局标题无 Emoji');
+  } catch (e) {
+    ok(false, 'EXCEPTION ' + (e && e.message));
+  }
+  const fails = out.filter((l) => l[0] === 'F');
+  $('r').textContent = out.join('\n');
+  document.title = fails.length ? 'SELFTEST-FAIL(' + fails.length + ')' : 'SELFTEST-PASS-' + out.length;
+})();
+</script>

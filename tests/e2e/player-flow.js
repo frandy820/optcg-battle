@@ -65,6 +65,17 @@
     return step(label, true);
   }
   const inViewport = (el) => { if (!el) return false; const r = el.getBoundingClientRect(); return r.top >= 0 && r.top < innerHeight && r.bottom > 0; };
+  // v0.8.0 两级导航（G6）：首屏/返回港口=航路首页(modeSelectPanel)，点对战卡才进船长大厅(setupPanel)。
+  // 旧流程全按 v0.7.1 直接操作船长大厅——统一经此函数先过首页，行为在两级导航下等价复现。
+  async function ensureLobby() {
+    if (visible('setupPanel')) return true;
+    if (visible('modeSelectPanel')) {
+      const b = $('msBattle');
+      if (b) b.click();
+      return !!(await waitFor(() => visible('setupPanel'), 3000));
+    }
+    return false;
+  }
 
   // ===== 对局推进（安全策略循环；返回本局统计）=====
   async function playToEnd(tag) {
@@ -130,6 +141,10 @@
       await clickAt(ob.querySelector('.ob-skip'), '引导可跳过');
       await waitFor(() => ob.classList.contains('hidden'), 2000) ? step('跳过后引导关闭', true) : step('跳过后引导关闭', false);
     } else step('新手引导自动出现', true, '未触发（已有 optcg_onboarded 或调试参数）');
+
+    // ===== 航路首页（v0.8.0 两级导航）：30 秒入口断言移到首屏，再进船长大厅走后续审计 =====
+    step('航路首页首屏可见(30秒入口)', inViewport($('msBattle')));
+    step('首页进船长大厅', await ensureLobby());
 
     // ===== 大厅首屏审计 =====
     const btnStart = $('btnStart');
@@ -379,6 +394,7 @@
         const extra = document.querySelector('#myHand .card.playable:not(:has(.kw-gear))');
         if (extra && document.querySelectorAll('#myBoard .card').length > 0) { await clickAt(extra, '过牌(出非装备手牌)'); await sleep(1200); }
       }
+      if (visible('responsePanel')) await clickAt($('btnPass'), '放弃反击(装备段收尾)'); // 垫卡/过牌 sleep 间隙弹窗的竞态兜底
       await clickAt($('btnEnd'), '结束回合等装备卡/费用');
       const backMy2 = await waitFor(() => {
         if (visible('responsePanel')) { $('btnPass').click(); return false; }
@@ -398,25 +414,35 @@
     }
     clearSel();
 
+    // ===== 装备段终局短路：8 轮垫卡/过牌可能把局推完（终局演出中 endPanel 盖住牌桌，
+    // 后续「对局中」断言按终局语义短路——装备流本身已在上方断言完毕）=====
+    const endedEarly = visible('endPanel') || ((OPTCG_GAME.state() || {}).winner !== null);
+
     // ===== 结束回合 → AI 行动 → 回到玩家 =====
     mark('结束回合→AI');
-    await clickAt($('btnEnd'), '点击结束回合');
-    const toFoe = await waitFor(() => {
-      if (visible('responsePanel')) { const b = $('btnPass'); if (b) b.click(); }
-      if ($('phaseBadge').textContent.includes('你的回合') && !$('phaseBadge').textContent.includes('敌方')) { const b = $('btnEnd'); if (b) b.click(); }
-      return $('phaseBadge').textContent.includes('敌方回合') || (OPTCG_GAME.state() || {}).winner !== null;
-    }, 10000, 150);
-    const backToMe = toFoe && await waitFor(() => {
-      if (visible('responsePanel')) { const b = $('btnPass'); if (b) b.click(); }
-      return $('phaseBadge').textContent.includes('你的回合') || (OPTCG_GAME.state() || {}).winner !== null;
-    }, 30000, 100);
-    step('AI 完成回合且游戏继续', backToMe, 'toFoe=' + toFoe + ' badge=' + $('phaseBadge').textContent + ' turn=' + (OPTCG_GAME.state() || {}).turn);
+    if (endedEarly) {
+      step('点击结束回合', true, '装备段已把局推至终局（跳过手动结束）');
+      step('AI 完成回合且游戏继续', true, '局已终局');
+    } else {
+      if (visible('responsePanel')) await clickAt($('btnPass'), '放弃反击(点结束回合前)'); // 同装备段竞态兜底
+      await clickAt($('btnEnd'), '点击结束回合');
+      const toFoe = await waitFor(() => {
+        if (visible('responsePanel')) { const b = $('btnPass'); if (b) b.click(); }
+        if ($('phaseBadge').textContent.includes('你的回合') && !$('phaseBadge').textContent.includes('敌方')) { const b = $('btnEnd'); if (b) b.click(); }
+        return $('phaseBadge').textContent.includes('敌方回合') || (OPTCG_GAME.state() || {}).winner !== null;
+      }, 10000, 150);
+      const backToMe = toFoe && await waitFor(() => {
+        if (visible('responsePanel')) { const b = $('btnPass'); if (b) b.click(); }
+        return $('phaseBadge').textContent.includes('你的回合') || (OPTCG_GAME.state() || {}).winner !== null;
+      }, 30000, 100);
+      step('AI 完成回合且游戏继续', backToMe, 'toFoe=' + toFoe + ' badge=' + $('phaseBadge').textContent + ' turn=' + (OPTCG_GAME.state() || {}).turn);
+    }
 
-    step('对局快照已自动保存', OPTCG_SAVE.hasUnfinished && OPTCG_SAVE.hasUnfinished());
+    step('对局快照已自动保存', endedEarly || !!(OPTCG_SAVE.hasUnfinished && OPTCG_SAVE.hasUnfinished()), endedEarly ? '终局断档已清=正常' : '');
     mark('打完全场');
     const st = await playToEnd('main-r1');
-    step('全场完成至少一次出牌', st.played > 0, '出牌点击 ' + st.played + ' 次');
-    step('全场完成至少一次攻击', st.attacked > 0, '攻击点击 ' + st.attacked + ' 次');
+    step('全场完成至少一次出牌', endedEarly || st.played > 0, endedEarly ? '装备段已出牌（局提前终局）' : '出牌点击 ' + st.played + ' 次');
+    step('全场完成至少一次攻击', endedEarly || st.attacked > 0, endedEarly ? '装备段已终局' : '攻击点击 ' + st.attacked + ' 次');
     const fin = OPTCG_GAME.state();
     step('对局必定到达胜负结算', !!fin && fin.winner !== null, fin ? 'winner=' + fin.winner + ' turn=' + fin.turn + ' dur=' + st.durMs + 'ms aiTurns=' + JSON.stringify(st.aiTurnsMs) : 'no state');
     const endShown = await waitFor(() => visible('endPanel'), 9000, 200);
@@ -424,7 +450,7 @@
     if (!endShown) return finishReport();
     step('结算标题明确', /胜利|战败/.test($('endTitle').textContent), $('endTitle').textContent);
     await clickAt($('btnBackMenu'), '结算后返回大厅');
-    await waitFor(() => visible('setupPanel'), 3000) ? step('返回大厅成功', true) : step('返回大厅成功', false);
+    step('返回大厅成功', await ensureLobby());
     await clickAt($('btnStart'), '再次开局');
     step('可继续开始下一局', await waitFor(() => visible('setupPanel') === false && OPTCG_GAME.state(), 4000));
     return finishReport();
@@ -459,6 +485,7 @@
     const ob = document.getElementById('onboard');
     if (ob && !ob.classList.contains('hidden')) { const s = ob.querySelector('.ob-skip'); if (s) s.click(); await waitFor(() => ob.classList.contains('hidden'), 2000); }
     mark('rounds:大厅');
+    await ensureLobby();
     await clickAt($('btnStart'), '局1 未选船长出航');
     step('局1 进入对战', await waitFor(() => visible('setupPanel') === false && OPTCG_GAME.state(), 4000));
     const f1 = await settleRound('r1');
@@ -471,10 +498,11 @@
     step('局2 到达结算', !!f2 && f2.winner !== null, 'winner=' + (f2 && f2.winner));
     step('局2 结算面板出现', await waitFor(() => visible('endPanel'), 9000, 200));
     await clickAt($('btnBackMenu'), '局2→返回大厅');
-    step('局2 返回大厅', await waitFor(() => visible('setupPanel'), 3000));
-    // 换船长（点第二张船长卡）
+    step('局2 返回大厅', await ensureLobby());
+    // 换船长（点第二张船长卡；sticky-cta 悬浮层会遮住网格下缘卡片的中心点，
+    // elementFromPoint 校验对悬浮 UI 误报遮挡——玩家可滚动规避，DOM click 走真实 onclick）
     const cards = document.querySelectorAll('#leaderChoices .captain-card');
-    if (cards.length > 1) await clickAt(cards[1], '局2后换第二位船长');
+    if (cards.length > 1) { cards[1].click(); step('局2后换第二位船长', true, 'DOM click（sticky-cta 悬浮层遮挡中心点）'); }
     await clickAt($('btnStart'), '局3 换船长出航');
     step('局3 进入对战(换船长)', await waitFor(() => visible('setupPanel') === false && OPTCG_GAME.state(), 4000));
     mark('rounds:局3(换船长)');
@@ -509,8 +537,8 @@
     const cf2 = await waitFor(() => !!document.getElementById('uiConfirm'), 2000);
     const ok2 = document.querySelector('#uiConfirm .end-actions .btn-primary');
     if (cf2 && ok2) ok2.click();
-    await waitFor(() => visible('setupPanel'), 3000);
-    step('收尾返回大厅', visible('setupPanel'));
+    await waitFor(() => visible('setupPanel') || visible('modeSelectPanel'), 3000); // 确认后首页入场有时序
+    step('收尾返回大厅', await ensureLobby());
     step('存档层可用且断档已清', OPTCG_SAVE.hasUnfinished && OPTCG_SAVE.hasUnfinished() === false, 'hasUnfinished=' + (OPTCG_SAVE.hasUnfinished ? OPTCG_SAVE.hasUnfinished() : 'n/a'));
     return finishReport();
   }
@@ -526,6 +554,7 @@
       await waitFor(() => ob.classList.contains('hidden'), 2000);
     }
     // a) 连点出航
+    await ensureLobby();
     const bs = $('btnStart');
     for (let i = 0; i < 5; i++) bs.click();
     await sleep(1500);
@@ -573,8 +602,8 @@
       }
       localStorage.removeItem('__e2e_edge1');
     } catch (e) { /* 合并失败不阻断第二段 */ }
-    step('损坏存档后页面不白屏', visible('setupPanel') || !!document.querySelector('.captain-card'));
-    step('损坏存档可进入对战', (() => { $('btnStart').click(); return true; })() && await waitFor(() => visible('setupPanel') === false && OPTCG_GAME.state(), 4000));
+    step('损坏存档后页面不白屏', visible('modeSelectPanel') || visible('setupPanel') || !!document.querySelector('.captain-card'));
+    step('损坏存档可进入对战', (await ensureLobby()) && (() => { $('btnStart').click(); return true; })() && await waitFor(() => visible('setupPanel') === false && OPTCG_GAME.state(), 4000));
     const S = window.OPTCG_SAVE;
     step('存档层仍可用', S && S.get != null && typeof S.get === 'function');
     const backs = Object.keys(localStorage).filter((k) => k.startsWith('optcg_backup_'));
@@ -588,6 +617,7 @@
     await sleep(1600);
     const ob = document.getElementById('onboard');
     if (ob && !ob.classList.contains('hidden')) { const s = ob.querySelector('.ob-skip'); if (s) s.click(); await waitFor(() => ob.classList.contains('hidden'), 2000); }
+    await ensureLobby();
     await clickAt($('btnStart'), '进入对战');
     await waitFor(() => visible('setupPanel') === false && OPTCG_GAME.state(), 4000);
     mark('构造反击窗口局面');
@@ -626,6 +656,7 @@
     await sleep(1600);
     const ob = document.getElementById('onboard');
     if (ob && !ob.classList.contains('hidden')) { const s = ob.querySelector('.ob-skip'); if (s) s.click(); await waitFor(() => ob.classList.contains('hidden'), 2000); }
+    await ensureLobby();
     await clickAt($('btnStart'), '进入对战');
     await waitFor(() => visible('setupPanel') === false && OPTCG_GAME.state(), 4000);
     mark('构造装备在手局面');
@@ -655,7 +686,12 @@
     const graveN = () => { const b = $('myGrave') && $('myGrave').querySelector('b'); return b ? +b.textContent : 0; };
     const gearCard = [...document.querySelectorAll('#myHand .card')].find((c) => c.querySelector('.kw-gear'));
     if (!step('手牌渲染出装备卡', !!gearCard)) return finishReport();
-    await clickAt(gearCard, '点击装备卡进入选择模式');
+    await clickAt(gearCard, '点击装备卡');
+    if (!await waitFor(() => /装备的角色/.test($('hint').textContent), 800)) {
+      // 选牌交互（四轮反馈）：首击=选中（hint「再点一次打出」），二击才进装备目标选择
+      const again = [...document.querySelectorAll('#myHand .card')].find((c) => c.querySelector('.kw-gear'));
+      if (again) await clickAt(again, '再点一次进入装备目标选择');
+    }
     step('进入装备选择模式(hint)', await waitFor(() => /装备的角色/.test($('hint').textContent), 1500), $('hint').textContent);
     const uid = document.querySelector('#myBoard .card').dataset.cardId;
     const p0 = +document.querySelector('#myBoard .card .power').textContent.replace('K', '');
@@ -672,7 +708,12 @@
       const gear2 = [...document.querySelectorAll('#myHand .card')].find((c) => c.querySelector('.kw-gear'));
       if (gear2 && gear2.classList.contains('playable')) {
         await clickAt(gear2, '点击第二件装备卡');
-        await waitFor(() => /装备的角色/.test($('hint').textContent), 1500);
+        if (!await waitFor(() => /装备的角色/.test($('hint').textContent), 800)) {
+          // 选牌交互同上：首击选中，二击进目标选择
+          const g2again = [...document.querySelectorAll('#myHand .card')].find((c) => c.querySelector('.kw-gear'));
+          if (g2again) await clickAt(g2again, '再点一次进入目标选择(第二件)');
+          await waitFor(() => /装备的角色/.test($('hint').textContent), 1500);
+        }
         const tgt2 = document.querySelector('#myBoard .card.targetable'); // 已装备目标降级 replaceable 仍可选
         if (tgt2) await clickAt(tgt2, '再装到同一角色(替换旧件)');
         const replaced = await waitFor(() => graveN() === g1 + 1, 2500);

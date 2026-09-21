@@ -1558,7 +1558,7 @@
       }
       $('logBody').innerHTML = '';
       rebuildLog(g); // 恢复战报脉络（简版：最近 18 条动作）
-      ['setupPanel', 'endPanel', 'responsePanel', 'helpPanel', 'builderPanel'].forEach((id) => $(id).classList.add('hidden'));
+      ['modeSelectPanel', 'setupPanel', 'endPanel', 'responsePanel', 'helpPanel', 'builderPanel'].forEach((id) => $(id).classList.add('hidden'));
       renderAll();
       autosaveNow();
       // 轮到 AI 或有待响应时重新驱动（复用 afterAction 的调度路径）
@@ -1699,6 +1699,7 @@
     }),
     autoplay, // 调试/自测：自动走 n 步（我方随机、响应自动放弃）
     snapshot, restoreFromSnapshot, // 断档恢复契约（save.js resume 回调）
+    refreshResume, // 调试/自测：断档续战按钮可见性刷新（backToMenu 会清档，测试须在 autosave 后单独触发）
     _diag: () => { // 调试/测试专用：当前 pending 与合法动作列表（勿在玩法逻辑中使用）
       try { return G && { turn: G.turn, pending: G.pending || null, acts: (O.listActions(G) || []).map((a) => a.t) }; } catch (e) { return null; }
     },

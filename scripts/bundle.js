@@ -54,3 +54,7 @@ global.OPTCG = {
 
 writeFileSync(join(root, 'web/app.bundle.js'), parts.join('\n'), 'utf8');
 console.log('bundled -> web/app.bundle.js', FILES.length + 1, 'sources');
+
+// 测试宿主页随构建重生成：index.html 是唯一骨架，手工拷贝的 selftest/e2e.html 会漂移
+// （v0.8.0 模式首页 13 个 id 未同步 → game.js 对 null onclick 崩 → 三段 verify 连环 FAIL）
+import('./gen-test-pages.mjs');
