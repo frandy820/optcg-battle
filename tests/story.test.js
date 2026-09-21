@@ -48,7 +48,7 @@ test('关卡表完整性：10 关 · 字段合法 · LP 递增曲线 · 敌色�
 
 test('敌方代表卡与奖励角色卡按名解析：全部命中卡池存活版本', () => {
   for (const st of S.STAGES) {
-    const c = S.resolveByName(st.boss);
+    const c = S.resolveByName(st.boss, st.color);
     assert.ok(c, `第${st.id}关 Boss「${st.boss}」解析失败`);
     assert.equal(c.type, 'char');
     assert.ok(!c.fusion, 'Boss 不能是融合卡');
@@ -185,7 +185,7 @@ test('卡组自动成长：奖励入组 · 最弱被替换 · 恒 50 张 · 满 
   assert.equal(totalOf(g1), 50, '成长后恒 50');
   assert.equal(g1['YELLOW-38'], 1, '高费奖励卡应入组（就近费段替换）');
   const weakest4 = weakestOf(Object.keys(init).filter((id) => byId(id).cost === 4).map(byId));
-  assert.equal(g1[weakest4.id], init[weakest4.id] - 1, '被换出的应为就近费段最弱卡');
+  assert.equal(g1[weakest4.id] || 0, init[weakest4.id] - 1, '被换出的应为就近费段最弱卡（唯一份换出后键被删=0）');
   // ② 同费替换：3 费 B 卡入组 → 3 费段最弱 A 卡（rarity 序）-1，B 卡 +1（S 级 char 最低 5 费，同费用 B 档测）
   const s3 = byId('RED-05'); // 山智之外的红 B 3费 char（3K）
   const beforeA3 = Object.entries(init).filter(([id]) => byId(id).cost === 3).reduce((a, [, n]) => a + n, 0);
@@ -195,7 +195,7 @@ test('卡组自动成长：奖励入组 · 最弱被替换 · 恒 50 张 · 满 
   const afterA3 = Object.entries(g2).filter(([id]) => id !== s3.id && byId(id).cost === 3).reduce((a, [, n]) => a + n, 0);
   assert.equal(afterA3, beforeA3 - 1, '同费段应被替换出 1 张');
   const weakest = weakestOf(Object.keys(init).filter((id) => byId(id).cost === 3).map(byId));
-  assert.equal(g2[weakest.id], init[weakest.id] - 1, '被换出的应为同费段最弱 A 卡');
+  assert.equal(g2[weakest.id] || 0, init[weakest.id] - 1, '被换出的应为同费段最弱 A 卡（唯一份换出后键被删=0）');
   // ③ 满 4 张不入：把某 A 卡灌到 4 再喂同卡
   const aCard = byId('RED-02');
   const full = { ...init, [aCard.id]: 4 };

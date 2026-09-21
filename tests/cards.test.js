@@ -6,7 +6,7 @@ import { validateDeck } from '../engine/index.js';
 
 const pool = JSON.parse(readFileSync(new URL('../data/cards.json', import.meta.url), 'utf8'));
 const COLORS = ['red', 'blue', 'green', 'yellow', 'purple', 'black'];
-const OPS = ['draw', 'powerSelf', 'powerLeader', 'gainDon', 'koWeakest', 'restEnemy', 'healLP', 'damageLP', 'buffAll', 'debuffFoeAll', 'discard'];
+const OPS = ['draw', 'powerSelf', 'powerLeader', 'gainDon', 'koWeakest', 'restEnemy', 'healLP', 'damageLP', 'buffAll', 'debuffFoeAll', 'discard', 'search', 'revive'];
 const HOOKS = ['onPlay', 'whenAttacking', 'onKO', 'trigger'];
 const KW = ['rush', 'blocker', 'doubleAttack', 'banish'];
 const FRUITS = ['paramecia', 'logia', 'zoan'];
@@ -47,12 +47,12 @@ test('卡池 schema：id 唯一、类型/颜色合法、字段完整', () => {
   }
 });
 
-test('卡池规模：六色各 30+ 张、总量 257（G1a 删 event54/stage15/同名去重164：490 → 257）', () => {
+test('卡池规模：六色各 30+ 张、总量 ≥257（G1a 清池 490→257 为下限；P2 扩池 257→1000 只增不减）', () => {
   for (const col of COLORS) {
     const n = pool.cards.filter((c) => c.color === col).length;
     assert.ok(n >= 30, `${col} only ${n} cards`);
   }
-  assert.equal(pool.cards.length, 257, `total ${pool.cards.length} ≠ 257`);
+  assert.ok(pool.cards.length >= 257, `total ${pool.cards.length} < 257`);
 });
 
 test('G1a 去重：同色同名 char 每组只留 1 张（融合卡不占组）', () => {
@@ -98,6 +98,7 @@ test('G3 稀有度：全部 char/gear 带 rarity 且与分级规则推导一致'
     if (c.type === 'gear') return { 1000: 'A', 2000: 'B', 3000: 'S' }[c.gear.atk];
     const kw = (c.keywords || []).length, eff = c.effect !== null;
     if (c.cost === 8 && c.power === 9000) return 'SSS';
+    if (c.cost === 8 && kw >= 1 && eff) return 'SSS'; // P2：费8+词条+效果=传说锚点（与 check-pool3/gen-expansion 同构）
     if (c.cost === 8 || kw >= 2) return 'SS';
     if ((kw > 0 && eff) || c.cost >= 7) return 'S';
     if (kw > 0 || eff) return 'B';
@@ -109,9 +110,9 @@ test('G3 稀有度：全部 char/gear 带 rarity 且与分级规则推导一致'
   }
 });
 
-test('六色均可组出合法 50 卡组（每卡×4 取 50）', () => {
+test('六色均可组出合法 50 卡组（每卡×4 取 50；融合卡不进 deckOf）', () => {
   for (const leader of pool.leaders) {
-    const cs = pool.cards.filter((c) => c.color === leader.color);
+    const cs = pool.cards.filter((c) => c.color === leader.color && !c.fusion);
     const deck = [];
     for (const c of cs) for (let i = 0; i < 4; i++) deck.push(c);
     const errs = validateDeck(leader, deck.slice(0, 50));

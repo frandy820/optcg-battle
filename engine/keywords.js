@@ -39,6 +39,8 @@
 //   { k:'buffAll', x, until }          我方全体角色战力+x
 //   { k:'debuffFoeAll', x, until }     对方全体角色战力-x
 //   { k:'discard', n }                 弃自己手牌 n 张（仅作复合代价段，弃最右）
+//   { k:'search', n, faction?, type?, maxCost?, formation? }  从牌组找匹配卡入手牌（P1a archetype 引擎）
+//   { k:'revive', maxCost? }           从墓场复活 ≤maxCost 角色回手牌（默认 3；仅 SS+ 卡可用，费率 −3K）
 
 export const HOOKS = ['onPlay', 'whenAttacking', 'onKO', 'trigger', 'onSummon', 'onAllyKO', 'onTurnStart', 'onKill', 'whenAttacked'];
 
@@ -201,6 +203,36 @@ function execOp(state, cardOrUnit, eff, op, side, me, foe, ctx) {
         u.buffs.push({ x: -op.x, until: op.until || 'battle', src: cardOrUnit.id });
       }
       logEvent(state, { t: 'effectDebuffAll', side: enemySide, x: -op.x, n: foe.board.length, src: cardOrUnit.id });
+      break;
+    }
+    case 'search': {
+      // 从牌组找匹配卡入手牌（牌组顶在尾部；找不够=有多少拿多少，不洗牌不透牌序）
+      // 条件：faction/type/maxCost/formation 任选组合（archetype 引擎的「找牌」核心原语）
+      const n = op.n || 1;
+      let found = 0;
+      for (let i = me.deck.length - 1; i >= 0 && found < n; i--) {
+        const c = me.deck[i];
+        const ok = (!op.faction || c.faction === op.faction)
+          && (!op.type || c.type === op.type)
+          && (op.maxCost == null || c.cost <= op.maxCost)
+          && (op.formation == null || c.formation === op.formation);
+        if (ok) { me.deck.splice(i, 1); me.hand.push(c); found++; }
+      }
+      logEvent(state, { t: 'effectSearch', side, n: found, src: cardOrUnit.id });
+      break;
+    }
+    case 'revive': {
+      // 从墓场复活一张 ≤maxCost 角色回手牌（回场太强，回手仍需付费打出）
+      const maxCost = op.maxCost || 3;
+      let idx = -1;
+      for (let i = me.trash.length - 1; i >= 0; i--) {
+        if (me.trash[i].type === 'char' && me.trash[i].cost <= maxCost) { idx = i; break; }
+      }
+      if (idx >= 0) {
+        const [c] = me.trash.splice(idx, 1);
+        me.hand.push(c);
+        logEvent(state, { t: 'effectRevive', side, cardId: c.id, src: cardOrUnit.id });
+      }
       break;
     }
     case 'discard': {

@@ -18,7 +18,10 @@
     },
     "art": "BLUE-25",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLUE-30",
@@ -40,7 +43,10 @@
     },
     "art": "BLUE-30",
     "fruit": "logia",
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "navy",
+    "formation": null,
+    "arc": "marineford"
   },
   {
     "id": "BLUE-34",
@@ -61,7 +67,10 @@
     },
     "art": "BLUE-34",
     "fruit": "logia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLUE-36",
@@ -83,7 +92,10 @@
     },
     "art": "BLUE-36",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": "marineford"
   },
   {
     "id": "BLUE-41",
@@ -104,7 +116,10 @@
     },
     "art": "BLUE-41",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLUE-46",
@@ -125,7 +140,10 @@
     },
     "art": "BLUE-46",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLUE-47",
@@ -140,7 +158,10 @@
     "effect": null,
     "art": "BLUE-47",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": "enies_lobby"
   },
   {
     "id": "BLUE-48",
@@ -155,7 +176,10 @@
     "effect": null,
     "art": "BLUE-48",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": "east_blue"
   },
   {
     "id": "BLUE-49",
@@ -170,7 +194,10 @@
     "effect": null,
     "art": "BLUE-49",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": "east_blue"
   },
   {
     "id": "BLUE-50",
@@ -191,7 +218,10 @@
     },
     "art": "BLUE-50",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": "enies_lobby"
   },
   {
     "id": "BLUE-59",
@@ -214,7 +244,10 @@
     },
     "art": "BLUE-59",
     "fruit": "paramecia",
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": "marineford"
   },
   {
     "id": "BLUE-61",
@@ -229,7 +262,10 @@
     "effect": null,
     "art": "BLUE-61",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": "alabasta"
   },
   {
     "id": "BLUE-62",
@@ -244,7 +280,10 @@
     "effect": null,
     "art": "BLUE-62",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": "alabasta"
   },
   {
     "id": "BLUE-63",
@@ -265,7 +304,10 @@
     },
     "art": "BLUE-63",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLUE-G3",
@@ -283,7 +325,10 @@
     "effect": null,
     "art": "BLUE-G3",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLUE-G4",
@@ -301,7 +346,10 @@
     "effect": null,
     "art": "BLUE-G4",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLUE-G5",
@@ -319,7 +367,10 @@
     "effect": null,
     "art": "BLUE-G5",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "FUSION-BLUE1",
@@ -344,7 +395,10 @@
       ],
       "cost": 3
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "marineford"
   },
   {
     "id": "FUSION-BLUE2",
@@ -375,6 +429,2532 @@
       ],
       "cost": 3
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-64",
+    "name": "基威",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-64",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-65",
+    "name": "Mr.3",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-65",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-66",
+    "name": "砂糖",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-66",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-67",
+    "name": "乔拉可尔·米霍克",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-67",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-68",
+    "name": "波雅·汉库珂",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker",
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-68",
+    "fruit": "paramecia",
+    "rarity": "SS",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLUE-69",
+    "name": "哈雷达斯",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-69",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-70",
+    "name": "莫莉",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-70",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-71",
+    "name": "基德娜",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "BLUE-71",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-72",
+    "name": "卡拉斯·革命军",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-72",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLUE-73",
+    "name": "皮卡",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "BLUE-73",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-74",
+    "name": "夏姆洛克",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "restEnemy",
+        "target": "strongest"
+      }
+    },
+    "art": "BLUE-74",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-75",
+    "name": "矢龙",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-75",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLUE-76",
+    "name": "迪奇",
+    "sub": " 风之军 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-76",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-77",
+    "name": "莫奈",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-77",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-78",
+    "name": "东塔克斯三世",
+    "sub": " 风之军 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-78",
+    "fruit": "logia",
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-79",
+    "name": "维奥莱特",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-79",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-80",
+    "name": "一笑",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-80",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-81",
+    "name": "贝比5",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-81",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-82",
+    "name": "小八",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "BLUE-82",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-83",
+    "name": "缪罗",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-83",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-84",
+    "name": "十字桥",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "BLUE-84",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-85",
+    "name": "安布里奥·伊万科夫",
+    "sub": " 风之军 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-85",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLUE-86",
+    "name": "萨博·革命军",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-86",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-87",
+    "name": "贝洛·贝蒂·革命军",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-87",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-88",
+    "name": "卡拉斯",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-88",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLUE-89",
+    "name": "波尔萨拉",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "weakest"
+      }
+    },
+    "art": "BLUE-89",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-90",
+    "name": "Miss圣诞快乐",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "BLUE-90",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-91",
+    "name": "鹤·大将",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "BLUE-91",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-92",
+    "name": "Mr.1",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-92",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-93",
+    "name": "玛丽哥德",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 2
+      }
+    },
+    "art": "BLUE-93",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-94",
+    "name": "爱德华·威布尔",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-94",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-95",
+    "name": "山姆",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker",
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "BLUE-95",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-96",
+    "name": "巴索罗缪·熊",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-96",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-97",
+    "name": "闪电·革命军",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "BLUE-97",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-98",
+    "name": "佩罗娜",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-98",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-99",
+    "name": "波尔萨利诺·大将",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-99",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-100",
+    "name": "加尔",
+    "sub": " 风之军 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-100",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-101",
+    "name": "比斯塔利亚",
+    "sub": " 风之军 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-101",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-102",
+    "name": "莫莉·革命军",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-102",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-103",
+    "name": "T·彭",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-103",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-104",
+    "name": "Miss黄金周",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "BLUE-104",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-105",
+    "name": "鼯鼠",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-105",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-106",
+    "name": "库赞",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "BLUE-106",
+    "fruit": "logia",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-107",
+    "name": "缇娜",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-107",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-108",
+    "name": "阿拉马基·大将",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-108",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-109",
+    "name": "强纳森",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "BLUE-109",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-110",
+    "name": "艾佛兰德拉",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-110",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-111",
+    "name": "孔美奥",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-111",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-112",
+    "name": "安",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLUE-112",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-113",
+    "name": "克尔拉",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "BLUE-113",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-114",
+    "name": "迪亚玛蒂",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "BLUE-114",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-115",
+    "name": "米哈",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "BLUE-115",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-116",
+    "name": "萨博",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-116",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "vanguard",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-117",
+    "name": "桑达索尼亚",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-117",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-118",
+    "name": "贝鲁梅特尔",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-118",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-119",
+    "name": "蒙奇·D·龙",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "BLUE-119",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-120",
+    "name": "林德伯格",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 9000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-120",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-121",
+    "name": "艾梅",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-121",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-122",
+    "name": "塔夫",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-122",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-123",
+    "name": "托米诺",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-123",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-124",
+    "name": "芭丝卡嬷嬷",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-124",
+    "fruit": "paramecia",
+    "rarity": "SS",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-125",
+    "name": "基松",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-125",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-126",
+    "name": "辛奇",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "BLUE-126",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLUE-127",
+    "name": "林德伯格·革命军",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "BLUE-127",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "revolutionary",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLUE-128",
+    "name": "门戈",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-128",
+    "fruit": "logia",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-129",
+    "name": "纳尔逊",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-129",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-130",
+    "name": "一笑·大将",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-130",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-131",
+    "name": "萨卡斯基·大将",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-131",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-132",
+    "name": "阿罗",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-132",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-133",
+    "name": "原达尔顿",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-133",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-134",
+    "name": "泰利",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-134",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLUE-135",
+    "name": "火烧山",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-135",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-136",
+    "name": "路奇",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-136",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-137",
+    "name": "布鲁诺",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-137",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-138",
+    "name": "阿布萨罗姆",
+    "sub": " 傀儡师 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "BLUE-138",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLUE-139",
+    "name": "克尔拉·革命军",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "BLUE-139",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-140",
+    "name": "库赞·大将",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-140",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-141",
+    "name": "月光·莫利亚",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 5000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-141",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-142",
+    "name": "安布里奥·伊万科夫·革命军",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker",
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-142",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-143",
+    "name": "蓝波·卡兰",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-143",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-144",
+    "name": "蒙奇·D·龙·革命军",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-144",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-145",
+    "name": "摩兹",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-145",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-146",
+    "name": "维尔戈",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-146",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-147",
+    "name": "甘布利诺",
+    "sub": " 风之军 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-147",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-148",
+    "name": "特雷波尔",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "BLUE-148",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-149",
+    "name": "闪电",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-149",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-150",
+    "name": "阿拉马基",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 9000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-150",
+    "fruit": "paramecia",
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": null,
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-151",
+    "name": "诺兰",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 6000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-151",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLUE-152",
+    "name": "斯摩格·大将",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-152",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-153",
+    "name": "莱纳",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-153",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-154",
+    "name": "蒙奇·D·卡普·大将",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-154",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-155",
+    "name": "哈库·革命军",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-155",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-156",
+    "name": "卡拉斯基",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-156",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-157",
+    "name": "鬼蜘蛛",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-157",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-158",
+    "name": "格拉迪乌斯",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "BLUE-158",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-159",
+    "name": "鹤",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "BLUE-159",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-160",
+    "name": "贝洛·贝蒂",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "BLUE-160",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-161",
+    "name": "斯特罗圣",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-161",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-162",
+    "name": "柯玛奈",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "BLUE-162",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-163",
+    "name": "提娜",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "powerSelf",
+        "x": 3000,
+        "until": "battle"
+      }
+    },
+    "art": "BLUE-163",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-164",
+    "name": "巴斯提雍",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-164",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-165",
+    "name": "多恩",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "BLUE-165",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-166",
+    "name": "帕帕克",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-166",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-167",
+    "name": "蒙奇·D·卡普",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "BLUE-167",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-168",
+    "name": "战国·大将",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "BLUE-168",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-169",
+    "name": "萨卡斯基",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 1000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-169",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-170",
+    "name": "帕顿",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLUE-170",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-171",
+    "name": "达斯琪·大将",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker",
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "BLUE-171",
+    "fruit": "paramecia",
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLUE-172",
+    "name": "帕乌",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-172",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-173",
+    "name": "贝鲁梅伯",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-173",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-G6",
+    "name": "苍波刃",
+    "sub": " 缉捕令 ",
+    "type": "gear",
+    "color": "blue",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-G6",
+    "fruit": null,
+    "rarity": "A",
+    "gear": {
+      "atk": 1000
+    },
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-G7",
+    "name": "海军制式铳",
+    "sub": " 正义之师 ",
+    "type": "gear",
+    "color": "blue",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-G7",
+    "fruit": null,
+    "rarity": "B",
+    "gear": {
+      "atk": 2000
+    },
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-G8",
+    "name": "冰河佩剑",
+    "sub": " 缉捕令 ",
+    "type": "gear",
+    "color": "blue",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-G8",
+    "fruit": null,
+    "rarity": "S",
+    "gear": {
+      "atk": 3000
+    },
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLUE-174",
+    "name": "霍格巴克",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 5,
+    "power": 5000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 1000
+      }
+    },
+    "art": "BLUE-174",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "enies_lobby"
+  },
+  {
+    "id": "BLUE-175",
+    "name": "乔拉",
+    "sub": " 傀儡师 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLUE-175",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLUE-176",
+    "name": "托雷波尔",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "blue",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLUE-176",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
   }
 ]

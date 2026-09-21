@@ -116,12 +116,14 @@
 
   // 奖励角色卡解析：名字精确匹配优先 → 包含匹配；多候选时优先与玩家同色（red），再费用低，再 id 序
   // （「查池内去重后存活版本」——不硬编码 id，卡池变化自动跟随）
-  function resolveByName(name) {
+  function resolveByName(name, preferColor) {
     if (!name) return null;
     let cands = allCards().filter((c) => !c.fusion && c.type === 'char' && c.name === name);
     if (!cands.length) cands = allCards().filter((c) => !c.fusion && c.type === 'char' && c.name.includes(name));
     if (!cands.length) return null;
-    cands.sort((a, b) => ((a.color === 'red') ? 0 : 1) - ((b.color === 'red') ? 0 : 1) || (a.cost - b.cost) || a.id.localeCompare(b.id));
+    // 色偏好优先（故事模式 Boss 与关卡敌色绑定——P2 扩池后同名牌跨色共存，红优先旧序会抢错色）
+    const pref = (c) => (preferColor ? (c.color === preferColor ? 0 : 1) : (c.color === 'red' ? 0 : 1));
+    cands.sort((a, b) => pref(a) - pref(b) || (a.cost - b.cost) || a.id.localeCompare(b.id));
     return cands[0];
   }
 
@@ -453,7 +455,7 @@
       b.className = 'story-stage' + (cleared ? ' cleared' : '') + (current ? ' current' : '') + (locked ? ' locked' : '');
       b.dataset.stage = st.id;
       b.style.setProperty('--sc', `var(--c-${st.color})`);
-      const bossCard = resolveByName(st.boss);
+      const bossCard = resolveByName(st.boss, st.color);
       const stars = `<span class="st-stars" title="已通关">${'★'.repeat(Math.min(3, 1 + Math.floor(((prog.wins && prog.wins[st.id]) || 0) / 2)))}</span>`;
       const rewardTxt = st.reward.fixed.map((n) => { const c = resolveByName(n); return c ? c.name : n; }).join('、')
         + (st.reward.random.length ? (st.reward.fixed.length ? ' + ' : '') + st.reward.random.map(([r, n]) => `${n}×${r}`).join(' + ') : '');

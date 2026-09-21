@@ -19,7 +19,10 @@
     },
     "art": "GREEN-25",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "GREEN-28",
@@ -36,7 +39,10 @@
     "effect": null,
     "art": "GREEN-28",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
   },
   {
     "id": "GREEN-32",
@@ -53,7 +59,10 @@
     "effect": null,
     "art": "GREEN-32",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
   },
   {
     "id": "GREEN-33",
@@ -74,7 +83,10 @@
     },
     "art": "GREEN-33",
     "fruit": null,
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "GREEN-37",
@@ -91,7 +103,10 @@
     "effect": null,
     "art": "GREEN-37",
     "fruit": "zoan",
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": "wano"
   },
   {
     "id": "GREEN-38",
@@ -106,7 +121,10 @@
     "effect": null,
     "art": "GREEN-38",
     "fruit": "zoan",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "beast",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "GREEN-41",
@@ -121,7 +139,10 @@
     "effect": null,
     "art": "GREEN-41",
     "fruit": "zoan",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "beast",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "GREEN-42",
@@ -138,7 +159,10 @@
     "effect": null,
     "art": "GREEN-42",
     "fruit": "zoan",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": "wano"
   },
   {
     "id": "GREEN-43",
@@ -153,7 +177,10 @@
     "effect": null,
     "art": "GREEN-43",
     "fruit": "zoan",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "beast",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "GREEN-44",
@@ -168,7 +195,10 @@
     "effect": null,
     "art": "GREEN-44",
     "fruit": "zoan",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "beast",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "GREEN-45",
@@ -185,7 +215,10 @@
     "effect": null,
     "art": "GREEN-45",
     "fruit": "zoan",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": "wano"
   },
   {
     "id": "GREEN-46",
@@ -200,7 +233,10 @@
     "effect": null,
     "art": "GREEN-46",
     "fruit": null,
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "GREEN-47",
@@ -215,7 +251,10 @@
     "effect": null,
     "art": "GREEN-47",
     "fruit": "paramecia",
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": null,
+    "arc": "marineford"
   },
   {
     "id": "GREEN-49",
@@ -230,7 +269,10 @@
     "effect": null,
     "art": "GREEN-49",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "GREEN-53",
@@ -252,7 +294,10 @@
     },
     "art": "GREEN-53",
     "fruit": "logia",
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "GREEN-54",
@@ -267,7 +312,10 @@
     "effect": null,
     "art": "GREEN-54",
     "fruit": null,
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "GREEN-55",
@@ -282,7 +330,10 @@
     "effect": null,
     "art": "GREEN-55",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "whitebeard",
+    "formation": null,
+    "arc": "marineford"
   },
   {
     "id": "GREEN-58",
@@ -299,7 +350,10 @@
     "effect": null,
     "art": "GREEN-58",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": "wano"
   },
   {
     "id": "GREEN-59",
@@ -314,7 +368,10 @@
     "effect": null,
     "art": "GREEN-59",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "GREEN-60",
@@ -329,7 +386,10 @@
     "effect": null,
     "art": "GREEN-60",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "GREEN-61",
@@ -344,7 +404,10 @@
     "effect": null,
     "art": "GREEN-61",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "GREEN-62",
@@ -359,7 +422,10 @@
     "effect": null,
     "art": "GREEN-62",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "GREEN-64",
@@ -374,7 +440,10 @@
     "effect": null,
     "art": "GREEN-64",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "GREEN-G3",
@@ -392,7 +461,10 @@
     "effect": null,
     "art": "GREEN-G3",
     "fruit": null,
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "GREEN-G4",
@@ -410,7 +482,10 @@
     "effect": null,
     "art": "GREEN-G4",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "GREEN-G5",
@@ -428,7 +503,10 @@
     "effect": null,
     "art": "GREEN-G5",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "GREEN-G6",
@@ -446,7 +524,10 @@
     "effect": null,
     "art": "GREEN-G6",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "FUSION-GREEN1",
@@ -471,7 +552,10 @@
       ],
       "cost": 2
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": "wano"
   },
   {
     "id": "FUSION-GREEN2",
@@ -502,6 +586,2588 @@
       ],
       "cost": 3
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-65",
+    "name": "闪电",
+    "sub": " 最恶世代 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-65",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-66",
+    "name": "卡莉法",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "GREEN-66",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-67",
+    "name": "贝拉米",
+    "sub": " 冒险王 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-67",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-68",
+    "name": "贝加庞克",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "GREEN-68",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-69",
+    "name": "库赞",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-69",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-70",
+    "name": "赞高",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker",
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "GREEN-70",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-71",
+    "name": "飞六胞",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-71",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-72",
+    "name": "艾恩",
+    "sub": " 乱世枭雄 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "GREEN-72",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-73",
+    "name": "托米诺",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "GREEN-73",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-74",
+    "name": "纳尔逊",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-74",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-75",
+    "name": "库赞·大将",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "GREEN-75",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-76",
+    "name": "拉库约",
+    "sub": " 残火 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "banish"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "GREEN-76",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-77",
+    "name": "强纳森",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "banish"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "GREEN-77",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-78",
+    "name": "卡库",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 6000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-78",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-79",
+    "name": "鼯鼠",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-79",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-80",
+    "name": "维尔戈",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "GREEN-80",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-81",
+    "name": "贝波",
+    "sub": " 新星 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "GREEN-81",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-82",
+    "name": "蒙奇·D·卡普·大将",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-82",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-83",
+    "name": "哈库",
+    "sub": " 出头天 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "GREEN-83",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-84",
+    "name": "布鲁诺",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "GREEN-84",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-85",
+    "name": "一笑",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-85",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-86",
+    "name": "火烧山",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "green",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "search",
+        "n": 1,
+        "faction": "navy"
+      }
+    },
+    "art": "GREEN-86",
+    "fruit": "logia",
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-87",
+    "name": "芭丝卡嬷嬷",
+    "sub": " 野心家 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "GREEN-87",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-88",
+    "name": "布罗吉",
+    "sub": " 冒险王 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "GREEN-88",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-89",
+    "name": "亚尔丽塔",
+    "sub": " 野心家 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "GREEN-89",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-90",
+    "name": "瓦尔波",
+    "sub": " 乱世枭雄 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "GREEN-90",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-91",
+    "name": "达斯琪",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-91",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-92",
+    "name": "妮可·罗宾",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-92",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-93",
+    "name": "尤斯塔斯·基德",
+    "sub": " 乱世枭雄 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "GREEN-93",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-94",
+    "name": "卡拉斯",
+    "sub": " 乱世枭雄 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-94",
+    "fruit": "zoan",
+    "rarity": "SS",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-95",
+    "name": "斯莱曼",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-95",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-96",
+    "name": "库洛卡斯",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "GREEN-96",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-97",
+    "name": "路奇",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-97",
+    "fruit": "logia",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-98",
+    "name": "萨波",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-98",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-99",
+    "name": "波尔萨利诺",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "banish"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "GREEN-99",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-100",
+    "name": "娜美·新世界",
+    "sub": " 冒险者 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 1000
+      }
+    },
+    "art": "GREEN-100",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-101",
+    "name": "乌索普·新世界",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-101",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-102",
+    "name": "山治·新世界",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "GREEN-102",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-103",
+    "name": "东利",
+    "sub": " 扬帆起航 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-103",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-104",
+    "name": "尼普顿",
+    "sub": " 冒险者 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-104",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-105",
+    "name": "X·德雷克",
+    "sub": " 野心家 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "GREEN-105",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-106",
+    "name": "蒙奇·D·路飞·新世界",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-106",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-107",
+    "name": "阿龙",
+    "sub": " 最恶世代 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "GREEN-107",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-108",
+    "name": "阿托摩斯",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-108",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-109",
+    "name": "T·彭",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-109",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-110",
+    "name": "斯摩格",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "GREEN-110",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-111",
+    "name": "乔艾莉·波妮",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 5000,
+    "counter": 2000,
+    "keywords": [
+      "banish"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "powerSelf",
+        "x": 3000,
+        "until": "battle"
+      }
+    },
+    "art": "GREEN-111",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-112",
+    "name": "鬼蜘蛛",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-112",
+    "fruit": "logia",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-113",
+    "name": "林德伯格",
+    "sub": " 新星 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-113",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-114",
+    "name": "弗兰奇",
+    "sub": " 扬帆起航 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-114",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-115",
+    "name": "冰山",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "GREEN-115",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-116",
+    "name": "贝鲁梅特尔",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-116",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-117",
+    "name": "罗罗诺亚·索隆·新世界",
+    "sub": " 扬帆起航 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 2
+      }
+    },
+    "art": "GREEN-117",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-118",
+    "name": "蒙奇·D·卡普",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "GREEN-118",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-119",
+    "name": "克洛",
+    "sub": " 最恶世代 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "banish",
+      "banish"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "GREEN-119",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-120",
+    "name": "雅利",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "GREEN-120",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-121",
+    "name": "夏莉",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "banish"
+    ],
+    "effect": null,
+    "art": "GREEN-121",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-122",
+    "name": "白星",
+    "sub": " 冒险王 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-122",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-123",
+    "name": "萨奇",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "restEnemy",
+        "target": "strongest"
+      }
+    },
+    "art": "GREEN-123",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-124",
+    "name": "迪鲁",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "GREEN-124",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-125",
+    "name": "原达尔顿",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "green",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "GREEN-125",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-126",
+    "name": "娜美",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-126",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-127",
+    "name": "斯特罗圣",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "green",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "GREEN-127",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-128",
+    "name": "甚平",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-128",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-129",
+    "name": "可可罗",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-129",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-130",
+    "name": "鹤",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "green",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "search",
+        "n": 1,
+        "faction": "navy"
+      }
+    },
+    "art": "GREEN-130",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-131",
+    "name": "莱纳",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-131",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-132",
+    "name": "弗兰奇·新世界",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-132",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-133",
+    "name": "一笑·大将",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-133",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-134",
+    "name": "贝鲁梅伯",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-134",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-135",
+    "name": "布洛契",
+    "sub": " 扬帆起航 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "strongest"
+      }
+    },
+    "art": "GREEN-135",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-136",
+    "name": "辛奇",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "GREEN-136",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-137",
+    "name": "提娜",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker",
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-137",
+    "fruit": "paramecia",
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-138",
+    "name": "山姆",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-138",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-139",
+    "name": "孔美奥",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-139",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-140",
+    "name": "诺琪高",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "GREEN-140",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-141",
+    "name": "凯撒·克朗",
+    "sub": " 最恶世代 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-141",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-142",
+    "name": "犬岚公爵",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-142",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-143",
+    "name": "蒙奇·D·路飞",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "search",
+        "n": 1,
+        "faction": "strawhat"
+      }
+    },
+    "art": "GREEN-143",
+    "fruit": "logia",
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-144",
+    "name": "萨卡斯基·大将",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "green",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-144",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-145",
+    "name": "巴斯提雍",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-145",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-146",
+    "name": "缇娜",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "GREEN-146",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-147",
+    "name": "门戈",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-147",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-148",
+    "name": "阿拉马基·大将",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-148",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-149",
+    "name": "波尔萨利诺·大将",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-149",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-150",
+    "name": "和道一文字",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-150",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-151",
+    "name": "加布拉",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "green",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-151",
+    "fruit": "logia",
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-152",
+    "name": "基拉",
+    "sub": " 出头天 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-152",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-153",
+    "name": "阿拉马基",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "powerSelf",
+        "x": 3000
+      }
+    },
+    "art": "GREEN-153",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-154",
+    "name": "托尼托尼·乔巴·新世界",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-154",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-155",
+    "name": "布拉曼克",
+    "sub": " 白胡子一族 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "GREEN-155",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-156",
+    "name": "妮可·罗宾·新世界",
+    "sub": " 冒险者 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-156",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-157",
+    "name": "薇薇",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-157",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-158",
+    "name": "根八",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "GREEN-158",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-159",
+    "name": "阿健",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-159",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-160",
+    "name": "曼波",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 1000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-160",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-161",
+    "name": "乔兹",
+    "sub": " 白胡子一族 ",
+    "type": "char",
+    "color": "green",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "GREEN-161",
+    "fruit": "paramecia",
+    "rarity": "SSS",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-162",
+    "name": "卡鲁",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-162",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-163",
+    "name": "拉布",
+    "sub": " 扬帆起航 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "GREEN-163",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-164",
+    "name": "布鲁克",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "GREEN-164",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-165",
+    "name": "顿·克利克",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-165",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "GREEN-166",
+    "name": "布鲁克·新世界",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-166",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-167",
+    "name": "乙姬",
+    "sub": " 冒险者 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "GREEN-167",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-168",
+    "name": "山治",
+    "sub": " 冒险王 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-168",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-169",
+    "name": "雪走",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "GREEN-169",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-170",
+    "name": "帕帕古",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-170",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "GREEN-171",
+    "name": "斯潘达姆",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-171",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-172",
+    "name": "波特卡斯·D·艾斯",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-172",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-173",
+    "name": "克比",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "green",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "GREEN-173",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-174",
+    "name": "萨卡斯基",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "green",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-174",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-175",
+    "name": "战国",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "green",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "GREEN-175",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-176",
+    "name": "十字桥",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "GREEN-176",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "wano"
+  },
+  {
+    "id": "GREEN-177",
+    "name": "奇蒙尼",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "green",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-177",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-178",
+    "name": "丹",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "green",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "GREEN-178",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "GREEN-G7",
+    "name": "翠林弓",
+    "sub": " 草帽一伙 ",
+    "type": "gear",
+    "color": "green",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-G7",
+    "fruit": null,
+    "rarity": "A",
+    "gear": {
+      "atk": 1000
+    },
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-G8",
+    "name": "兽王爪",
+    "sub": " 自由之海 ",
+    "type": "gear",
+    "color": "green",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-G8",
+    "fruit": null,
+    "rarity": "B",
+    "gear": {
+      "atk": 2000
+    },
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "GREEN-G9",
+    "name": "巨树大盾",
+    "sub": " 冒险者 ",
+    "type": "gear",
+    "color": "green",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "GREEN-G9",
+    "fruit": null,
+    "rarity": "S",
+    "gear": {
+      "atk": 3000
+    },
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   }
 ]

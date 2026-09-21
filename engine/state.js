@@ -60,16 +60,38 @@ export function cloneGame(state) {
 
 // ===== 查询辅助（纯函数） =====
 
-export function powerOfUnit(unit) {
+export function powerOfUnit(unit, pl, phase) {
   if (!unit) return 0;
   const buff = unit.buffs.reduce((n, b) => n + b.x, 0);
   const gearAtk = (unit.gears || []).reduce((n, g) => n + ((g.gear && g.gear.atk) || 0), 0);
-  return unit.power + unit.dons * 1000 + buff + gearAtk;
+  return unit.power + unit.dons * 1000 + buff + gearAtk + formationEdge(pl, unit.formation, phase);
 }
 
-export function leaderPower(pl) {
+export function leaderPower(pl, phase) {
   const buff = pl.leader.buffs.reduce((n, b) => n + b.x, 0);
-  return pl.leader.power + pl.leader.dons * 1000 + buff;
+  return pl.leader.power + pl.leader.dons * 1000 + buff + formationEdge(pl, pl.leader.formation, phase);
+}
+
+// 阵型光环（design-system §4.1，标签制方案 C）：只在战斗结算相位生效（UI 基础显示不含光环，
+// 真实对比体现在 dmg-calc 伤害算式浮字）。旧卡/旧快照无 formation 字段=无光环，天然兼容。
+//   vanguard 突击：攻击相位，攻击者每多 1 名场上突击单位 +500
+//   bulwark  铁壁：防守相位，防守方每多 1 名场上铁壁单位 +500
+//   skirmish 游击：非光环——登场计数触发（见 phases.js summon 点）
+function formationEdge(pl, formation, phase) {
+  if (!pl || !formation) return 0;
+  if (formation === 'vanguard' && phase === 'attack') {
+    return Math.max(0, formationCount(pl, 'vanguard') - 1) * 500;
+  }
+  if (formation === 'bulwark' && phase === 'defense') {
+    return Math.max(0, formationCount(pl, 'bulwark') - 1) * 500;
+  }
+  return 0;
+}
+
+function formationCount(pl, formation) {
+  let n = pl.leader.formation === formation ? 1 : 0;
+  for (const u of pl.board) if (u.formation === formation) n++;
+  return n;
 }
 
 // 可用（未横置、未附着）DON!! 数量

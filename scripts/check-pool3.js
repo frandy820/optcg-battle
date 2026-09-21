@@ -15,9 +15,15 @@ const COLORS = ['red', 'blue', 'green', 'yellow', 'purple', 'black'];
 // F13 融合卡：id 形如 FUSION-{COLOR}{n}，art 指向主素材图≠id，不进 deckOf → 不占频率红线额度
 const isFusion = (c) => typeof c.id === 'string' && c.id.startsWith('FUSION-');
 const CARD_HOOKS = ['onPlay', 'whenAttacking', 'onKO', 'trigger'];
-const OPS = ['draw', 'powerSelf', 'powerLeader', 'gainDon', 'koWeakest', 'restEnemy', 'healLP', 'damageLP', 'buffAll', 'debuffFoeAll', 'discard'];
+const OPS = ['draw', 'powerSelf', 'powerLeader', 'gainDon', 'koWeakest', 'restEnemy', 'healLP', 'damageLP', 'buffAll', 'debuffFoeAll', 'discard', 'search', 'revive'];
+// P1a 阵营/阵型（design-system §2/§4）：全卡必填 faction（8 阵营）、formation 三阵型或 null、arc 篇章或 null
+const FACTIONS = ['strawhat', 'navy', 'warlord', 'yonko', 'supernova', 'revolutionary', 'whitebeard', 'beast'];
+const FORMATIONS = ['vanguard', 'bulwark', 'skirmish', null];
+const ARCS = ['east_blue', 'alabasta', 'skypiea', 'enies_lobby', 'marineford', 'dressrosa', 'whole_cake', 'wano', null];
 const KW_CAPS = { doubleAttack: 8, banish: 5 };
-const FREQ_CAPS = { draw: 60, gainDon: 25, healLP: 20, damageLP: 30, koWeakest: 10, restEnemy: 30, buffAll: 20, debuffFoeAll: 12 };
+// P2 扩池（2026-09-21）起红线改占比制：源规模 142→800+，绝对值必超；占比上限按 design-system §5 词频预算
+const FREQ_PCT = { draw: 10, gainDon: 4, healLP: 4, damageLP: 5, koWeakest: 2, restEnemy: 5, buffAll: 3.5, debuffFoeAll: 2.5, search: 4, revive: 1 };
+const KW_PCT = { doubleAttack: 3, banish: 2 };
 const ABSTRACT = ['黎明', '新时代', '羁绊', '梦想', '希望', '时代', '意志'];
 
 // ===== 总量与结构 =====
@@ -33,7 +39,7 @@ if (!Array.isArray(cards)) { console.error('FATAL pool3 必须是数组'); proce
     for (const c of src) {
       const m = merged.get(c.id);
       if (!m) { errs.push(`${c.id}: 在 ${col}.json 但不在 cards-pool3.json`); continue; }
-      for (const f of ['name', 'sub', 'type', 'cost', 'power', 'counter', 'effect', 'keywords', 'gear', 'fruit', 'rarity']) {
+      for (const f of ['name', 'sub', 'type', 'cost', 'power', 'counter', 'effect', 'keywords', 'gear', 'fruit', 'rarity', 'faction', 'formation', 'arc']) {
         if (JSON.stringify(m[f]) !== JSON.stringify(c[f])) errs.push(`${c.id}: cards-pool3 与 ${col}.json 不同步（${f}）`);
       }
     }
@@ -59,16 +65,20 @@ const newIdsBySlot = {}; // 'red:char' -> [nums]
 for (const c of cards) {
   const where = c.id || '(no-id)';
   // ---- schema ----
-  for (const f of ['id', 'name', 'sub', 'type', 'color', 'cost', 'power', 'counter', 'keywords', 'art', 'fruit', 'rarity']) {
+  for (const f of ['id', 'name', 'sub', 'type', 'color', 'cost', 'power', 'counter', 'keywords', 'art', 'fruit', 'rarity', 'faction', 'formation', 'arc']) {
     if (!(f in c)) errs.push(`${where}: 缺字段 ${f}`);
   }
+  // P1a 阵营/阵型/篇章取值域
+  if (!FACTIONS.includes(c.faction)) errs.push(`${where}: faction 非法 ${JSON.stringify(c.faction)}`);
+  if (!FORMATIONS.includes(c.formation)) errs.push(`${where}: formation 非法 ${JSON.stringify(c.formation)}`);
+  if (!ARCS.includes(c.arc)) errs.push(`${where}: arc 非法 ${JSON.stringify(c.arc)}`);
   if (errTooMany()) continue;
   if (!isFusion(c) && !/^(RED|BLUE|GREEN|YELLOW|PURPLE|BLACK)(-E|-S|-G)?-?\d+$/.test(c.id)) errs.push(`${where}: id 格式非法`);
   if (isFusion(c) && !/^FUSION-(RED|BLUE|GREEN|YELLOW|PURPLE|BLACK)\d+$/.test(c.id)) errs.push(`${where}: 融合卡 id 格式非法（须 FUSION-{COLOR}{n}）`);
   if (!!c.fusion !== isFusion(c)) errs.push(`${where}: fusion 字段与 id 前缀须一致（FUSION- 卡必带 fusion，普通卡禁带）`);
   if (existById.has(c.id)) {
     const m = existById.get(c.id);
-    for (const f of ['name', 'sub', 'type', 'color', 'cost', 'power', 'counter', 'keywords', 'effect', 'fruit', 'rarity']) {
+    for (const f of ['name', 'sub', 'type', 'color', 'cost', 'power', 'counter', 'keywords', 'effect', 'fruit', 'rarity', 'faction', 'formation', 'arc']) {
       if (JSON.stringify(m[f]) !== JSON.stringify(c[f])) errs.push(`${where}: 与主库不同步（${f}: pool3=${JSON.stringify(c[f])} 主库=${JSON.stringify(m[f])}）——两处必须同步改`);
     }
   } else if (!/^LEADER/.test(c.id) && existIds.has(c.id)) errs.push(`${where}: 与现有库冲突`);
@@ -119,6 +129,7 @@ for (const c of cards) {
       if (x.type === 'gear') return { 1000: 'A', 2000: 'B', 3000: 'S' }[x.gear.atk]; // +1K=A/+2K=B/+3K=S
       const kw = (x.keywords || []).length, eff = x.effect !== null;
       if (x.cost === 8 && x.power === 9000) return 'SSS';            // 费顶配战力天花板
+      if (x.cost === 8 && kw >= 1 && eff) return 'SSS';              // P2：费8+词条+效果=传说锚点（生成器 gen-expansion 同构）
       if (x.cost === 8 || kw >= 2) return 'SS';                      // cost=8 或 词条≥2
       if ((kw > 0 && eff) || x.cost >= 7) return 'S';                // 词条+效果双全 或 cost≥7
       if (kw > 0 || eff) return 'B';
@@ -200,6 +211,18 @@ for (const c of cards) {
       if (['damageLP'].includes(op.k)) { if (t === null || t < 1000 || t > 2000 || t % 1000) errs.push(`${where}: damageLP.x 非法`); if (t === 2000 && c.type === 'event' && cost < 3) errs.push(`${where}: damageLP2000 须 event cost>=3`); }
       if (['draw', 'gainDon', 'discard'].includes(op.k) && (![1, 2].includes(op.n))) errs.push(`${where}: ${op.k}.n 非法`);
       if (op.k === 'draw' && op.n === 3 && cost < 3) errs.push(`${where}: draw3 须 cost>=3`);
+      if (op.k === 'search') {
+        if (![1, 2].includes(op.n)) errs.push(`${where}: search.n 非法（1-2）`);
+        if (op.faction && !FACTIONS.includes(op.faction)) errs.push(`${where}: search.faction 非法`);
+        if (op.type && !['char', 'gear'].includes(op.type)) errs.push(`${where}: search.type 非法`);
+        if (op.maxCost != null && !(Number.isInteger(op.maxCost) && op.maxCost >= 1 && op.maxCost <= 8)) errs.push(`${where}: search.maxCost 非法`);
+        if (cost < 3) errs.push(`${where}: search 须 cost>=3（费率 -2.5K 档）`);
+      }
+      if (op.k === 'revive') {
+        if (op.maxCost != null && !(Number.isInteger(op.maxCost) && op.maxCost >= 1 && op.maxCost <= 5)) errs.push(`${where}: revive.maxCost 非法（1-5）`);
+        if (!['SS', 'SSS'].includes(c.rarity)) errs.push(`${where}: revive 仅 SS/SSS 卡（费率 -3K 档）`);
+        if (cost < 5) errs.push(`${where}: revive 须 cost>=5`);
+      }
       if (op.k === 'koWeakest' && c.color !== 'black') errs.push(`${where}: koWeakest 仅 black`);
       if (op.k === 'restEnemy' && op.target && !['last', 'strongest', 'weakest'].includes(op.target)) errs.push(`${where}: restEnemy.target 非法`);
       if (op.until && !['turn', 'battle'].includes(op.until)) errs.push(`${where}: until 非法`);
@@ -226,9 +249,14 @@ for (const col of COLORS) {
 }
 // 编号连续性断言已退役：运营期删卡=跳号合法（官方卡表惯例）
 
-// ===== 全库频率红线 =====
-for (const [k, cap] of Object.entries(FREQ_CAPS)) if ((opCount[k] || 0) > cap) errs.push(`op ${k} 共 ${opCount[k]} 张 > 上限 ${cap}`);
-for (const [k, cap] of Object.entries(KW_CAPS)) if ((kwCount[k] || 0) > cap) errs.push(`keyword ${k} 共 ${kwCount[k]} 张 > 上限 ${cap}`);
+// ===== 全库频率红线（占比制：max(旧绝对下限, 占比×池规模)）=====
+const pctCap = (pct) => Math.max(Math.round(cards.length * pct / 100), 1);
+const FREQ_CAPS = Object.fromEntries(Object.entries(FREQ_PCT).map(([k, p]) => [k, pctCap(p)]));
+for (const [k, cap] of Object.entries(FREQ_CAPS)) if ((opCount[k] || 0) > cap) errs.push(`op ${k} 共 ${opCount[k]} 张 > 上限 ${cap}（${FREQ_PCT[k]}%×${cards.length}）`);
+for (const [k, p] of Object.entries(KW_PCT)) {
+  const cap = Math.max(Math.round(cards.length * p / 100), KW_CAPS[k]);
+  if ((kwCount[k] || 0) > cap) errs.push(`keyword ${k} 共 ${kwCount[k]} 张 > 上限 ${cap}（${p}%×${cards.length}）`);
+}
 
 // ===== fruit 分布（WARN） =====
 const fr = Object.entries(fruitCount);

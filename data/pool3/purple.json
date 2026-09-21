@@ -12,7 +12,10 @@
     "effect": null,
     "art": "PURPLE-24",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "PURPLE-30",
@@ -33,7 +36,10 @@
     },
     "art": "PURPLE-30",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
   },
   {
     "id": "PURPLE-32",
@@ -48,7 +54,10 @@
     "effect": null,
     "art": "PURPLE-32",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "PURPLE-36",
@@ -69,7 +78,10 @@
     },
     "art": "PURPLE-36",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "PURPLE-41",
@@ -90,7 +102,10 @@
     },
     "art": "PURPLE-41",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "PURPLE-43",
@@ -105,7 +120,10 @@
     "effect": null,
     "art": "PURPLE-43",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "PURPLE-45",
@@ -120,7 +138,10 @@
     "effect": null,
     "art": "PURPLE-45",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "PURPLE-46",
@@ -135,7 +156,10 @@
     "effect": null,
     "art": "PURPLE-46",
     "fruit": "zoan",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "PURPLE-51",
@@ -156,7 +180,10 @@
     },
     "art": "PURPLE-51",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "PURPLE-54",
@@ -178,7 +205,10 @@
     },
     "art": "PURPLE-54",
     "fruit": null,
-    "rarity": "SS"
+    "rarity": "SS",
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "PURPLE-57",
@@ -199,7 +229,10 @@
     },
     "art": "PURPLE-57",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "PURPLE-59",
@@ -220,7 +253,10 @@
     },
     "art": "PURPLE-59",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
   },
   {
     "id": "PURPLE-62",
@@ -235,7 +271,10 @@
     "effect": null,
     "art": "PURPLE-62",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
   },
   {
     "id": "PURPLE-63",
@@ -252,7 +291,10 @@
     "effect": null,
     "art": "PURPLE-63",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": "alabasta"
   },
   {
     "id": "PURPLE-64",
@@ -267,7 +309,10 @@
     "effect": null,
     "art": "PURPLE-64",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "alabasta"
   },
   {
     "id": "PURPLE-G4",
@@ -285,7 +330,10 @@
     "effect": null,
     "art": "PURPLE-G4",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "PURPLE-G5",
@@ -303,7 +351,10 @@
     "effect": null,
     "art": "PURPLE-G5",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "FUSION-PURPLE1",
@@ -333,7 +384,10 @@
       ],
       "cost": 3
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
   },
   {
     "id": "FUSION-PURPLE2",
@@ -358,6 +412,2590 @@
       ],
       "cost": 2
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-65",
+    "name": "乌尔蒂",
+    "sub": " 大看板 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-65",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-66",
+    "name": "提娜",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-66",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-67",
+    "name": "霍尔德姆",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "PURPLE-67",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-68",
+    "name": "马姆",
+    "sub": " 真打 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "PURPLE-68",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-69",
+    "name": "多古拉",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "PURPLE-69",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-70",
+    "name": "佩罗娜·王下",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "PURPLE-70",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-71",
+    "name": "多彭",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "PURPLE-71",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-72",
+    "name": "克比",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker",
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-72",
+    "fruit": "zoan",
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-73",
+    "name": "奎因·百兽海贼团",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-73",
+    "fruit": "logia",
+    "rarity": "A",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-74",
+    "name": "乔拉可尔·米霍克·王下",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker",
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "PURPLE-74",
+    "fruit": "paramecia",
+    "rarity": "SS",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-75",
+    "name": "斯特罗圣",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-75",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-76",
+    "name": "斯摩格",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "PURPLE-76",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-77",
+    "name": "库赞",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-77",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-78",
+    "name": "杰欧",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-78",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-79",
+    "name": "波雅·汉库珂",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-79",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-80",
+    "name": "蒙奇·D·卡普",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "PURPLE-80",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-81",
+    "name": "Mr.1",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-81",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-82",
+    "name": "狮子",
+    "sub": " 大看板 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-82",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-83",
+    "name": "克隆",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-83",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-84",
+    "name": "蝙蝠",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-84",
+    "fruit": "logia",
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-85",
+    "name": "腕龙",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-85",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": null,
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-86",
+    "name": "莱纳",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-86",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-87",
+    "name": "犰狳",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-87",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-88",
+    "name": "火烧山",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-88",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-89",
+    "name": "棘背",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-89",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-90",
+    "name": "特雷波尔",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-90",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-91",
+    "name": "猛犸",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-91",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-92",
+    "name": "巴索罗缪·熊",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-92",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-93",
+    "name": "西番",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-93",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-94",
+    "name": "大和",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-94",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-95",
+    "name": "范德戴肯",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-95",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-96",
+    "name": "托米诺",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "revive",
+        "maxCost": 5
+      }
+    },
+    "art": "PURPLE-96",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-97",
+    "name": "凯多·百兽海贼团",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-97",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-98",
+    "name": "波雅·汉库珂·王下",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-98",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-99",
+    "name": "波尔萨利诺",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-99",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-100",
+    "name": "鼯鼠",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-100",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-101",
+    "name": "润媞",
+    "sub": " 真打 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-101",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-102",
+    "name": "夏洛特·布琳",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-102",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-103",
+    "name": "巴基",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-103",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-104",
+    "name": "艾佛兰德拉",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-104",
+    "fruit": "logia",
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-105",
+    "name": "辛奇",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-105",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-106",
+    "name": "瓦斯卡多",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-106",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-107",
+    "name": "迪亚玛蒂",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-107",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-108",
+    "name": "奎因",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "PURPLE-108",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-109",
+    "name": "卡特琳娜·蝶美",
+    "sub": " 真打 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-109",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-110",
+    "name": "蓝波·卡兰",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "PURPLE-110",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-111",
+    "name": "沙尔·克洛克达尔·王下",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-111",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-112",
+    "name": "范·奥卡",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-112",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-113",
+    "name": "马童",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "search",
+        "n": 1,
+        "faction": "beast"
+      }
+    },
+    "art": "PURPLE-113",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-114",
+    "name": "马尔科",
+    "sub": " 真打 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-114",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-115",
+    "name": "布鲁诺",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-115",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-116",
+    "name": "金·百兽海贼团",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-116",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-117",
+    "name": "福兹弗",
+    "sub": " 大看板 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-117",
+    "fruit": "logia",
+    "rarity": "SS",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-118",
+    "name": "阿布萨罗姆",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "PURPLE-118",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-119",
+    "name": "贝鲁梅特尔",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-119",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-120",
+    "name": "巴基·王下",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-120",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-121",
+    "name": "无齿翼龙",
+    "sub": " 真打 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-121",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-122",
+    "name": "强纳森",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-122",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-123",
+    "name": "霍格巴克",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-123",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-124",
+    "name": "玛丽哥德",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "PURPLE-124",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-125",
+    "name": "戴夫戈",
+    "sub": " 真打 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-125",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-126",
+    "name": "月光·莫利亚·王下",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 1000
+      }
+    },
+    "art": "PURPLE-126",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-127",
+    "name": "霍迪·琼斯",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-127",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-128",
+    "name": "金",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-128",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-129",
+    "name": "赞高",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-129",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-130",
+    "name": "达鲁马",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-130",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-131",
+    "name": "Mr.5",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-131",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-132",
+    "name": "德林杰",
+    "sub": " 傀儡师 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-132",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-133",
+    "name": "路奇",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-133",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-134",
+    "name": "巴加斯",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-134",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-135",
+    "name": "佩罗娜",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-135",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-136",
+    "name": "恩典",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-136",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-137",
+    "name": "翼龙",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-137",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-138",
+    "name": "黑炭大蛇",
+    "sub": " 大看板 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-138",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-139",
+    "name": "塞尼奥尔·皮克",
+    "sub": " 傀儡师 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-139",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-140",
+    "name": "圣胡安·恶狼",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-140",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-141",
+    "name": "豹藏",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-141",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-142",
+    "name": "伊卡洛斯",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-142",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-143",
+    "name": "阿拉马基",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-143",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-144",
+    "name": "卡莉法",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-144",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-145",
+    "name": "月光·莫利亚",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "PURPLE-145",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-146",
+    "name": "格拉迪乌斯",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-146",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-147",
+    "name": "斯皮德",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-147",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-148",
+    "name": "阿巴罗·比萨罗",
+    "sub": " 真打 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-148",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-149",
+    "name": "哈姆",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-149",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-150",
+    "name": "Mr.4",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-150",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-151",
+    "name": "鬼蜘蛛",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-151",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-152",
+    "name": "毒Q",
+    "sub": " 大看板 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "PURPLE-152",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-153",
+    "name": "贝鲁梅伯",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-153",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-154",
+    "name": "爱德华·威布尔",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-154",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-155",
+    "name": "帕帕苏斯",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-155",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-156",
+    "name": "Miss圣诞快乐",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-156",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-157",
+    "name": "桑达索尼亚",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-157",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-158",
+    "name": "沙尔·克洛克达尔",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-158",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-159",
+    "name": "巴索罗缪·熊·王下",
+    "sub": " 傀儡师 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-159",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-160",
+    "name": "唐吉诃德·多弗朗明戈·王下",
+    "sub": " 傀儡师 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "PURPLE-160",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-161",
+    "name": "凯多",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "PURPLE-161",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-162",
+    "name": "卡库",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-162",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-163",
+    "name": "贝比5",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-163",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-164",
+    "name": "玛格丽特",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-164",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-165",
+    "name": "拉菲特",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker",
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "PURPLE-165",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "beast",
+    "formation": null,
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-166",
+    "name": "巴巴努基",
+    "sub": " 大看板 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-166",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-167",
+    "name": "雨之希留",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-167",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-168",
+    "name": "Mr.2",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-168",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-169",
+    "name": "拉奥G",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-169",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-170",
+    "name": "爱德华·威布尔·王下",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-170",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-171",
+    "name": "特拉法尔加·罗·王下",
+    "sub": " 傀儡师 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-171",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-172",
+    "name": "莫奈",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-172",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-173",
+    "name": "佐佐木",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-173",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-174",
+    "name": "托雷波尔",
+    "sub": " 傀儡师 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-174",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-175",
+    "name": "砂糖",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-175",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-176",
+    "name": "维尔戈",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-176",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-177",
+    "name": "皮卡",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "PURPLE-177",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-178",
+    "name": "Miss双手指",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-178",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-G6",
+    "name": "紫电细剑",
+    "sub": " 暗流涌动 ",
+    "type": "gear",
+    "color": "purple",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-G6",
+    "fruit": null,
+    "rarity": "A",
+    "gear": {
+      "atk": 1000
+    },
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-G7",
+    "name": "傀儡丝线",
+    "sub": " 王下七武海 ",
+    "type": "gear",
+    "color": "purple",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-G7",
+    "fruit": null,
+    "rarity": "B",
+    "gear": {
+      "atk": 2000
+    },
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-G8",
+    "name": "暗影匕首",
+    "sub": " 王下七武海 ",
+    "type": "gear",
+    "color": "purple",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-G8",
+    "fruit": null,
+    "rarity": "S",
+    "gear": {
+      "atk": 3000
+    },
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "PURPLE-179",
+    "name": "战国",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "PURPLE-179",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-180",
+    "name": "达斯琪",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-180",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "dressrosa"
+  },
+  {
+    "id": "PURPLE-181",
+    "name": "斯潘达姆",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "PURPLE-181",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-182",
+    "name": "T·彭",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "PURPLE-182",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "PURPLE-183",
+    "name": "孔美奥",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "purple",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "PURPLE-183",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
   }
 ]

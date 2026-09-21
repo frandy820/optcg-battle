@@ -19,7 +19,10 @@
     },
     "art": "BLACK-26",
     "fruit": "logia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "beast",
+    "formation": null,
+    "arc": "marineford"
   },
   {
     "id": "BLACK-31",
@@ -36,7 +39,10 @@
     "effect": null,
     "art": "BLACK-31",
     "fruit": "paramecia",
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "marineford"
   },
   {
     "id": "BLACK-33",
@@ -57,7 +63,10 @@
     },
     "art": "BLACK-33",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLACK-36",
@@ -72,7 +81,10 @@
     "effect": null,
     "art": "BLACK-36",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLACK-40",
@@ -87,7 +99,10 @@
     "effect": null,
     "art": "BLACK-40",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLACK-41",
@@ -102,7 +117,10 @@
     "effect": null,
     "art": "BLACK-41",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLACK-45",
@@ -119,7 +137,10 @@
     "effect": null,
     "art": "BLACK-45",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
   },
   {
     "id": "BLACK-47",
@@ -141,7 +162,10 @@
     },
     "art": "BLACK-47",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLACK-50",
@@ -158,7 +182,10 @@
     "effect": null,
     "art": "BLACK-50",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "enies_lobby"
   },
   {
     "id": "BLACK-51",
@@ -173,7 +200,10 @@
     "effect": null,
     "art": "BLACK-51",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "alabasta"
   },
   {
     "id": "BLACK-52",
@@ -188,7 +218,10 @@
     "effect": null,
     "art": "BLACK-52",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
   },
   {
     "id": "BLACK-54",
@@ -205,7 +238,10 @@
     "effect": null,
     "art": "BLACK-54",
     "fruit": "zoan",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": "wano"
   },
   {
     "id": "BLACK-57",
@@ -220,7 +256,10 @@
     "effect": null,
     "art": "BLACK-57",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLACK-60",
@@ -235,7 +274,10 @@
     "effect": null,
     "art": "BLACK-60",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": "marineford"
   },
   {
     "id": "BLACK-61",
@@ -250,7 +292,10 @@
     "effect": null,
     "art": "BLACK-61",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": "east_blue"
   },
   {
     "id": "BLACK-62",
@@ -265,7 +310,10 @@
     "effect": null,
     "art": "BLACK-62",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "alabasta"
   },
   {
     "id": "BLACK-63",
@@ -280,7 +328,10 @@
     "effect": null,
     "art": "BLACK-63",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "alabasta"
   },
   {
     "id": "BLACK-64",
@@ -295,7 +346,10 @@
     "effect": null,
     "art": "BLACK-64",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "alabasta"
   },
   {
     "id": "BLACK-G3",
@@ -313,7 +367,10 @@
     "effect": null,
     "art": "BLACK-G3",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "BLACK-G6",
@@ -331,7 +388,10 @@
     "effect": null,
     "art": "BLACK-G6",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "FUSION-BLACK1",
@@ -356,7 +416,10 @@
       ],
       "cost": 3
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": "marineford"
   },
   {
     "id": "FUSION-BLACK2",
@@ -381,6 +444,2813 @@
       ],
       "cost": 3
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-65",
+    "name": "贝洛·贝蒂·革命军",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-65",
+    "fruit": "paramecia",
+    "rarity": "SS",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-66",
+    "name": "加尔",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-66",
+    "fruit": "logia",
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-67",
+    "name": "达斯琪",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-67",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-68",
+    "name": "帕乌",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "banish"
+    ],
+    "effect": null,
+    "art": "BLACK-68",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-69",
+    "name": "波尔萨利诺·大将",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "BLACK-69",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-70",
+    "name": "强纳森",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-70",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-71",
+    "name": "斯潘达姆",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-71",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-72",
+    "name": "佐佐木",
+    "sub": " 大看板 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "BLACK-72",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-73",
+    "name": "萨奇",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "BLACK-73",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-74",
+    "name": "哈雷达斯",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-74",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-75",
+    "name": "阿罗",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-75",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-76",
+    "name": "甘布利诺",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "BLACK-76",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-77",
+    "name": "小八",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-77",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-78",
+    "name": "哈库·革命军",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "BLACK-78",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-79",
+    "name": "莱纳",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "BLACK-79",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLACK-80",
+    "name": "十字桥",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "BLACK-80",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-81",
+    "name": "阿托摩斯",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-81",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-82",
+    "name": "艾梅",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "banish"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "buffAll",
+        "x": 1000
+      }
+    },
+    "art": "BLACK-82",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-83",
+    "name": "贝鲁梅伯",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-83",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLACK-84",
+    "name": "辛奇",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "koWeakest"
+      }
+    },
+    "art": "BLACK-84",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-85",
+    "name": "布拉曼克",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-85",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-86",
+    "name": "莫莉·革命军",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": 2000,
+    "keywords": [
+      "banish"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "koWeakest"
+      }
+    },
+    "art": "BLACK-86",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-87",
+    "name": "蒙奇·D·卡普·大将",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-87",
+    "fruit": "logia",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-88",
+    "name": "蒙奇·D·龙",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "BLACK-88",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-89",
+    "name": "卡莉法",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-89",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-90",
+    "name": "阿拉马基",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLACK-90",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-91",
+    "name": "卡库",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-91",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-92",
+    "name": "多恩",
+    "sub": " 风之军 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "BLACK-92",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-93",
+    "name": "林德伯格·革命军",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker",
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-93",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-94",
+    "name": "安",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-94",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-95",
+    "name": "萨卡斯基",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-95",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-96",
+    "name": "菊之丞",
+    "sub": " 残火 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 6000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-96",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-97",
+    "name": "纳尔逊",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-97",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-98",
+    "name": "库赞·大将",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-98",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-99",
+    "name": "路奇",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-99",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-100",
+    "name": "提娜",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLACK-100",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-101",
+    "name": "比斯塔利亚",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "BLACK-101",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-102",
+    "name": "帕顿",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-102",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-103",
+    "name": "贝鲁梅特尔",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-103",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-104",
+    "name": "安布里奥·伊万科夫",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "buffAll",
+        "x": 1000
+      }
+    },
+    "art": "BLACK-104",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-105",
+    "name": "门戈",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-105",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-106",
+    "name": "原达尔顿",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-106",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-107",
+    "name": "马童",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-107",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-108",
+    "name": "安布里奥·伊万科夫·革命军",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-108",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-109",
+    "name": "波特卡斯·D·艾斯",
+    "sub": " 残火 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-109",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-110",
+    "name": "摩兹",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "BLACK-110",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-111",
+    "name": "天羽羽斩",
+    "sub": " 赤鞘武士 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-111",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-112",
+    "name": "霜月康家",
+    "sub": " 白胡子一族 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-112",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-113",
+    "name": "赞高",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "BLACK-113",
+    "fruit": "logia",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-114",
+    "name": "猫蝮蛇",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "BLACK-114",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-115",
+    "name": "迪奇",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-115",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-116",
+    "name": "豹藏",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLACK-116",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLACK-117",
+    "name": "小玉",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-117",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-118",
+    "name": "拉库约",
+    "sub": " 残火 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "BLACK-118",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-119",
+    "name": "一笑·大将",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-119",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-120",
+    "name": "克比",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "banish"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLACK-120",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-121",
+    "name": "奎因",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-121",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-122",
+    "name": "卡拉斯基",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-122",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-123",
+    "name": "萨博",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "banish"
+    ],
+    "effect": null,
+    "art": "BLACK-123",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-124",
+    "name": "金",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-124",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-125",
+    "name": "缪罗",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-125",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-126",
+    "name": "加布拉",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-126",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-127",
+    "name": "一笑",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-127",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-128",
+    "name": "维尔戈",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "banish",
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "search",
+        "n": 1,
+        "faction": "navy"
+      }
+    },
+    "art": "BLACK-128",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-129",
+    "name": "战国·大将",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 2
+      }
+    },
+    "art": "BLACK-129",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-130",
+    "name": "杰克",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-130",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-131",
+    "name": "闪电·革命军",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-131",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-132",
+    "name": "棘背",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "banish"
+    ],
+    "effect": null,
+    "art": "BLACK-132",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-133",
+    "name": "凯多·百兽海贼团",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "BLACK-133",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": null,
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-134",
+    "name": "缇娜",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "search",
+        "n": 1,
+        "faction": "navy"
+      }
+    },
+    "art": "BLACK-134",
+    "fruit": "paramecia",
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-135",
+    "name": "矢龙",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-135",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLACK-136",
+    "name": "波尔萨拉",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "search",
+        "n": 1,
+        "faction": "revolutionary"
+      }
+    },
+    "art": "BLACK-136",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-137",
+    "name": "克尔拉",
+    "sub": " 风之军 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-137",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-138",
+    "name": "乔兹",
+    "sub": " 赤鞘武士 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-138",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-139",
+    "name": "萨博·革命军",
+    "sub": " 风之军 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "BLACK-139",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-140",
+    "name": "斯库亚德",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-140",
+    "fruit": "logia",
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-141",
+    "name": "卡拉斯",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-141",
+    "fruit": "logia",
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-142",
+    "name": "阿拉马基·大将",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-142",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-143",
+    "name": "佩吉万",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-143",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-144",
+    "name": "霍迪·琼斯",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-144",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-145",
+    "name": "夏姆洛克",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-145",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-146",
+    "name": "米哈",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-146",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-147",
+    "name": "猛犸",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-147",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-148",
+    "name": "柯玛奈",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-148",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-149",
+    "name": "战国",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "BLACK-149",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-150",
+    "name": "莫莉",
+    "sub": " 解放战线 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-150",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-151",
+    "name": "酒天丸",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "search",
+        "n": 1,
+        "faction": "whitebeard"
+      }
+    },
+    "art": "BLACK-151",
+    "fruit": "paramecia",
+    "rarity": "SS",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-152",
+    "name": "杰欧",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-152",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-153",
+    "name": "达鲁马",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-153",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLACK-154",
+    "name": "无齿翼龙",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-154",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-155",
+    "name": "犬岚公爵",
+    "sub": " 赤鞘武士 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-155",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-156",
+    "name": "哈姆",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-156",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLACK-157",
+    "name": "芭丝卡嬷嬷",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-157",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-158",
+    "name": "帕帕克",
+    "sub": " 起义者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-158",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-159",
+    "name": "卡拉斯·革命军",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-159",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-160",
+    "name": "鹤·大将",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-160",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-161",
+    "name": "耕四郎",
+    "sub": " 残火 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "BLACK-161",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-162",
+    "name": "库赞",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "black",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-162",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-163",
+    "name": "爱德华·纽盖特",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-163",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-164",
+    "name": "巴斯提雍",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-164",
+    "fruit": "logia",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-165",
+    "name": "林德伯格",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-165",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-166",
+    "name": "达斯琪·大将",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-166",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-167",
+    "name": "蒙奇·D·卡普",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-167",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-168",
+    "name": "金古多",
+    "sub": " 白胡子一族 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "BLACK-168",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-169",
+    "name": "山姆",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-169",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-170",
+    "name": "闪电",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-170",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-171",
+    "name": "萨卡斯基·大将",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-171",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-172",
+    "name": "哈库",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-172",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-173",
+    "name": "狮子",
+    "sub": " SMILE能力者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-173",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-174",
+    "name": "传次郎",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-174",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-175",
+    "name": "蝙蝠",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-175",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-176",
+    "name": "腕龙",
+    "sub": " 大看板 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-176",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "BLACK-177",
+    "name": "蒙奇·D·龙·革命军",
+    "sub": " 隐密行动 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "BLACK-177",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-178",
+    "name": "克隆",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-178",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-179",
+    "name": "波尔萨利诺",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-179",
+    "fruit": "logia",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-180",
+    "name": "基松",
+    "sub": " 革命军干部 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-180",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-181",
+    "name": "犰狳",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "BLACK-181",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-182",
+    "name": "孔美奥",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-182",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-183",
+    "name": "巴巴努基",
+    "sub": " 真打 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-183",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-184",
+    "name": "翼龙",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-184",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-185",
+    "name": "恩典",
+    "sub": " 大看板 ",
+    "type": "char",
+    "color": "black",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLACK-185",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-186",
+    "name": "西番",
+    "sub": " 鬼岛之主 ",
+    "type": "char",
+    "color": "black",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 1000
+      }
+    },
+    "art": "BLACK-186",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-187",
+    "name": "马尔科",
+    "sub": " 真打 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "BLACK-187",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-188",
+    "name": "马姆",
+    "sub": " 狩猎者 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-188",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "beast",
+    "formation": "skirmish",
+    "arc": "marineford"
+  },
+  {
+    "id": "BLACK-189",
+    "name": "戴夫戈",
+    "sub": " 百兽军团 ",
+    "type": "char",
+    "color": "black",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "gainDon",
+        "n": 2
+      }
+    },
+    "art": "BLACK-189",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "beast",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-190",
+    "name": "克尔拉·革命军",
+    "sub": " 风之军 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "BLACK-190",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "revolutionary",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "BLACK-191",
+    "name": "东塔克斯三世",
+    "sub": " 疾风 ",
+    "type": "char",
+    "color": "black",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-191",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-192",
+    "name": "鹤",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "black",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-192",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-193",
+    "name": "斯摩格·大将",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "black",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-193",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "BLACK-G7",
+    "name": "黑翼斩舰刀",
+    "sub": " 真打 ",
+    "type": "gear",
+    "color": "black",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-G7",
+    "fruit": null,
+    "rarity": "A",
+    "gear": {
+      "atk": 1000
+    },
+    "faction": "beast",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-G8",
+    "name": "铁狱锁链",
+    "sub": " 大看板 ",
+    "type": "gear",
+    "color": "black",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-G8",
+    "fruit": null,
+    "rarity": "B",
+    "gear": {
+      "atk": 2000
+    },
+    "faction": "beast",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "BLACK-G9",
+    "name": "夜枭钩爪",
+    "sub": " SMILE能力者 ",
+    "type": "gear",
+    "color": "black",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "BLACK-G9",
+    "fruit": null,
+    "rarity": "S",
+    "gear": {
+      "atk": 3000
+    },
+    "faction": "beast",
+    "formation": null,
+    "arc": null
   }
 ]

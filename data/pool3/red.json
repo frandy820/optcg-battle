@@ -19,7 +19,10 @@
     },
     "art": "RED-27",
     "fruit": "zoan",
-    "rarity": "SS"
+    "rarity": "SS",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-29",
@@ -41,7 +44,10 @@
     },
     "art": "RED-29",
     "fruit": "logia",
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": null,
+    "arc": "marineford"
   },
   {
     "id": "RED-33",
@@ -63,7 +69,10 @@
     },
     "art": "RED-33",
     "fruit": "logia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "revolutionary",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-35",
@@ -85,7 +94,10 @@
     },
     "art": "RED-35",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-37",
@@ -102,7 +114,10 @@
     "effect": null,
     "art": "RED-37",
     "fruit": null,
-    "rarity": "SS"
+    "rarity": "SS",
+    "faction": "yonko",
+    "formation": "vanguard",
+    "arc": null
   },
   {
     "id": "RED-39",
@@ -119,7 +134,10 @@
     "effect": null,
     "art": "RED-39",
     "fruit": null,
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": "wano"
   },
   {
     "id": "RED-41",
@@ -134,7 +152,10 @@
     "effect": null,
     "art": "RED-41",
     "fruit": "zoan",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "RED-44",
@@ -151,7 +172,10 @@
     "effect": null,
     "art": "RED-44",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": "wano"
   },
   {
     "id": "RED-45",
@@ -166,7 +190,10 @@
     "effect": null,
     "art": "RED-45",
     "fruit": null,
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": "wano"
   },
   {
     "id": "RED-47",
@@ -183,7 +210,10 @@
     "effect": null,
     "art": "RED-47",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
   },
   {
     "id": "RED-48",
@@ -198,7 +228,10 @@
     "effect": null,
     "art": "RED-48",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-50",
@@ -219,7 +252,10 @@
     },
     "art": "RED-50",
     "fruit": "paramecia",
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-52",
@@ -240,7 +276,10 @@
     },
     "art": "RED-52",
     "fruit": "paramecia",
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": null,
+    "arc": "marineford"
   },
   {
     "id": "RED-53",
@@ -257,7 +296,10 @@
     "effect": null,
     "art": "RED-53",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": null
   },
   {
     "id": "RED-55",
@@ -272,7 +314,10 @@
     "effect": null,
     "art": "RED-55",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": "east_blue"
   },
   {
     "id": "RED-56",
@@ -287,7 +332,10 @@
     "effect": null,
     "art": "RED-56",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "alabasta"
   },
   {
     "id": "RED-57",
@@ -302,7 +350,10 @@
     "effect": null,
     "art": "RED-57",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-58",
@@ -324,7 +375,10 @@
     },
     "art": "RED-58",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-60",
@@ -339,7 +393,10 @@
     "effect": null,
     "art": "RED-60",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-61",
@@ -354,7 +411,10 @@
     "effect": null,
     "art": "RED-61",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-62",
@@ -371,7 +431,10 @@
     "effect": null,
     "art": "RED-62",
     "fruit": "zoan",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "enies_lobby"
   },
   {
     "id": "RED-63",
@@ -393,7 +456,10 @@
     },
     "art": "RED-63",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": null,
+    "arc": "whole_cake"
   },
   {
     "id": "RED-64",
@@ -408,7 +474,10 @@
     "effect": null,
     "art": "RED-64",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-G3",
@@ -426,7 +495,10 @@
     "effect": null,
     "art": "RED-G3",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-G4",
@@ -444,7 +516,10 @@
     "effect": null,
     "art": "RED-G4",
     "fruit": null,
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-G5",
@@ -462,7 +537,10 @@
     "effect": null,
     "art": "RED-G5",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "RED-G6",
@@ -480,7 +558,10 @@
     "effect": null,
     "art": "RED-G6",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "FUSION-RED1",
@@ -505,7 +586,10 @@
       ],
       "cost": 3
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": "marineford"
   },
   {
     "id": "FUSION-RED2",
@@ -536,6 +620,2604 @@
       ],
       "cost": 2
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-65",
+    "name": "蕾贝卡",
+    "sub": " 新星 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-65",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-66",
+    "name": "布拉曼克",
+    "sub": " 一番队长 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "RED-66",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-67",
+    "name": "莫莉",
+    "sub": " 最恶世代 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-67",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-68",
+    "name": "布洛契",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-68",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-69",
+    "name": "以藏",
+    "sub": " 残火 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-69",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-70",
+    "name": "基拉",
+    "sub": " 出头天 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-70",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-71",
+    "name": "河松",
+    "sub": " 赤鞘武士 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-71",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-72",
+    "name": "波特卡斯·D·艾斯·一番队",
+    "sub": " 残火 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-72",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-73",
+    "name": "金古多",
+    "sub": " 残火 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-73",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-74",
+    "name": "龙马",
+    "sub": " 赤鞘武士 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-74",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-75",
+    "name": "泽法",
+    "sub": " 最恶世代 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "RED-75",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-76",
+    "name": "犬岚公爵",
+    "sub": " 一番队长 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "RED-76",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-77",
+    "name": "阿健",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "RED-77",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-78",
+    "name": "可可罗",
+    "sub": " 冒险者 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-78",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-79",
+    "name": "居鲁士",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "RED-79",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-80",
+    "name": "鬼蜘蛛",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-80",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-81",
+    "name": "顿·克利克",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-81",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": null,
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-82",
+    "name": "罗罗诺亚·索隆",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "RED-82",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-83",
+    "name": "鼯鼠",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-83",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-84",
+    "name": "帕帕古",
+    "sub": " 扬帆起航 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "RED-84",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-85",
+    "name": "福萨",
+    "sub": " 白胡子一族 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-85",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-86",
+    "name": "一笑",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-86",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-87",
+    "name": "乌尔基",
+    "sub": " 野心家 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "RED-87",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-88",
+    "name": "黑色玛利亚",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "RED-88",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-89",
+    "name": "提娜",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-89",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-90",
+    "name": "芭丝卡嬷嬷",
+    "sub": " 出头天 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "RED-90",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-91",
+    "name": "斯摩格",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-91",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-92",
+    "name": "巴兹尔·霍金斯·最恶世代",
+    "sub": " 乱世枭雄 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-92",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-93",
+    "name": "乔兹·一番队",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-93",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-94",
+    "name": "忍",
+    "sub": " 赤鞘武士 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "RED-94",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-95",
+    "name": "凯撒·克朗",
+    "sub": " 出头天 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-95",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-96",
+    "name": "猫蝮蛇",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-96",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-97",
+    "name": "阿拉马基",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker",
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-97",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-98",
+    "name": "哈库",
+    "sub": " 最恶世代 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-98",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-99",
+    "name": "娜美·新世界",
+    "sub": " 冒险王 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-99",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-100",
+    "name": "酒天丸",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-100",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-101",
+    "name": "小玉",
+    "sub": " 残火 ",
+    "type": "char",
+    "color": "red",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "RED-101",
+    "fruit": "zoan",
+    "rarity": "SSS",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-102",
+    "name": "邦尼",
+    "sub": " 乱世枭雄 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-102",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-103",
+    "name": "瓦伊帕",
+    "sub": " 冒险王 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-103",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-104",
+    "name": "斯库亚德",
+    "sub": " 残火 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "RED-104",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-105",
+    "name": "贝鲁梅特尔",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-105",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-106",
+    "name": "尤斯塔斯·基德",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker",
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 2
+      }
+    },
+    "art": "RED-106",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-107",
+    "name": "雷藏",
+    "sub": " 赤鞘武士 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "RED-107",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-108",
+    "name": "拉库约",
+    "sub": " 白胡子一族 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-108",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-109",
+    "name": "托尼托尼·乔巴·新世界",
+    "sub": " 扬帆起航 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-109",
+    "fruit": "logia",
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-110",
+    "name": "贝鲁梅伯",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-110",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-111",
+    "name": "X·德雷克",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-111",
+    "fruit": "logia",
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-112",
+    "name": "福萨·一番队",
+    "sub": " 赤鞘武士 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "RED-112",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-113",
+    "name": "卡拉斯",
+    "sub": " 出头天 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-113",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-114",
+    "name": "菊之丞",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "RED-114",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-115",
+    "name": "耕四郎",
+    "sub": " 一番队长 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-115",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-116",
+    "name": "比斯塔",
+    "sub": " 一番队长 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-116",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-117",
+    "name": "堪十郎",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-117",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-118",
+    "name": "蒙奇·D·路飞·新世界",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-118",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-119",
+    "name": "缇娜",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "RED-119",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-120",
+    "name": "拉布",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-120",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-121",
+    "name": "乌尔基·最恶世代",
+    "sub": " 野心家 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-121",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-122",
+    "name": "曼波",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-122",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-123",
+    "name": "杰克",
+    "sub": " 赤鞘武士 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-123",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-124",
+    "name": "贝波",
+    "sub": " 新星 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-124",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-125",
+    "name": "战国",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-125",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-126",
+    "name": "宾兹",
+    "sub": " 乱世枭雄 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "RED-126",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-127",
+    "name": "大和",
+    "sub": " 一番队长 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "doubleAttack"
+    ],
+    "effect": null,
+    "art": "RED-127",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-128",
+    "name": "T·彭",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-128",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-129",
+    "name": "尼普顿",
+    "sub": " 冒险王 ",
+    "type": "char",
+    "color": "red",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 1000
+      }
+    },
+    "art": "RED-129",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-130",
+    "name": "赞高",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-130",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-131",
+    "name": "弗兰奇·新世界",
+    "sub": " 冒险王 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-131",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-132",
+    "name": "巴兹尔·霍金斯",
+    "sub": " 最恶世代 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-132",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-133",
+    "name": "妮可·罗宾·新世界",
+    "sub": " 冒险王 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-133",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-134",
+    "name": "丹",
+    "sub": " 扬帆起航 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-134",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-135",
+    "name": "贝加庞克",
+    "sub": " 出头天 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-135",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": null,
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-136",
+    "name": "飞六胞",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "red",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "search",
+        "n": 1,
+        "faction": "whitebeard"
+      }
+    },
+    "art": "RED-136",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "whitebeard",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-137",
+    "name": "爱德华·纽盖特·一番队",
+    "sub": " 一番队长 ",
+    "type": "char",
+    "color": "red",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "search",
+        "n": 1,
+        "faction": "whitebeard"
+      }
+    },
+    "art": "RED-137",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-138",
+    "name": "布鲁克·新世界",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "RED-138",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-139",
+    "name": "修佐",
+    "sub": " 出头天 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-139",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-140",
+    "name": "乔艾莉·波妮",
+    "sub": " 野心家 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-140",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-141",
+    "name": "阿金",
+    "sub": " 出头天 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 6000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-141",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-142",
+    "name": "以藏·一番队",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-142",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-143",
+    "name": "维尔戈",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-143",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-144",
+    "name": "萨奇·一番队",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "powerSelf",
+        "x": 1000,
+        "until": "battle"
+      }
+    },
+    "art": "RED-144",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-145",
+    "name": "布鲁克",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-145",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-146",
+    "name": "门戈",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-146",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-147",
+    "name": "X·德雷克·最恶世代",
+    "sub": " 新星 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker",
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-147",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-148",
+    "name": "日和",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "RED-148",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-149",
+    "name": "卡库",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 2
+      }
+    },
+    "art": "RED-149",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-150",
+    "name": "林德伯格",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "red",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-150",
+    "fruit": "paramecia",
+    "rarity": "SS",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-151",
+    "name": "冰山",
+    "sub": " 扬帆起航 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-151",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-152",
+    "name": "天羽羽斩",
+    "sub": " 遗志 ",
+    "type": "char",
+    "color": "red",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "RED-152",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-153",
+    "name": "杰克斯",
+    "sub": " 乱世枭雄 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "strongest"
+      }
+    },
+    "art": "RED-153",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-154",
+    "name": "佩金",
+    "sub": " 乱世枭雄 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "gainDon",
+        "n": 2
+      }
+    },
+    "art": "RED-154",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-155",
+    "name": "马尔科·一番队",
+    "sub": " 白胡子一族 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-155",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-156",
+    "name": "比斯塔·一番队",
+    "sub": " 家族之绊 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-156",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-157",
+    "name": "古伊娜",
+    "sub": " 赤鞘武士 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "RED-157",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-158",
+    "name": "传次郎",
+    "sub": " 残火 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-158",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-159",
+    "name": "十字桥",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-159",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-160",
+    "name": "甚平",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "RED-160",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-161",
+    "name": "火烧山",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "RED-161",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-162",
+    "name": "乌索普·新世界",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "RED-162",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-163",
+    "name": "拳骨",
+    "sub": " 新星 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-163",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-164",
+    "name": "尤斯塔斯·基德·最恶世代",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-164",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-165",
+    "name": "根八",
+    "sub": " 冒险者 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "RED-165",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-166",
+    "name": "杀手",
+    "sub": " 结盟 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "RED-166",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-167",
+    "name": "佐佐木",
+    "sub": " 白胡子一族 ",
+    "type": "char",
+    "color": "red",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "RED-167",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-168",
+    "name": "路奇",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-168",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-169",
+    "name": "托尼托尼·乔巴",
+    "sub": " 伙伴之力 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "RED-169",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-170",
+    "name": "迪鲁",
+    "sub": " 草帽一伙 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "RED-170",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-171",
+    "name": "孔美奥",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-171",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-172",
+    "name": "娜美",
+    "sub": " 冒险者 ",
+    "type": "char",
+    "color": "red",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 1000
+      }
+    },
+    "art": "RED-172",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "RED-173",
+    "name": "阿托摩斯",
+    "sub": " 白胡子一族 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 1000
+      }
+    },
+    "art": "RED-173",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-174",
+    "name": "乔兹",
+    "sub": " 一番队长 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "RED-174",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "whitebeard",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-175",
+    "name": "卡鲁",
+    "sub": " 扬帆起航 ",
+    "type": "char",
+    "color": "red",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "RED-175",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "bulwark",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-176",
+    "name": "弗兰奇",
+    "sub": " 冒险王 ",
+    "type": "char",
+    "color": "red",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-176",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-177",
+    "name": "斯莱曼",
+    "sub": " 乱世枭雄 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-177",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "RED-178",
+    "name": "罗罗诺亚·索隆·新世界",
+    "sub": " 自由之海 ",
+    "type": "char",
+    "color": "red",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-178",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-179",
+    "name": "雅利",
+    "sub": " 冒险者 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "RED-179",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "vanguard",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-180",
+    "name": "乙姬",
+    "sub": " 冒险王 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "RED-180",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "strawhat",
+    "formation": "skirmish",
+    "arc": "east_blue"
+  },
+  {
+    "id": "RED-181",
+    "name": "莱德菲尔德",
+    "sub": " 野心家 ",
+    "type": "char",
+    "color": "red",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "RED-181",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "supernova",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "RED-G7",
+    "name": "烈焰短刀",
+    "sub": " 结盟 ",
+    "type": "gear",
+    "color": "red",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-G7",
+    "fruit": null,
+    "rarity": "A",
+    "gear": {
+      "atk": 1000
+    },
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-G8",
+    "name": "赤犬军刀",
+    "sub": " 结盟 ",
+    "type": "gear",
+    "color": "red",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-G8",
+    "fruit": null,
+    "rarity": "B",
+    "gear": {
+      "atk": 2000
+    },
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "RED-G9",
+    "name": "革命火铳",
+    "sub": " 新星 ",
+    "type": "gear",
+    "color": "red",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "RED-G9",
+    "fruit": null,
+    "rarity": "S",
+    "gear": {
+      "atk": 3000
+    },
+    "faction": "supernova",
+    "formation": null,
+    "arc": null
   }
 ]

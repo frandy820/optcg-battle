@@ -116,12 +116,15 @@ export function resolveAttack(state, p) {
   const def = resolveUnit(state, p.target);
   const defCard = p.target.type === 'leader' ? state.players[p.target.side].leader : def;
   const edge = fruitEdge(atkCard, defCard); // 果实克制：只利攻击方
+  // 阵型光环（方案 C）：攻击按攻击相位、防守按防守相位结算（state.js formationEdge）
   const atkPower = (p.attacker.type === 'leader'
-    ? leaderPower(state.players[p.attacker.side])
-    : powerOfUnit(atk)) + edge;
+    ? leaderPower(state.players[p.attacker.side], 'attack')
+    : powerOfUnit(atk, state.players[p.attacker.side], 'attack')) + edge;
   const defPower = (p.target.type === 'leader'
-    ? leaderPower(state.players[p.target.side])
-    : powerOfUnit(def) + (hasKeyword(def, 'blocker') ? BLOCKER_WALL : 0)) + p.counterBoost;
+    ? leaderPower(state.players[p.target.side], 'defense')
+    : def // 目标在 counter 窗口期离场（效果竞态）：防线记 0，由下方 !def 分支 noDamage 收场
+      ? powerOfUnit(def, state.players[p.target.side], 'defense') + (hasKeyword(def, 'blocker') ? BLOCKER_WALL : 0)
+      : 0) + p.counterBoost;
 
   logEvent(state, { t: 'clash', atkPower, defPower, fruitEdge: edge });
 

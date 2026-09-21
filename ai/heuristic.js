@@ -15,20 +15,22 @@ export function createAI(level = 'normal', rng = Math.random) {
     level,
     choose(state, acts) {
       if (!acts || acts.length === 0) return null;
-      if (blunder > 0 && rng() < blunder) {
-        // 乱走池排除 takeDon：give/take 互切会造成无限循环（AI 诊断实证）
-        const pool = acts.filter((a) => a.t !== 'takeDon');
-        const p = pool.length ? pool : acts;
-        return p[Math.floor(rng() * p.length)];
-      }
       const scored = acts.map((a) => ({ a, s: scoreAction(state, a) + rng() * noise }));
+      if (blunder > 0 && rng() < blunder) {
+        // 乱走排除 takeDon（give/take 互切死循环，AI 诊断实证）；反向选最差——
+        // 988 池曲线对齐后随机乱走送分不足（hard 仅 57% 分层），新手档语义=可被碾压
+        const pool = scored.filter((x) => x.a.t !== 'takeDon');
+        const p = pool.length ? pool : scored;
+        p.sort((x, y) => x.s - y.s);
+        return p[0].a;
+      }
       scored.sort((x, y) => y.s - x.s);
       if (level !== 'hard') return scored[0].a;
       // hard：对 top5 前瞻一步（执行动作+响应全 pass，取局面估值差），叠加启发分
       const me = state.pending ? state.pending.target.side : state.active;
       let best = null;
       let bestV = -Infinity;
-      for (const { a, s: s0 } of scored.slice(0, 3)) {
+      for (const { a, s: s0 } of scored.slice(0, 5)) {
         // hard 攻击折减：前瞻把对手响应强制 pass，但高反击手牌的真实局会翻盘互斗/垫防线
         // （normal 靠 6 分噪声偶有回避，hard noise=0 恒选最高分=恒踩激进坑，红v蓝实证）
         const foeNow = state.players[1 - me];
@@ -41,7 +43,7 @@ export function createAI(level = 'normal', rng = Math.random) {
           while (st.pending && guard-- > 0) {
             applyAction(st, { t: 'passCounter', side: st.pending.target.side });
           }
-          const v = s * 2.0 + evaluate(st, me) * 0.3; // 启发分主导：中间局面估值噪声大（红v蓝实证前瞻净贡献为负），evaluate 只留终局检测与轻量修正
+          const v = s * 1.8 + evaluate(st, me) * 0.35; // 启发分主导：中间局面估值噪声大（红v蓝实证），evaluate 权重微升拉大与乱走的差距（988 池曲线对齐后 top3+0.3 只剩 57% 分层）
           if (v > bestV) { bestV = v; best = a; }
         } catch { /* 模拟异常则跳过该动作 */ }
       }
@@ -66,6 +68,11 @@ export function evaluate(state, me) {
     v += sign * usableDons(pl) * 1.2;
     v += sign * leaderPower(pl) / 4000;
     if (pl.stage) v += sign * 2;
+    // 阵型聚合度（design-system §4.3）：同阵型单位成簇=光环/触发在线，权重 0.3×单位效用
+    const fc = { vanguard: 0, bulwark: 0, skirmish: 0 };
+    for (const u of pl.board) if (u.formation && fc[u.formation] != null) fc[u.formation]++;
+    if (pl.leader.formation && fc[pl.leader.formation] != null) fc[pl.leader.formation]++;
+    for (const n of Object.values(fc)) if (n >= 2) v += sign * (n - 1) * 0.3 * 2;
   }
   return v;
 }
@@ -84,6 +91,12 @@ function scoreAction(state, act) {
       let s = 40 + c.cost * 5 + c.power / 500;
       for (const kw of c.keywords || []) s += { rush: 8, blocker: 6, doubleAttack: 12, banish: 8 }[kw] || 0;
       if (c.effect) s += effValue(c.effect, state, side);
+      // 阵型聚合倾向：与场上/船长同阵型成对（光环起点）加值
+      if (c.formation) {
+        const n = me.board.filter((u) => u.formation === c.formation).length
+          + (me.leader.formation === c.formation ? 1 : 0);
+        if (n >= 1) s += 6;
+      }
       return s;
     }
     case 'playEvent': case 'playStage': {
@@ -188,13 +201,16 @@ function scoreDefense(state, act, me, foe) {
   const p = state.pending;
   const atkUnit = p.attacker.type === 'leader' ? foe.leader : foe.board[p.attacker.idx];
   const defSelf = p.target.type === 'leader' ? me.leader : me.board[p.target.idx];
+  if (p.attacker.type !== 'leader' && !atkUnit) return act.t === 'pass' ? 0 : -99; // 攻击者已离场：不再投入
   const atk = (p.attacker.type === 'leader' ? leaderPower(foe) : powerOfUnit(atkUnit))
     + fruitEdge(atkUnit, defSelf); // 攻方克制我方：威胁值上浮，反击阈值随之抬高
 
   if (act.t === 'counter') {
     const card = me.hand[act.cards[0]];
-    const curDef = (p.target.type === 'leader' ? leaderPower(me) : powerOfUnit(me.board[p.target.idx]))
-      + (p.target.type !== 'leader' && hasKeyword(me.board[p.target.idx], 'blocker') ? 1000 : 0)
+    // 目标可能在窗口期被 whenAttacking 效果移走（koWeakest/restEnemy）——离场则防线记 0，resolveAttack 的 !def 分支收场
+    const defUnit = p.target.type === 'leader' ? null : me.board[p.target.idx];
+    const curDef = (p.target.type === 'leader' ? leaderPower(me) : defUnit ? powerOfUnit(defUnit) : 0)
+      + (defUnit && hasKeyword(defUnit, 'blocker') ? 1000 : 0)
       + p.counterBoost;
     if (curDef + card.counter >= atk) {
       // 能翻盘才反：致死攻击必反，一般攻击看价值

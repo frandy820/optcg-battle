@@ -12,7 +12,10 @@
     "effect": null,
     "art": "YELLOW-24",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "strawhat",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "YELLOW-29",
@@ -33,7 +36,10 @@
     },
     "art": "YELLOW-29",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "YELLOW-36",
@@ -48,7 +54,10 @@
     "effect": null,
     "art": "YELLOW-36",
     "fruit": "logia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": null,
+    "arc": "skypiea"
   },
   {
     "id": "YELLOW-38",
@@ -70,7 +79,10 @@
     },
     "art": "YELLOW-38",
     "fruit": "logia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "east_blue"
   },
   {
     "id": "YELLOW-39",
@@ -87,7 +99,10 @@
     "effect": null,
     "art": "YELLOW-39",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": null
   },
   {
     "id": "YELLOW-40",
@@ -104,7 +119,10 @@
     "effect": null,
     "art": "YELLOW-40",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "whitebeard",
+    "formation": "vanguard",
+    "arc": null
   },
   {
     "id": "YELLOW-41",
@@ -121,7 +139,10 @@
     "effect": null,
     "art": "YELLOW-41",
     "fruit": "paramecia",
-    "rarity": "SS"
+    "rarity": "SS",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": "whole_cake"
   },
   {
     "id": "YELLOW-44",
@@ -138,7 +159,10 @@
     "effect": null,
     "art": "YELLOW-44",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": "whole_cake"
   },
   {
     "id": "YELLOW-46",
@@ -153,7 +177,10 @@
     "effect": null,
     "art": "YELLOW-46",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "YELLOW-47",
@@ -174,7 +201,10 @@
     },
     "art": "YELLOW-47",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "YELLOW-48",
@@ -189,7 +219,10 @@
     "effect": null,
     "art": "YELLOW-48",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "YELLOW-49",
@@ -210,7 +243,10 @@
     },
     "art": "YELLOW-49",
     "fruit": "paramecia",
-    "rarity": "S"
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "YELLOW-50",
@@ -227,7 +263,10 @@
     "effect": null,
     "art": "YELLOW-50",
     "fruit": "paramecia",
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
   },
   {
     "id": "YELLOW-51",
@@ -242,7 +281,10 @@
     "effect": null,
     "art": "YELLOW-51",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
   },
   {
     "id": "YELLOW-52",
@@ -257,7 +299,10 @@
     "effect": null,
     "art": "YELLOW-52",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
   },
   {
     "id": "YELLOW-53",
@@ -272,7 +317,10 @@
     "effect": null,
     "art": "YELLOW-53",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
   },
   {
     "id": "YELLOW-54",
@@ -287,7 +335,10 @@
     "effect": null,
     "art": "YELLOW-54",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
   },
   {
     "id": "YELLOW-55",
@@ -302,7 +353,10 @@
     "effect": null,
     "art": "YELLOW-55",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": null,
+    "arc": "whole_cake"
   },
   {
     "id": "YELLOW-56",
@@ -317,7 +371,10 @@
     "effect": null,
     "art": "YELLOW-56",
     "fruit": "paramecia",
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": null,
+    "arc": "whole_cake"
   },
   {
     "id": "YELLOW-57",
@@ -332,7 +389,10 @@
     "effect": null,
     "art": "YELLOW-57",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "dressrosa"
   },
   {
     "id": "YELLOW-G4",
@@ -350,7 +410,10 @@
     "effect": null,
     "art": "YELLOW-G4",
     "fruit": null,
-    "rarity": "A"
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "YELLOW-G6",
@@ -368,7 +431,10 @@
     "effect": null,
     "art": "YELLOW-G6",
     "fruit": null,
-    "rarity": "B"
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
   },
   {
     "id": "FUSION-YELLOW1",
@@ -397,7 +463,10 @@
       ],
       "cost": 3
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
   },
   {
     "id": "FUSION-YELLOW2",
@@ -427,6 +496,2747 @@
       ],
       "cost": 2
     },
-    "rarity": "SSS"
+    "rarity": "SSS",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-58",
+    "name": "卡库",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-58",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "YELLOW-59",
+    "name": "哥尔·D·罗杰·四皇",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-59",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "YELLOW-60",
+    "name": "阿曼德",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-60",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-61",
+    "name": "提娜",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-61",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-62",
+    "name": "Mr.2",
+    "sub": " 傀儡师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker",
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-62",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-63",
+    "name": "月光·莫利亚·王下",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-63",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-64",
+    "name": "巴索罗缪·熊·王下",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-64",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-65",
+    "name": "加列特",
+    "sub": " 皇族血脉 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-65",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-66",
+    "name": "坎迪",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-66",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-67",
+    "name": "达斯琪",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-67",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-68",
+    "name": "巴基·王下",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-68",
+    "fruit": "logia",
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-69",
+    "name": "蒙奇·D·卡普·大将",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-69",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-70",
+    "name": "洛克之星",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-70",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-71",
+    "name": "洛克之星·四皇",
+    "sub": " 亲卫队长 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "strongest"
+      }
+    },
+    "art": "YELLOW-71",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-72",
+    "name": "战国",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-72",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-73",
+    "name": "Mr.3",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-73",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-74",
+    "name": "扎拉逢",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-74",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-75",
+    "name": "洛克斯·D·吉贝克",
+    "sub": " 蛋糕城 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "buffAll",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-75",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-76",
+    "name": "本·贝克曼·四皇",
+    "sub": " 皇族血脉 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-76",
+    "fruit": "paramecia",
+    "rarity": "SSS",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-77",
+    "name": "巴雷特",
+    "sub": " 大海之主 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-77",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-78",
+    "name": "海楼石",
+    "sub": " 皇族血脉 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-78",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "YELLOW-79",
+    "name": "阿拉马基·大将",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "YELLOW-79",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-80",
+    "name": "斯潘达姆",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-80",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-81",
+    "name": "波尔萨利诺·大将",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-81",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-82",
+    "name": "万国",
+    "sub": " 破竹之势 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-82",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-83",
+    "name": "山姆",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "buffAll",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-83",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-84",
+    "name": "蒙奇·D·卡普",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-84",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-85",
+    "name": "维奥莱特",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-85",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "YELLOW-86",
+    "name": "爱德华·威布尔·王下",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "rush",
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "YELLOW-86",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-87",
+    "name": "爱德华·威布尔",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 1000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-87",
+    "fruit": "zoan",
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-88",
+    "name": "托米诺",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 1000,
+    "counter": 2000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "YELLOW-88",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-89",
+    "name": "强纳森",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-89",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-90",
+    "name": "艾佛兰德拉",
+    "sub": " 傀儡师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-90",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-91",
+    "name": "库赞·大将",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-91",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-92",
+    "name": "唐吉诃德·多弗朗明戈",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-92",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-93",
+    "name": "赞高",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 2000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-93",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-94",
+    "name": "斯摩格·大将",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 2
+      }
+    },
+    "art": "YELLOW-94",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-95",
+    "name": "鼯鼠",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-95",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-96",
+    "name": "克比",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-96",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-97",
+    "name": "沙尔·克洛克达尔·王下",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-97",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-98",
+    "name": "乔拉",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-98",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-99",
+    "name": "鹤·大将",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-99",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-100",
+    "name": "巴基",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-100",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-101",
+    "name": "席尔巴斯·雷利",
+    "sub": " 亲卫队长 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-101",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-102",
+    "name": "斯纳克",
+    "sub": " 亲卫队长 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-102",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-103",
+    "name": "卡莉法",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-103",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-104",
+    "name": "夏奇·四皇",
+    "sub": " 亲卫队长 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-104",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-105",
+    "name": "萨卡斯基",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-105",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-106",
+    "name": "文斯莫克·勇治",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-106",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-107",
+    "name": "一笑·大将",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-107",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-108",
+    "name": "路奇",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-108",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-109",
+    "name": "纳尔逊",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-109",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-110",
+    "name": "火烧山",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-110",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-111",
+    "name": "库赞",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 2
+      }
+    },
+    "art": "YELLOW-111",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-112",
+    "name": "沙尔·克洛克达尔",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-112",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-113",
+    "name": "波尔萨利诺",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "damageLP",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-113",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-114",
+    "name": "歌姬",
+    "sub": " 破竹之势 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-114",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-115",
+    "name": "波雅·汉库珂·王下",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-115",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-116",
+    "name": "Miss圣诞快乐",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 2000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-116",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-117",
+    "name": "夏奇",
+    "sub": " 大海之主 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "YELLOW-117",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-118",
+    "name": "霍格巴克",
+    "sub": " 夜行 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-118",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-119",
+    "name": "一笑",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-119",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-120",
+    "name": "香克斯",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-120",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-121",
+    "name": "康佩什",
+    "sub": " 破竹之势 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-121",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-122",
+    "name": "本·贝克曼",
+    "sub": " 蛋糕城 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-122",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-123",
+    "name": "布鲁诺",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-123",
+    "fruit": "paramecia",
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-124",
+    "name": "特拉法尔加·罗",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-124",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-125",
+    "name": "乔拉可尔·米霍克·王下",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-125",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-126",
+    "name": "席尔巴斯·雷利·四皇",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-126",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": "vanguard",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-127",
+    "name": "迪亚玛蒂",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-127",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "YELLOW-128",
+    "name": "Miss黄金周",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "damageLP",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-128",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-129",
+    "name": "原达尔顿",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-129",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-130",
+    "name": "托雷波尔",
+    "sub": " 暗流涌动 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-130",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-131",
+    "name": "拉基·路",
+    "sub": " 蛋糕城 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush",
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "search",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-131",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-132",
+    "name": "T·彭",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-132",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-133",
+    "name": "耶稣布·四皇",
+    "sub": " 破竹之势 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-133",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-134",
+    "name": "鬼蜘蛛",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "YELLOW-134",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-135",
+    "name": "贝鲁梅特尔",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "YELLOW-135",
+    "fruit": "logia",
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-136",
+    "name": "辛奇",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-136",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-137",
+    "name": "唐吉诃德·多弗朗明戈·王下",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 7,
+    "power": 8000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-137",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-138",
+    "name": "Mr.1",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-138",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-139",
+    "name": "巴斯提雍",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-139",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-140",
+    "name": "十字桥",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "buffAll",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-140",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-141",
+    "name": "拉基·路·四皇",
+    "sub": " 皇族血脉 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack",
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-141",
+    "fruit": null,
+    "rarity": "SS",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-142",
+    "name": "加布拉",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-142",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-143",
+    "name": "鹤",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-143",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-144",
+    "name": "塔马戈",
+    "sub": " 蛋糕城 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "search",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-144",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-145",
+    "name": "贝鲁梅伯",
+    "sub": " 巡逻舰队 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-145",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-146",
+    "name": "门戈",
+    "sub": " 执法者 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 7000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-146",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-147",
+    "name": "Miss双手指",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "search",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-147",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-148",
+    "name": "蓝波·卡兰",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 3000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-148",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-149",
+    "name": "孔美奥",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 5000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "strongest"
+      }
+    },
+    "art": "YELLOW-149",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "YELLOW-150",
+    "name": "战国·大将",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-150",
+    "fruit": "zoan",
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-151",
+    "name": "金狮子史基",
+    "sub": " 大海之主 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 5000,
+    "counter": 2000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-151",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-152",
+    "name": "文斯莫克·伊治",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-152",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-153",
+    "name": "柴火",
+    "sub": " 蛋糕城 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-153",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-154",
+    "name": "香克斯·四皇",
+    "sub": " 破竹之势 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-154",
+    "fruit": null,
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-155",
+    "name": "卡塔库栗",
+    "sub": " 皇族血脉 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onKO",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-155",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-156",
+    "name": "缇娜",
+    "sub": " 缉捕令 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 2000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 2000
+      }
+    },
+    "art": "YELLOW-156",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-157",
+    "name": "佩罗斯佩罗",
+    "sub": " 破竹之势 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": 2000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-157",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "vanguard",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-158",
+    "name": "萨卡斯基·大将",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "gainDon",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-158",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-159",
+    "name": "乔拉可尔·米霍克",
+    "sub": " 傀儡师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": 1000,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-159",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-160",
+    "name": "庞蒂",
+    "sub": " 皇族血脉 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-160",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-161",
+    "name": "Mr.4",
+    "sub": " 王下七武海 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-161",
+    "fruit": "zoan",
+    "rarity": "A",
+    "faction": "warlord",
+    "formation": null,
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-162",
+    "name": "蒙多尔",
+    "sub": " 大海之主 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-162",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-163",
+    "name": "文斯莫克·伽治",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-163",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-164",
+    "name": "夏洛特·布蕾",
+    "sub": " 皇族血脉 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-164",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-165",
+    "name": "Mr.5",
+    "sub": " 处刑人 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "doubleAttack"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy",
+        "target": "last"
+      }
+    },
+    "art": "YELLOW-165",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-166",
+    "name": "文斯莫克·蕾玖",
+    "sub": " 皇族血脉 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-166",
+    "fruit": "paramecia",
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-167",
+    "name": "文斯莫克·尼治",
+    "sub": " 破竹之势 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 7,
+    "power": 7000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": null,
+    "art": "YELLOW-167",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-168",
+    "name": "阿拉马基",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "draw",
+        "n": 2
+      }
+    },
+    "art": "YELLOW-168",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-169",
+    "name": "斯特罗圣",
+    "sub": " 海军将校 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 8,
+    "power": 8000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "draw",
+        "n": 1
+      }
+    },
+    "art": "YELLOW-169",
+    "fruit": null,
+    "rarity": "SSS",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-170",
+    "name": "斯摩格",
+    "sub": " 正义之师 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 6,
+    "power": 6000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-170",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "navy",
+    "formation": "bulwark",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-171",
+    "name": "卡彭·贝基",
+    "sub": " 皇族血脉 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 4000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-171",
+    "fruit": "logia",
+    "rarity": "A",
+    "faction": "yonko",
+    "formation": "bulwark",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-172",
+    "name": "尼特拉",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 1,
+    "power": 1000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "restEnemy"
+      }
+    },
+    "art": "YELLOW-172",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-173",
+    "name": "哥尔·D·罗杰",
+    "sub": " 亲卫队长 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 5,
+    "power": 5000,
+    "counter": 1000,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "debuffFoeAll",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-173",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-174",
+    "name": "莱纳",
+    "sub": " 铁律 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 5000,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-174",
+    "fruit": "paramecia",
+    "rarity": "A",
+    "faction": "navy",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-175",
+    "name": "道格拉斯",
+    "sub": " 破竹之势 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "rush"
+    ],
+    "effect": {
+      "hook": "onPlay",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-175",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-176",
+    "name": "波宾",
+    "sub": " 破竹之势 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 4,
+    "power": 4000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-176",
+    "fruit": "paramecia",
+    "rarity": "B",
+    "faction": "yonko",
+    "formation": "skirmish",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-177",
+    "name": "耶稣布",
+    "sub": " 四皇麾下 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 3,
+    "power": 3000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": {
+      "hook": "whenAttacking",
+      "op": {
+        "k": "healLP",
+        "x": 1000
+      }
+    },
+    "art": "YELLOW-177",
+    "fruit": null,
+    "rarity": "S",
+    "faction": "yonko",
+    "formation": "vanguard",
+    "arc": null
+  },
+  {
+    "id": "YELLOW-178",
+    "name": "贝比5",
+    "sub": " 孤高之刃 ",
+    "type": "char",
+    "color": "yellow",
+    "cost": 2,
+    "power": 2000,
+    "counter": null,
+    "keywords": [
+      "blocker"
+    ],
+    "effect": null,
+    "art": "YELLOW-178",
+    "fruit": null,
+    "rarity": "B",
+    "faction": "warlord",
+    "formation": "vanguard",
+    "arc": "whole_cake"
+  },
+  {
+    "id": "YELLOW-G7",
+    "name": "雷光三节棍",
+    "sub": " 四皇麾下 ",
+    "type": "gear",
+    "color": "yellow",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-G7",
+    "fruit": null,
+    "rarity": "A",
+    "gear": {
+      "atk": 1000
+    },
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "YELLOW-G8",
+    "name": "天候棒·改",
+    "sub": " 四皇麾下 ",
+    "type": "gear",
+    "color": "yellow",
+    "cost": 2,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-G8",
+    "fruit": null,
+    "rarity": "B",
+    "gear": {
+      "atk": 2000
+    },
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
+  },
+  {
+    "id": "YELLOW-G9",
+    "name": "琥珀长弓",
+    "sub": " 亲卫队长 ",
+    "type": "gear",
+    "color": "yellow",
+    "cost": 3,
+    "power": null,
+    "counter": null,
+    "keywords": [],
+    "effect": null,
+    "art": "YELLOW-G9",
+    "fruit": null,
+    "rarity": "S",
+    "gear": {
+      "atk": 3000
+    },
+    "faction": "yonko",
+    "formation": null,
+    "arc": null
   }
 ]

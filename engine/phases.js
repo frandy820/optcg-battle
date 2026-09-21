@@ -69,6 +69,16 @@ export function playCharacter(state, side, idx) {
   runEffect(state, unit, 'onPlay', { side, self: unit });
   // 船长技能：己方角色登场钩子（娜美抽牌/索隆强化——对新登场单位生效）
   runEffect(state, me.leader, 'onSummon', { side, self: unit });
+  // 游击阵型（design-system §4.1）：每当第 3 名游击单位登场（场上游击数恰为 3 的倍数）抽 1
+  if (card.formation === 'skirmish') {
+    let n = (me.leader.formation === 'skirmish' ? 1 : 0);
+    for (const u of me.board) if (u.formation === 'skirmish') n++;
+    if (n > 0 && n % 3 === 0) {
+      if (me.deck.length === 0) { declareDeckOut(state, side); return; }
+      me.hand.push(me.deck.pop());
+      logEvent(state, { t: 'skirmishDraw', side, n, src: card.id });
+    }
+  }
 }
 
 // 出事件：付费 → 执行效果 → 进垃圾场
