@@ -64,6 +64,34 @@ JS_EXTRACT = r"""
 }
 """
 
+# 等新图（wait_for_function 版：页面内轮询直到出现 key 不在 keys0 且带可下载 URL 的新图）
+# 根因：Python 侧循环调 page.evaluate 轮询时，CDP 消息挂起会让 evaluate 永不返回（无超时参数），
+# 脚本 12:21/12:31 两次「进程活着但零产出」均为此；wait_for_function 超时由 playwright 客户端强制，可断
+JS_WAIT_NEW = r"""
+(keys0) => {
+  const k0 = new Set(keys0);
+  const imgs = [...document.querySelectorAll('img')].filter(i => (i.src||'').includes('rc_gen_image'));
+  for (const el of imgs) {
+    const fk = Object.keys(el).find(k => k.startsWith('__reactFiber$'));
+    if (!fk) continue;
+    let f = el[fk], ic = null, depth = 0;
+    while (f && depth < 40) {
+      const p = f.memoizedProps;
+      if (p && p.imageContent) { ic = p.imageContent; break; }
+      f = f.return; depth++;
+    }
+    if (ic && ic.key && !k0.has(ic.key) && (ic.image_ori_raw || ic.image_ori)) {
+      return {
+        key: ic.key,
+        raw: ic.image_ori_raw && ic.image_ori_raw.url || null,
+        ori: ic.image_ori && ic.image_ori.url || null,
+      };
+    }
+  }
+  return null;
+}
+"""
+
 
 def build_prompt(c):
     fac = FACTION_CN.get(c.get("faction"), "海贼")
@@ -130,14 +158,25 @@ def main():
     ok, fail = [], []
     with sync_playwright() as pw:
         browser = pw.chromium.connect_over_cdp(CDP)
+        # 选健康聊天页：wait_for_function 8s 硬超时试探。渲染进程假死（连续生图重渲染积压，
+        # 12:21 实证：evaluate/screenshot 全挂但 browser 进程活）会超时跳过；全死则开新聊天页
         page = None
         for ctx in browser.contexts:
             for p in ctx.pages:
                 if "doubao" in (p.url or "") and "chat" in (p.url or ""):
-                    page = p
-                    break
+                    try:
+                        p.wait_for_function(JS_EXTRACT, timeout=8000).json_value()
+                        page = p
+                        break
+                    except Exception:
+                        continue
             if page:
                 break
+        if not page:
+            print("既有聊天页均无响应，开新页…")
+            page = browser.contexts[0].new_page()
+            page.goto("https://www.doubao.com/chat/", timeout=30000)
+            page.wait_for_selector('[contenteditable="true"]', timeout=30000)
         if not page:
             print("FAIL 未找到豆包聊天页（确认客户端已开且带 9225）")
             sys.exit(1)
@@ -152,23 +191,25 @@ def main():
                 editor = page.query_selector('[contenteditable="true"]')
                 if not editor:
                     raise RuntimeError("找不到输入框")
-                keys0 = set(x["key"] for x in page.evaluate(JS_EXTRACT))  # 发送前已渲染图的 fiber key 集
-                editor.click()
+                # 发送前已渲染图的 fiber key 集（JS_EXTRACT 恒返数组=truthy，wait_for_function 立即返回且带硬超时）
+                keys0 = set(x["key"] for x in page.wait_for_function(JS_EXTRACT, timeout=20000).json_value())
+                # focus() 聚焦而非 ElementHandle.click()：客户端界面动画会让 click 的
+                # stable/receives-events 等待永不满足（12:21 挂死+熔断三连根因），DOM 聚焦无此检查
+                page.evaluate("() => { const ed = document.querySelector('[contenteditable=\\\"true\\\"]'); ed && ed.focus(); }")
                 page.keyboard.type(prompt, delay=20)
                 time.sleep(1.5)
                 page.keyboard.press("Enter")
 
-                # 轮询新图：fiber key 不在 keys0 里（虚拟列表只挂载近期卡，keys0 已含历史可见卡）
-                deadline = time.time() + args.timeout
-                info = None
-                while time.time() < deadline:
-                    cards_now = page.evaluate(JS_EXTRACT)
-                    fresh = [x for x in cards_now if x["key"] not in keys0 and (x["raw"] or x["ori"])]
-                    if fresh:
-                        info = fresh[-1]
-                        break
-                    time.sleep(3)
-                if not info:
+                # 等新图：wait_for_function 带硬超时（fiber key 不在 keys0 且带可下载 URL——
+                # keys0 已含发送前全部可见历史卡；evaluate 轮询版会因 CDP 挂起永久卡死，已废）
+                try:
+                    info = page.wait_for_function(
+                        JS_WAIT_NEW, arg=list(keys0),
+                        timeout=args.timeout * 1000,
+                    ).json_value()
+                except Exception:
+                    raise RuntimeError("超时未出新图")
+                if not info or not (info.get("raw") or info.get("ori")):
                     raise RuntimeError("超时未出新图")
                 url = info["raw"] or info["ori"]
                 raw_png = TMP / f"{cid}.png"
@@ -180,13 +221,11 @@ def main():
             except Exception as e:
                 fail.append((cid, str(e)[:120]))
                 print(f"[{i+1}/{len(jobs)}] {cid} FAIL {str(e)[:120]}")
-                # 输入框残留清理：全选删除，防 prompt 叠加
+                # 输入框残留清理：全选删除，防 prompt 叠加（focus 路径，同上绕 click）
                 try:
-                    editor = page.query_selector('[contenteditable="true"]')
-                    if editor:
-                        editor.click()
-                        page.keyboard.press("Control+a")
-                        page.keyboard.press("Delete")
+                    page.evaluate("() => { const ed = document.querySelector('[contenteditable=\\\"true\\\"]'); ed && ed.focus(); }")
+                    page.keyboard.press("Control+a")
+                    page.keyboard.press("Delete")
                 except Exception:
                     pass
             # 熔断：连续 3 失败
