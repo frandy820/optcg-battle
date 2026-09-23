@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>伟大航路：船长对决</title>
+<link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== 屏 1：标题 ===== -->
+  <section id="screen-title" class="screen active">
+    <div class="title-hero">
+      <div class="title-compass" aria-hidden="true">✦</div>
+      <h1>伟大航路</h1>
+      <p class="subtitle">船长对决 · GRAND VOYAGE</p>
+      <p class="title-tag">构筑卡组 · 集结伙伴 · 决战霜岚中将</p>
+    </div>
+    <nav class="title-menu">
+      <button id="btn-new" class="btn btn-primary">启航（新游戏）</button>
+      <button id="btn-continue" class="btn" hidden>继续航行</button>
+      <button id="btn-help" class="btn">航行指南</button>
+      <button id="btn-settings" class="btn" disabled title="开发中">设置</button>
+    </nav>
+    <footer class="title-foot">纯本地单机 · 原创同人策略卡牌 · 无需联网</footer>
+  </section>
+
+  <!-- ===== 屏 2：船长选择 ===== -->
+  <section id="screen-captain" class="screen">
+    <header class="screen-head"><h2>选择你的船长</h2><button class="btn btn-back" data-back="title">← 返回</button></header>
+    <div id="captain-list" class="captain-list"></div>
+  </section>
+
+  <!-- ===== 屏 3：航线 ===== -->
+  <section id="screen-route" class="screen">
+    <header class="screen-head"><h2>航线图</h2><button class="btn btn-back" data-back="title">← 返回大厅（进度自动保存）</button></header>
+    <div class="route-status">
+      <span id="route-captain" class="rs-chip"></span>
+      <span id="route-hp" class="rs-chip rs-hp"></span>
+      <span id="route-gold" class="rs-chip rs-gold"></span>
+      <span id="route-relics" class="rs-chip rs-relics"></span>
+      <button id="btn-deck-view" class="btn btn-sm">查看牌组</button>
+    </div>
+    <div id="route-map" class="route-map"></div>
+    <div class="route-next">
+      <button id="btn-node-go" class="btn btn-primary">出发</button>
+    </div>
+  </section>
+
+  <!-- ===== 屏 4：战斗 ===== -->
+  <section id="screen-battle" class="screen">
+    <header class="battle-top">
+      <button id="btn-flee" class="btn btn-sm">撤退（放弃本局）</button>
+      <div id="battle-title" class="battle-title"></div>
+      <button id="btn-log" class="btn btn-sm">日志</button>
+    </header>
+
+    <div id="enemy-zone" class="enemy-zone">
+      <div id="enemy-block" class="enemy-block">
+        <div class="enemy-intent" id="enemy-intent"></div>
+        <div class="enemy-figure" id="enemy-figure"></div>
+        <div class="enemy-name" id="enemy-name"></div>
+        <div class="bar hp-bar"><div class="bar-fill" id="enemy-hp-fill"></div><span class="bar-text" id="enemy-hp-text"></span></div>
+        <div class="enemy-statuses" id="enemy-statuses"></div>
+      </div>
+      <div id="enemy-minions" class="enemy-minions"></div>
+    </div>
+
+    <div id="event-zone" class="event-zone">
+      <div id="float-layer" class="float-layer" aria-hidden="true"></div>
+      <div id="mate-row" class="mate-row"></div>
+    </div>
+
+    <div class="player-zone">
+      <div class="player-stats">
+        <div class="ps-left">
+          <div class="ps-hp"><span class="ps-label">生命</span><div class="bar hp-bar"><div class="bar-fill" id="p-hp-fill"></div><span class="bar-text" id="p-hp-text"></span></div></div>
+          <span id="p-block" class="ps-chip" title="护盾：吸收伤害，回合开始清空">🛡 0</span>
+        </div>
+        <div class="ps-mid">
+          <div id="p-energy" class="energy-orb" title="能量：出牌消耗，每回合回满"><span id="p-energy-n">3/3</span></div>
+          <div class="resolve-wrap" title="斗志：攻击/承伤/防御积累，驱动船长技与蓄力卡">
+            <span class="ps-label">斗志</span>
+            <div class="resolve-bar" id="p-resolve-bar"></div>
+            <span id="p-resolve-n" class="ps-num">0</span>
+          </div>
+        </div>
+        <div class="ps-right">
+          <button id="btn-skill-0" class="btn-skill" hidden></button>
+          <button id="btn-skill-1" class="btn-skill" hidden></button>
+        </div>
+        <div class="ps-piles">
+          <span class="pile" id="pile-deck" title="抽牌堆">抽 <b id="n-deck">0</b></span>
+          <span class="pile" id="pile-discard" title="弃牌堆">弃 <b id="n-discard">0</b></span>
+          <span class="pile" id="pile-exhaust" title="消耗堆">耗 <b id="n-exhaust">0</b></span>
+          <button id="btn-endturn" class="btn btn-primary btn-endturn">结束回合</button>
+        </div>
+      </div>
+      <div id="hand" class="hand"></div>
+    </div>
+  </section>
+
+  <!-- ===== 屏 5：奖励（三选一/遗物） ===== -->
+  <section id="screen-reward" class="screen">
+    <header class="screen-head"><h2 id="reward-title">战利品</h2></header>
+    <p id="reward-sub" class="reward-sub"></p>
+    <div id="reward-cards" class="reward-cards"></div>
+    <div id="relic-row" class="relic-row"></div>
+    <div class="reward-actions"><button id="btn-skip-reward" class="btn">跳过（+30 金币）</button><button id="btn-reward-done" class="btn btn-primary" hidden>继续航行</button></div>
+  </section>
+
+  <!-- ===== 屏 6：营地 ===== -->
+  <section id="screen-camp" class="screen">
+    <header class="screen-head"><h2>营地</h2></header>
+    <p class="reward-sub">篝火安静地烧着。选择一件事做，然后继续赶路。</p>
+    <div id="camp-actions" class="camp-actions"></div>
+    <div id="camp-picker" class="camp-picker" hidden>
+      <p id="camp-picker-hint" class="reward-sub"></p>
+      <div id="camp-cards" class="reward-cards"></div>
+    </div>
+    <div class="reward-actions"><button id="btn-leave-camp" class="btn btn-primary">启程</button></div>
+  </section>
+
+  <!-- ===== 屏 7：终局 ===== -->
+  <section id="screen-end" class="screen">
+    <div class="end-hero">
+      <div id="end-icon" class="end-icon"></div>
+      <h2 id="end-title"></h2>
+      <p id="end-sub" class="reward-sub"></p>
+      <div id="end-stats" class="end-stats"></div>
+      <div class="reward-actions">
+        <button id="btn-again" class="btn btn-primary">再来一局</button>
+        <button id="btn-end-home" class="btn">回到标题</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 悬浮层：卡牌放大 / 关键词提示 / 日志抽屉 / 说明 ===== -->
+  <div id="overlay" class="overlay" hidden></div>
+  <aside id="log-drawer" class="log-drawer" hidden><h3>战斗日志</h3><div id="log-body"></div></aside>
+  <div id="help-modal" class="modal" hidden></div>
+  <div id="toast" class="toast" hidden></div>
+  <div id="debug-panel" class="debug-panel" hidden></div>
+</div>
+<script type="module" src="js/game/main.js"></script>
+</body>
+</html>
