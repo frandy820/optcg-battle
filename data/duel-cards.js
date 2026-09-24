@@ -5,9 +5,17 @@
 export const DUEL_CARDS_DATA = (() => {
   const C = (id, name, sub, faction, level, atk, def, art, role, desc, keywords) =>
     ({ id, name, sub, type: 'char', faction, level, atk, def, art, role, ability: null, keywords: keywords || [], desc });
+  // 招式：type 'move'，moveKind 'normal'（用后进墓）| 'equip'（留场装备）
+  // effect.need: 目标约束；effect.ops: 算子（engine.applyOps）
+  const M = (id, name, sub, moveKind, art, effect, desc) =>
+    ({ id, name, sub, type: 'move', moveKind, art, effect, desc });
+  // 伏笔：type 'trap'，triggers 命中窗口（onAttacked/onDirectAttack/onOppMove）
+  // category 'negate' 计入构筑限制「无效化伏笔每副 ≤2」（规则 附 B）
+  const T = (id, name, sub, art, triggers, effect, desc, category) =>
+    ({ id, name, sub, type: 'trap', art, triggers, effect, desc, category: category || null });
 
   return {
-    version: 'phase2-2',
+    version: 'phase3-1',
     cards: [
       // ===== 玩家侧 · 草帽团与东海伙伴 =====
       C('DUE-001', '蒙奇·D·路飞', '我要成为海贼王', 'strawhat', 4, 1900, 1500, 'GREEN-106',
@@ -54,21 +62,61 @@ export const DUEL_CARDS_DATA = (() => {
         '敌方·守备', '罗格镇篇；守备向。'),
       C('DUE-111', '斯摩格', '捕猎人上校', 'navy', 5, 2300, 2100, 'BLUE-152',
         '敌方·压制（需 1 解放）', '罗格镇篇收官对手原型。'),
+
+      // ===== 招式（Phase 3）=====
+      M('DUE-201', '三刀流·鬼斩', '通常招式', 'normal', 'RED-G1',
+        { need: 'ownUnit', ops: [{ op: 'atkDelta', target: 'chosen', amount: 800, until: 'turn' }] },
+        '选自己 1 名人物：本回合 ATK+800。战斗阶段前铺开，或战斗阶段后补刀。'),
+      M('DUE-202', '雷光·天候', '通常招式', 'normal', 'YELLOW-G7',
+        { ops: [{ op: 'damage', amount: 700, side: 'opponent' }] },
+        '对对方造成 700 点伤害。不留场面、直接削 LP。'),
+      M('DUE-203', '铅星·精准射击', '通常招式', 'normal', 'BLACK-G1',
+        { need: 'foeUnitMax1200', ops: [{ op: 'destroy', target: 'chosen' }] },
+        '破坏对方 1 名 ATK1200 以下的人物。低费小怪的噩梦。'),
+      M('DUE-204', '海军的包围网', '通常招式', 'normal', 'BLUE-G5',
+        { need: 'foeUnitAtkPos', ops: [{ op: 'setPosDef', target: 'chosen' }] },
+        '选对方 1 名攻击表示人物，改为守备表示。拔掉攻势、迫其换防。'),
+      M('DUE-205', '和道一文字', '装备招式', 'equip', 'RED-G3',
+        { need: 'ownUnit', ops: [{ op: 'equip', stat: 'atk', amount: 300, target: 'chosen' }] },
+        '装备自己 1 名人物：ATK+300。装备留在场上，装备者离场时随之进墓。'),
+      M('DUE-206', '武装色·硬化', '装备招式', 'equip', 'RED-G2',
+        { need: 'ownUnit', ops: [{ op: 'equip', stat: 'atk', amount: 400, target: 'chosen' }] },
+        '装备自己 1 名人物：ATK+400。橡胶枪打不透的硬度。'),
+
+      // ===== 伏笔（Phase 3；盖伏后下一回合起在响应窗口发动）=====
+      T('DUE-301', '必杀·狼蛛星', '伏笔·乌索普', 'RED-01', ['onAttacked', 'onDirectAttack'],
+        { ops: [{ op: 'atkDelta', target: 'attacker', amount: -800, until: 'battle' }] },
+        '对方攻击宣言时：该攻击人物 ATK-800 直至战斗阶段结束。以弱胜强的陷阱。'),
+      T('DUE-302', '宴席脚', '伏笔·山治', 'YELLOW-24', ['onDirectAttack'],
+        { ops: [{ op: 'negateAttack' }, { op: 'damage', amount: 500, side: 'opponent' }] },
+        '对方直接攻击宣言时：无效该攻击，并给对方 500 点伤害。空场硬闯的代价。', 'negate'),
+      T('DUE-303', '烟雾体', '伏笔·斯摩格', 'BLUE-152', ['onAttacked', 'onDirectAttack'],
+        { ops: [{ op: 'negateAttack' }] },
+        '对方攻击宣言时：无效该攻击。（无效化类，每副牌组最多 2 张——规则 附 B）', 'negate'),
+      T('DUE-304', '催眠曲·赞高', '伏笔·黑猫', 'BLUE-23', ['onOppMove'],
+        { ops: [{ op: 'negateMove' }] },
+        '对方发动招式时：无效该招式。让对手的关键一击落空。（无效化类，每副 ≤2）', 'negate'),
+      T('DUE-305', '诺琪高的守护', '伏笔·可可亚村', 'GREEN-140', ['onAttacked'],
+        { ops: [{ op: 'defDelta', target: 'defender', amount: 800, until: 'battle' }] },
+        '自己人物被攻击时：该人物 DEF+800 直至战斗阶段结束。守备翻盘的反噬。', null),
     ],
 
-    // 预组牌组：各 20 张整、同名 ≤2（规则 §八；Phase 2 过渡期允许全人物构成，招式/伏笔 Phase 3 入组）
+    // 预组牌组：20 张整 / 同名 ≤2 / 无效化伏笔每副 ≤2（规则 §八 + 附 B）
+    // 构成带（§八.3）：人物 12-14 + 招式/伏笔 6-8
     decks: {
       strawhat_default: {
-        name: '草帽团·起航', leader: '蒙奇·D·路飞', theme: '玩家默认（一键恢复）',
-        cards: ['DUE-001','DUE-002','DUE-003','DUE-004','DUE-005','DUE-006','DUE-007',
-                'DUE-008','DUE-009','DUE-010','DUE-001','DUE-002','DUE-003','DUE-004',
-                'DUE-005','DUE-006','DUE-007','DUE-008','DUE-009','DUE-010'],
+        name: '草帽团·起航', leader: '蒙奇·D·路飞', theme: '玩家默认（一键恢复）· 全面均衡',
+        cards: ['DUE-001','DUE-002','DUE-003','DUE-004','DUE-005','DUE-006',
+                'DUE-001','DUE-002','DUE-003','DUE-004','DUE-005','DUE-006',
+                'DUE-201','DUE-202','DUE-204','DUE-205','DUE-206',
+                'DUE-301','DUE-303','DUE-305'],
       },
       eastblue_aggro: {
         name: '东海野心家', leader: '亚尔丽塔', theme: 'AI·激进铺场原型',
-        cards: ['DUE-101','DUE-102','DUE-103','DUE-104','DUE-105','DUE-106','DUE-107',
-                'DUE-108','DUE-110','DUE-111','DUE-101','DUE-102','DUE-103','DUE-104',
-                'DUE-105','DUE-106','DUE-107','DUE-108','DUE-110','DUE-111'],
+        cards: ['DUE-101','DUE-102','DUE-103','DUE-104','DUE-105','DUE-106',
+                'DUE-101','DUE-102','DUE-103','DUE-104','DUE-105','DUE-106',
+                'DUE-201','DUE-201','DUE-202','DUE-202','DUE-204','DUE-204',
+                'DUE-302','DUE-302'],
       },
     },
   };
