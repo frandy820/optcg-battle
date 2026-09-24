@@ -34,9 +34,10 @@ function aiStep(g, cardsById, pi = (g.pending ? g.pending.turnPtr : g.active)) {
   }
   if (g.active !== pi || g.winner !== null) return null;
   const moves = legalMoves(g, cardsById, pi);
+  const PROF = g.aiProfile || 'aggro'; // 战术原型（§九.4）：aggro 激进铺场 / control 控制反击 / boss 篇章Boss
 
   if (g.phase === 'main1' || g.phase === 'main2') {
-    // 1) 登场最优人物（激进型：总攻击最大化 + 略偏大怪；解放不亏总攻才上）
+    // 1) 登场最优人物（总攻击最大化 + 略偏大怪；解放不亏总攻才上）
     const summons = moves.filter(m => m.t === 'summon');
     if (summons.length && p.summoned === 0) {
       let best = null, bestScore = -1e9;
@@ -44,14 +45,21 @@ function aiStep(g, cardsById, pi = (g.pending ? g.pending.turnPtr : g.active)) {
         const d = cardsById[p.hand.find(h => h.uid === m.handUid).cardId];
         const loss = (m.tributes || []).reduce((s, uid) => s + A(p.board.find(u => u.uid === uid)), 0);
         const boardAfter = p.board.reduce((s, u) => s + A(u), 0) - loss + d.atk;
-        const score = boardAfter + d.level * 30;
+        const score = boardAfter + d.level * (PROF === 'boss' ? 90 : 30); // boss 型更贪大怪
         if (score > bestScore) { bestScore = score; best = m; }
       }
       if (best) {
         const curAtk = p.board.reduce((s, u) => s + A(u), 0);
         const d = cardsById[p.hand.find(h => h.uid === best.handUid).cardId];
         const loss = (best.tributes || []).reduce((s, uid) => s + A(p.board.find(u => u.uid === uid)), 0);
-        if (curAtk - loss + d.atk >= curAtk) return best;
+        if (curAtk - loss + d.atk >= curAtk) {
+          // control 型：对方场攻压迫时改守备登场（攒伏笔等反击），否则照常攻击表示
+          if (PROF === 'control') {
+            const foeAtk = e.board.reduce((s, u) => s + A(u), 0);
+            if (foeAtk > curAtk - loss + d.atk + 500) return { ...best, pos: 'def' };
+          }
+          return best;
+        }
       }
     }
     // 2) 盖伏伏笔（招式倾向直接发动，符合激进原型）
@@ -72,6 +80,7 @@ function aiStep(g, cardsById, pi = (g.pending ? g.pending.turnPtr : g.active)) {
 
   if (g.phase === 'battle') {
     const atks = moves.filter(m => m.t === 'attack');
+    const margin = PROF === 'control' ? 200 : 0; // 控制型只在明显有利时换血
     for (const m of atks) {
       const u = p.board.find(x => x.uid === m.uid);
       if (!u) continue;
@@ -80,8 +89,8 @@ function aiStep(g, cardsById, pi = (g.pending ? g.pending.turnPtr : g.active)) {
       const t = e.board.find(x => x.uid === m.target);
       if (t.pos === 'atk') {
         const b = A(t);
-        if (a > b) return m;                          // 有利：破坏+差额
-        if (a === b && e.board.length === 1) return m; // 换掉对方唯一怪
+        if (a > b + margin) return m;                          // 有利：破坏+差额
+        if (a === b && e.board.length === 1 && PROF !== 'control') return m; // 换掉对方唯一怪
       } else {
         if (a > DF(t)) return m;                      // 破守备
       }
@@ -186,8 +195,9 @@ function decideRespond(g, cardsById, pi) {
     }
     if (gain > bestGain) { bestGain = gain; best = s; }
   }
-  // 阈值：避免为小亏浪费伏笔；致死攻击必然触发（baseLoss ≥ lp）
-  return (best && (bestGain >= 400 || baseLoss >= p.lp)) ? { t: 'respond', spellUid: best.uid } : { t: 'pass' };
+  // 阈值：避免为小亏浪费伏笔；致死攻击必然触发（baseLoss ≥ lp）；控制型反制更积极
+  const threshold = (g.aiProfile === 'control') ? 250 : 400;
+  return (best && (bestGain >= threshold || baseLoss >= p.lp)) ? { t: 'respond', spellUid: best.uid } : { t: 'pass' };
 }
 
 // 战斗推演（不改动真实状态）：返回防守方 {lp 损失, 人物价值损失（负=反赚）}
