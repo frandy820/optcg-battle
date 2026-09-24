@@ -31,22 +31,36 @@ let sel = null;          // 当前选中攻击者 uid（战斗阶段）
 let logShown = 0;
 let aiTimer = null;
 let busy = false;        // 动画/AI 播放中锁输入（与"等待响应"视觉区分，规则 §七.5）
+let pendingCampaign = null; // 闯关配置（campaign 页写入 localStorage，本局生效）
 
 // ---------- 建局 ----------
 function start() {
   stopAi();
+  // 闯关模式：读取一次性对局配置（campaign.html「开战」写入）
+  try { pendingCampaign = JSON.parse(localStorage.getItem('gld_duel_pending')); } catch (e) { pendingCampaign = null; }
+  let decks, names, aiProfile = 'aggro', intro;
+  if (pendingCampaign && pendingCampaign.foeDeck) {
+    localStorage.removeItem('gld_duel_pending'); // 一次性消费；「再战一局」回快速对决
+    decks = [pendingCampaign.myDeck, pendingCampaign.foeDeck];
+    names = ['玩家', `${pendingCampaign.foeName}（AI）`];
+    aiProfile = pendingCampaign.aiProfile || 'aggro';
+    intro = `【东海篇·第 ${pendingCampaign.stageId} 关「${pendingCampaign.stageName}」】与「${pendingCampaign.foeName}」的决斗开始！`;
+  } else {
+    pendingCampaign = null;
+    decks = [DUEL_CARDS_DATA.decks.strawhat_default.cards, DUEL_CARDS_DATA.decks.eastblue_aggro.cards];
+    names = ['玩家', '亚尔丽塔（AI）'];
+    intro = '【快速对决】与「东海野心家」亚尔丽塔的决斗开始！想闯关请点顶部「闯关模式」。';
+  }
   const seed = (Date.now() ^ (Math.random() * 1e9)) >>> 0;
   g = DUEL.newGame(cardsById, {
-    seed,
-    decks: [DUEL_CARDS_DATA.decks.strawhat_default.cards, DUEL_CARDS_DATA.decks.eastblue_aggro.cards],
-    names: ['玩家', '亚尔丽塔（AI）'],
+    seed, decks, names, aiProfile,
   });
   sel = null; logShown = 0; busy = false;
   els.log.innerHTML = '';
   els.endOverlay.classList.add('hidden');
   els.modal.classList.add('hidden');
   els.rb.classList.add('hidden');
-  pushLog('与「东海野心家」亚尔丽塔的决斗开始！');
+  pushLog(intro);
   pushLog('提示：先手第一回合不抽牌；招式/伏笔卡可在主要阶段点击使用。');
   // 开局：先手玩家的抽牌阶段无动作 → 快速推进到 main1
   DUEL.applyAction(g, cardsById, 0, { t: 'nextPhase' }); // draw → standby（先手不抽）
@@ -59,6 +73,8 @@ function render() {
   if (!g) return;
   const [P, E] = g.players;
   els.turnChip.textContent = `第 ${g.turn} 回合 · ${g.active === 0 ? '你的回合' : '对方回合'}`;
+  els.foeName.textContent = E.name;
+  els.myName.textContent = P.name;
   document.querySelectorAll('.ph').forEach(el => el.classList.toggle('active', el.dataset.ph === g.phase));
   els.foeLpNum.textContent = Math.max(0, E.lp);
   els.foeLpBar.innerHTML = `<i style="width:${Math.max(0, E.lp) / 4000 * 100}%"></i>`;
@@ -451,6 +467,8 @@ els.btnHelp.onclick = () => showModal(`
   · <b>招式</b>（红标）：主要阶段发动。通常招式用后进墓；装备招式留场持续增益，装备者离场时随葬。<br>
   · <b>伏笔</b>（紫标）：先盖伏到伏笔区（每回合 2 张），下一回合起在「响应窗口」发动——对方攻击宣言或发动招式时，顶部横幅会提示你反制。<br>
   · 连锁：后发动的伏笔先结算，最多 3 层；被无效的攻击/招式不返还费用。<br>
+  · <b>人物能力</b>（⚡）：登场时/被破坏时/每回合开始时/攻击宣言时自动触发——点卡面可看详细。<br>
+  · 想闯东海篇 8 关或自组牌组？点顶部「闯关模式」。<br>
   · 完整规则见 docs/duel-rules.md。
   </div>`);
 
@@ -504,8 +522,34 @@ function showEnd() {
   stopAi();
   const w = g.winner;
   els.endTitle.textContent = w === -1 ? '平局' : w === 0 ? '胜 利' : '败 北';
-  els.endSub.textContent = w === -1 ? '双方同时倒下' :
+  let sub = w === -1 ? '双方同时倒下' :
     (g.winReason === 'lp' ? '生命点数归零' : '牌组抽空') + ` · 历时 ${g.turn} 回合`;
+  // 闯关模式：胜利回写通关进度 + 解锁提示；按钮改为返回闯关（可再战同关）
+  if (pendingCampaign) {
+    els.btnAgain.textContent = '返回闯关';
+    els.btnAgain.onclick = () => { location.href = 'campaign.html'; };
+    if (w === 0) {
+      let s = null;
+      try { s = JSON.parse(localStorage.getItem('gld_campaign_v1')); } catch (e) { s = null; }
+      if (!s || !Array.isArray(s.cleared)) s = { cleared: [], decks: {}, activeDeck: 'default' };
+      if (!s.cleared.includes(pendingCampaign.stageId)) {
+        s.cleared.push(pendingCampaign.stageId);
+        if (!s.decks) s.decks = {};
+        localStorage.setItem('gld_campaign_v1', JSON.stringify(s));
+        const bits = [`第 ${Math.min(pendingCampaign.stageId + 1, 8)} 关解锁`];
+        if (pendingCampaign.unlockCard) bits.push(`新卡「${cardsById[pendingCampaign.unlockCard].name}」入池`);
+        sub += ' · 通关！' + bits.join('，');
+      } else {
+        sub += ' · 再次通关';
+      }
+    } else if (w === 1) {
+      sub += ' · 重整旗鼓，回闯关页再战';
+    }
+  } else {
+    els.btnAgain.textContent = '再战一局';
+    els.btnAgain.onclick = start;
+  }
+  els.endSub.textContent = sub;
   els.endOverlay.classList.remove('hidden');
 }
 
