@@ -70,8 +70,20 @@ const card = (g, uid) => {
 const def = (cardsById, u) => cardsById[u.cardId];
 const me = g => g.players[g.active];
 const foe = g => g.players[1 - g.active];
-const unitAtk = (cardsById, u) => def(cardsById, u).atk + (u.buffAtk || 0);
-const unitDef = (cardsById, u) => def(cardsById, u).def + (u.buffDef || 0);
+// 战斗力 = 卡面 + 增益/减益（buffs，限时） + 装备（equips，随人物存亡）
+const buffSum = (u, stat) => (u.buffs || []).reduce((s, b) => s + (b.stat === stat ? b.amount : 0), 0);
+const equipSum = (u, stat) => (u.equips || []).reduce((s, e) => s + (e.stat === stat ? e.amount : 0), 0);
+const unitAtk = (cardsById, u) => def(cardsById, u).atk + buffSum(u, 'atk') + equipSum(u, 'atk');
+const unitDef = (cardsById, u) => def(cardsById, u).def + buffSum(u, 'def') + equipSum(u, 'def');
+
+// 清除增益：which='battle'（战斗阶段结束）| 'all'（回合结束）
+function clearBuffs(g, which) {
+  for (const p of g.players) for (const u of p.board) {
+    if (!u.buffs || !u.buffs.length) continue;
+    const keep = u.buffs.filter(b => which === 'all' ? false : b.until !== which);
+    if (keep.length !== u.buffs.length) u.buffs = keep;
+  }
+}
 
 // ---------- 抽牌与胜负 ----------
 function drawCard(g, p, { silent } = {}) {
@@ -164,9 +176,19 @@ function canAttack(g, cardsById, pi, uid, targetUid) {
 
 // ---------- 动作执行（唯一入口） ----------
 // action: {t:'summon',handUid,pos,tributes} | {t:'setPos',uid,pos} |
-//         {t:'attack',uid,target} | {t:'nextPhase'} | {t:'endTurn'}
+//         {t:'attack',uid,target} | {t:'nextPhase'} | {t:'endTurn'} |
+//         {t:'setSpell',handUid}（盖伏招式/伏笔） |
+//         {t:'activateMove',handUid,target?}（直接发动招式） |
+//         {t:'activateSpell',spellUid,target?}（翻开已盖伏的招式） |
+//         {t:'respond',spellUid,target?}（响应窗口发动伏笔） | {t:'pass'}（窗口跳过）
 function applyAction(g, cardsById, pi, action) {
   if (g.winner !== null) return { ok: false, reason: '对局已结束', fatal: false };
+  if (g.pending) {
+    // 响应窗口期间只接受窗口动作（规则 §七）
+    if (action.t === 'respond') return doRespond(g, cardsById, pi, action);
+    if (action.t === 'pass') return doPass(g, cardsById, pi);
+    return { ok: false, reason: '正在响应窗口——只能发动伏笔或选择不响应' };
+  }
   const r = dispatch(g, cardsById, pi, action);
   return r;
 }
@@ -178,6 +200,9 @@ function dispatch(g, cardsById, pi, a) {
     case 'attack': return doAttack(g, cardsById, pi, a);
     case 'nextPhase': return doNextPhase(g, cardsById);
     case 'endTurn': return doEndTurn(g, cardsById, pi);
+    case 'setSpell': return doSetSpell(g, cardsById, pi, a);
+    case 'activateMove': return doActivateMove(g, cardsById, pi, a);
+    case 'activateSpell': return doActivateSpell(g, cardsById, pi, a);
     default: return no('未知动作 ' + a.t);
   }
 }
@@ -194,12 +219,13 @@ function doSummon(g, cardsById, pi, a) {
     const i = p.board.findIndex(x => x.uid === t);
     const u = p.board[i];
     names.push(cardsById[u.cardId].name);
-    p.board.splice(i, 1); p.grave.push({ ...u });
+    p.board.splice(i, 1); p.grave.push({ ...u, buffs: [], equips: [] });
+    unequipAll(g, p, u, cardsById); // 装备随解放者进墓（§五.5）
   }
   if (names.length) log(g, `${p.name} 解放了 ${names.join('、')}`);
   p.hand.splice(idx, 1);
   p.board.push({ uid: 'u' + (++g.actionSeq), cardId: h.cardId, pos: a.pos,
-    attacked: false, summonedTurn: g.turn, posChanged: false });
+    attacked: false, summonedTurn: g.turn, posChanged: false, buffs: [], equips: [] });
   p.summoned++;
   log(g, `${p.name} 通常登场「${d.name}」（Lv${d.level} ATK${d.atk}/${a.pos === 'atk' ? '攻' : '守'}表示）`);
   return { ok: true };
@@ -222,11 +248,12 @@ function doAttack(g, cardsById, pi, a) {
   const p = g.players[pi], e = g.players[1 - pi];
   const u = p.board.find(x => x.uid === a.uid);
   const d = def(cardsById, u);
-  u.attacked = true; // 宣言即锁定攻击权（无论结算结果）
+  u.attacked = true; // 宣言即锁定攻击权（无论结算结果，被无效也不返还）
 
-  // 响应窗口（Phase 3 实现；当前无伏笔卡类型时直接通过）
-  const wnd = openResponseWindow(g, cardsById, { kind: 'attack', attacker: u, target: a.target });
-  if (wnd) return wnd; // 挂起等待响应（Phase 3）
+  // 响应窗口 W1：攻击宣言（规则 §七.2）——对方有可发动伏笔才开窗
+  const ev = { kind: 'attack', attackerUid: u.uid, targetUid: (a.target ?? null), direct: a.target == null };
+  const wnd = openResponseWindow(g, cardsById, ev);
+  if (wnd) return wnd; // 挂起，等待双方响应后 resolvePending 继续
 
   resolveAttack(g, cardsById, pi, u, a.target);
   return { ok: true };
@@ -265,8 +292,21 @@ function destroy(g, p, u, cardsById) {
   const i = p.board.findIndex(x => x.uid === u.uid);
   if (i < 0) return;
   p.board.splice(i, 1);
-  p.grave.push({ ...u });
+  p.grave.push({ ...u, buffs: [], equips: [] });
   log(g, `「${cardsById[u.cardId].name}」被破坏，进入墓场`);
+  unequipAll(g, p, u, cardsById); // 装备随葬（§五.5）
+}
+
+// 卸下某人物的全部装备 → 墓场（人物被破坏/被解放时）
+function unequipAll(g, p, u, cardsById) {
+  const keeps = [];
+  for (const s of p.spells) {
+    if (s.equipTo === u.uid) {
+      p.grave.push({ uid: s.uid, cardId: s.cardId });
+      log(g, `装备「${cardsById[s.cardId].name}」失去对象，进入墓场`);
+    } else keeps.push(s);
+  }
+  p.spells = keeps;
 }
 
 // ---------- 阶段推进 ----------
@@ -282,6 +322,7 @@ function doNextPhase(g, cardsById) {
     // 主1 → 战斗（可跳过：UI 发两次 nextPhase）
   }
   g.phase = PHASES[i + 1];
+  if (PHASES[i] === 'battle') clearBuffs(g, 'battle'); // 战斗阶段结束 → 清「直至战斗阶段结束」增益
   onEnterPhase(g, cardsById);
   return { ok: true };
 }
@@ -319,6 +360,7 @@ function doEndTurn(g, cardsById, pi) {
     if (g.winner !== null) return { ok: true };
   }
   // 换边
+  clearBuffs(g, 'all'); // 回合结束 → 清所有限时增益（双方）
   for (const u of me(g).board) { u.attacked = false; u.posChanged = false; }
   me(g).summoned = 0; me(g).setsThisTurn = 0;
   g.active = 1 - g.active;
@@ -336,20 +378,304 @@ function doEndTurn(g, cardsById, pi) {
   return { ok: true };
 }
 
-// ---------- 响应窗口（Phase 3 实现；当前无伏笔卡 → 永远无窗口） ----------
+// ================= 招式与伏笔（Phase 3；规则 §五.5-6 / §七） =================
+
+// ---- 盖伏（招式或伏息→招式/伏笔区，里侧） ----
+function canSetSpell(g, cardsById, pi, handUid) {
+  const p = g.players[pi];
+  if (g.winner !== null) return no('对局已结束');
+  if (g.active !== pi) return no('不是你的回合');
+  if (g.phase !== 'main1' && g.phase !== 'main2') return no('只能在主要阶段盖伏');
+  const h = p.hand.find(x => x.uid === handUid);
+  if (!h) return no('手牌中不存在该卡');
+  const d = cardsById[h.cardId];
+  if (d.type !== 'move' && d.type !== 'trap') return no('只有招式或伏笔可以盖伏');
+  if (p.setsThisTurn >= SET_LIMIT) return no(`每回合最多盖伏 ${SET_LIMIT} 张`);
+  if (p.spells.length >= SPELL_MAX) return no(`招式/伏笔区已满（${SPELL_MAX} 格）`);
+  return ok();
+}
+function doSetSpell(g, cardsById, pi, a) {
+  const c = canSetSpell(g, cardsById, pi, a.handUid);
+  if (!c.ok) return c;
+  const p = g.players[pi];
+  const i = p.hand.findIndex(x => x.uid === a.handUid);
+  const h = p.hand[i];
+  p.hand.splice(i, 1);
+  p.spells.push({ uid: 's' + (++g.actionSeq), cardId: h.cardId, set: true, setTurn: g.turn, equipTo: null });
+  p.setsThisTurn++;
+  log(g, `${p.name} 盖伏了 1 张卡`);
+  return { ok: true };
+}
+
+// ---- 招式发动（手牌直接发动 / 翻开已盖伏的招式） ----
+function canActivateMove(g, cardsById, pi, d, targetUid) {
+  const p = g.players[pi], e = g.players[1 - pi];
+  if (g.phase !== 'main1' && g.phase !== 'main2') return no('只能在主要阶段发动招式');
+  if (d.moveKind === 'equip' && p.spells.length >= SPELL_MAX)
+    return no(`装备须占 1 格，招式/伏笔区已满（${SPELL_MAX} 格）`);
+  const need = d.effect.need;
+  if (!need) return ok();
+  const t = (targetUid != null)
+    ? e.board.find(x => x.uid === targetUid) || p.board.find(x => x.uid === targetUid) : null;
+  if (!t) return no('该招式需要选择目标');
+  if (need === 'ownUnit' && !p.board.some(x => x.uid === targetUid)) return no('目标须为自己场上人物');
+  if (need === 'foeUnitMax1200' || need === 'foeUnitAtkPos') {
+    if (!e.board.some(x => x.uid === targetUid)) return no('目标须为对方场上人物');
+    if (need === 'foeUnitMax1200' && def(cardsById, t).atk > 1200) return no('该招式只能指定 ATK1200 以下的人物');
+    if (need === 'foeUnitAtkPos' && t.pos !== 'atk') return no('目标须为攻击表示的人物');
+  }
+  return ok();
+}
+// 该招式的全部合法目标（无目标卡返回 [null]）
+function moveTargets(g, cardsById, pi, d) {
+  const p = g.players[pi], e = g.players[1 - pi];
+  if (d.moveKind === 'equip' && p.spells.length >= SPELL_MAX) return [];
+  switch (d.effect.need) {
+    case 'ownUnit': return p.board.map(u => u.uid);
+    case 'foeUnitMax1200': return e.board.filter(u => def(cardsById, u).atk <= 1200).map(u => u.uid);
+    case 'foeUnitAtkPos': return e.board.filter(u => u.pos === 'atk').map(u => u.uid);
+    default: return [null];
+  }
+}
+
+function doActivateMove(g, cardsById, pi, a) {
+  const p = g.players[pi];
+  const h = p.hand.find(x => x.uid === a.handUid);
+  if (!h) return no('手牌中不存在该卡');
+  const d = cardsById[h.cardId];
+  if (d.type !== 'move') return no('只有招式卡可以发动');
+  if (g.active !== pi) return no('不是你的回合');
+  const c = canActivateMove(g, cardsById, pi, d, a.target);
+  if (!c.ok) return c;
+  p.hand.splice(p.hand.indexOf(h), 1);
+  return launchMove(g, cardsById, pi, d, a.target);
+}
+
+function doActivateSpell(g, cardsById, pi, a) {
+  const p = g.players[pi];
+  const s = p.spells.find(x => x.uid === a.spellUid);
+  if (!s) return no('招式/伏笔区没有该卡');
+  if (!s.set) return no('该卡已在场上（装备中）');
+  if (g.active !== pi) return no('不是你的回合');
+  const d = cardsById[s.cardId];
+  if (d.type !== 'move') return no('盖伏的伏笔只能在响应窗口发动');
+  const c = canActivateMove(g, cardsById, pi, d, a.target);
+  if (!c.ok) return c;
+  p.spells.splice(p.spells.indexOf(s), 1);
+  return launchMove(g, cardsById, pi, d, a.target);
+}
+
+// 发动招式：无窗口 → 立即结算；对方有 onOppMove 伏笔 → 开 W2 窗口
+function launchMove(g, cardsById, pi, d, targetUid) {
+  const p = g.players[pi];
+  const ops = (d.effect.ops || []).map(o => ({ ...o, targetUid: targetUid ?? null }));
+  log(g, `${p.name} 发动招式「${d.name}」！`);
+  let row = null;
+  if (d.moveKind === 'equip') {
+    row = { uid: 's' + (++g.actionSeq), cardId: d.id, set: false, setTurn: g.turn, equipTo: null };
+    p.spells.push(row);
+    const eq = ops.find(o => o.op === 'equip');
+    if (eq) eq.spellUid = row.uid;
+  } else {
+    p.grave.push({ uid: 's' + (++g.actionSeq), cardId: d.id }); // 通常招式用后进墓
+  }
+  const ev = { kind: 'move', cardId: d.id, ops, negated: false, equipRowUid: row ? row.uid : null };
+  if (openResponseWindow(g, cardsById, ev)) return { ok: true, pending: true };
+  applyOps(g, cardsById, pi, ops, null);
+  return { ok: true };
+}
+
+// ---- 响应窗口 ----
+// 伏笔与窗口是否匹配（不含轮次指针检查）
+function trapMatches(g, cardsById, s, ev) {
+  const d = cardsById[s.cardId];
+  if (!s.set || d.type !== 'trap' || s.setTurn >= g.turn) return false; // §五.6 当回合盖伏不可发
+  const trigs = d.triggers || [];
+  if (ev.kind === 'attack') {
+    if (!(trigs.includes('onAttacked') || (ev.direct && trigs.includes('onDirectAttack')))) return false;
+    if (d.effect.requireTarget && !ev.targetUid) return false;
+  } else if (ev.kind === 'move') {
+    if (!trigs.includes('onOppMove')) return false;
+  } else return false;
+  return true;
+}
+
 function openResponseWindow(g, cardsById, ev) {
-  // Phase 2：场上不存在可发动的伏笔（卡池无 trap 类型）→ 不开窗，直接结算。
-  const anyTrap = g.players.some(p => p.spells.length > 0);
-  if (!anyTrap) return null;
-  // Phase 3: g.pending = { kind: ev.kind, chain: [], actor: g.active, ev };
-  return null;
+  const responder = 1 - g.active;
+  const np = g.players[responder];
+  if (!np.spells.some(s => trapMatches(g, cardsById, s, ev))) return null;
+  g.pending = { kind: ev.kind, actor: g.active, responder, turnPtr: responder, passes: 0, chain: [], ev };
+  log(g, ev.kind === 'attack'
+    ? `【响应窗口】${np.name} 可发动伏笔响应攻击宣言`
+    : `【响应窗口】${np.name} 可发动伏笔响应招式发动`);
+  return { ok: true, pending: true };
+}
+
+function canRespond(g, cardsById, pi, s) {
+  const pd = g.pending;
+  if (!pd) return no('当前没有响应窗口');
+  if (pd.turnPtr !== pi) return no('还没轮到你响应');
+  const d = cardsById[s.cardId];
+  if (d.type !== 'trap') return no('响应窗口只能发动伏笔');
+  if (!trapMatches(g, cardsById, s, pd.ev)) {
+    return no(s.setTurn >= g.turn ? '盖伏的当回合不能发动' : '该伏笔不能在此窗口发动');
+  }
+  return ok();
+}
+
+function doRespond(g, cardsById, pi, a) {
+  const pd = g.pending;
+  if (!pd) return no('当前没有响应窗口');
+  const p = g.players[pi];
+  const s = p.spells.find(x => x.uid === a.spellUid);
+  if (!s) return no('招式/伏笔区没有该卡');
+  const c = canRespond(g, cardsById, pi, s);
+  if (!c.ok) return c;
+  const d = cardsById[s.cardId];
+  p.spells.splice(p.spells.indexOf(s), 1);
+  pd.chain.push({ spellUid: s.uid, cardId: s.cardId, owner: pi, ops: d.effect.ops || [], negated: false, grave: { uid: s.uid, cardId: s.cardId } });
+  pd.passes = 0;
+  pd.turnPtr = 1 - pi;
+  log(g, `${p.name} 发动伏笔「${d.name}」！`);
+  if (pd.chain.length >= CHAIN_MAX) return resolvePending(g, cardsById);
+  skipAhead(g, cardsById);
+  return { ok: true, pending: !!g.pending };
+}
+
+function doPass(g, cardsById, pi) {
+  const pd = g.pending;
+  if (!pd) return no('当前没有响应窗口');
+  if (pd.turnPtr !== pi) return no('还没轮到你响应');
+  log(g, `${g.players[pi].name} 选择不响应`);
+  pd.passes++;
+  pd.turnPtr = 1 - pi;
+  skipAhead(g, cardsById);
+  return { ok: true, pending: !!g.pending };
+}
+
+// 轮到的一方若无伏笔可发 → 自动跳过；连续两方不响应 → 结算
+function skipAhead(g, cardsById) {
+  const pd = g.pending;
+  while (pd && pd.passes < 2) {
+    const pi = pd.turnPtr;
+    if (g.players[pi].spells.some(s => trapMatches(g, cardsById, s, pd.ev))) return; // 等该方决策
+    pd.passes++;
+    pd.turnPtr = 1 - pi;
+  }
+  if (pd && pd.passes >= 2) resolvePending(g, cardsById);
+}
+
+// 窗口关闭：连锁后发先结算 → 主事件
+function resolvePending(g, cardsById) {
+  const pd = g.pending;
+  g.pending = null;
+  for (let i = pd.chain.length - 1; i >= 0; i--) {
+    const link = pd.chain[i];
+    if (link.negated) { log(g, `「${cardsById[link.cardId].name}」效果被无效，落空`); continue; }
+    applyOps(g, cardsById, link.owner, link.ops, pd);
+    g.players[link.owner].grave.push(link.grave); // 伏笔用后进墓
+  }
+  if (pd.kind === 'attack') {
+    const actor = g.players[pd.actor];
+    const u = actor.board.find(x => x.uid === pd.ev.attackerUid);
+    if (pd.ev.negated) {
+      log(g, `攻击宣言被无效！${u ? `「${cardsById[u.cardId].name}」` : '攻击方'}本回合不能再攻击`);
+    } else if (!u) {
+      log(g, '攻击方已离场，攻击落空');
+    } else {
+      resolveAttack(g, cardsById, pd.actor, u, pd.ev.targetUid);
+    }
+  } else { // move
+    const p = g.players[pd.actor];
+    if (pd.ev.negated) {
+      log(g, `「${cardsById[pd.ev.cardId].name}」的招式被无效，效果落空（费用不返还）`);
+      if (pd.ev.equipRowUid) { // 装备落空 → 进墓（§七.6）
+        const i = p.spells.findIndex(s => s.uid === pd.ev.equipRowUid);
+        if (i >= 0) { const [row] = p.spells.splice(i, 1); p.grave.push({ uid: row.uid, cardId: row.cardId }); }
+      }
+    } else {
+      applyOps(g, cardsById, pd.actor, pd.ev.ops, pd);
+    }
+  }
+  return { ok: true };
+}
+
+// ---- 效果算子 ----
+function applyOps(g, cardsById, pi, ops, pd) {
+  const p = g.players[pi];
+  for (const op of ops) {
+    switch (op.op) {
+      case 'damage': {
+        damageLP(g, op.side === 'self' ? pi : 1 - pi, op.amount, '招式/伏笔效果');
+        break;
+      }
+      case 'atkDelta': case 'defDelta': {
+        const u = resolveOpTarget(g, op, pd);
+        if (!u) { log(g, '效果目标已离场，落空'); break; }
+        const stat = op.op === 'atkDelta' ? 'atk' : 'def';
+        (u.buffs = u.buffs || []).push({ stat, amount: op.amount, until: op.until || 'turn' });
+        log(g, `「${cardsById[u.cardId].name}」${stat === 'atk' ? 'ATK' : 'DEF'}${op.amount >= 0 ? '+' : ''}${op.amount}（直至${op.until === 'battle' ? '战斗阶段结束' : '回合结束'}）`);
+        break;
+      }
+      case 'negateAttack':
+        if (pd && pd.kind === 'attack' && !pd.ev.negated) { pd.ev.negated = true; log(g, '攻击宣言被无效化！'); }
+        break;
+      case 'negateMove':
+        if (pd && pd.kind === 'move' && !pd.ev.negated) { pd.ev.negated = true; log(g, '招式发动被无效化！'); }
+        break;
+      case 'setPosDef': {
+        const u = resolveOpTarget(g, op, pd);
+        if (!u) { log(g, '效果目标已离场，落空'); break; }
+        if (u.pos !== 'def') { u.pos = 'def'; log(g, `「${cardsById[u.cardId].name}」被改为守备表示`); }
+        break;
+      }
+      case 'destroy': {
+        const u = resolveOpTarget(g, op, pd);
+        if (!u) { log(g, '破坏目标已离场，效果落空'); break; }
+        const owner = g.players.find(pp => pp.board.some(x => x.uid === u.uid));
+        destroy(g, owner, u, cardsById);
+        break;
+      }
+      case 'equip': {
+        const u = resolveOpTarget(g, op, pd);
+        const row = p.spells.find(s => s.uid === op.spellUid);
+        if (!u || !row) {
+          log(g, '装备目标已离场，落空');
+          if (row) { p.spells.splice(p.spells.indexOf(row), 1); p.grave.push({ uid: row.uid, cardId: row.cardId }); }
+          break;
+        }
+        row.equipTo = u.uid;
+        (u.equips = u.equips || []).push({ stat: op.stat || 'atk', amount: op.amount });
+        log(g, `「${cardsById[u.cardId].name}」装备了「${cardsById[row.cardId].name}」${(op.stat || 'atk').toUpperCase()}+${op.amount}`);
+        break;
+      }
+    }
+  }
+}
+
+// 效果目标：attacker/defender=窗口上下文；chosen=发动时宣言（此时校验仍在）
+function resolveOpTarget(g, op, pd) {
+  let uid = null;
+  if (op.target === 'attacker') uid = pd && pd.ev.attackerUid;
+  else if (op.target === 'defender') uid = pd && pd.ev.targetUid;
+  else uid = op.targetUid;
+  if (!uid) return null;
+  return card(g, uid);
 }
 
 // ---------- UI/AI 辅助：当前玩家合法动作清单 ----------
 function legalMoves(g, cardsById, pi) {
   const moves = [];
+  if (g.winner !== null) return moves;
   const p = g.players[pi];
-  if (g.winner !== null || g.active !== pi) return moves;
+  if (g.pending) { // 响应窗口：轮到的一方可用伏笔 + 跳过
+    if (g.pending.turnPtr === pi) {
+      for (const s of p.spells) if (canRespond(g, cardsById, pi, s).ok) moves.push({ t: 'respond', spellUid: s.uid });
+      moves.push({ t: 'pass' });
+    }
+    return moves;
+  }
+  if (g.active !== pi) return moves;
   if (g.phase === 'main1' || g.phase === 'main2') {
     for (const h of p.hand) {
       const d = cardsById[h.cardId];
@@ -369,6 +695,25 @@ function legalMoves(g, cardsById, pi) {
     for (const u of p.board) {
       if (canSetPos(g, pi, u.uid, u.pos === 'atk' ? 'def' : 'atk').ok) moves.push({ t: 'setPos', uid: u.uid, pos: u.pos === 'atk' ? 'def' : 'atk' });
     }
+    // 盖伏（招式/伏笔 → 里侧）
+    if (p.setsThisTurn < SET_LIMIT && p.spells.length < SPELL_MAX) {
+      for (const h of p.hand) {
+        const d = cardsById[h.cardId];
+        if (d.type === 'move' || d.type === 'trap') moves.push({ t: 'setSpell', handUid: h.uid });
+      }
+    }
+    // 招式发动（手牌 + 已盖伏招式）
+    for (const h of p.hand) {
+      const d = cardsById[h.cardId];
+      if (d.type !== 'move') continue;
+      for (const tgt of moveTargets(g, cardsById, pi, d)) moves.push({ t: 'activateMove', handUid: h.uid, target: tgt });
+    }
+    for (const s of p.spells) {
+      if (!s.set) continue;
+      const d = cardsById[s.cardId];
+      if (d.type !== 'move') continue;
+      for (const tgt of moveTargets(g, cardsById, pi, d)) moves.push({ t: 'activateSpell', spellUid: s.uid, target: tgt });
+    }
   }
   if (g.phase === 'battle') {
     for (const u of p.board) {
@@ -387,6 +732,7 @@ const DUEL = {
   SUMMON_LIMIT, SET_LIMIT, CHAIN_MAX, DECK_SIZE,
   newGame, applyAction, legalMoves,
   canSummon, canSetPos, canAttack,
-  drawCard, damageLP, resolveAttack, unitAtk, unitDef, def,
+  canSetSpell, canActivateMove, canRespond, moveTargets,
+  drawCard, damageLP, resolveAttack, unitAtk, unitDef, def, destroy,
 };
 export { DUEL };
