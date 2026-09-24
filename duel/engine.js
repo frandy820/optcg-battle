@@ -31,11 +31,12 @@ function shuffle(arr, rng) {
 }
 
 // ---------- 建局 ----------
-// opts: { seed, decks:[playerDeckIds, aiDeckIds], first: 0|1(默认0=玩家先手), names:[..] }
+// opts: { seed, decks:[playerDeckIds, aiDeckIds], first: 0|1(默认0=玩家先手), names:[..], aiProfile }
 function newGame(cardsById, opts) {
   const rng = mkRng(opts.seed || 20260924);
   const g = {
     v: 1, seed: opts.seed || 20260924, rng,
+    aiProfile: opts.aiProfile || 'aggro', // AI 战术原型: 'aggro'|'control'|'boss'（§九.4 权重区分，非规则豁免）
     turn: 1, active: (opts.first === 1 ? 1 : 0), firstTurnDone: false,
     phase: 'draw',
     players: [0, 1].map(i => ({
@@ -76,11 +77,11 @@ const equipSum = (u, stat) => (u.equips || []).reduce((s, e) => s + (e.stat === 
 const unitAtk = (cardsById, u) => def(cardsById, u).atk + buffSum(u, 'atk') + equipSum(u, 'atk');
 const unitDef = (cardsById, u) => def(cardsById, u).def + buffSum(u, 'def') + equipSum(u, 'def');
 
-// 清除增益：which='battle'（战斗阶段结束）| 'all'（回合结束）
+// 清除增益：which='battle'（战斗阶段结束）| 'all'（回合结束）；'permanent' 永不清除
 function clearBuffs(g, which) {
   for (const p of g.players) for (const u of p.board) {
     if (!u.buffs || !u.buffs.length) continue;
-    const keep = u.buffs.filter(b => which === 'all' ? false : b.until !== which);
+    const keep = u.buffs.filter(b => which === 'all' ? b.until === 'permanent' : b.until !== which);
     if (keep.length !== u.buffs.length) u.buffs = keep;
   }
 }
@@ -228,6 +229,7 @@ function doSummon(g, cardsById, pi, a) {
     attacked: false, summonedTurn: g.turn, posChanged: false, buffs: [], equips: [] });
   p.summoned++;
   log(g, `${p.name} 通常登场「${d.name}」（Lv${d.level} ATK${d.atk}/${a.pos === 'atk' ? '攻' : '守'}表示）`);
+  triggerAbility(g, cardsById, pi, p.board[p.board.length - 1], 'onSummon');
   return { ok: true };
 }
 
@@ -249,6 +251,7 @@ function doAttack(g, cardsById, pi, a) {
   const u = p.board.find(x => x.uid === a.uid);
   const d = def(cardsById, u);
   u.attacked = true; // 宣言即锁定攻击权（无论结算结果，被无效也不返还）
+  triggerAbility(g, cardsById, pi, u, 'onAttackDecl'); // 攻击宣言能力先于响应窗口生效（反制方按增强后数值评估）
 
   // 响应窗口 W1：攻击宣言（规则 §七.2）——对方有可发动伏笔才开窗
   const ev = { kind: 'attack', attackerUid: u.uid, targetUid: (a.target ?? null), direct: a.target == null };
@@ -295,6 +298,7 @@ function destroy(g, p, u, cardsById) {
   p.grave.push({ ...u, buffs: [], equips: [] });
   log(g, `「${cardsById[u.cardId].name}」被破坏，进入墓场`);
   unequipAll(g, p, u, cardsById); // 装备随葬（§五.5）
+  triggerAbility(g, cardsById, g.players.indexOf(p), u, 'onDestroyed'); // 触发点在墓场之后（回手类效果可从墓取回）
 }
 
 // 卸下某人物的全部装备 → 墓场（人物被破坏/被解放时）
@@ -332,7 +336,10 @@ function onEnterPhase(g, cardsById) {
   if (g.phase === 'draw') {
     // 新回合开始由 endTurn 处理换边；此处仅为防御
   }
-  if (g.phase === 'standby') log(g, `— ${p.name} 的准备阶段 —`);
+  if (g.phase === 'standby') {
+    log(g, `— ${p.name} 的准备阶段 —`);
+    for (const u of [...p.board]) triggerAbility(g, cardsById, g.players.indexOf(p), u, 'onTurnStart');
+  }
   if (g.phase === 'main1') log(g, `— ${p.name} 的主要阶段1 —`);
   if (g.phase === 'battle') log(g, `— ${p.name} 的战斗阶段 —`);
   if (g.phase === 'main2') log(g, `— ${p.name} 的主要阶段2 —`);
@@ -600,13 +607,78 @@ function resolvePending(g, cardsById) {
   return { ok: true };
 }
 
+// ---- 人物能力（Phase 4；规则 §十：登场时/被破坏时/每回合开始时/攻击宣言时）----
+// ability = { onSummon?/onDestroyed?/onTurnStart?/onAttackDecl?: { when?{ally}, text, ops } }
+const ABILITY_TARGETS = new Set(['self', 'foeStrongest', 'foeStrongestAtkPos', 'foeWeakestAtkPos', 'foeStrongestUnder']);
+
+function triggerAbility(g, cardsById, pi, unit, hook) {
+  const d = cardsById[unit.cardId];
+  const ab = d.ability && d.ability[hook];
+  if (!ab) return;
+  if (ab.when && ab.when.ally) { // 协同条件：自己场上存在指定伙伴（不含自己）
+    if (!g.players[pi].board.some(x => x.cardId === ab.when.ally && x.uid !== unit.uid)) return;
+  }
+  if (ab.text) log(g, `⚡「${d.name}」${ab.text}`);
+  applyAbilityOps(g, cardsById, pi, ab.ops || [], unit);
+}
+
+// 能力目标 → 具体 uid；无合法目标（如对方空场）的算子静默丢弃
+function resolveAbilityTarget(g, cardsById, pi, unit, op) {
+  const e = g.players[1 - pi];
+  const top = arr => arr.slice().sort((a, b) => unitAtk(cardsById, b) - unitAtk(cardsById, a))[0];
+  switch (op.target) {
+    case 'self': return unit.uid;
+    case 'foeStrongest': { const t = top(e.board); return t ? t.uid : null; }
+    case 'foeStrongestAtkPos': { const t = top(e.board.filter(u => u.pos === 'atk')); return t ? t.uid : null; }
+    case 'foeWeakestAtkPos': {
+      const t = e.board.filter(u => u.pos === 'atk').sort((a, b) => unitAtk(cardsById, a) - unitAtk(cardsById, b))[0];
+      return t ? t.uid : null;
+    }
+    case 'foeStrongestUnder': {
+      const t = top(e.board.filter(u => unitAtk(cardsById, u) <= (op.cap || 1200)));
+      return t ? t.uid : null;
+    }
+    default: return null;
+  }
+}
+
+function applyAbilityOps(g, cardsById, pi, ops, unit) {
+  const mapped = [];
+  for (const o of ops) {
+    const m = { ...o };
+    if (m.op === 'returnToHand') m.unitUid = unit.uid;
+    if (m.target && ABILITY_TARGETS.has(m.target)) {
+      const uid = resolveAbilityTarget(g, cardsById, pi, unit, m);
+      if (!uid) continue;
+      m.targetUid = uid; delete m.target;
+    }
+    mapped.push(m);
+  }
+  applyOps(g, cardsById, pi, mapped, null);
+}
+
 // ---- 效果算子 ----
 function applyOps(g, cardsById, pi, ops, pd) {
   const p = g.players[pi];
   for (const op of ops) {
     switch (op.op) {
       case 'damage': {
-        damageLP(g, op.side === 'self' ? pi : 1 - pi, op.amount, '招式/伏笔效果');
+        damageLP(g, op.side === 'self' ? pi : 1 - pi, op.amount, op.why || '招式/伏笔效果');
+        break;
+      }
+      case 'draw': {
+        const tp = g.players[op.side === 'self' ? pi : 1 - pi];
+        for (let i = 0; i < (op.amount || 1); i++) drawCard(g, tp);
+        break;
+      }
+      case 'returnToHand': { // 复活类（巴基·四分五裂）：从墓场回到手牌
+        const tp = g.players[op.side === 'self' ? pi : 1 - pi];
+        const i = tp.grave.findIndex(x => x.uid === op.unitUid);
+        if (i >= 0) {
+          const [row] = tp.grave.splice(i, 1);
+          tp.hand.push({ uid: 'h' + (++g.actionSeq) + '_r', cardId: row.cardId });
+          log(g, `「${cardsById[row.cardId].name}」分裂重组，回到手牌`);
+        }
         break;
       }
       case 'atkDelta': case 'defDelta': {
@@ -614,7 +686,7 @@ function applyOps(g, cardsById, pi, ops, pd) {
         if (!u) { log(g, '效果目标已离场，落空'); break; }
         const stat = op.op === 'atkDelta' ? 'atk' : 'def';
         (u.buffs = u.buffs || []).push({ stat, amount: op.amount, until: op.until || 'turn' });
-        log(g, `「${cardsById[u.cardId].name}」${stat === 'atk' ? 'ATK' : 'DEF'}${op.amount >= 0 ? '+' : ''}${op.amount}（直至${op.until === 'battle' ? '战斗阶段结束' : '回合结束'}）`);
+        log(g, `「${cardsById[u.cardId].name}」${stat === 'atk' ? 'ATK' : 'DEF'}${op.amount >= 0 ? '+' : ''}${op.amount}（${op.until === 'battle' ? '直至战斗阶段结束' : op.until === 'permanent' ? '永久' : '直至回合结束'}）`);
         break;
       }
       case 'negateAttack':
