@@ -16,6 +16,8 @@ const els = {
   foeHand: $('foeHand'), foeBoard: $('foeBoard'),
   myName: $('myName'), myLpBar: $('myLpBar'), myLpNum: $('myLpNum'),
   myDeckN: $('myDeckN'), myGraveN: $('myGraveN'), myBoard: $('myBoard'), myHand: $('myHand'),
+  foeSpells: $('foeSpells'), mySpells: $('mySpells'),
+  rb: $('respondBanner'), rbText: $('rbText'), rbBtns: $('rbBtns'),
   log: $('battleLog'), btnNext: $('btnNext'), btnRestart: $('btnRestart'), btnHelp: $('btnHelp'),
   modal: $('modal'), modalBox: $('modalBox'), toast: $('toast'),
   btnDirect: $('btnDirect'), endOverlay: $('endOverlay'), endTitle: $('endTitle'), endSub: $('endSub'), btnAgain: $('btnAgain'),
@@ -43,7 +45,9 @@ function start() {
   els.log.innerHTML = '';
   els.endOverlay.classList.add('hidden');
   els.modal.classList.add('hidden');
-  pushLog('与「东海野心家」亚尔丽塔的决斗开始！'); pushLog('提示：先手第一回合不抽牌。');
+  els.rb.classList.add('hidden');
+  pushLog('与「东海野心家」亚尔丽塔的决斗开始！');
+  pushLog('提示：先手第一回合不抽牌；招式/伏笔卡可在主要阶段点击使用。');
   // 开局：先手玩家的抽牌阶段无动作 → 快速推进到 main1
   DUEL.applyAction(g, cardsById, 0, { t: 'nextPhase' }); // draw → standby（先手不抽）
   DUEL.applyAction(g, cardsById, 0, { t: 'nextPhase' }); // standby → main1
@@ -67,30 +71,66 @@ function render() {
   els.foeBoard.innerHTML = E.board.map(u => unitCard(u, false)).join('') || emptySlots(E.board.length);
   els.myBoard.innerHTML = P.board.map(u => unitCard(u, true)).join('') || emptySlots(P.board.length);
   els.myHand.innerHTML = P.hand.map(h => handCard(h)).join('');
+  els.foeSpells.innerHTML = E.spells.map(() => '<div class="spellback-sm" title="对方盖伏的卡">伏</div>').join('')
+    + Array.from({ length: Math.max(0, 3 - E.spells.length) }, () => '<div class="slot-sm"></div>').join('');
+  els.mySpells.innerHTML = P.spells.map(s => mySpellCard(s)).join('')
+    + Array.from({ length: Math.max(0, 3 - P.spells.length) }, () => '<div class="slot-sm"></div>').join('');
   bindCards();
   renderLog();
   renderHint();
   updateNextBtn();
+  renderRespond();
   if (g.winner !== null) showEnd();
-  if (g.active === 1 && g.winner === null && !aiTimer) scheduleAi();
+  if (g.winner === null && !aiTimer && (g.active === 1 || (g.pending && g.pending.turnPtr === 1))) scheduleAi();
 }
 
 function emptySlots(n) { return Array.from({ length: 3 - n }, () => '<div class="slot"></div>').join(''); }
 
 function unitCard(u, mine) {
   const d = cardsById[u.cardId];
+  const eqN = (u.equips || []).length;
   const cls = ['card', 'unit', u.pos === 'def' ? 'pos-def' : '', u.attacked ? 'attacked' : '',
     mine && clickable(u) ? 'playable' : '', sel === u.uid ? 'selected' : '',
     !mine && sel ? 'targetable' : ''].join(' ');
-  return `<div class="${cls}" data-uid="${u.uid}" title="${d.name} Lv${d.level} ATK${d.atk}/DEF${d.def}">
+  return `<div class="${cls}" data-uid="${u.uid}" title="${d.name} Lv${d.level} ATK${d.atk}/DEF${d.def}${eqN ? `（装备×${eqN}）` : ''}">
     <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
     <span class="lv">${d.level}</span>
+    ${eqN ? `<span class="eq-badge">⚒${eqN}</span>` : ''}
     <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
     <div class="stats"><span class="atk">${d.atk}</span><span class="def">${d.def}</span></div>
   </div>`;
 }
+// 招式/伏笔效果短描述（手牌/弹层共用）
+function shortFx(d) {
+  return (d.effect.ops || []).map(o => {
+    switch (o.op) {
+      case 'damage': return `伤害${o.amount}`;
+      case 'atkDelta': return `ATK${o.amount >= 0 ? '+' : ''}${o.amount}`;
+      case 'defDelta': return `DEF${o.amount >= 0 ? '+' : ''}${o.amount}`;
+      case 'destroy': return '破坏';
+      case 'setPosDef': return '改守备';
+      case 'negateAttack': return '无效攻击';
+      case 'negateMove': return '无效招式';
+      case 'equip': return `装备${(o.stat || 'atk').toUpperCase()}+${o.amount}`;
+      default: return '';
+    }
+  }).join('·');
+}
 function handCard(h) {
   const d = cardsById[h.cardId];
+  if (d.type !== 'char') {
+    const my = g.players[0];
+    const can = myPhaseMain() && (
+      d.type === 'trap'
+        ? (my.setsThisTurn < 2 && my.spells.length < 3)
+        : true); // 招式：发动或盖伏至少一头可行
+    return `<div class="card hand-card spell-card t-${d.type} ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}：${d.desc}">
+      <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
+      <span class="tbadge">${d.type === 'move' ? '招' : '伏'}</span>
+      <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
+      <div class="fx">${shortFx(d)}</div>
+    </div>`;
+  }
   const can = myPhaseMain() && g.players[0].summoned === 0 && (d.level <= 4 ? g.players[0].board.length < 3 : true);
   return `<div class="card hand-card ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}">
     <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
@@ -98,6 +138,20 @@ function handCard(h) {
     <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
     <div class="stats"><span class="atk">${d.atk}</span><span class="def">${d.def}</span></div>
   </div>`;
+}
+// 我方招式/伏笔区条目
+function mySpellCard(s) {
+  const d = cardsById[s.cardId];
+  if (s.equipTo) {
+    const u = g.players[0].board.find(x => x.uid === s.equipTo);
+    return `<div class="spellcard equip" title="${d.name}：${d.desc}">⚒ ${d.name}<span class="fx-sm">${u ? cardsById[u.cardId].name : ''}</span></div>`;
+  }
+  if (s.set) {
+    const clickableSpell = d.type === 'move' && myPhaseMain();
+    return `<div class="spellcard set${clickableSpell ? '' : ' locked'}" data-suid="${s.uid}"
+      title="${d.name}（已盖伏）${d.type === 'move' ? '·点击可翻开发动' : '·响应窗口自动提示'}">伏·${d.name}</div>`;
+  }
+  return `<div class="spellcard">${d.name}</div>`;
 }
 
 function myPhaseMain() { return g.active === 0 && (g.phase === 'main1' || g.phase === 'main2') && g.winner === null; }
@@ -120,6 +174,11 @@ function renderLog() {
 
 function renderHint() {
   if (g.winner !== null) { setHint('— 决斗结束 —'); return; }
+  if (g.pending) {
+    if (g.pending.turnPtr === 0) setHint('【响应窗口】在顶部横幅选择：发动伏笔反制 / 不响应', true);
+    else setHint('对方正在考虑是否反制…', true);
+    return;
+  }
   if (busy) { setHint('对方思考中…', true); return; }
   if (g.active === 1) { setHint('对方回合', true); return; }
   const who = `${PH_CN[g.phase]}：`;
@@ -137,8 +196,53 @@ function setHint(t, warn) { els.hint.textContent = t; els.hint.className = warn 
 function updateNextBtn() {
   const b = els.btnNext;
   if (g.winner !== null) { b.disabled = true; b.textContent = '对决结束'; return; }
+  if (g.pending) { b.disabled = true; b.textContent = '等待响应…'; return; }
   b.disabled = g.active !== 0 || busy;
   b.textContent = g.phase === 'end' ? '结束回合 ✓' : g.phase === 'main1' ? '进入战斗 ⚔' : '下一步 ›';
+}
+
+// ---------- 响应窗口横幅（规则 §七：玩家为响应方时操作入口） ----------
+function renderRespond() {
+  if (!g || !g.pending || g.pending.turnPtr !== 0 || g.winner !== null) {
+    els.rb.classList.add('hidden'); return;
+  }
+  const pd = g.pending;
+  let text, sub;
+  const chainNames = pd.chain.map(l => `「${cardsById[l.cardId].name}」`).join(' → ');
+  if (pd.actor === 1) { // 对方宣言，我首次反制
+    if (pd.kind === 'attack') {
+      const atkU = g.players[1].board.find(u => u.uid === pd.ev.attackerUid);
+      const tU = pd.ev.targetUid ? g.players[0].board.find(u => u.uid === pd.ev.targetUid) : null;
+      text = `对方宣言攻击！${atkU ? `「${cardsById[atkU.cardId].name}」` : ''}${tU ? ` → 「${cardsById[tU.cardId].name}」` : ' → 直接攻击！'}`;
+      sub = '可发动伏笔反制，或选择不响应';
+    } else {
+      text = `对方发动招式「${cardsById[pd.ev.cardId].name}」！`;
+      sub = '可发动伏笔无效该招式，或选择不响应';
+    }
+  } else { // 我方宣言，对方已跟链，问我是否继续连锁
+    text = pd.kind === 'attack'
+      ? `对方以${chainNames}反制你的攻击宣言！`
+      : `对方以${chainNames}反制你的招式！`;
+    sub = '可继续追加伏笔（后发先结算），或选择不响应';
+  }
+  if (chainNames) sub = `连锁：${chainNames} · ${sub}`;
+  els.rbText.innerHTML = `${text}<small>${sub}</small>`;
+  const btns = [];
+  for (const s of g.players[0].spells) {
+    if (!DUEL.canRespond(g, cardsById, 0, s).ok) continue;
+    const d = cardsById[s.cardId];
+    btns.push(`<button data-suid="${s.uid}" title="${d.desc}">发动「${d.name}」</button>`);
+  }
+  btns.push(`<button class="pass" data-suid="">不响应</button>`);
+  els.rbBtns.innerHTML = btns.join('');
+  els.rbBtns.querySelectorAll('button').forEach(b => b.onclick = () => {
+    if (busy) return;
+    const a = b.dataset.suid ? { t: 'respond', spellUid: b.dataset.suid } : { t: 'pass' };
+    const r = DUEL.applyAction(g, cardsById, 0, a);
+    if (!r.ok) return toast(r.reason);
+    render();
+  });
+  els.rb.classList.remove('hidden');
 }
 
 // ---------- 交互绑定 ----------
@@ -152,18 +256,76 @@ function bindCards() {
   els.foeBoard.querySelectorAll('.unit').forEach(el => {
     el.onclick = () => onFoeUnitClick(el.dataset.uid);
   });
+  els.mySpells.querySelectorAll('.spellcard.set:not(.locked)').forEach(el => {
+    el.onclick = () => onMySpellClick(el.dataset.suid);
+  });
+}
+
+function onMySpellClick(suid) {
+  if (busy || !myPhaseMain()) return toast('只能在你的主要阶段翻开发动');
+  const s = g.players[0].spells.find(x => x.uid === suid);
+  if (!s) return;
+  const d = cardsById[s.cardId];
+  if (d.type !== 'move') return toast('伏笔会在响应窗口自动提示发动');
+  showSpellModal({ kind: 'spell', uid: suid }, d);
 }
 
 function onHandClick(huid) {
-  if (busy || !myPhaseMain()) return toast('只能在你的主要阶段登场');
+  if (busy || !myPhaseMain()) return toast('只能在你的主要阶段操作');
   const h = g.players[0].hand.find(x => x.uid === huid);
   if (!h) return;
-  if (g.players[0].summoned >= 1) return toast('本回合通常登场次数已用完（每回合 1 次）');
   const d = cardsById[h.cardId];
+  if (d.type !== 'char') return showSpellModal({ kind: 'hand', uid: h.uid }, d);
+  if (g.players[0].summoned >= 1) return toast('本回合通常登场次数已用完（每回合 1 次）');
   const need = d.level >= 7 ? 2 : d.level >= 5 ? 1 : 0;
   if (need === 0 && g.players[0].board.length >= 3) return toast('人物区已满（3 格）——可通过解放腾位');
   if (need > 0 && g.players[0].board.length < need) return toast(`Lv${d.level} 人物需要解放 ${need} 名场上人物，你场上不足`);
   showSummonModal(h, d, need);
+}
+
+// 招式/伏笔操作弹层：src={kind:'hand'|'spell', uid}
+function showSpellModal(src, d) {
+  const my = g.players[0], en = g.players[1];
+  const parts = [`<div class="card-preview">
+    <div class="card t-${d.type}"><img class="art" src="art/${d.art}.webp">
+      <span class="tbadge">${d.type === 'move' ? '招式' : '伏笔'}</span>
+      <div class="nm">${d.name}</div><div class="sub">${d.sub}</div><div class="fx">${shortFx(d)}</div></div>
+    <div class="meta"><b>${d.name}</b>（${d.type === 'move' ? (d.moveKind === 'equip' ? '装备招式' : '通常招式') : '伏笔'}）<br>${d.desc}</div>
+  </div>`];
+  const act = src.kind === 'hand' ? 'activateMove' : 'activateSpell';
+  const key = src.kind === 'hand' ? 'handUid' : 'spellUid';
+  if (d.type === 'trap') {
+    parts.push(`<div id="posOpts" style="margin-top:10px">
+      <button class="opt" data-act="set">🂠 盖伏到伏笔区（下一回合起可在响应窗口发动）</button>
+      <button class="cancel">取消</button></div>`);
+  } else {
+    let body = '';
+    if (d.effect.need) {
+      const tgts = DUEL.moveTargets(g, cardsById, 0, d);
+      if (!tgts.length) body = `<div class="meta" style="margin-top:10px;color:#ff9b9b">当前没有合法目标（${d.effect.need === 'ownUnit' ? '需要自己场上人物' : d.effect.need === 'foeUnitMax1200' ? '需要对方 ATK1200 以下人物' : '需要对方攻击表示人物'}）</div>`;
+      else body = `<h3 style="margin-top:10px">选择目标</h3>` + tgts.map(uid => {
+        const mine = my.board.some(u => u.uid === uid);
+        const u = (mine ? my.board : en.board).find(x => x.uid === uid);
+        const ud = cardsById[u.cardId];
+        return `<button class="opt" data-act="cast" data-tgt="${uid}">${mine ? '▸ 我方' : '▸ 对方'}「${ud.name}」ATK${ud.atk}${u.pos === 'def' ? '（守备）' : ''}</button>`;
+      }).join('');
+    } else body = `<div style="margin-top:10px"><button class="opt" data-act="cast">⚡ 立即发动</button></div>`;
+    if (src.kind === 'hand') body += `<button class="opt" data-act="set" style="margin-top:6px">🂠 盖伏（之后可随时翻开发动）</button>`;
+    parts.push(body + `<button class="cancel">取消</button>`);
+  }
+  els.modalBox.innerHTML = parts.join('');
+  els.modal.classList.remove('hidden');
+  els.modalBox.querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
+    const a = { t: b.dataset.act === 'set' ? 'setSpell' : act };
+    a[key] = src.uid;
+    if (b.dataset.tgt !== undefined) a.target = b.dataset.tgt;
+    els.modal.classList.add('hidden');
+    const r = DUEL.applyAction(g, cardsById, 0, a);
+    if (!r.ok) return toast(r.reason);
+    render();
+  });
+  const c = els.modalBox.querySelector('.cancel');
+  if (c) c.onclick = () => els.modal.classList.add('hidden');
 }
 
 function showSummonModal(h, d, need) {
@@ -285,8 +447,10 @@ els.btnHelp.onclick = () => showModal(`
   · 通常登场每回合 1 次：Lv1-4 直接登场；Lv5-6 须解放 1 名场上伙伴；Lv7+ 须解放 2 名。<br>
   · 攻击表示（竖）可攻击；守备表示（横）不能攻击但不易被破。<br>
   · 战斗：攻vs攻击表示=比 ATK，高者破坏低者并按差额扣 LP，相等同归于尽；攻vs守备=ATK 对 DEF，破防无伤害、攻不破则自己扣差额。<br>
-  · 对方场上无人物时可直接攻击（全额 ATK）。<br>
-  · 本回合登场的人物不能攻击（速攻词条除外）、不能切换表示。<br>
+  · 对方场上无人物时可直接攻击（全额 ATK）。本回合登场不能攻击（速攻除外）。<br>
+  · <b>招式</b>（红标）：主要阶段发动。通常招式用后进墓；装备招式留场持续增益，装备者离场时随葬。<br>
+  · <b>伏笔</b>（紫标）：先盖伏到伏笔区（每回合 2 张），下一回合起在「响应窗口」发动——对方攻击宣言或发动招式时，顶部横幅会提示你反制。<br>
+  · 连锁：后发动的伏笔先结算，最多 3 层；被无效的攻击/招式不返还费用。<br>
   · 完整规则见 docs/duel-rules.md。
   </div>`);
 
@@ -315,8 +479,18 @@ function scheduleAi() {
   }, AI_DELAY);
 }
 function aiTimerStep() {
-  if (!g || g.winner !== null || g.active !== 1) { stopAi(); busy = false; render(); return; }
-  const step = DUEL_AI.aiStep(g, cardsById);
+  if (!g || g.winner !== null) { stopAi(); busy = false; render(); return; }
+  if (g.pending) {
+    if (g.pending.turnPtr !== 1) { stopAi(); busy = false; render(); return; } // 窗口轮到玩家
+    const step = DUEL_AI.aiStep(g, cardsById, 1);
+    const r = DUEL.applyAction(g, cardsById, 1, step || { t: 'pass' });
+    if (!r.ok) { stopAi(); busy = false; render(); return; }
+    render();
+    if (!g.pending) { stopAi(); busy = false; render(); } // 窗口关闭交回正常节奏
+    return;
+  }
+  if (g.active !== 1) { stopAi(); busy = false; render(); return; }
+  const step = DUEL_AI.aiStep(g, cardsById, 1);
   if (!step) { stopAi(); busy = false; render(); return; }
   const r = DUEL.applyAction(g, cardsById, 1, step);
   if (!r.ok) { stopAi(); busy = false; render(); return; }
