@@ -1,0 +1,121 @@
+/* 东海篇闯关 + 牌组工坊（视觉基调=duel.css 深海夜航×烫金） */
+:root {
+  --gold: #d4af37; --gold-bright: #f5d76e; --gold-dim: #8a6d1f;
+  --sea-deep: #060d1f; --sea-mid: #0a1a35; --sea-cream: #f4ecd8; --ink: #1a1408;
+  --c-red: #e5484d; --c-green: #2fbf71;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body.campaign-scene {
+  font-family: "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  background: radial-gradient(1200px 700px at 50% -10%, #12264d 0%, var(--sea-mid) 45%, var(--sea-deep) 100%);
+  color: var(--sea-cream); min-height: 100vh; overflow-x: hidden;
+}
+#app { max-width: 1080px; margin: 0 auto; padding: 10px 14px 24px; display: flex; flex-direction: column; gap: 10px; }
+#topbar { display: flex; align-items: center; justify-content: space-between; }
+.pg-title { font-size: 19px; letter-spacing: 4px; color: var(--gold-bright); text-shadow: 0 0 12px rgba(212,175,55,.35); }
+.top-actions { display: flex; gap: 8px; }
+.ghost-btn { background: transparent; border: 1px solid var(--gold-dim); color: var(--gold-bright);
+  border-radius: 7px; padding: 4px 12px; font-size: 13px; cursor: pointer; text-decoration: none; }
+.ghost-btn:hover { background: rgba(212,175,55,.12); }
+
+/* tabs */
+#tabs { display: flex; gap: 8px; }
+.tab { background: #0e1c38; border: 1px solid #24406e; color: #9db1d4; border-radius: 9px;
+  padding: 7px 18px; font-size: 14px; cursor: pointer; }
+.tab.active { color: #0b1020; background: linear-gradient(180deg, var(--gold-bright), var(--gold)); font-weight: 700;
+  box-shadow: 0 0 12px rgba(245,215,110,.4); }
+.tabpane.hidden { display: none; }
+
+/* 关卡列表 */
+.progress-line { font-size: 13px; color: #a9bde0; padding: 2px 2px 0; }
+.progress-line b { color: var(--gold-bright); }
+#stageList { display: flex; flex-direction: column; gap: 10px; }
+.stage { display: flex; gap: 12px; align-items: center; border: 1px solid #1d3a6b; border-radius: 12px;
+  background: linear-gradient(180deg, rgba(10,26,53,.6), rgba(6,13,31,.85)); padding: 10px 14px; }
+.stage .art-wrap { width: 64px; height: 90px; flex: none; border-radius: 8px; overflow: hidden;
+  border: 2px solid var(--gold-dim); background: #0c1730; }
+.stage .art-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 8%; }
+.stage.locked { opacity: .55; filter: saturate(.4); }
+.stage.cleared { border-color: var(--c-green); }
+.stage .info { flex: 1; min-width: 0; }
+.stage .st-name { font-size: 16px; font-weight: 800; color: var(--gold-bright); }
+.stage .st-name .idx { font-size: 12px; color: #7e93ba; margin-right: 6px; }
+.stage .st-place { font-size: 12px; color: #7e93ba; margin: 2px 0 4px; }
+.stage .st-foe { font-size: 13px; }
+.stage .st-foe b { color: var(--sea-cream); }
+.stage .st-intro { font-size: 12px; color: #b9c9e6; line-height: 1.5; margin-top: 4px; }
+.stage .badge { display: inline-block; font-size: 11px; border-radius: 5px; padding: 1px 7px; margin-left: 6px; vertical-align: 2px; }
+.badge.aggro { background: #3d1015; color: #ff9b9b; border: 1px solid #a33; }
+.badge.control { background: #10203d; color: #9dc3ff; border: 1px solid #2a5aa8; }
+.badge.boss { background: #2a1a05; color: #ffd88a; border: 1px solid var(--gold-dim); }
+.stage .st-right { flex: none; text-align: center; display: flex; flex-direction: column; gap: 6px; min-width: 92px; }
+.stage .st-state { font-size: 12px; }
+.stage .st-state.ok { color: var(--c-green); font-weight: 700; }
+.stage .st-state.lock { color: #5b6c8f; }
+.fight-btn { background: linear-gradient(180deg, #ff6b6b, #c22525); color: #fff; border: none; border-radius: 9px;
+  padding: 8px 20px; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 3px 12px rgba(229,72,77,.4); }
+.fight-btn:hover { filter: brightness(1.1); }
+.unlock-chip { font-size: 11px; color: #ffd88a; }
+.unlock-chip .locked-yet { color: #5b6c8f; }
+
+/* 牌组工坊 */
+.deck-head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  border: 1px solid #1d3a6b; border-radius: 12px; padding: 10px 14px;
+  background: linear-gradient(180deg, rgba(10,26,53,.6), rgba(6,13,31,.85)); }
+.deck-slots { display: flex; gap: 6px; flex-wrap: wrap; }
+.slot-btn { background: #0e1c38; border: 1px solid #24406e; color: #c6d4ef; border-radius: 8px;
+  padding: 6px 12px; font-size: 13px; cursor: pointer; }
+.slot-btn.active { border-color: var(--gold-bright); color: var(--gold-bright); box-shadow: 0 0 8px rgba(245,215,110,.3); }
+.deck-stats { flex: 1; min-width: 220px; font-size: 13px; color: #b9c9e6; }
+.deck-stats b { color: var(--gold-bright); }
+.deck-stats .err { color: #ff9b9b; }
+.deck-stats .okline { color: var(--c-green); }
+.deck-filter { display: flex; gap: 6px; }
+.fbtn { background: #0e1c38; border: 1px solid #24406e; color: #9db1d4; border-radius: 999px;
+  padding: 3px 14px; font-size: 12.5px; cursor: pointer; }
+.fbtn.active { color: #0b1020; background: var(--gold); font-weight: 700; }
+.deck-body { display: flex; gap: 12px; align-items: flex-start; }
+.pool { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.pool-card { border-radius: 9px; overflow: hidden; cursor: pointer; position: relative;
+  background: linear-gradient(165deg, #f8f1dd, #efe3c3); border: 2px solid var(--gold);
+  box-shadow: 0 2px 8px rgba(0,0,0,.45); transition: transform .15s; color: var(--ink); }
+.pool-card:hover { transform: translateY(-4px); }
+.pool-card img.part { width: 100%; height: 64px; object-fit: cover; object-position: center 10%; display: block; background: #0c1730; }
+.pool-card .nm { font-size: 10.5px; font-weight: 700; text-align: center; padding: 2px 2px 0; line-height: 1.15; }
+.pool-card .sub { font-size: 8.5px; color: #6b5a33; text-align: center; }
+.pool-card .stats { display: flex; justify-content: space-between; font-size: 10px; font-weight: 800; padding: 1px 4px 3px; }
+.pool-card .stats .atk { color: #b3261e; } .pool-card .stats .def { color: #1d4ed8; }
+.pool-card .tbadge { position: absolute; top: 3px; left: 3px; border-radius: 5px; padding: 1px 5px;
+  font-size: 9px; font-weight: 800; color: #fff; }
+.pool-card.t-move .tbadge { background: linear-gradient(180deg, #e5484d, #b3261e); }
+.pool-card.t-trap .tbadge { background: linear-gradient(180deg, #8d6bd6, #5b3fa0); }
+.pool-card.t-move { border-color: #c98a8a; } .pool-card.t-trap { border-color: #ab8fd8; }
+.pool-card .cnt { position: absolute; top: 2px; right: 2px; background: rgba(212,175,55,.95); color: #161006;
+  border-radius: 6px; font-size: 11px; font-weight: 800; padding: 0 6px; box-shadow: 0 1px 4px rgba(0,0,0,.5); }
+.pool-card .newchip { position: absolute; bottom: 26px; left: 3px; background: #2fbf71; color: #04160c;
+  font-size: 9px; font-weight: 800; border-radius: 4px; padding: 0 5px; }
+.built { flex: none; width: 200px; border: 1px solid #1d3a6b; border-radius: 12px; padding: 10px;
+  background: rgba(8,16,34,.5); max-height: 70vh; overflow-y: auto; }
+.built h3 { font-size: 13px; color: var(--gold-bright); margin-bottom: 8px; }
+.built .brow { display: flex; justify-content: space-between; align-items: center; font-size: 12px;
+  padding: 4px 6px; border-radius: 7px; cursor: pointer; }
+.built .brow:hover { background: #132648; }
+.built .brow .bn { color: var(--sea-cream); }
+.built .brow .bn small { color: #7e93ba; margin-left: 4px; }
+.built .brow .bx { color: var(--gold-bright); font-weight: 800; }
+.built .bempty { color: #5b6c8f; font-size: 12px; text-align: center; padding: 10px 0; }
+
+#hint { text-align: center; font-size: 12.5px; color: #8fa5cc; }
+
+.toast { position: fixed; left: 50%; bottom: 60px; transform: translateX(-50%); background: #2a2610; color: #ffe9b0;
+  border: 1px solid var(--gold-dim); border-radius: 9px; padding: 8px 16px; font-size: 13.5px; z-index: 60;
+  box-shadow: 0 4px 18px rgba(0,0,0,.5); }
+.toast.hidden { display: none; }
+
+@media (max-width: 720px) {
+  .deck-body { flex-direction: column; }
+  .built { width: 100%; max-height: 40vh; }
+  .stage { flex-wrap: wrap; }
+  .stage .st-intro { display: none; }
+  .pool { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
+}
