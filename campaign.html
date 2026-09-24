@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>东海篇 · 闯关模式 — 伟大航路决斗</title>
+<link rel="stylesheet" href="campaign.css">
+</head>
+<body class="campaign-scene">
+<div id="app">
+  <header id="topbar">
+    <h1 class="pg-title">东海篇 · 闯关</h1>
+    <div class="top-actions">
+      <a class="ghost-btn" href="duel.html">快速对决</a>
+      <a class="ghost-btn" href="index.html">旧版入口</a>
+    </div>
+  </header>
+
+  <nav id="tabs">
+    <button class="tab active" data-tab="stages">🗺 东海篇</button>
+    <button class="tab" data-tab="deck">⚒ 牌组工坊</button>
+  </nav>
+
+  <!-- 东海篇关卡 -->
+  <main id="tab-stages" class="tabpane">
+    <div class="progress-line" id="progLine"></div>
+    <div id="stageList"></div>
+  </main>
+
+  <!-- 牌组工坊 -->
+  <main id="tab-deck" class="tabpane hidden">
+    <section class="deck-head">
+      <div class="deck-slots" id="deckSlots"></div>
+      <div class="deck-stats" id="deckStats"></div>
+    </section>
+    <div class="deck-filter" id="deckFilter">
+      <button class="fbtn active" data-f="all">全部</button>
+      <button class="fbtn" data-f="char">人物</button>
+      <button class="fbtn" data-f="move">招式</button>
+      <button class="fbtn" data-f="trap">伏笔</button>
+    </div>
+    <section class="deck-body">
+      <div class="pool" id="pool"></div>
+      <aside class="built" id="built"></aside>
+    </section>
+  </main>
+
+  <footer id="hint">通关解锁新人物卡 · 牌组须满 20 张才可出战</footer>
+</div>
+<div id="toast" class="toast hidden"></div>
+<script type="module" src="campaign-ui.js"></script>
+</body>
+</html>
