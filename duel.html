@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>伟大航路决斗 · 海贼王卡牌对战</title>
+<link rel="stylesheet" href="duel.css">
+</head>
+<body class="duel-scene">
+<div id="app">
+  <header id="topbar">
+    <div class="turn-chip" id="turnChip">第 1 回合</div>
+    <h1 class="duel-title">伟大航路决斗</h1>
+    <div class="top-actions">
+      <button id="btnHelp" class="ghost-btn">规则</button>
+      <button id="btnRestart" class="ghost-btn">重新开局</button>
+      <a class="ghost-btn" href="index.html">旧版入口</a>
+    </div>
+  </header>
+
+  <div id="phaseBar">
+    <span class="ph" data-ph="draw">抽牌</span>
+    <span class="ph-arrow">›</span>
+    <span class="ph" data-ph="standby">准备</span>
+    <span class="ph-arrow">›</span>
+    <span class="ph" data-ph="main1">主要1</span>
+    <span class="ph-arrow">›</span>
+    <span class="ph" data-ph="battle">战斗</span>
+    <span class="ph-arrow">›</span>
+    <span class="ph" data-ph="main2">主要2</span>
+    <span class="ph-arrow">›</span>
+    <span class="ph" data-ph="end">结束</span>
+  </div>
+
+  <main id="table">
+    <!-- 对手区 -->
+    <section class="zone foe" id="foeZone">
+      <div class="pinfo">
+        <div class="pname" id="foeName">亚尔丽塔（AI）</div>
+        <div class="lp-wrap"><div class="lp-bar" id="foeLpBar"></div><span class="lp-num" id="foeLpNum">4000</span></div>
+        <div class="pcounts">
+          <span class="chip">牌组 <b id="foeDeckN">20</b></span>
+          <span class="chip">手牌 <b id="foeHandN">5</b></span>
+          <span class="chip">墓场 <b id="foeGraveN">0</b></span>
+        </div>
+      </div>
+      <div class="foe-hand" id="foeHand"></div>
+      <div class="unit-row" id="foeBoard"></div>
+    </section>
+
+    <!-- 中线：战报 -->
+    <section id="midline">
+      <div id="battleLog" aria-live="polite"></div>
+    </section>
+
+    <!-- 我方区 -->
+    <section class="zone mine" id="mineZone">
+      <div class="unit-row" id="myBoard"></div>
+      <div class="pinfo">
+        <div class="pname" id="myName">玩家 · 草帽团·起航</div>
+        <div class="lp-wrap"><div class="lp-bar" id="myLpBar"></div><span class="lp-num" id="myLpNum">4000</span></div>
+        <div class="pcounts">
+          <span class="chip">牌组 <b id="myDeckN">20</b></span>
+          <span class="chip">墓场 <b id="myGraveN">0</b></span>
+        </div>
+        <button id="btnNext" class="next-btn">下一步 ›</button>
+      </div>
+      <div class="my-hand" id="myHand"></div>
+    </section>
+  </main>
+
+  <footer id="hint">— 决斗准备 —</footer>
+</div>
+
+<!-- 弹层：登场选项 -->
+<div id="modal" class="modal hidden">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+<!-- 目标直攻按钮 -->
+<button id="btnDirect" class="direct-btn hidden">⚔ 直接攻击</button>
+<!-- toast -->
+<div id="toast" class="toast hidden"></div>
+<!-- 胜负遮罩 -->
+<div id="endOverlay" class="end-overlay hidden">
+  <div class="end-box">
+    <div class="end-title" id="endTitle"></div>
+    <div class="end-sub" id="endSub"></div>
+    <button class="next-btn big" id="btnAgain">再战一局</button>
+  </div>
+</div>
+
+<script type="module" src="duel-ui.js"></script>
+</body>
+</html>
