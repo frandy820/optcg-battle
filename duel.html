@@ -46,6 +46,7 @@
       </div>
       <div class="foe-hand" id="foeHand"></div>
       <div class="unit-row" id="foeBoard"></div>
+      <div class="spell-row foe-spells" id="foeSpells"></div>
     </section>
 
     <!-- 中线：战报 -->
@@ -56,6 +57,7 @@
     <!-- 我方区 -->
     <section class="zone mine" id="mineZone">
       <div class="unit-row" id="myBoard"></div>
+      <div class="spell-row my-spells" id="mySpells"></div>
       <div class="pinfo">
         <div class="pname" id="myName">玩家 · 草帽团·起航</div>
         <div class="lp-wrap"><div class="lp-bar" id="myLpBar"></div><span class="lp-num" id="myLpNum">4000</span></div>
@@ -78,6 +80,11 @@
 </div>
 <!-- 目标直攻按钮 -->
 <button id="btnDirect" class="direct-btn hidden">⚔ 直接攻击</button>
+<!-- 响应窗口横幅 -->
+<div id="respondBanner" class="respond-banner hidden">
+  <div class="rb-text" id="rbText"></div>
+  <div class="rb-btns" id="rbBtns"></div>
+</div>
 <!-- toast -->
 <div id="toast" class="toast hidden"></div>
 <!-- 胜负遮罩 -->
