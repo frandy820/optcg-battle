@@ -1,4 +1,6 @@
 // 存档：localStorage 安全降级（隐私模式/配额满/被禁 → 内存兜底，游戏仍可玩，仅刷新丢失）
+import { captainById } from '../data/captains.js';
+
 const KEY = 'gcd_save_v1';
 let memStore = null; let storageOk = true;
 
@@ -29,9 +31,12 @@ export function loadRun() {
 }
 
 // 结构校验：关键字段缺失/版本不符 → 视为损坏，返回 null（宁可丢档不可白屏）
+// 船长 id 必须存在于当前数据（拦截旧版本存档：旧船长 deck 引用已删除的卡 id）
 function revive(raw) {
   if (!raw || raw.kind !== 'run' || raw.v !== 1) return null;
   if (typeof raw.nodeIdx !== 'number' || !Array.isArray(raw.deck) || !raw.captainId) return null;
+  if (!captainById(raw.captainId)) return null;
+  if (raw.nodeIdx >= 9) return null; // ROUTE 长度护栏（旧 5 节点档不会到 9）
   if (typeof raw.hp !== 'number' || typeof raw.hpMax !== 'number') return null;
   raw.stats = raw.stats || { battles: 0, turns: 0, dmgDealt: 0, dmgTaken: 0, cardsPlayed: 0, playCount: {} };
   raw.relics = Array.isArray(raw.relics) ? raw.relics : [];

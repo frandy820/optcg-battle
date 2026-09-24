@@ -1,7 +1,7 @@
 // 战斗状态机（纯逻辑零 DOM）——docs/02-game-design.md §2-§6 真值源
 // 结算顺序铁律：攻击基础值 → 攻方修正 → 易伤/虚弱 → 护盾吸收 → HP → 受伤触发 → 死亡检查
 import { makeRng, shuffle, weightedPick } from './rng.js';
-import { resolveCard, EMERGENCY_CARD, MATES } from '../data/cards.js';
+import { resolveCard, EMERGENCY_CARD, MATES, MATE_BONDS } from '../data/cards.js';
 import { ENEMY_MINIONS } from '../data/enemies.js';
 import { execOps, describe } from './effects.js';
 
@@ -97,8 +97,17 @@ export function dealToEnemy(b, raw, { fromCardType = null } = {}) {
   if (fromCardType === 'atk') {
     if (b.captain && b.captain.passive && b.captain.passive.k === 'firstAtkBonus' && !b.player.firstAtkDone) x += b.captain.passive.x;
     for (const m of b.player.mates) if (m.def.buffFirstAtk && !m.buffedThisTurn) { x += m.def.buffFirstAtk; m.buffedThisTurn = true; }
+    if (b.player.bondAtk) x += b.player.bondAtk; // 伙伴羁绊加成
     if (b.relics.includes('warblade') && b.turn === 1) x += 4;
   }
+  // 船长被动：绝境反击（HP 低于阈值攻击提升——路飞「要成为海贼王的男人」）
+  if (b.captain && b.captain.passive && b.captain.passive.k === 'lastStand'
+    && b.player.hp <= Math.floor(b.player.hpMax * b.captain.passive.pct / 100)) x += b.captain.passive.x;
+  // 敌方被动减伤：hitReduce 每次生效（滑溜溜果实）；firstHitReduce 每回合首次（四分五裂/白雾）
+  const ep = (b.enemy.def && b.enemy.def.passive) || null;
+  if (ep && ep.hitReduce) x -= ep.hitReduce;
+  if (ep && ep.firstHitReduce && !b.enemy._hitTakenThisTurn) { x -= ep.firstHitReduce; }
+  if (x < 1) x = 1; // 减伤下限：至少 1 点
   const vuln = statusStacks(b.enemy, 'vulnerable');
   if (vuln > 0) x = Math.round(x * 1.5); // 易伤（先）
   if (statusStacks(b.player, 'weak') > 0) x = Math.round(x * 0.75); // 玩家虚弱（后）——目标造成的伤害 ×0.75
@@ -106,6 +115,7 @@ export function dealToEnemy(b, raw, { fromCardType = null } = {}) {
   let absorbed = 0;
   if (b.enemy.block > 0) { absorbed = Math.min(b.enemy.block, x); b.enemy.block -= absorbed; x -= absorbed; }
   if (x > 0) b.enemy.hp -= x;
+  b.enemy._hitTakenThisTurn = true; // firstHitReduce 只对每回合首次攻击生效
   log(b, { t: 'dmg', side: 'e', x: raw, dealt: x + absorbed, blocked: absorbed, hp: Math.max(0, b.enemy.hp) });
   if (fromCardType === 'atk') gainResolve(b, 2); // 攻击命中积累斗志
   // 敌方反甲：玩家攻击命中后被回敬（charged 之外的 block_thorns 来源）
@@ -261,6 +271,8 @@ export function startPlayerTurn(b) {
   p.energy = p.energyMax;
   p.combo = 0; p.comboAdd = 0; p.atkBuffTurn = 0; p.thornsTurn = 0;
   p.firstAtkDone = false; p.firstSkillDone = false; p._skillDrewThisTurn = false;
+  b.enemy._hitTakenThisTurn = false; // 敌方「每回合首次受击减伤」重置
+  refreshBonds(b); // 伙伴羁绊：每回合按在场伙伴刷新
   p.skillsUsed = [false, false];
   p.costDownHand = 0; p.costDownNext = 0;
   p.tookDmgLastTurn = p.tookDmgThisTurn; p.tookDmgThisTurn = false;
@@ -320,12 +332,13 @@ export function intentLabel(b) {
   const it = e.intent;
   if (!it) return { icon: '·', text: '观察', cls: '' };
   const m = {
-    atk: (x) => ({ icon: '⚔', text: `攻击 ${x}` }),
+    atk: (x) => ({ icon: '⚔', text: `攻击 ${x}${it.times > 1 ? `×${it.times}` : ''}` }),
     atk_per_minion: (x) => ({ icon: '⚔', text: `攻击 ${x}+${(it.per || 1) * e.minions.filter((mm) => mm.hp > 0).length}` }),
     block: (x) => ({ icon: '🛡', text: `防御 ${x}` }),
     block_thorns: (x) => ({ icon: '🛡', text: `防御 ${x}+反甲` }),
     weak: () => ({ icon: '✦', text: '施压(虚弱)' }),
     vulnerable: () => ({ icon: '✦', text: '施压(易伤)' }),
+    atkBuff: (x) => ({ icon: '💪', text: `强化自身 攻+${x}` }),
     weak_atk: (x) => ({ icon: '⚔', text: `攻击 ${x}+虚弱` }),
     vuln_atk: (x) => ({ icon: '⚔', text: `攻击 ${x}+易伤` }),
     vuln_weak: (x) => ({ icon: '✦', text: '易伤+虚弱' }),
@@ -338,7 +351,11 @@ export function intentLabel(b) {
 function execEnemyAct(b, act) {
   const e = b.enemy;
   switch (act.k) {
-    case 'atk': dealToPlayer(b, act.x); break;
+    case 'atk': {
+      const times = act.times || 1;
+      for (let i = 0; i < times && !b.over; i++) dealToPlayer(b, act.x);
+      break;
+    }
     case 'atk_per_minion': dealToPlayer(b, act.x + (act.per || 1) * e.minions.filter((m) => m.hp > 0).length); break;
     case 'block': e.block += act.x; log(b, { t: 'block', side: 'e', x: act.x, v: e.block }); break;
     case 'block_thorns': e.block += act.x; e.thorns = (e.thorns || 0) + act.thorns; log(b, { t: 'block', side: 'e', x: act.x, v: e.block }); break;
@@ -347,6 +364,7 @@ function execEnemyAct(b, act) {
     case 'weak_atk': dealToPlayer(b, act.x); if (!b.over) applyStatusToPlayer(b, 'weak', act.weak); break;
     case 'vuln_atk': dealToPlayer(b, act.x); if (!b.over) applyStatusToPlayer(b, 'vulnerable', act.vuln); break;
     case 'vuln_weak': applyStatusToPlayer(b, 'vulnerable', act.vuln); applyStatusToPlayer(b, 'weak', act.weak); break;
+    case 'atkBuff': e.atkBuff += act.n; log(b, { t: 'enrage', side: 'e', n: act.n }); break; // 自我强化（蒙卡·自我崇拜）
     case 'charged_atk': e.charged = { x: act.x }; log(b, { t: 'charge', x: act.x }); break;
     case 'summon': {
       if (e.minions.filter((m) => m.hp > 0).length < 2) {
@@ -362,5 +380,19 @@ function execEnemyAct(b, act) {
 
 // 敌方反甲（敌人 block_thorns 给的）在玩家攻击敌人时结算
 export function enemyThorns(b) { return b.enemy.thorns || 0; }
+
+// ===== 伙伴羁绊 =====
+// data 层 MATE_BONDS: [{ mates:[idA,idB], name, atk }] —— 双方在场时该羁绊的 atk 计入玩家攻击
+// 聚合到 b.player.bondAtk（每条命中羁绊计一次，不按伙伴数重复）；每回合开始/召唤后刷新
+export function refreshBonds(b) {
+  let sum = 0;
+  const hit = [];
+  for (const bond of MATE_BONDS) {
+    const ok = bond.mates.every((id) => b.player.mates.some((m) => m.def.id === id && m.hp > 0));
+    if (ok) { sum += bond.atk; hit.push(bond.name); }
+  }
+  b.player.bondAtk = sum;
+  b.player.bondNames = hit;
+}
 
 export { execOps, describe, MATE_SLOTS };

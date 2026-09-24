@@ -96,6 +96,7 @@ function onSkill(i) {
   replay(before, { fast: true });
   renderBattle(state.battle);
   renderHand(state.battle, onPlayCard);
+  if (state.battle.over) setTimeout(finishBattle, 600); // 技能击杀同样要走结算（曾漏：战斗卡死）
 }
 
 $('btn-endturn').onclick = () => {
@@ -124,13 +125,14 @@ function replay(fromIdx, { fast = false, stepMs = 240, done = null } = {}) {
       if (e.side === 'e') { floater(`-${e.dealt}`, 'dmg', 'enemy'); shake('enemy'); }
       else { floater(`-${e.dealt}${e.blocked ? ` 🛡${e.blocked}` : ''}`, 'dmg', 'player'); shake('player'); }
     } else if (e.t === 'heal') floater(`+${e.x}`, 'heal', 'player');
+    else if (e.t === 'mateHeal') floater(`+${e.x}`, 'heal', 'layer');
     else if (e.t === 'block') { if (e.side === 'p') floater(`盾+${e.x}`, 'block', 'player'); }
     else if (e.t === 'resolve') floater(`✦+${e.n}`, 'resolve', 'player');
-    else if (e.t === 'summon') toast(`${e.name} 加入战斗`);
+    else if (e.t === 'summon') toast(e.side === 'e' ? `敌方召唤 ${e.name}！` : `${e.name} 加入战斗！`);
     else if (e.t === 'mateDie') toast(`${e.name} 离场`);
     else if (e.t === 'phase2') toast('☠ Boss 狂怒！', 3000);
     else if (e.t === 'charge') toast(`⚠ 敌人蓄力 ${e.x} 伤害！`, 3000);
-    else if (e.t === 'deathSave') toast('◈ 复仇酒瓶免死！');
+    else if (e.t === 'deathSave') toast('👒 草帽护住了你：免死！');
     else if (e.t === 'win') toast('★ 胜利！');
     else if (e.t === 'lose') toast('✖ 战败……');
     else if (e.t === 'emergency') toast('⚠ 牌库耗尽，获得应急短刀');
@@ -151,6 +153,11 @@ function finishBattle() {
   state.battle = null;
   if (!r.win) { clearRun(); showEnd(); return; }
   if (state.run.finished === 'victory') { clearRun(); showEnd(); return; }
+  // 伙伴加入（剧情节点固定）：招募卡已免费入组
+  if (r.joinsCard) {
+    const rc = resolveCard({ id: r.joinsCard });
+    toast(`🤝 ${rc ? rc.name.replace('招募·', '') : '新伙伴'}加入了！招募卡已放入牌组`, 3200);
+  }
   // 奖励屏：先遗物后卡牌（遗物必选，卡牌可跳过）
   show('reward');
   const relicOpts = r.relicOptions;

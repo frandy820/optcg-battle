@@ -1,7 +1,7 @@
 // 效果结算器 + 卡面描述生成器（文案与逻辑同源）——docs/02-game-design.md §6/§9
 // execOps(b, ops, ctx)：按序结算声明式算子；ctx={ self, cardType, isCaptainSkill, mate }
 import { MATES, resolveCard } from '../data/cards.js';
-import { dealToEnemy, dealToPlayer, draw, gainResolve, statusStacks } from './battle.js';
+import { dealToEnemy, dealToPlayer, draw, gainResolve, statusStacks, refreshBonds } from './battle.js';
 
 export function execOps(b, ops, ctx = {}) {
   for (const op of ops || []) execOp(b, op, ctx);
@@ -76,6 +76,15 @@ function execOp(b, op, ctx) {
       if (p.hp > before) b.log.push({ t: 'heal', side: 'p', x: p.hp - before, hp: p.hp, seq: b.log.length });
       break;
     }
+    case 'healMates': { // 宴席料理系：伙伴全体回复（山治「厨师的骄傲」）
+      for (const m of p.mates) {
+        if (m.hp > 0 && m.hp < m.hpMax) {
+          m.hp = Math.min(m.hpMax, m.hp + op.x);
+          b.log.push({ t: 'mateHeal', name: m.def.name, x: op.x, hp: m.hp, seq: b.log.length });
+        }
+      }
+      break;
+    }
     case 'gold': b.goldGain = (b.goldGain || 0) + op.n; break; // run 层结算时取走
     case 'summon': {
       const def = MATES[op.mate];
@@ -83,6 +92,7 @@ function execOp(b, op, ctx) {
         const m = { def, hp: def.hp, hpMax: def.hp };
         p.mates.push(m);
         if (def.onSummon) execOps(b, [def.onSummon], { cardType: 'mate', mate: m });
+        refreshBonds(b); // 新伙伴入场即重算羁绊
         b.log.push({ t: 'summon', side: 'p', name: def.name, seq: b.log.length });
       }
       break;
@@ -132,6 +142,7 @@ const OP_TEXT = {
   thorns: (o) => `获得反甲 ${o.n}（受击反弹，本回合）`,
   selfDmg: (o) => `自伤 ${o.x}`,
   heal: (o) => `回复 ${o.x} 点生命`,
+  healMates: (o) => `伙伴全体回复 ${o.x} 点生命`,
   gold: (o) => `获得 ${o.n} 金币`,
   summon: (o) => `召唤伙伴`,
   costDownNext: (o) => `本回合下一张卡费用 -${o.n}`,

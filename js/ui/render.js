@@ -1,9 +1,9 @@
 // 渲染层：纯函数 DOM 构造（数据→节点），不含游戏流程判断；事件绑定在 main.js
 import { CARDS, resolveCard, MATES } from '../data/cards.js';
-import { CAPTAINS } from '../data/captains.js';
-import { ENEMIES } from '../data/enemies.js';
+import { CAPTAINS, CAPTAIN_TEASERS } from '../data/captains.js';
+import { ENEMIES, enemyById } from '../data/enemies.js';
 import { RELICS } from '../data/relics.js';
-import { ROUTE, deckResolved } from '../game/run.js';
+import { ROUTE, deckResolved, nodeAt } from '../game/run.js';
 import { describe, kwTip } from '../engine/effects.js';
 import { cardCost, canPlay, intentLabel, HAND_MAX } from '../engine/battle.js';
 
@@ -84,6 +84,14 @@ export function renderCaptainList(onPick, onDeckView) {
     c.append(acts);
     box.append(c);
   }
+  // 预告槽（不可选）：东海篇之后还有更多航线
+  for (const t of CAPTAIN_TEASERS) {
+    const c = el('div', 'captain-card captain-teaser');
+    c.append(el('div', 'cap-badge cap-locked', '？'));
+    c.append(el('h3', 'cap-name', t.name));
+    c.append(el('p', 'cap-style', `${t.title} · ${t.desc}`));
+    box.append(c);
+  }
 }
 
 // ===== 航线 =====
@@ -100,14 +108,29 @@ export function renderRoute(run, onGo) {
   map.innerHTML = '';
   ROUTE.forEach((node, i) => {
     const nd = el('div', 'route-node' + (i < run.nodeIdx ? ' done' : i === run.nodeIdx ? ' current' : ' future'));
-    nd.append(el('div', 'rn-dot', node.k === 'battle' ? (node.tier === 'boss' ? '☠' : node.tier === 'elite' ? '⚔' : '🗡') : '⛺'));
+    const ed = node.k === 'battle' ? enemyById(node.enemy) : null;
+    nd.append(el('div', 'rn-dot', node.k === 'battle'
+      ? (ed ? ed.icon : '☠') : '⛺'));
     nd.append(el('div', 'rn-label', node.label));
+    if (ed) nd.append(el('div', 'rn-foe', (i < run.nodeIdx ? '✓ ' : '') + ed.name));
+    if (node.joins && i >= run.nodeIdx) {
+      const rc = CARDS.find((c) => c.id === node.joins);
+      const mate = rc && MATES[rc.ops[0].mate];
+      nd.append(el('div', 'rn-join', `+ ${mate ? mate.name : '新伙伴'} 加入`));
+    }
     if (i === run.nodeIdx) nd.append(el('div', 'rn-here', '你在这里'));
     map.append(nd);
   });
+  // 当前节点剧情（东海篇叙事主线）
+  const cur = nodeAt(run);
+  const story = $('route-story');
+  if (story) {
+    story.textContent = cur && cur.story ? cur.story : '';
+    story.hidden = !(cur && cur.story);
+  }
   const last = run.nodeIdx >= ROUTE.length - 1;
   const go = $('btn-node-go');
-  go.textContent = last ? '决战！' : '前往下一站';
+  go.textContent = last ? '决战罗格镇！' : '前往下一站';
   go.onclick = onGo;
 }
 
@@ -117,6 +140,8 @@ export function renderBattle(b) {
   const e = b.enemy;
   $('battle-title').textContent = `${e.def.name} · 第 ${b.turn} 回合`;
   $('enemy-name').textContent = e.def.name + (e.phase2On ? '（狂怒）' : '');
+  const esub = $('enemy-sub');
+  if (esub) { esub.textContent = e.def.sub || ''; esub.hidden = !(e.def.sub); }
   const hpPct = Math.max(0, e.hp / e.hpMax * 100);
   $('enemy-hp-fill').style.width = hpPct + '%';
   $('enemy-hp-fill').classList.toggle('low', hpPct < 30);
@@ -177,12 +202,21 @@ export function renderBattle(b) {
   for (const m of p.mates) {
     if (m.hp <= 0) continue;
     const mc = el('div', 'mate-card');
-    mc.append(el('div', 'mc-icon', '⚓'), el('div', 'mc-name', m.def.name));
+    mc.append(el('div', 'mc-icon', m.def.icon || '⚓'), el('div', 'mc-name', m.def.name));
     const bar = el('div', 'bar hp-bar mate-hp');
     const fill = el('div', 'bar-fill'); fill.style.width = (m.hp / m.hpMax * 100) + '%';
     bar.append(fill, el('span', 'bar-text', `${m.hp}`));
     mc.append(bar);
     mr.append(mc);
+  }
+  // 羁绊提示（当前生效的伙伴羁绊）
+  const bondRow = $('bond-row');
+  if (bondRow) {
+    bondRow.innerHTML = '';
+    if (p.bondNames && p.bondNames.length) {
+      for (const name of p.bondNames) bondRow.append(el('span', 'bond-chip', `🤝 ${name} 攻+${p.bondAtk}`));
+      bondRow.hidden = false;
+    } else bondRow.hidden = true;
   }
   renderHand(b);
 }
@@ -240,13 +274,14 @@ const LOG_TEXT = {
   burn: (e) => `手牌已满，${e.name} 被烧掉`,
   emergency: () => '⚠ 无牌可抽，获得应急短刀',
   exhaust: () => '', status: (e) => `施加 ${e.k === 'weak' ? '虚弱' : '易伤'} ${e.stacks}`,
-  summon: (e) => `召唤 ${e.name}`,
+  summon: (e) => (e.side === 'e' ? `敌方召唤 ${e.name}` : `${e.name} 加入战斗！`),
   mateDmg: (e) => `${e.name} 被打 ${e.x}（剩 ${e.hp}）`,
   mateDie: (e) => `${e.name} 离场`,
+  mateHeal: (e) => `${e.name} 回复 ${e.x}（${e.hp}）`,
   turnStart: (e) => `—— 第 ${e.turn} 回合 ——`,
   charge: (e) => `⚠ 敌人蓄力中（${e.x} 伤害！）`,
   phase2: () => '☠ Boss 进入狂怒阶段！',
-  deathSave: () => '复仇酒瓶发动：免死！',
+  deathSave: () => '草帽护住了你：免死！',
   win: () => '★ 敌人被击败！', lose: () => '✖ 你倒下了……',
   resolve: (e) => `斗志 +${e.n}（${e.v}）`,
   fetch: (e) => `取回 ${e.name}（费用 0）`,
@@ -330,10 +365,10 @@ export function renderEnd(run, onAgain, onHome) {
   const win = run.finished === 'victory';
   $('end-icon').textContent = win ? '★' : '☠';
   $('end-icon').className = 'end-icon ' + (win ? 'win' : 'lose');
-  $('end-title').textContent = win ? '伟大航路制霸！' : '航程终止';
+  $('end-title').textContent = win ? '驶入伟大航路！' : '航程终止';
   $('end-sub').textContent = win
-    ? '你击败了海军中将·霜岚，这段传说将被水手们传唱。'
-    : '大海无情。调整牌组，再来一次。';
+    ? '你闯过了罗格镇，白猎人斯摩格目送梅利号消失在暴风雨中。颠倒山就在前方——东海篇，完。'
+    : '大海无情。整备牌组，再出航一次。';
   const st = $('end-stats');
   st.innerHTML = '';
   const s = run.stats;
@@ -381,16 +416,19 @@ export function showHelp() {
   const box = el('div', 'modal-box');
   box.append(el('h3', null, '航行指南'));
   const items = [
-    ['目标', '沿航线打 3 场（遭遇→精英→Boss），活着到终点即通关。'],
+    ['目标', '沿东海航线 9 站：风车村 → 谢尔兹镇 → 橘子镇 → 西罗布村 → 海上餐厅 → Arlong Park → 罗格镇。击败白猎人斯摩格，驶入伟大航路。'],
     ['能量', '每回合 3 点能量，出牌消耗，回合结束回满。没花完不保留。'],
     ['手牌', '开局抽 5 张，每回合开始抽 5 张，上限 10 张。'],
     ['护盾 🛡', '吸收伤害，回合开始清空——防御卡只在当回合有用。'],
-    ['斗志 ✦', '攻击命中 +2、首次承伤 +2、部分卡+斗志。攒够驱动船长技（每回合限 1 次）与「蓄力」卡强化效果。'],
-    ['连击', '每打出 1 张攻击卡连击 +1；带连击的卡按当前连击数加伤。'],
+    ['斗志 ✦', '攻击命中 +2、首次承伤 +2、部分卡+斗志。攒够驱动路飞的橡胶招式（每回合各限 1 次）与「蓄力」卡强化效果。'],
+    ['连击', '每打出 1 张攻击卡连击 +1；带连击的卡按当前连击数加伤（索隆的三刀流多为连击向）。'],
+    ['伙伴 ⚓', '招募卡召唤伙伴占 1 个伙伴位（最多 3 位）。索隆每回合斩击、娜美补给斗志、乌索普削弱敌人、山治回复全队。'],
+    ['羁绊 🤝', '特定伙伴同时在场时全队攻击获得加成：索隆+山治「死对头的较量」、乌索普+娜美「狙击×天候的连携」。'],
     ['虚弱/易伤', '虚弱：敌方伤害 -25%；易伤：敌方承伤 +50%。给敌人的 debuff，别怕用。'],
-    ['意图', '敌人头顶显示下一步行动。大攻击前先叠盾或输出竞速。'],
-    ['营地', '休息回血 / 锻造强化卡 / 花金币移除废卡。'],
-    ['战利品', '每场胜利三选一补强牌组；精英战后额外选遗物。'],
+    ['意图', '敌人头顶显示下一步行动（巴基会蓄力火箭弹、克洛会无声连击）。大攻击前先叠盾或输出竞速。'],
+    ['剧情节点', '部分关卡打完会有伙伴带着招募卡加入草帽一伙——不用选，直接进牌组。'],
+    ['营地', '甲板休整回血 / 锻造强化卡 / 花金币移除废卡。'],
+    ['战利品', '每场胜利三选一补强牌组；精英战后额外选遗物。招式按进度解锁（后期招式不会提前出现）。'],
   ];
   for (const [k, v] of items) {
     const p = el('p', 'help-item');
