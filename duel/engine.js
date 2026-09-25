@@ -54,7 +54,6 @@ function newGame(cardsById, opts) {
   };
   // 起手
   for (const p of g.players) for (let i = 0; i < HAND_START; i++) drawCard(g, p, { silent: true });
-  log(g, `决斗开始！${g.players[0].name} LP${LP_START} vs ${g.players[1].name} LP${LP_START}`);
   return g;
 }
 
@@ -802,7 +801,7 @@ function legalMoves(g, cardsById, pi) {
 const DUEL = {
   PHASES, LP_START, HAND_START, HAND_MAX, BOARD_MAX, SPELL_MAX,
   SUMMON_LIMIT, SET_LIMIT, CHAIN_MAX, DECK_SIZE,
-  newGame, applyAction, legalMoves,
+  newGame, applyAction, legalMoves, mkRng,
   canSummon, canSetPos, canAttack,
   canSetSpell, canActivateMove, canRespond, moveTargets,
   drawCard, damageLP, resolveAttack, unitAtk, unitDef, def, destroy,
