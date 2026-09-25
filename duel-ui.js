@@ -1,10 +1,10 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=1189296';
-import { DUEL_AI } from './duel/ai.js?v=1189296';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=1189296';
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=1189296';
+import { DUEL } from './duel/engine.js?v=bae6d0d';
+import { DUEL_AI } from './duel/ai.js?v=bae6d0d';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=bae6d0d';
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=bae6d0d';
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -147,11 +147,19 @@ function tutAttackResolved() {
   if (g.pending) return false;
   return tutFlags.attacked && !g.log.slice(-3).some(l => l.msg.includes('响应窗口'));
 }
-// 统一动作入口包装：成功后喂给教学观察器 + 捕捉登场/攻击/LP变化驱动战斗动效（Phase 5 用户反馈）
-let fxAttack = null, fxLp = null, fxSummon = null;
+// 统一动作入口包装：成功后喂给教学观察器 + 捕捉登场/攻击/LP变化/卡牌发动驱动战斗动效
+let fxAttack = null, fxLp = null, fxSummon = null, fxCast = null;
 function act(pi, a) {
   const lp0 = [g.players[0].lp, g.players[1].lp];
   const board0 = g.players[pi].board.map(u => u.uid);
+  // 发动卡快照（applyAction 前取——发动后卡即离场进连锁/墓场）
+  let castD = null;
+  if (a.t === 'respond' || a.t === 'activateSpell' || a.t === 'activateMove') {
+    const pool = a.t === 'activateMove' ? g.players[pi].hand : g.players[pi].spells;
+    const key = a.t === 'activateMove' ? a.handUid : a.spellUid;
+    const row = pool.find(x => x.uid === key);
+    if (row) { const cd = cardsById[row.cardId]; if (cd && (cd.type === 'trap' || cd.type === 'move')) castD = cd; }
+  }
   const r = DUEL.applyAction(g, cardsById, pi, a);
   if (r.ok) {
     tutObserve(a);
@@ -163,12 +171,26 @@ function act(pi, a) {
       fxAttack = { uid: a.uid, target: a.target, side: pi, t: Date.now(),
         art: ad ? ad.art : null, name: ad ? ad.name : '' }; // 快照：攻方阵亡时渲染冲撞残影
     }
+    if (castD) fxCast = { d: castD, t: Date.now() }; // 发动闪卡演出（伏笔/招式）
     const d0 = lp0[0] - g.players[0].lp, d1 = lp0[1] - g.players[1].lp;
     if (d0 !== 0 || d1 !== 0) {
       fxLp = { side: d0 > 0 ? 0 : 1, delta: Math.max(d0, d1), t: Date.now() }; // 扣血方闪红+飘字
     }
   }
   return r;
+}
+// 命中点爆裂演出：冲击环×2 + 放射粒子×6（挂 #table 按目标绝对定位，900ms 自清）
+function spawnBurst(el) {
+  const host = document.getElementById('table');
+  if (!host || !el || document.querySelector('.fx-burst')) return;
+  const r = el.getBoundingClientRect(), hr = host.getBoundingClientRect();
+  const b = document.createElement('div');
+  b.className = 'fx-burst';
+  b.style.left = (r.left + r.width / 2 - hr.left) + 'px';
+  b.style.top = (r.top + r.height / 2 - hr.top) + 'px';
+  b.innerHTML = '<i></i><i></i>' + Array.from({ length: 6 }, (_, k) => `<s style="--a:${k * 60}deg"></s>`).join('');
+  setTimeout(() => b.remove(), 950);
+  host.appendChild(b);
 }
 // render 后注入动效类：攻方冲撞（我打敌=向上/敌打我=向下）、目标受击红闪、LP 数字跳动（450ms 窗口，过窗自清）
 function fxPlay() {
@@ -189,11 +211,29 @@ function fxPlay() {
           host.appendChild(ghost);
         }
       }
-      if (fxAttack.target) {
-        const tgtEl = document.querySelector(`[data-uid="${fxAttack.target}"]`);
-        if (tgtEl) tgtEl.classList.add('fx-hit');
+      // 命中演出（round3 视觉升级）：受击点爆裂环+粒子、全桌震动（冲撞 0.14s 后命中，CSS delay 对齐）
+      const tgtEl = fxAttack.target ? document.querySelector(`[data-uid="${fxAttack.target}"]`) : null;
+      if (tgtEl) { tgtEl.classList.add('fx-hit'); spawnBurst(tgtEl); }
+      else spawnBurst(fxAttack.side === 0 ? els.foeLpNum : els.myLpNum); // 直接攻击命中 LP 区
+      const tb = document.getElementById('table');
+      if (tb && !tb.classList.contains('fx-quake')) {
+        tb.classList.add('fx-quake');
+        setTimeout(() => tb.classList.remove('fx-quake'), 850);
       }
     } else fxAttack = null;
+  }
+  if (fxCast) {
+    if (now - fxCast.t < 450) {
+      if (!document.querySelector('.fx-cast')) {
+        const d = fxCast.d;
+        const c = document.createElement('div');
+        c.className = `fx-cast ${d.type === 'trap' ? 't-trap' : 't-move'}`;
+        c.innerHTML = `<img src="art/${d.art}.webp" alt=""><b>${d.type === 'trap' ? '伏笔发动！' : '招式发动！'}${d.name}</b>`;
+        c.addEventListener('animationend', () => c.remove(), { once: true });
+        setTimeout(() => c.remove(), 1150);
+        document.body.appendChild(c);
+      }
+    } else fxCast = null;
   }
   if (fxLp) {
     if (now - fxLp.t < 450) {
@@ -283,8 +323,9 @@ function render() {
   els.myDeckN.textContent = P.deck.length; els.myGraveN.textContent = P.grave.length;
 
   els.foeHand.innerHTML = E.hand.map(() => '<div class="cardback"></div>').join('');
-  els.foeBoard.innerHTML = E.board.map(u => unitCard(u, false)).join('') || emptySlots(E.board.length);
-  els.myBoard.innerHTML = P.board.map(u => unitCard(u, true)).join('') || emptySlots(P.board.length);
+  // round3：5 格人物区——已登场卡 + 空槽并存（空位可见=场上格局一目了然）
+  els.foeBoard.innerHTML = E.board.map(u => unitCard(u, false)).join('') + emptySlots(E.board.length);
+  els.myBoard.innerHTML = P.board.map(u => unitCard(u, true)).join('') + emptySlots(P.board.length);
   els.myHand.innerHTML = P.hand.map(h => handCard(h)).join('');
   els.foeSpells.innerHTML = E.spells.map(() => '<div class="spellback-sm" title="对方盖伏的卡">伏</div>').join('')
     + Array.from({ length: Math.max(0, 3 - E.spells.length) }, () => '<div class="slot-sm"></div>').join('');
@@ -306,7 +347,7 @@ function render() {
   saveLive(); // 每次状态渲染后落档（结束局/恢复流程自动跳过）
 }
 
-function emptySlots(n) { return Array.from({ length: 3 - n }, () => '<div class="slot"></div>').join(''); }
+function emptySlots(n) { return Array.from({ length: DUEL.BOARD_MAX - n }, () => '<div class="slot"></div>').join(''); }
 
 function unitCard(u, mine) {
   const d = cardsById[u.cardId];
@@ -519,8 +560,15 @@ function onHandClick(huid) {
   if (d.type !== 'char') return showSpellModal({ kind: 'hand', uid: h.uid }, d);
   if (g.players[0].summoned >= 1) return toast('本回合通常登场次数已用完（每回合 1 次）');
   const need = d.level >= 7 ? 2 : d.level >= 5 ? 1 : 0;
-  if (need === 0 && g.players[0].board.length >= 3) return toast('人物区已满（3 格）——可通过解放腾位');
-  if (need > 0 && g.players[0].board.length < need) return toast(`Lv${d.level} 人物需要解放 ${need} 名场上人物，你场上不足`);
+  if (need === 0) {
+    if (g.players[0].board.length >= DUEL.BOARD_MAX)
+      return toast(`人物区已满（${DUEL.BOARD_MAX} 格）——点场上人物可解放腾位`);
+    // round3 用户反馈：默认攻击表示直接登场，不弹窗；守备=下一回合点场上卡切换
+    const r = act(0, { t: 'summon', handUid: h.uid, pos: 'atk', tributes: [] });
+    if (!r.ok) return toast(r.reason);
+    return render();
+  }
+  if (g.players[0].board.length < need) return toast(`Lv${d.level} 人物需要解放 ${need} 名场上人物，你场上不足`);
   showSummonModal(h, d, need);
 }
 
@@ -579,17 +627,15 @@ function showSummonModal(h, d, need) {
       <div class="stats"><span class="atk"><i>攻</i>${d.atk}</span><span class="def"><i>守</i>${d.def}</span></div></div>
     <div class="meta"><b>${d.name}</b>（Lv${d.level}）<br>攻击力 ${d.atk} / 守备力 ${d.def}<br>${d.role}<br>${d.desc}</div>
   </div>`);
-  if (need > 0) {
-    html.push(`<h3 style="margin-top:12px">选择解放对象（${need} 名）</h3><div id="triList">`);
-    for (const u of my.board) {
-      const ud = cardsById[u.cardId];
-      html.push(`<button class="opt tri" data-uid="${u.uid}">${ud.name}（ATK${ud.atk}/DEF${ud.def}）</button>`);
-    }
-    html.push('</div>');
+  html.push(`<h3 style="margin-top:12px">选择解放对象（${need} 名）</h3><div id="triList">`);
+  for (const u of my.board) {
+    const ud = cardsById[u.cardId];
+    html.push(`<button class="opt tri" data-uid="${u.uid}">${ud.name}（ATK${ud.atk}/DEF${ud.def}）</button>`);
   }
+  html.push('</div>');
+  // round3：默认攻击表示——不再二选一（守备=下一回合点场上卡切换）
   html.push(`<div id="posOpts" style="margin-top:10px">
-    <button class="opt" data-pos="atk">⚔ 攻击表示登场（竖放，可攻击）</button>
-    <button class="opt" data-pos="def">🛡 守备表示登场（横放，不易被破）</button>
+    <button class="opt" data-pos="atk">⚔ 解放并登场（攻击表示）</button>
     <button class="cancel">取消</button>
   </div>`);
   els.modalBox.innerHTML = html.join('');
@@ -633,14 +679,40 @@ function onMyUnitClick(uid) {
     return;
   }
   if (g.phase === 'main1' || g.phase === 'main2') {
-    // 切换表示
-    const u = g.players[0].board.find(x => x.uid === uid);
-    if (!u) return;
-    const to = u.pos === 'atk' ? 'def' : 'atk';
-    const r = act(0, { t: 'setPos', uid, pos: to });
+    showUnitMenu(uid); // round3：场上卡操作菜单（切换表示/解放腾位）
+  }
+}
+
+// 场上人物操作菜单（round3：「解放腾位」显式化——原先只藏在 Lv5+ 登场弹窗里，区满时无处可点）
+function showUnitMenu(uid) {
+  const u = g.players[0].board.find(x => x.uid === uid);
+  if (!u) return;
+  const d = cardsById[u.cardId];
+  const toPos = u.pos === 'atk' ? 'def' : 'atk';
+  const canPos = DUEL.canSetPos(g, 0, uid, toPos);
+  els.modalBox.innerHTML = `<div class="card-preview">
+      <div class="card ${u.pos === 'def' ? 'pos-def' : ''}"><img class="art" src="art/${d.art}.webp"><span class="lv">${d.level}</span>
+        <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
+        <div class="stats"><span class="atk"><i>攻</i>${d.atk}</span><span class="def"><i>守</i>${d.def}</span></div></div>
+      <div class="meta"><b>${d.name}</b>（${u.pos === 'atk' ? '攻击表示' : '守备表示'}${u.summonedTurn === g.turn ? ' · 本回合登场' : ''}）<br>${d.desc}</div>
+    </div>
+    <button class="opt" id="umPos" ${canPos.ok ? '' : 'disabled'}>↔ 切换为${toPos === 'def' ? '守备' : '攻击'}表示${canPos.ok ? '' : `（${canPos.reason}）`}</button>
+    <button class="opt" id="umRel">🔥 解放这名人物（送入墓场，腾出人物区）</button>
+    <button class="cancel">取消</button>`;
+  els.modal.classList.remove('hidden');
+  $('umPos').onclick = () => {
+    els.modal.classList.add('hidden');
+    const r = act(0, { t: 'setPos', uid, pos: toPos });
     if (!r.ok) return toast(r.reason);
     render();
-  }
+  };
+  $('umRel').onclick = () => {
+    els.modal.classList.add('hidden');
+    const r = act(0, { t: 'release', uid });
+    if (!r.ok) return toast(r.reason);
+    render();
+  };
+  els.modalBox.querySelector('.cancel').onclick = () => els.modal.classList.add('hidden');
 }
 
 function onFoeUnitClick(uid) {
@@ -714,8 +786,8 @@ function showRules() {
   <div class="meta" style="line-height:1.9">
   · 双方 LP 4000，降到 0 获胜；必须抽牌而牌组为空则败。<br>
   · 回合六阶段：抽牌 → 准备 → 主要1 → 战斗 → 主要2 → 结束。先手第一回合不抽牌。<br>
-  · 通常登场每回合 1 次：Lv1-4 直接登场；Lv5-6 须解放 1 名场上伙伴；Lv7+ 须解放 2 名。<br>
-  · 攻击表示（竖）可攻击；守备表示（横）不能攻击但不易被破。<br>
+  · 通常登场每回合 1 次：Lv1-4 点击手牌直接登场（默认攻击表示）；Lv5-6 须解放 1 名场上伙伴；Lv7+ 须解放 2 名。<br>
+  · 人物区 5 格。区满时点场上人物 →「解放」腾位（下一回合点场上卡也可切换攻/守表示）。<br>
   · 战斗：攻vs攻击表示=比 ATK，高者破坏低者并按差额扣 LP，相等同归于尽；攻vs守备=ATK 对 DEF，破防无伤害、攻不破则自己扣差额。<br>
   · 对方场上无人物时可直接攻击（全额 ATK）。本回合登场不能攻击（速攻除外）。<br>
   · <b>招式</b>（红标）：主要阶段发动。通常招式用后进墓；装备招式留场持续增益，装备者离场时随葬。<br>
