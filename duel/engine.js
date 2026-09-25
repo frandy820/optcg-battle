@@ -7,7 +7,7 @@ const PHASES = ['draw', 'standby', 'main1', 'battle', 'main2', 'end'];
 const LP_START = 4000;
 const HAND_START = 5;
 const HAND_MAX = 8;
-const BOARD_MAX = 3;   // 人物区
+const BOARD_MAX = 5;   // 人物区（round3：3→5，对齐游戏王 5 怪位）
 const SPELL_MAX = 3;   // 招式/伏笔区
 const SUMMON_LIMIT = 1;    // 每回合通常登场次数
 const SET_LIMIT = 2;       // 每回合盖伏张数
@@ -203,6 +203,7 @@ function dispatch(g, cardsById, pi, a) {
     case 'setSpell': return doSetSpell(g, cardsById, pi, a);
     case 'activateMove': return doActivateMove(g, cardsById, pi, a);
     case 'activateSpell': return doActivateSpell(g, cardsById, pi, a);
+    case 'release': return doRelease(g, cardsById, pi, a);
     default: return no('未知动作 ' + a.t);
   }
 }
@@ -310,6 +311,22 @@ function unequipAll(g, p, u, cardsById) {
     } else keeps.push(s);
   }
   p.spells = keeps;
+}
+
+// 独立解放（round3：区满腾位的显式入口；与 summon 附带解放同规则——不算破坏、不触发 onDestroyed，装备随葬）
+function doRelease(g, cardsById, pi, a) {
+  const p = g.players[pi];
+  if (g.winner !== null) return no('对局已结束');
+  if (g.active !== pi) return no('不是你的回合');
+  if (g.phase !== 'main1' && g.phase !== 'main2') return no('只能在主要阶段解放');
+  const i = p.board.findIndex(x => x.uid === a.uid);
+  if (i < 0) return no('人物不在自己场上');
+  const u = p.board[i];
+  p.board.splice(i, 1);
+  p.grave.push({ ...u, buffs: [], equips: [] });
+  log(g, `${p.name} 解放了「${cardsById[u.cardId].name}」（腾出人物区）`);
+  unequipAll(g, p, u, cardsById);
+  return { ok: true };
 }
 
 // ---------- 阶段推进 ----------
