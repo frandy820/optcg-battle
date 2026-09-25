@@ -2,7 +2,7 @@
 // 设计约束：真实点击驱动（check 验证局面而非按钮点击）；可跳过/重看；教学局不落档不写通关（duel-ui 配合）。
 // 教学局仍走 applyAction 合法路径（AI 用剧本而非 aiStep）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=1189296';
+import { DUEL } from './duel/engine.js?v=bae6d0d';
 
 // 固定起手：通过注入手牌实现确定性（不走洗牌运气）
 const HAND1 = ['DUE-001', 'DUE-003'];            // T1：路飞+娜美
@@ -16,7 +16,7 @@ export const TUTORIALS = [
     intro: '目标：学会①通常登场 ②推进阶段 ③攻击。按黄色指令条的提示一步步点。',
     myHand: HAND1, foeDeck: Array(20).fill('DUE-006'),
     steps: [
-      { say: '点击手牌中的「蒙奇·D·路飞」，在弹窗里选「⚔ 攻击表示登场」。', check: g => g.players[0].board.some(u => u.cardId === 'DUE-001') },
+      { say: '点击手牌中的「蒙奇·D·路飞」直接登场（默认攻击表示，点一下就上）。', check: g => g.players[0].board.some(u => u.cardId === 'DUE-001') },
       { say: '登场成功！路飞的能力自动触发了 ⚡橡胶火箭炮（看战报，对方 LP-300）。重要规则：本回合登场的人物不能攻击——点「下一步」进入战斗阶段看看。', check: g => g.phase === 'battle' },
       { say: '战斗阶段中路飞灰着不可点（登场回合不能攻）。没关系：连续点「下一步」→ 主要2 → 结束回合，把回合交给对方。', check: (g, st) => st.turnPassed },
       { say: '对方虚度了回合（陪练不出场）。先点「下一步」进入战斗阶段，再点你场上的路飞——选中后点出现的「⚔ 直接攻击」红色按钮（注意：主要阶段点人物=切换表示，别点错）。', check: (g, st) => st.directDone },
@@ -28,7 +28,7 @@ export const TUTORIALS = [
     intro: '目标：学会①发动通常招式 ②装备招式。招式卡有红色「招」角标。',
     myHand: HAND2, foeDeck: Array(20).fill('DUE-104'),
     steps: [
-      { say: '先登场路飞（点手牌→攻击表示）。登场回合不能攻击，先把回合交出去：连续「下一步」直到「结束回合 ✓」。', check: (g, st) => st.turnPassed && g.players[0].board.some(u => u.cardId === 'DUE-001') },
+      { say: '先登场路飞（点手牌即可）。登场回合不能攻击，先把回合交出去：连续「下一步」直到「结束回合 ✓」。', check: (g, st) => st.turnPassed && g.players[0].board.some(u => u.cardId === 'DUE-001') },
       { say: '对方登场了总队长阿金（ATK1100）。现在点手牌「三刀流·鬼斩」（红角标招式卡），目标选你自己的路飞——ATK+800（增益到回合结束有效）！', check: g => (g.players[0].board[0]?.buffs || []).some(b => b.stat === 'atk' && b.amount === 800) },
       { say: '招式发动成功！点「下一步」进入战斗阶段，点路飞攻击阿金——2700 碾压 1100。', check: (g, st) => st.attackResolved },
       { say: '战斗获胜，这类「通常招式」用一次进墓场。点「下一步」回到主要阶段2，点手牌「雷光·天候」选「🂠 盖伏」。', check: g => g.players[0].spells.some(s => s.cardId === 'DUE-202' && s.set) },
@@ -41,7 +41,7 @@ export const TUTORIALS = [
     myHand: HAND3, foeDeck: Array(20).fill(AI_T3_ATTACKER),
     steps: [
       { say: '点击手牌「必杀·狼蛛星」（紫角标伏笔卡），选「🂠 盖伏到伏笔区」。', check: g => g.players[0].spells.some(s => s.cardId === 'DUE-301' && s.set) },
-      { say: '盖伏完成。注意：盖伏的当回合不能发动。现在登场山治（攻击表示），然后连续「下一步」结束回合。', check: (g, st) => st.turnPassed },
+      { say: '盖伏完成。注意：盖伏的当回合不能发动。现在登场山治（点手牌即可），然后连续「下一步」结束回合。', check: (g, st) => st.turnPassed },
       { say: '对方登场了斧手蒙卡（ATK1800，比山治 1500 强）——但本回合它不能攻击。把回合交出去，等它动手的瞬间，顶部会弹出红色「响应窗口」横幅！', check: (g, st) => st.responded || g.winner !== null },
       { say: '狼蛛星让蒙卡 ATK-800（1800→1000 < 山治 1500）——攻击被反杀！这就是伏笔的威力。完成教学，去闯东海篇吧！', check: (g, st) => st.attackResolved || g.winner !== null, final: true },
     ],
