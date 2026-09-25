@@ -491,7 +491,8 @@ function doActivateSpell(g, cardsById, pi, a) {
 // 发动招式：无窗口 → 立即结算；对方有 onOppMove 伏笔 → 开 W2 窗口
 function launchMove(g, cardsById, pi, d, targetUid) {
   const p = g.players[pi];
-  const ops = (d.effect.ops || []).map(o => ({ ...o, targetUid: targetUid ?? null }));
+  // why 默认=卡名（LP 飘字/日志归因用；能力类伤害自带具名 why 不覆盖）
+  const ops = (d.effect.ops || []).map(o => ({ why: d.name, ...o, targetUid: targetUid ?? null }));
   log(g, `${p.name} 发动招式「${d.name}」！`);
   let row = null;
   if (d.moveKind === 'equip') {
@@ -556,7 +557,7 @@ function doRespond(g, cardsById, pi, a) {
   if (!c.ok) return c;
   const d = cardsById[s.cardId];
   p.spells.splice(p.spells.indexOf(s), 1);
-  pd.chain.push({ spellUid: s.uid, cardId: s.cardId, owner: pi, ops: d.effect.ops || [], negated: false, grave: { uid: s.uid, cardId: s.cardId } });
+  pd.chain.push({ spellUid: s.uid, cardId: s.cardId, owner: pi, ops: (d.effect.ops || []).map(o => ({ why: d.name, ...o })), negated: false, grave: { uid: s.uid, cardId: s.cardId } });
   pd.passes = 0;
   pd.turnPtr = 1 - pi;
   log(g, `${p.name} 发动伏笔「${d.name}」！`);
