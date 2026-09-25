@@ -1,10 +1,10 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=bae6d0d';
-import { DUEL_AI } from './duel/ai.js?v=bae6d0d';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=bae6d0d';
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=bae6d0d';
+import { DUEL } from './duel/engine.js?v=d3b3635';
+import { DUEL_AI } from './duel/ai.js?v=d3b3635';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=d3b3635';
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=d3b3635';
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -192,6 +192,30 @@ function spawnBurst(el) {
   setTimeout(() => b.remove(), 950);
   host.appendChild(b);
 }
+// round4：飞行光剑（用户设计——选中卡持剑，确认目标后剑飞过去）。剑尖默认朝上，按航向旋转。
+const SWORD_SVG = `<svg viewBox="0 0 28 96" xmlns="http://www.w3.org/2000/svg">
+  <path d="M14 2 L19 14 L19 62 L14 70 L9 62 L9 14 Z" fill="#eafaff" stroke="#8fd4ff" stroke-width="1"/>
+  <rect x="4" y="63" width="20" height="5" rx="2.5" fill="#d4af37"/>
+  <rect x="12" y="68" width="4" height="13" rx="2" fill="#7a5c1e"/>
+  <circle cx="14" cy="84" r="3.5" fill="#d4af37"/>
+</svg>`;
+function flySword(fromEl, toEl) {
+  if (!fromEl || !toEl || document.querySelector('.fx-sword')) return;
+  const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+  const x1 = a.left + a.width / 2, y1 = a.top + a.height / 2;
+  const dx = (b.left + b.width / 2) - x1, dy = (b.top + b.height / 2) - y1;
+  const rot = Math.atan2(dy, dx) * 180 / Math.PI + 90; // 剑身坐标 0°=朝上 → 对齐航向
+  const s = document.createElement('div');
+  s.className = 'fx-sword';
+  s.style.left = x1 + 'px'; s.style.top = y1 + 'px';
+  s.style.setProperty('--dx', dx + 'px');
+  s.style.setProperty('--dy', dy + 'px');
+  s.style.setProperty('--rot', rot + 'deg');
+  s.innerHTML = SWORD_SVG;
+  s.addEventListener('animationend', () => s.remove(), { once: true });
+  setTimeout(() => s.remove(), 950);
+  document.body.appendChild(s);
+}
 // render 后注入动效类：攻方冲撞（我打敌=向上/敌打我=向下）、目标受击红闪、LP 数字跳动（450ms 窗口，过窗自清）
 function fxPlay() {
   const now = Date.now();
@@ -211,8 +235,11 @@ function fxPlay() {
           host.appendChild(ghost);
         }
       }
-      // 命中演出（round3 视觉升级）：受击点爆裂环+粒子、全桌震动（冲撞 0.14s 后命中，CSS delay 对齐）
+      // 命中演出（round4 剑飞行版）：光剑从攻方射向目标（0.4s 航程），命中点爆裂/震动 CSS delay 对齐 0.38s
       const tgtEl = fxAttack.target ? document.querySelector(`[data-uid="${fxAttack.target}"]`) : null;
+      const fromEl = atkEl || document.querySelector('.fx-ghost') || (fxAttack.side === 0 ? els.myBoard : els.foeBoard);
+      const toEl = tgtEl || (fxAttack.side === 0 ? els.foeLpNum : els.myLpNum); // 直攻=剑飞向对方 LP 区
+      flySword(fromEl, toEl);
       if (tgtEl) { tgtEl.classList.add('fx-hit'); spawnBurst(tgtEl); }
       else spawnBurst(fxAttack.side === 0 ? els.foeLpNum : els.myLpNum); // 直接攻击命中 LP 区
       const tb = document.getElementById('table');
@@ -352,15 +379,19 @@ function emptySlots(n) { return Array.from({ length: DUEL.BOARD_MAX - n }, () =>
 function unitCard(u, mine) {
   const d = cardsById[u.cardId];
   const eqN = (u.equips || []).length;
+  // round4 P0：显示当前战斗力（卡面+buff+装备）——结算值与显示一致，偏离印刷值时▲▼标注
+  const A = DUEL.unitAtk(cardsById, u), D0 = DUEL.unitDef(cardsById, u);
+  const aCls = A > d.atk ? 'up' : A < d.atk ? 'down' : '';
+  const dCls = D0 > d.def ? 'up' : D0 < d.def ? 'down' : '';
   const cls = ['card', 'unit', u.pos === 'def' ? 'pos-def' : '', u.attacked ? 'attacked' : '',
     mine && clickable(u) ? 'playable' : '', sel === u.uid ? 'selected' : '',
     !mine && sel ? 'targetable' : ''].join(' ');
-  return `<div class="${cls}" data-uid="${u.uid}" title="${d.name} Lv${d.level} ATK${d.atk}/DEF${d.def}${eqN ? `（装备×${eqN}）` : ''}">
+  return `<div class="${cls}" data-uid="${u.uid}" title="${d.name} Lv${d.level} 攻${A}/守${D0}${eqN ? `（装备×${eqN}）` : ''}">
     <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
     <span class="lv">${d.level}</span>
     ${eqN ? `<span class="eq-badge">⚒${eqN}</span>` : ''}
     <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
-    <div class="stats"><span class="atk"><i>攻</i>${d.atk}</span><span class="def"><i>守</i>${d.def}</span></div>
+    <div class="stats"><span class="atk ${aCls}"><i>攻</i>${A}${aCls === 'up' ? '▲' : aCls === 'down' ? '▼' : ''}</span><span class="def ${dCls}"><i>守</i>${D0}${dCls === 'up' ? '▲' : dCls === 'down' ? '▼' : ''}</span></div>
   </div>`;
 }
 // 招式/伏笔效果短描述（手牌/弹层共用）
