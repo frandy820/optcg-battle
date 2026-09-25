@@ -307,9 +307,31 @@ html.reduce-fx .ph { transition-duration: 0s; }
   .toast { bottom: 96px; font-size: 12px; padding: 6px 12px; }
 }
 
-/* ---------- 战斗动效 v2（round3 用户反馈：要炫酷）----------
-   时间线（纯 CSS delay 排演出，无 JS 定时器链）：0s 攻方倾斜冲刺 → 0.14s 命中
-   （受击击退白闪 + 冲击环×2 + 放射粒子×6 + 全桌震动）→ 0.25s+ 破坏碎裂淡出。 */
+/* ---------- 战斗动效 v3（round4 用户设计：选中持剑 + 剑飞向目标）----------
+   时间线（纯 CSS delay 排演出）：0s 光剑离手加速飞射（0.4s 航程）→ 0.38s 剑至命中
+   （受击击退白闪 + 冲击环 + 粒子 + 全桌震动）→ 0.62s 破坏碎裂淡出；攻方全程随剑冲撞。 */
+/* 飞行光剑：fixed 起点居中，CSS 变量传航向/位移；剑尖朝上坐标按 --rot 对齐航向 */
+.fx-sword { position: fixed; z-index: 40; width: 34px; height: 96px; margin: -48px 0 0 -17px;
+  pointer-events: none; animation: swordFly .42s cubic-bezier(.3,.1,.6,1) forwards; }
+.fx-sword svg { width: 100%; height: 100%;
+  filter: drop-shadow(0 0 12px rgba(143,212,255,.95)) drop-shadow(0 0 3px #fff); }
+@keyframes swordFly {
+  0% { transform: translate(0,0) rotate(var(--rot)) scale(.55); opacity: 0; }
+  14% { opacity: 1; }
+  82% { filter: brightness(1.6); }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(1.08); opacity: .85; } }
+html.reduce-fx .fx-sword { display: none; }
+@media (prefers-reduced-motion: reduce) { .fx-sword { display: none; } }
+/* 选中攻击者=持剑待发（半透明光剑浮现卡面，缓慢游移；与 attacked 徽章互斥） */
+.card.selected:not(.attacked)::after {
+  content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 96"><path d="M14 2 L19 14 L19 62 L14 70 L9 62 L9 14 Z" fill="%23eafaff" stroke="%238fd4ff"/><rect x="4" y="63" width="20" height="5" rx="2.5" fill="%23d4af37"/><rect x="12" y="68" width="4" height="13" rx="2" fill="%237a5c1e"/><circle cx="14" cy="84" r="3.5" fill="%23d4af37"/></svg>') center 26%/auto 58% no-repeat;
+  opacity: .62; filter: drop-shadow(0 0 8px rgba(143,212,255,.85));
+  animation: swordIdle 1.3s ease-in-out infinite alternate; }
+@keyframes swordIdle { from { transform: rotate(-7deg) translateY(0); } to { transform: rotate(5deg) translateY(-4px); } }
+html.reduce-fx .card.selected:not(.attacked)::after { animation: none; }
+@media (prefers-reduced-motion: reduce) { .card.selected:not(.attacked)::after { animation: none; } }
+
 .fx-lunge-up { animation: lungeUp2 .5s cubic-bezier(.16,.9,.3,1); z-index: 6; }
 .fx-lunge-down { animation: lungeDown2 .5s cubic-bezier(.16,.9,.3,1); z-index: 6; }
 @keyframes lungeUp2 {
@@ -322,12 +344,12 @@ html.reduce-fx .ph { transition-duration: 0s; }
   28% { transform: translateY(56px) rotate(6deg) scale(1.14); filter: brightness(1.5) drop-shadow(0 -8px 10px rgba(0,0,0,.65)); }
   55% { transform: translateY(-4px); }
   100% { transform: none; filter: none; } }
-.fx-hit { animation: hitFx2 .5s ease; }
+.fx-hit { animation: hitFx2 .5s .38s ease; }
 @keyframes hitFx2 {
   10%,45%,75% { filter: brightness(2.5) saturate(3.2) hue-rotate(-18deg); transform: translate(5px,-3px) rotate(2.5deg); }
   28%,60% { filter: brightness(1.7) saturate(2); transform: translate(-5px,3px) rotate(-2deg); }
   100% { filter: none; transform: none; } }
-.lp-num.fx-hit { animation: lpHit2 .55s ease; display: inline-block; }
+.lp-num.fx-hit { animation: lpHit2 .55s .38s ease; display: inline-block; }
 @keyframes lpHit2 { 30% { transform: scale(1.6); color: #ff6b6b; text-shadow: 0 0 16px #e5484d; } }
 html.reduce-fx .fx-lunge-up, html.reduce-fx .fx-lunge-down, html.reduce-fx .fx-hit,
 html.reduce-fx .lp-num.fx-hit { animation: none; }
@@ -335,8 +357,8 @@ html.reduce-fx .lp-num.fx-hit { animation: none; }
   .fx-lunge-up, .fx-lunge-down, .fx-hit, .lp-num.fx-hit { animation: none; }
 }
 
-/* 全桌震动（命中时刻 0.12s 起，与冲撞 28% 对齐） */
-#table.fx-quake { animation: quake .42s .12s ease; }
+/* 全桌震动（命中时刻 0.38s 起，与剑至对齐） */
+#table.fx-quake { animation: quake .42s .38s ease; }
 @keyframes quake {
   0%,100% { transform: translate(0,0); }
   20% { transform: translate(-3px,2px); } 40% { transform: translate(3px,-2px); }
@@ -344,16 +366,16 @@ html.reduce-fx .lp-num.fx-hit { animation: none; }
 html.reduce-fx #table.fx-quake { animation: none; }
 @media (prefers-reduced-motion: reduce) { #table.fx-quake { animation: none; } }
 
-/* 命中点爆裂：冲击环×2 + 放射粒子×6（fxPlay spawnBurst 按目标定位挂 #table） */
+/* 命中点爆裂：冲击环×2 + 放射粒子×6（delay 0.38s 对齐剑至） */
 #table { position: relative; }
 .fx-burst { position: absolute; z-index: 30; pointer-events: none; width: 0; height: 0; }
 .fx-burst i { position: absolute; left: 0; top: 0; width: 16px; height: 16px; margin: -8px; border-radius: 50%;
-  border: 3px solid #ffd76e; opacity: 0; animation: ringOut .5s .12s ease-out forwards; }
-.fx-burst i:nth-child(2) { width: 22px; height: 22px; margin: -11px; border-color: #ff9b4a; animation-delay: .22s; animation-duration: .6s; }
+  border: 3px solid #ffd76e; opacity: 0; animation: ringOut .5s .38s ease-out forwards; }
+.fx-burst i:nth-child(2) { width: 22px; height: 22px; margin: -11px; border-color: #ff9b4a; animation-delay: .48s; animation-duration: .6s; }
 @keyframes ringOut { 0% { opacity: 1; transform: scale(.3); } 100% { opacity: 0; transform: scale(5.4); } }
 .fx-burst s { position: absolute; left: 0; top: 0; width: 6px; height: 6px; margin: -3px; border-radius: 2px;
   background: #ffe9a0; box-shadow: 0 0 6px #ffd76e; opacity: 0;
-  animation: sparkOut .55s .14s cubic-bezier(.1,.7,.4,1) forwards; }
+  animation: sparkOut .55s .4s cubic-bezier(.1,.7,.4,1) forwards; }
 @keyframes sparkOut {
   0% { opacity: 1; transform: rotate(var(--a)) translateX(8px); }
   100% { opacity: 0; transform: rotate(var(--a)) translateX(48px) scale(.3); } }
@@ -364,8 +386,8 @@ html.reduce-fx .fx-burst, html.reduce-fx .fx-burst i, html.reduce-fx .fx-burst s
 .unit-row { position: relative; }
 .fx-ghost { position: absolute; left: 50%; top: 4px; margin-left: calc(var(--card-w) / -2);
   pointer-events: none; opacity: .92;
-  animation: lungeUp2 .5s cubic-bezier(.16,.9,.3,1), ghostBreak .42s .24s ease forwards; }
-.fx-ghost.fx-lunge-down { animation: lungeDown2 .5s cubic-bezier(.16,.9,.3,1), ghostBreak .42s .24s ease forwards; }
+  animation: lungeUp2 .5s cubic-bezier(.16,.9,.3,1), ghostBreak .42s .62s ease forwards; }
+.fx-ghost.fx-lunge-down { animation: lungeDown2 .5s cubic-bezier(.16,.9,.3,1), ghostBreak .42s .62s ease forwards; }
 @keyframes ghostBreak {
   0% { filter: brightness(1); }
   30% { filter: brightness(2.8) grayscale(0); }
@@ -432,6 +454,9 @@ html.reduce-fx .fx-summon, html.reduce-fx .fx-lpfloat { animation: none; display
 
 /* 卡面数值胶囊（攻/守权重已加标签，胶囊消除「挨着摆放」的拥挤感） */
 .card .stats span { background: rgba(255,255,255,.55); border-radius: 4px; padding: 0 4px; }
+/* round4 P0：实时战斗力偏离印刷值时▲绿/▼红（结算值=显示值，分数看得懂） */
+.card .stats span.up { background: #d9f6e2; color: #0d7a3a !important; }
+.card .stats span.down { background: #f6dcdc; color: #8a1f1f !important; }
 
 /* ---------- 手机单屏 v2：svh + 矮屏守卫 + 横屏放行 ---------- */
 @media (max-width: 720px) and (orientation: portrait) and (min-height: 480px) {
