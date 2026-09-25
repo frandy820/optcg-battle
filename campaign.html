@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>东海篇 · 闯关模式 — 伟大航路决斗</title>
-<link rel="stylesheet" href="campaign.css">
+<link rel="stylesheet" href="campaign.css?v=1189296">
 </head>
 <body class="campaign-scene">
 <div id="app">
@@ -24,6 +24,9 @@
   <!-- 东海篇关卡 -->
   <main id="tab-stages" class="tabpane">
     <div class="progress-line" id="progLine"></div>
+    <section class="tut-entry" id="tutEntry">
+      <b>🎓 新手教学</b><span id="tutBtns"></span>
+    </section>
     <div id="stageList"></div>
   </main>
 
@@ -47,7 +50,9 @@
 
   <footer id="hint">通关解锁新人物卡 · 牌组须满 20 张才可出战</footer>
 </div>
+<!-- 手机端构筑入口（浮动胶囊 → 底部抽屉；桌面隐藏） -->
+<button id="deckFab" class="deck-fab" title="查看当前构筑">构筑 0/20</button>
 <div id="toast" class="toast hidden"></div>
-<script type="module" src="campaign-ui.js"></script>
+<script type="module" src="campaign-ui.js?v=1189296"></script>
 </body>
 </html>
