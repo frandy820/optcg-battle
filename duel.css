@@ -52,7 +52,8 @@ body.duel-scene {
 /* 人物区 */
 .unit-row { display: flex; gap: 10px; min-height: calc(var(--card-h) + 14px); align-items: center; padding: 4px 6px;
   border-radius: 10px; background: rgba(8,16,34,.35); border: 1px dashed #24406e; }
-.slot { width: var(--card-w); height: var(--card-h); border-radius: var(--r-card); border: 1px dashed #22375f; opacity: .5; }
+.slot { width: var(--card-w); height: var(--card-h); border-radius: var(--r-card); border: 1px dashed rgba(212,175,55,.38); opacity: .6;
+  background: rgba(212,175,55,.04); }
 .zone.foe .unit-row { justify-content: center; }
 .zone.mine .unit-row { justify-content: center; }
 
@@ -187,10 +188,10 @@ body.duel-scene {
 /* 响应窗口横幅（与普通提示区分：红边脉冲 + 顶部吸附） */
 .respond-banner { position: fixed; top: 64px; left: 50%; transform: translateX(-50%); z-index: 55;
   background: linear-gradient(180deg, #2a0f18, #160812); border: 2px solid #e5484d; border-radius: 12px;
-  padding: 10px 16px; max-width: 92vw; box-shadow: 0 6px 26px rgba(229,72,77,.4);
-  animation: rbPulse 1.1s infinite; text-align: center; }
+  padding: 10px 16px; max-width: 92vw; box-shadow: 0 6px 26px rgba(229,72,77,.55);
+  animation: rbIn .3s ease; text-align: center; }
 .respond-banner.hidden { display: none; }
-@keyframes rbPulse { 0%,100% { box-shadow: 0 6px 26px rgba(229,72,77,.35); } 50% { box-shadow: 0 6px 34px rgba(229,72,77,.85); } }
+@keyframes rbIn { from { opacity: 0; transform: translate(-50%, -10px); } }
 .rb-text { color: #ffd9d9; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
 .rb-text small { color: #c9a; font-weight: 400; display: block; margin-top: 2px; }
 .rb-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
@@ -306,31 +307,69 @@ html.reduce-fx .ph { transition-duration: 0s; }
   .toast { bottom: 96px; font-size: 12px; padding: 6px 12px; }
 }
 
-/* ---------- 战斗动效（Phase 5 用户反馈：攻击没有反馈感）----------
-   攻方冲撞（我打敌=向上 / 敌打我=向下）+ 目标受击红闪 + LP 数字跳动；
-   纯 CSS 一次性动画（450ms 窗口，fxPlay 注入类），不阻塞操作；reduce-fx 下静默。 */
-.fx-lunge-up { animation: lungeUp .42s ease; z-index: 6; }
-.fx-lunge-down { animation: lungeDown .42s ease; z-index: 6; }
-@keyframes lungeUp { 35% { transform: translateY(-38px) scale(1.07); } }
-@keyframes lungeDown { 35% { transform: translateY(38px) scale(1.07); } }
-.fx-hit { animation: hitFx .42s ease; }
-@keyframes hitFx { 15%,45%,75% { filter: brightness(2) saturate(3) hue-rotate(-25deg); transform: translateX(3px); }
-  30%,60% { filter: brightness(1.6) saturate(2); transform: translateX(-3px); } }
-.lp-num.fx-hit { animation: lpHit .5s ease; display: inline-block; }
-@keyframes lpHit { 30% { transform: scale(1.45); color: #ff6b6b; text-shadow: 0 0 12px #e5484d; } }
+/* ---------- 战斗动效 v2（round3 用户反馈：要炫酷）----------
+   时间线（纯 CSS delay 排演出，无 JS 定时器链）：0s 攻方倾斜冲刺 → 0.14s 命中
+   （受击击退白闪 + 冲击环×2 + 放射粒子×6 + 全桌震动）→ 0.25s+ 破坏碎裂淡出。 */
+.fx-lunge-up { animation: lungeUp2 .5s cubic-bezier(.16,.9,.3,1); z-index: 6; }
+.fx-lunge-down { animation: lungeDown2 .5s cubic-bezier(.16,.9,.3,1); z-index: 6; }
+@keyframes lungeUp2 {
+  0% { filter: brightness(1.1); }
+  28% { transform: translateY(-56px) rotate(-6deg) scale(1.14); filter: brightness(1.5) drop-shadow(0 8px 10px rgba(0,0,0,.65)); }
+  55% { transform: translateY(4px); }
+  100% { transform: none; filter: none; } }
+@keyframes lungeDown2 {
+  0% { filter: brightness(1.1); }
+  28% { transform: translateY(56px) rotate(6deg) scale(1.14); filter: brightness(1.5) drop-shadow(0 -8px 10px rgba(0,0,0,.65)); }
+  55% { transform: translateY(-4px); }
+  100% { transform: none; filter: none; } }
+.fx-hit { animation: hitFx2 .5s ease; }
+@keyframes hitFx2 {
+  10%,45%,75% { filter: brightness(2.5) saturate(3.2) hue-rotate(-18deg); transform: translate(5px,-3px) rotate(2.5deg); }
+  28%,60% { filter: brightness(1.7) saturate(2); transform: translate(-5px,3px) rotate(-2deg); }
+  100% { filter: none; transform: none; } }
+.lp-num.fx-hit { animation: lpHit2 .55s ease; display: inline-block; }
+@keyframes lpHit2 { 30% { transform: scale(1.6); color: #ff6b6b; text-shadow: 0 0 16px #e5484d; } }
 html.reduce-fx .fx-lunge-up, html.reduce-fx .fx-lunge-down, html.reduce-fx .fx-hit,
 html.reduce-fx .lp-num.fx-hit { animation: none; }
 @media (prefers-reduced-motion: reduce) {
   .fx-lunge-up, .fx-lunge-down, .fx-hit, .lp-num.fx-hit { animation: none; }
 }
 
-/* 阵亡攻方冲撞残影：绝对定位幽灵卡，冲撞后灰化淡出自清 */
+/* 全桌震动（命中时刻 0.12s 起，与冲撞 28% 对齐） */
+#table.fx-quake { animation: quake .42s .12s ease; }
+@keyframes quake {
+  0%,100% { transform: translate(0,0); }
+  20% { transform: translate(-3px,2px); } 40% { transform: translate(3px,-2px); }
+  60% { transform: translate(-2px,-2px); } 80% { transform: translate(2px,1px); } }
+html.reduce-fx #table.fx-quake { animation: none; }
+@media (prefers-reduced-motion: reduce) { #table.fx-quake { animation: none; } }
+
+/* 命中点爆裂：冲击环×2 + 放射粒子×6（fxPlay spawnBurst 按目标定位挂 #table） */
+#table { position: relative; }
+.fx-burst { position: absolute; z-index: 30; pointer-events: none; width: 0; height: 0; }
+.fx-burst i { position: absolute; left: 0; top: 0; width: 16px; height: 16px; margin: -8px; border-radius: 50%;
+  border: 3px solid #ffd76e; opacity: 0; animation: ringOut .5s .12s ease-out forwards; }
+.fx-burst i:nth-child(2) { width: 22px; height: 22px; margin: -11px; border-color: #ff9b4a; animation-delay: .22s; animation-duration: .6s; }
+@keyframes ringOut { 0% { opacity: 1; transform: scale(.3); } 100% { opacity: 0; transform: scale(5.4); } }
+.fx-burst s { position: absolute; left: 0; top: 0; width: 6px; height: 6px; margin: -3px; border-radius: 2px;
+  background: #ffe9a0; box-shadow: 0 0 6px #ffd76e; opacity: 0;
+  animation: sparkOut .55s .14s cubic-bezier(.1,.7,.4,1) forwards; }
+@keyframes sparkOut {
+  0% { opacity: 1; transform: rotate(var(--a)) translateX(8px); }
+  100% { opacity: 0; transform: rotate(var(--a)) translateX(48px) scale(.3); } }
+html.reduce-fx .fx-burst, html.reduce-fx .fx-burst i, html.reduce-fx .fx-burst s { display: none; }
+@media (prefers-reduced-motion: reduce) { .fx-burst { display: none; } }
+
+/* 阵亡攻方冲撞残影：冲撞后白闪碎裂（放大+模糊飞散）淡出自清 */
 .unit-row { position: relative; }
 .fx-ghost { position: absolute; left: 50%; top: 4px; margin-left: calc(var(--card-w) / -2);
-  pointer-events: none; opacity: .92; filter: grayscale(.4);
-  animation: lungeUp .42s ease, ghostFade .3s .25s forwards; }
-.fx-ghost.fx-lunge-down { animation: lungeDown .42s ease, ghostFade .3s .25s forwards; }
-@keyframes ghostFade { to { opacity: 0; } }
+  pointer-events: none; opacity: .92;
+  animation: lungeUp2 .5s cubic-bezier(.16,.9,.3,1), ghostBreak .42s .24s ease forwards; }
+.fx-ghost.fx-lunge-down { animation: lungeDown2 .5s cubic-bezier(.16,.9,.3,1), ghostBreak .42s .24s ease forwards; }
+@keyframes ghostBreak {
+  0% { filter: brightness(1); }
+  30% { filter: brightness(2.8) grayscale(0); }
+  100% { opacity: 0; transform: scale(1.3); filter: blur(8px) brightness(2.2); } }
 html.reduce-fx .fx-ghost { display: none; }
 @media (prefers-reduced-motion: reduce) { .fx-ghost { display: none; } }
 
@@ -423,3 +462,81 @@ html.reduce-fx .fx-summon, html.reduce-fx .fx-lpfloat { animation: none; display
   #actionBar { position: sticky; bottom: 0; background: rgba(6,13,31,.94); padding: 6px 8px;
     border-top: 1px solid #1d3a6b; border-radius: 10px; z-index: 20; }
 }
+
+/* ---------- round3 视觉升级：发动闪卡 + 桌面/卡面/LP 质感 + 背景氛围 ---------- */
+/* 发动闪卡：伏笔（紫）/招式（红）发动时全屏居中弹出演出，1s 自清；pointer-events 不挡操作 */
+.fx-cast { position: fixed; left: 50%; top: 36%; z-index: 56; pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  animation: castIn 1.05s cubic-bezier(.2,.9,.35,1) forwards; }
+.fx-cast img { width: min(150px, 34vw); aspect-ratio: .704; object-fit: cover; object-position: center 10%;
+  border-radius: 12px; background: #0c1730; }
+.fx-cast.t-trap img { border: 3px solid #8d6bd6; box-shadow: 0 0 36px rgba(141,107,214,.95), 0 14px 34px rgba(0,0,0,.65); }
+.fx-cast.t-move img { border: 3px solid #e5484d; box-shadow: 0 0 36px rgba(229,72,77,.95), 0 14px 34px rgba(0,0,0,.65); }
+.fx-cast b { font-size: 16px; font-weight: 900; letter-spacing: 1px; white-space: nowrap;
+  padding: 3px 14px; border-radius: 999px; background: rgba(6,13,31,.85); }
+.fx-cast.t-trap b { color: #d9c9f5; text-shadow: 0 0 12px rgba(141,107,214,.9); border: 1px solid #8d6bd6; }
+.fx-cast.t-move b { color: #ffd9d9; text-shadow: 0 0 12px rgba(229,72,77,.9); border: 1px solid #e5484d; }
+@keyframes castIn {
+  0% { opacity: 0; transform: translate(-50%, 0) scale(.45); filter: brightness(2.6); }
+  16% { opacity: 1; transform: translate(-50%, 0) scale(1.14); }
+  28% { transform: translate(-50%, 0) scale(1); }
+  78% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -26px) scale(1.04); filter: brightness(1.6); } }
+html.reduce-fx .fx-cast { display: none; }
+@media (prefers-reduced-motion: reduce) { .fx-cast { display: none; } }
+
+/* 决斗桌质感：深胡桃木面 + 金线镶边 + 内阴影（叠在深海背景上=牌桌意象） */
+#table {
+  background:
+    linear-gradient(180deg, rgba(10,26,53,.16), rgba(6,13,31,.38)),
+    repeating-linear-gradient(90deg, rgba(212,175,55,.05) 0 2px, transparent 2px 24px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.1) 0 1px, transparent 1px 11px),
+    linear-gradient(180deg, #3d2c16, #241a0c);
+  border: 1px solid #a5822e;
+  box-shadow: inset 0 0 0 2px rgba(212,175,55,.4), inset 0 0 38px rgba(0,0,0,.55), 0 10px 34px rgba(0,0,0,.55); }
+/* 内嵌金线框（镶边层次；不挡操作） */
+#table::after { content: ''; position: absolute; inset: 5px; pointer-events: none; border-radius: 10px;
+  border: 1px solid rgba(212,175,55,.28); }
+/* LP 底槽加深+条子提亮（对比度） */
+.lp-bar { background: #070f22; border-color: #3a5a95; }
+.lp-bar > i { filter: saturate(1.25) brightness(1.12); }
+
+/* 背景氛围：顶部金光锥缓慢摇曳 + 四周渐晕（纯伪元素，无 DOM；reduce-fx 静止） */
+body.duel-scene::before { content: ''; position: fixed; inset: -20% -10% auto; height: 75%; z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(52% 62% at 50% -8%, rgba(212,175,55,.13), transparent 70%);
+  animation: glowDrift 9s ease-in-out infinite alternate; }
+body.duel-scene::after { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(3,7,16,.55) 100%); }
+#app { position: relative; z-index: 1; }
+@keyframes glowDrift { from { transform: translateX(-2.5%); opacity: .8; } to { transform: translateX(2.5%); opacity: 1; } }
+html.reduce-fx body.duel-scene::before { animation: none; }
+@media (prefers-reduced-motion: reduce) { body.duel-scene::before { animation: none; } }
+
+/* 卡面质感：可点卡 hover 金泽斜扫（before 光泽层，attacked 徽章仍走 after） */
+.card.playable::before { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,244,200,.5) 46%, rgba(255,255,255,.85) 50%, rgba(255,244,200,.5) 54%, transparent 70%);
+  transform: translateX(-130%); }
+.card.playable:hover::before, .card.selected::before { animation: sheen .8s ease; }
+@keyframes sheen { to { transform: translateX(130%); } }
+html.reduce-fx .card.playable:hover::before { animation: none; transform: none; background: none; }
+@media (prefers-reduced-motion: reduce) { .card.playable:hover::before { animation: none; transform: none; background: none; } }
+
+/* LP 条流光：血条内高光带缓慢横移（生命感） */
+.lp-bar > i { position: relative; overflow: hidden; }
+.lp-bar > i::after { content: ''; position: absolute; inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.4) 42%, rgba(255,255,255,.55) 50%, rgba(255,255,255,.4) 58%, transparent 80%);
+  background-size: 220% 100%; animation: lpFlow 2.6s linear infinite; }
+@keyframes lpFlow { from { background-position: 130% 0; } to { background-position: -90% 0; } }
+html.reduce-fx .lp-bar > i::after { animation: none; opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .lp-bar > i::after { animation: none; opacity: 0; } }
+
+/* 主按钮按压反馈 + 弹层禁用态 */
+.next-btn:active { transform: translateY(1px) scale(.97); filter: brightness(.95); }
+.ab-sub:active { transform: translateY(1px); }
+.modal-box .opt:disabled { opacity: .42; cursor: not-allowed; border-style: dashed; }
+.modal-box .opt:disabled:hover { border-color: #2a4a7e; background: #10203f; }
+
+/* 发动闪卡时全屏暗化一拍（增强演出聚焦；随 .fx-cast 自清） */
+.fx-cast + .cast-dim, body > .cast-dim { position: fixed; inset: 0; background: rgba(3,7,16,.28); z-index: 55; pointer-events: none; animation: castDim 1.05s ease forwards; }
+@keyframes castDim { 0% { opacity: 0; } 18% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
