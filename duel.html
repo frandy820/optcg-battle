@@ -4,19 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>伟大航路决斗 · 海贼王卡牌对战</title>
-<link rel="stylesheet" href="duel.css">
+<link rel="stylesheet" href="duel.css?v=1189296">
 </head>
 <body class="duel-scene">
 <div id="app">
   <header id="topbar">
-    <div class="turn-chip" id="turnChip">第 1 回合</div>
+    <div class="turn-chip" id="turnChip">第 1 回合 · 你的回合</div>
     <h1 class="duel-title">伟大航路决斗</h1>
     <div class="top-actions">
       <button id="btnHelp" class="ghost-btn">规则</button>
+      <button id="btnFx" class="ghost-btn" title="闪烁/脉冲等演出动画开关（也自动跟随系统「减少动态效果」设置）">动效：开</button>
       <a class="ghost-btn" href="campaign.html">闯关模式</a>
       <button id="btnRestart" class="ghost-btn">重新开局</button>
       <a class="ghost-btn" href="index.html">旧版入口</a>
     </div>
+    <button id="btnMenu" class="ghost-btn menu-btn" title="菜单">☰</button>
   </header>
 
   <div id="phaseBar">
@@ -50,11 +52,6 @@
       <div class="spell-row foe-spells" id="foeSpells"></div>
     </section>
 
-    <!-- 中线：战报 -->
-    <section id="midline">
-      <div id="battleLog" aria-live="polite"></div>
-    </section>
-
     <!-- 我方区 -->
     <section class="zone mine" id="mineZone">
       <div class="unit-row" id="myBoard"></div>
@@ -66,13 +63,20 @@
           <span class="chip">牌组 <b id="myDeckN">20</b></span>
           <span class="chip">墓场 <b id="myGraveN">0</b></span>
         </div>
-        <button id="btnNext" class="next-btn">下一步 ›</button>
       </div>
       <div class="my-hand" id="myHand"></div>
     </section>
   </main>
 
-  <footer id="hint">— 决斗准备 —</footer>
+  <!-- 底部动作条：提示 + 战报 ticker + 主按钮（桌面手机同构） -->
+  <footer id="actionBar">
+    <div class="ab-left">
+      <div id="hint">— 决斗准备 —</div>
+      <div id="ticker" aria-live="polite"></div>
+    </div>
+    <button id="btnToMain2" class="ab-sub hidden" title="不结束回合，先去主要阶段2 登场/盖伏">出牌 ›</button>
+    <button id="btnNext" class="next-btn ab-btn">下一步 ›</button>
+  </footer>
 </div>
 
 <!-- 弹层：登场选项 -->
@@ -86,6 +90,11 @@
   <div class="rb-text" id="rbText"></div>
   <div class="rb-btns" id="rbBtns"></div>
 </div>
+<!-- 战报抽屉（点击 ticker 展开） -->
+<div id="logDrawer" class="log-drawer">
+  <div class="ld-head"><b>战斗记录</b><button id="ldClose">收起 ▾</button></div>
+  <div id="ldBody"></div>
+</div>
 <!-- toast -->
 <div id="toast" class="toast hidden"></div>
 <!-- 胜负遮罩 -->
@@ -97,6 +106,6 @@
   </div>
 </div>
 
-<script type="module" src="duel-ui.js"></script>
+<script type="module" src="duel-ui.js?v=1189296"></script>
 </body>
 </html>
