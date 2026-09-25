@@ -1,8 +1,8 @@
 // 东海篇闯关 + 牌组工坊 UI（Phase 4）
 // 进度/牌组存 localStorage；开战写 gld_duel_pending → duel.html 开局；胜利由 duel-ui 回写通关。
 'use strict';
-import DATA from './data/duel-cards.js';
-import STAGES from './data/duel-stages.js';
+import DATA from './data/duel-cards.js?v=1189296';
+import STAGES from './data/duel-stages.js?v=1189296';
 
 const cardsById = {};
 for (const c of DATA.cards) cardsById[c.id] = c;
@@ -11,7 +11,7 @@ const els = {
   progLine: $('progLine'), stageList: $('stageList'),
   deckSlots: $('deckSlots'), deckStats: $('deckStats'), pool: $('pool'), built: $('built'),
   tabs: [...document.querySelectorAll('.tab')], panes: { stages: $('tab-stages'), deck: $('tab-deck') },
-  toast: $('toast'),
+  toast: $('toast'), deckFab: $('deckFab'),
 };
 
 const SAVE_KEY = 'gld_campaign_v1';
@@ -61,6 +61,7 @@ function validateDeck(cards) {
 function renderStages() {
   const clearedN = save.cleared.length;
   els.progLine.innerHTML = `征程：<b>${clearedN}/8</b> 关通关` + (clearedN >= 8 ? ' · <b>东海篇制霸！</b>' : '');
+  renderTutEntry();
   els.stageList.innerHTML = STAGES.map(st => {
     const cleared = save.cleared.includes(st.id);
     const open = st.id === 1 || save.cleared.includes(st.id - 1);
@@ -88,6 +89,16 @@ function renderStages() {
     </div>`;
   }).join('');
   els.stageList.querySelectorAll('.fight-btn').forEach(b => b.onclick = () => startStage(+b.dataset.st));
+}
+
+// 教学入口（Phase 5）：三段直达 duel.html?tutorial=N；已完成打 ✓（gld_tut_done 由 duel-ui 写）
+function renderTutEntry() {
+  const names = ['登场与战斗', '招式卡', '伏笔与响应'];
+  let done = [];
+  try { done = JSON.parse(localStorage.getItem('gld_tut_done') || '[]'); } catch (e) { done = []; }
+  $('tutBtns').innerHTML = names.map((n, i) =>
+    `<a class="tut-link" href="duel.html?tutorial=${i + 1}">${i + 1}. ${n}${done.includes(i + 1) ? ' ✓' : ''}</a>`
+  ).join('') + `<a class="tut-link all" href="duel.html?tutorial=1">${done.length >= 3 ? '↺ 全部重看' : '▶ 从头开始'}</a>`;
 }
 
 function startStage(stageId) {
@@ -151,7 +162,15 @@ function renderDeck() {
   const cnt = {};
   for (const id of cards) cnt[id] = (cnt[id] || 0) + 1;
   const baseSet = new Set(BASE_POOL);
-  els.pool.innerHTML = poolIds.filter(id => filter === 'all' || cardsById[id].type === filter).map(id => {
+  // 过滤按钮带各类计数（一眼看出该类还有多少可选）
+  const typeCnt = { all: poolIds.length, char: 0, move: 0, trap: 0 };
+  for (const id of poolIds) typeCnt[cardsById[id].type]++;
+  document.querySelectorAll('.fbtn').forEach(b => {
+    const f = b.dataset.f;
+    b.textContent = ({ all: '全部', char: '人物', move: '招式', trap: '伏笔' })[f] + ` ${typeCnt[f]}`;
+  });
+  const shown = poolIds.filter(id => filter === 'all' || cardsById[id].type === filter);
+  els.pool.innerHTML = shown.map(id => {
     const c = cardsById[id];
     const n = cnt[id] || 0;
     const stats = c.type === 'char'
@@ -166,16 +185,31 @@ function renderDeck() {
     </div>`;
   }).join('');
   els.pool.querySelectorAll('.pool-card').forEach(el => el.onclick = () => addCard(el.dataset.id));
-  // 构筑清单
+  if (!shown.length) els.pool.innerHTML = '<div class="pool-empty">该类型暂无可选卡</div>';
+  // 构筑清单：人物/招式/伏笔分组 + 组头计数 + 20 张进度条
   const order = {};
   cards.forEach(id => order[id] = (order[id] || 0) + 1);
-  const rows = Object.entries(order).map(([id, n]) => {
-    const c = cardsById[id];
-    return `<div class="brow" data-id="${id}"><span class="bn">${c.name}<small>${c.type === 'char' ? `Lv${c.level} ${c.atk}/${c.def}` : (c.type === 'move' ? '招式' : '伏笔')}</small></span><span class="bx">×${n}</span></div>`;
-  }).join('');
-  els.built.innerHTML = `<h3>当前构筑（点击卡池加入 / 点击条目移除）</h3>` +
-    (rows || '<div class="bempty">空——从卡池点击加入</div>') + rows;
+  let rows = `<div class="bclose" id="bClose">▾ 收起构筑</div>
+    <h3>当前构筑 <span class="bprog">${cards.length}/20</span></h3>
+    <div class="bbar"><i style="width:${Math.min(100, cards.length / 20 * 100)}%"></i></div>
+    <div class="bhint">点卡池加入 · 点条目移除</div>`;
+  let any = false;
+  for (const [t, label] of [['char', '⚔ 人物'], ['move', '✦ 招式'], ['trap', '◈ 伏笔']]) {
+    const items = Object.entries(order).filter(([id]) => cardsById[id].type === t);
+    if (!items.length) continue;
+    any = true;
+    const nSum = items.reduce((s, [, n]) => s + n, 0);
+    rows += `<div class="bgrp">${label} <span>${nSum}</span></div>` + items.map(([id, n]) => {
+      const c = cardsById[id];
+      return `<div class="brow" data-id="${id}"><span class="bn">${c.name}<small>${c.type === 'char' ? `Lv${c.level} ${c.atk}/${c.def}` : (c.type === 'move' ? '招式' : '伏笔')}</small></span><span class="bx">×${n}</span></div>`;
+    }).join('');
+  }
+  if (!any) rows += '<div class="bempty">空——从卡池点击加入</div>';
+  els.built.innerHTML = rows;
   els.built.querySelectorAll('.brow').forEach(el => el.onclick = () => removeCard(el.dataset.id));
+  const bc = $('bClose');
+  if (bc) bc.onclick = () => els.built.classList.remove('open');
+  if (els.deckFab) els.deckFab.textContent = `构筑 ${cards.length}/20`;
 }
 
 function addCard(id) {
@@ -208,6 +242,13 @@ function switchTab(name) {
   for (const [k, pane] of Object.entries(els.panes)) pane.classList.toggle('hidden', k !== name);
 }
 els.tabs.forEach(t => t.onclick = () => switchTab(t.dataset.tab));
+// 过滤按钮（体验 round2 修复：原先无绑定，点击不生效）+ 手机构筑胶囊
+document.querySelectorAll('.fbtn').forEach(b => b.onclick = () => {
+  filter = b.dataset.f;
+  document.querySelectorAll('.fbtn').forEach(x => x.classList.toggle('active', x === b));
+  renderDeck();
+});
+if (els.deckFab) els.deckFab.onclick = () => els.built.classList.toggle('open');
 
 let toastTimer = null;
 function toast(msg) {
