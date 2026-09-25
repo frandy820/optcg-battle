@@ -1,10 +1,10 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=d3b3635';
-import { DUEL_AI } from './duel/ai.js?v=d3b3635';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=d3b3635';
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=d3b3635';
+import { DUEL } from './duel/engine.js?v=a40a236';
+import { DUEL_AI } from './duel/ai.js?v=a40a236';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=a40a236';
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=a40a236';
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -168,26 +168,37 @@ function act(pi, a) {
     if (a.t === 'attack') {
       const au = g.players[pi].board.find(u => u.uid === a.uid) || g.players[pi].grave.find(u => u.uid === a.uid);
       const ad = au && cardsById[au.cardId];
-      fxAttack = { uid: a.uid, target: a.target, side: pi, t: Date.now(),
+      // 目标位置快照（applyAction 前，目标还在场）——破坏性攻击结算后目标 DOM 即被重绘移除，
+      // 剑与爆裂须打在目标倒下的原位（round4 用户反馈：剑要飞到攻击的对象）
+      let tgtRect = null;
+      if (a.target) {
+        const tEl = document.querySelector(`[data-uid="${a.target}"]`);
+        if (tEl) tgtRect = tEl.getBoundingClientRect();
+      }
+      fxAttack = { uid: a.uid, target: a.target, side: pi, t: Date.now(), tgtRect,
         art: ad ? ad.art : null, name: ad ? ad.name : '' }; // 快照：攻方阵亡时渲染冲撞残影
     }
     if (castD) fxCast = { d: castD, t: Date.now() }; // 发动闪卡演出（伏笔/招式）
     const d0 = lp0[0] - g.players[0].lp, d1 = lp0[1] - g.players[1].lp;
     if (d0 !== 0 || d1 !== 0) {
-      fxLp = { side: d0 > 0 ? 0 : 1, delta: Math.max(d0, d1), t: Date.now() }; // 扣血方闪红+飘字
+      // 归因：本笔伤害的 why（damageLP 日志「XX LP -N（why）→ M」）——飘字带上卡名，多笔连跳可分清
+      const delta = Math.max(d0, d1);
+      const whyRow = g.log.slice().reverse().find(l => l.msg.includes(`LP -${delta}`));
+      const m = whyRow && whyRow.msg.match(/LP -\d+（(.+?)）/); // 锚定伤害括号（玩家名含括号如「（AI）」不误抓）
+      fxLp = { side: d0 > 0 ? 0 : 1, delta, why: m ? m[1] : '', t: Date.now() }; // 扣血方闪红+飘字
     }
   }
   return r;
 }
-// 命中点爆裂演出：冲击环×2 + 放射粒子×6（挂 #table 按目标绝对定位，900ms 自清）
-function spawnBurst(el) {
+// 命中点爆裂演出：冲击环×2 + 放射粒子×6（挂 #table，入参=页面坐标中心，900ms 自清）
+function spawnBurst(pt) {
   const host = document.getElementById('table');
-  if (!host || !el || document.querySelector('.fx-burst')) return;
-  const r = el.getBoundingClientRect(), hr = host.getBoundingClientRect();
+  if (!host || !pt || document.querySelector('.fx-burst')) return;
+  const hr = host.getBoundingClientRect();
   const b = document.createElement('div');
   b.className = 'fx-burst';
-  b.style.left = (r.left + r.width / 2 - hr.left) + 'px';
-  b.style.top = (r.top + r.height / 2 - hr.top) + 'px';
+  b.style.left = (pt.x - hr.left) + 'px';
+  b.style.top = (pt.y - hr.top) + 'px';
   b.innerHTML = '<i></i><i></i>' + Array.from({ length: 6 }, (_, k) => `<s style="--a:${k * 60}deg"></s>`).join('');
   setTimeout(() => b.remove(), 950);
   host.appendChild(b);
@@ -199,15 +210,21 @@ const SWORD_SVG = `<svg viewBox="0 0 28 96" xmlns="http://www.w3.org/2000/svg">
   <rect x="12" y="68" width="4" height="13" rx="2" fill="#7a5c1e"/>
   <circle cx="14" cy="84" r="3.5" fill="#d4af37"/>
 </svg>`;
-function flySword(fromEl, toEl) {
-  if (!fromEl || !toEl || document.querySelector('.fx-sword')) return;
-  const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
-  const x1 = a.left + a.width / 2, y1 = a.top + a.height / 2;
-  const dx = (b.left + b.width / 2) - x1, dy = (b.top + b.height / 2) - y1;
+// 端点归一：元素→中心坐标 {x,y}；坐标直接透传（目标被破坏时传攻击前 rect 的中心）
+function fxCenter(v) {
+  if (!v) return null;
+  if (v instanceof Element) { const r = v.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+  if (typeof v.x === 'number') return v;
+  return null;
+}
+function flySword(from, to) {
+  const a = fxCenter(from), b = fxCenter(to);
+  if (!a || !b || document.querySelector('.fx-sword')) return;
+  const dx = b.x - a.x, dy = b.y - a.y;
   const rot = Math.atan2(dy, dx) * 180 / Math.PI + 90; // 剑身坐标 0°=朝上 → 对齐航向
   const s = document.createElement('div');
   s.className = 'fx-sword';
-  s.style.left = x1 + 'px'; s.style.top = y1 + 'px';
+  s.style.left = a.x + 'px'; s.style.top = a.y + 'px';
   s.style.setProperty('--dx', dx + 'px');
   s.style.setProperty('--dy', dy + 'px');
   s.style.setProperty('--rot', rot + 'deg');
@@ -236,12 +253,15 @@ function fxPlay() {
         }
       }
       // 命中演出（round4 剑飞行版）：光剑从攻方射向目标（0.4s 航程），命中点爆裂/震动 CSS delay 对齐 0.38s
+      // 目标被破坏时 DOM 已重绘移除 → 用 act() 快照的攻击前位置（剑与爆裂打在目标倒下的原位）
       const tgtEl = fxAttack.target ? document.querySelector(`[data-uid="${fxAttack.target}"]`) : null;
-      const fromEl = atkEl || document.querySelector('.fx-ghost') || (fxAttack.side === 0 ? els.myBoard : els.foeBoard);
-      const toEl = tgtEl || (fxAttack.side === 0 ? els.foeLpNum : els.myLpNum); // 直攻=剑飞向对方 LP 区
-      flySword(fromEl, toEl);
-      if (tgtEl) { tgtEl.classList.add('fx-hit'); spawnBurst(tgtEl); }
-      else spawnBurst(fxAttack.side === 0 ? els.foeLpNum : els.myLpNum); // 直接攻击命中 LP 区
+      const tgtC = fxCenter(tgtEl) || (fxAttack.tgtRect
+        ? { x: fxAttack.tgtRect.left + fxAttack.tgtRect.width / 2, y: fxAttack.tgtRect.top + fxAttack.tgtRect.height / 2 }
+        : null) || fxCenter(fxAttack.side === 0 ? els.foeLpNum : els.myLpNum); // 直攻=LP 区
+      const from = atkEl || document.querySelector('.fx-ghost') || (fxAttack.side === 0 ? els.myBoard : els.foeBoard);
+      flySword(from, tgtC);
+      if (tgtEl) tgtEl.classList.add('fx-hit');
+      spawnBurst(tgtC);
       const tb = document.getElementById('table');
       if (tb && !tb.classList.contains('fx-quake')) {
         tb.classList.add('fx-quake');
@@ -267,13 +287,13 @@ function fxPlay() {
       const el = fxLp.side === 0 ? els.myLpNum : els.foeLpNum;
       el.classList.remove('fx-hit'); void el.offsetWidth; // 重排触发同类动画重播
       el.classList.add('fx-hit');
-      // LP 飘字：-N 红字从数字旁上飘淡出（一次元素，animationend 自清）
+      // LP 飘字：-N 卡名/原因 红字从数字旁上飘淡出（多笔伤害连跳可归因；animationend 自清）
       if (fxLp.delta > 0 && !document.querySelector('.fx-lpfloat')) {
         const wrap = el.closest('.lp-wrap');
         if (wrap) {
           const f = document.createElement('span');
           f.className = 'fx-lpfloat';
-          f.textContent = `-${fxLp.delta}`;
+          f.textContent = `-${fxLp.delta}${fxLp.why ? ` ${fxLp.why}` : ''}`;
           f.addEventListener('animationend', () => f.remove(), { once: true });
           setTimeout(() => f.remove(), 1100);
           wrap.appendChild(f);
