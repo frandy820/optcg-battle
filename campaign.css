@@ -119,3 +119,48 @@ body.campaign-scene {
   .stage .st-intro { display: none; }
   .pool { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
 }
+
+/* 新手教学入口（Phase 5） */
+.tut-entry { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 10px 0 4px;
+  padding: 9px 12px; border: 1px dashed #b8860b; border-radius: 10px; background: rgba(247,230,168,.07); }
+.tut-entry b { color: var(--gold-bright, #f0c85a); font-size: 13px; }
+.tut-entry .tut-link { color: #d9c9f5; text-decoration: none; border: 1px solid #8d6bd6; border-radius: 7px;
+  padding: 3px 10px; font-size: 12px; background: #231542; }
+.tut-entry .tut-link:hover { border-color: var(--gold-bright, #f0c85a); }
+.tut-entry .tut-link.all { border-color: #b8860b; color: #f7e6a8; }
+
+/* ---------- 工坊双端改造（体验设计 round2 序5：排列拥挤/右侧太空）---------- */
+/* 桌面：卡池大图列（用户认可闯关图的质量，工坊同等待遇）+ 构筑栏 sticky 常驻 */
+@media (min-width: 721px) {
+  .pool { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; }
+  .pool-card img.part { height: 96px; }
+  .built { width: 248px; position: sticky; top: 10px; }
+}
+/* 构筑分组/进度条/抽屉关闭钮 */
+.built .bprog { float: right; color: var(--gold-bright); font-size: 13px; }
+.bbar { height: 6px; border-radius: 4px; background: #16233f; border: 1px solid #27406b; overflow: hidden; margin: 6px 0 2px; }
+.bbar > i { display: block; height: 100%; background: linear-gradient(90deg, #f2c94c, #2fbf71); transition: width .3s; }
+.built .bhint { font-size: 10.5px; color: #5b6c8f; margin-bottom: 6px; }
+.bgrp { font-size: 11.5px; color: #9db1d4; font-weight: 800; margin: 8px 0 2px; padding: 2px 6px;
+  border-left: 3px solid var(--gold-dim); background: rgba(20,38,74,.5); border-radius: 0 5px 5px 0; }
+.bgrp span { color: var(--gold-bright); float: right; }
+.bclose { display: none; }
+.pool-empty { grid-column: 1 / -1; color: #5b6c8f; font-size: 13px; text-align: center; padding: 26px 0; }
+
+/* 手机：构筑清单改底部抽屉（删 40vh 常驻堆底），浮动胶囊入口；卡池全宽大图 */
+.deck-fab { display: none; }
+@media (max-width: 720px) {
+  .deck-fab { display: block; position: fixed; right: 14px; bottom: 18px; z-index: 45;
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold)); color: #141006; border: none;
+    border-radius: 999px; padding: 11px 20px; font-size: 14px; font-weight: 800; cursor: pointer;
+    box-shadow: 0 4px 18px rgba(212,175,55,.5); }
+  .deck-body { flex-direction: column; padding-bottom: 64px; }
+  /* align-items:flex-start 使 column 下子项收缩到内容宽——显式拉满 */
+  .pool { width: 100%; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+  .built { position: fixed; left: 0; right: 0; bottom: 0; width: 100%; max-height: 62svh;
+    border-radius: 14px 14px 0 0; border-bottom: none; z-index: 52;
+    transform: translateY(105%); transition: transform .25s ease; box-shadow: 0 -8px 32px rgba(0,0,0,.5); }
+  .built.open { transform: translateY(0); }
+  .bclose { display: block; text-align: center; color: var(--gold-bright); font-size: 13px;
+    padding: 2px 0 6px; cursor: pointer; border-bottom: 1px solid #1d3a6b; margin-bottom: 6px; }
+}
