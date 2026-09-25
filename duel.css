@@ -67,8 +67,9 @@ body.duel-scene {
   border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,.6); }
 .card .nm { font-size: 10.5px; font-weight: 700; padding: 2px 3px 0; text-align: center; line-height: 1.15; }
 .card .sub { font-size: 8.5px; color: #6b5a33; text-align: center; padding: 0 2px; }
-.card .stats { position: absolute; bottom: 3px; left: 3px; right: 3px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; }
+.card .stats { position: absolute; bottom: 3px; left: 4px; right: 4px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; }
 .card .stats .atk { color: #b3261e; } .card .stats .def { color: #1d4ed8; }
+.card .stats i { font-style: normal; font-size: 8px; font-weight: 700; opacity: .68; margin-right: 1px; }
 /* 守备表示：横置 */
 .card.pos-def { transform: rotate(90deg) scale(.82); }
 /* 已攻击 */
@@ -197,3 +198,228 @@ body.duel-scene {
   border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 700; cursor: pointer; }
 .rb-btns button:hover { filter: brightness(1.15); }
 .rb-btns button.pass { background: transparent; border: 1px solid #7e93ba; color: #a9bde0; font-weight: 400; }
+
+/* 教学指令条（Phase 5）：顶部固定黄条，进度+跳过 */
+.tut-banner { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 60;
+  background: linear-gradient(180deg, #fdf3d0, #f7e6a8); border: 2px solid #b8860b; border-radius: 12px;
+  padding: 8px 14px; max-width: 94vw; box-shadow: 0 4px 18px rgba(0,0,0,.45); }
+.tb-head { display: flex; align-items: center; gap: 10px; color: #4a3208; font-size: 13px; font-weight: 800; }
+.tb-prog { background: #b8860b; color: #fff8e0; border-radius: 8px; font-size: 11px; padding: 1px 8px; }
+.tb-skip { margin-left: auto; background: transparent; border: 1px solid #a0752a; color: #7a5615;
+  border-radius: 7px; font-size: 11px; padding: 2px 9px; cursor: pointer; }
+.tb-skip:hover { background: #efd98f; }
+.tb-say { color: #3a2a06; font-size: 12.5px; line-height: 1.55; margin-top: 5px; max-width: 74vw; }
+
+/* ---------- 减少动画（Phase 5 任务6）----------
+   两种触发：①系统「减少动态效果」（prefers-reduced-motion，JS 同步为 html.reduce-fx）
+            ②顶栏「动效」按钮手动切换（localStorage gld_reduce_fx，手动优先）。
+   原则：停循环闪烁/脉冲（保静态高亮可辨识），过渡时长归零（状态即时反映）——
+   动画纯装饰层，关闭不影响任何操作与信息获取。 */
+html.reduce-fx .card.targetable,
+html.reduce-fx .direct-btn { animation: none; box-shadow: 0 0 0 2px #e5484d; }
+html.reduce-fx .respond-banner { animation: none; box-shadow: 0 6px 26px rgba(229,72,77,.45); }
+html.reduce-fx .toast { animation: none; }
+html.reduce-fx .lp-bar > i,
+html.reduce-fx .card,
+html.reduce-fx .ph { transition-duration: 0s; }
+@media (prefers-reduced-motion: reduce) { /* 纯 CSS 兜底：JS 未跑/被禁时也生效 */
+  .card.targetable, .direct-btn { animation: none; box-shadow: 0 0 0 2px #e5484d; }
+  .respond-banner { animation: none; box-shadow: 0 6px 26px rgba(229,72,77,.45); }
+  .toast { animation: none; }
+  .lp-bar > i, .card, .ph { transition-duration: 0s; }
+}
+
+/* R2-01：defDelta 伏笔对攻表示目标无效的视觉警示（可点但降透明度） */
+.rb-btns button.dim { opacity: .55; border: 1px dashed #c9a; }
+/* 移动端响应按钮触达尺寸（390 实测 58×29 偏小，低于 44px 触达基线） */
+@media (max-width: 720px) {
+  .respond-banner .rb-btns button { font-size: 13px; padding: 8px 14px; min-height: 40px; }
+}
+
+/* ---------- 手机单屏化（Phase 5 用户反馈：手机要上下滑动太麻烦）----------
+   竖屏 ≤720px：页面锁定 100dvh 禁滚动，总高压进最坏 ~600px 预算（含浏览器地址栏侵占）；
+   弹层改为层内滚动（弹层内滑动≠页面滑动）；横屏保持可滚（高度太小锁死会裁切）。 */
+@media (max-width: 720px) and (orientation: portrait) {
+  html, body { height: 100dvh; overflow: hidden; }
+  body.duel-scene { min-height: 0; }
+  #app { height: 100dvh; padding: 5px 7px 6px; gap: 3px; }
+
+  /* 顶栏一行极简：标题隐藏（回合chip已在），按钮缩为紧凑胶囊 */
+  #topbar { gap: 6px; }
+  .duel-title { display: none; }
+  .ghost-btn { padding: 3px 7px; font-size: 11px; }
+  .turn-chip { padding: 2px 8px; font-size: 11.5px; white-space: nowrap; }
+
+  /* 阶段条紧排 */
+  #phaseBar { padding: 1px 0; gap: 3px; }
+  .ph { padding: 1px 6px; font-size: 10px; }
+  .ph-arrow { font-size: 9px; }
+
+  /* 桌面吃满剩余高度 */
+  #table { flex: 1; min-height: 0; padding: 5px 6px; gap: 3px; }
+  .zone { gap: 3px; }
+
+  /* 卡牌与行高压缩（62×88 → 57×81） */
+  :root { --card-w: 57px; --card-h: 81px; }
+  .unit-row { min-height: calc(var(--card-h) + 6px); padding: 3px 4px; }
+  .my-hand { min-height: calc(var(--card-h) + 10px); padding: 2px 0 1px; gap: 3px; }
+
+  /* 玩家信息行紧凑：chip 缩小、LP 条变细 */
+  .pinfo { gap: 6px; }
+  .pname { min-width: 0; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 34vw; }
+  .lp-wrap { min-width: 90px; }
+  .lp-bar { height: 7px; }
+  .lp-num { font-size: 12px; min-width: 34px; }
+  .chip { padding: 1px 5px; font-size: 10px; }
+  #btnNext { padding: 5px 12px; font-size: 12.5px; }
+
+  /* 对手手牌卡背矮排 */
+  .foe-hand { min-height: 22px; }
+  .cardback { width: 18px; height: 22px; }
+
+  /* 伏笔区矮排 */
+  .spell-row { min-height: 32px; padding: 1px 4px; }
+  .spell-row .slot-sm { width: 58px; height: 28px; }
+  .spellcard { height: 28px; padding: 2px 7px; font-size: 10px; }
+  .spellback-sm { width: 38px; height: 26px; font-size: 9px; }
+
+  /* 战报：手机压为 2 行最新消息（桌面 96px） */
+  #midline { padding: 2px 5px; }
+  #battleLog { max-height: 34px; font-size: 10.5px; line-height: 1.35; }
+
+  #hint { font-size: 11px; min-height: 15px; }
+
+  /* 弹层：小屏适配 + 层内滚动（不滚页面） */
+  .modal { align-items: center; }
+  .modal-box { min-width: 0; width: min(92vw, 400px); max-height: 82dvh; overflow-y: auto; padding: 12px 12px; }
+  .card-preview { flex-direction: row; }
+  .card-preview .meta { max-width: 46vw; font-size: 11px; }
+  .modal-box .opt { padding: 8px 10px; font-size: 13px; margin: 4px 0; min-height: 38px; }
+  .end-title { font-size: 26px; letter-spacing: 4px; }
+
+  /* 响应横幅/教学条贴顶不遮手牌区 */
+  .respond-banner { top: 52px; padding: 6px 10px; }
+  .rb-text { font-size: 12px; margin-bottom: 5px; }
+  .tut-banner { padding: 5px 10px; max-width: 96vw; }
+  .tb-head { font-size: 11.5px; }
+  .tb-say { font-size: 11px; max-width: 92vw; }
+  .toast { bottom: 96px; font-size: 12px; padding: 6px 12px; }
+}
+
+/* ---------- 战斗动效（Phase 5 用户反馈：攻击没有反馈感）----------
+   攻方冲撞（我打敌=向上 / 敌打我=向下）+ 目标受击红闪 + LP 数字跳动；
+   纯 CSS 一次性动画（450ms 窗口，fxPlay 注入类），不阻塞操作；reduce-fx 下静默。 */
+.fx-lunge-up { animation: lungeUp .42s ease; z-index: 6; }
+.fx-lunge-down { animation: lungeDown .42s ease; z-index: 6; }
+@keyframes lungeUp { 35% { transform: translateY(-38px) scale(1.07); } }
+@keyframes lungeDown { 35% { transform: translateY(38px) scale(1.07); } }
+.fx-hit { animation: hitFx .42s ease; }
+@keyframes hitFx { 15%,45%,75% { filter: brightness(2) saturate(3) hue-rotate(-25deg); transform: translateX(3px); }
+  30%,60% { filter: brightness(1.6) saturate(2); transform: translateX(-3px); } }
+.lp-num.fx-hit { animation: lpHit .5s ease; display: inline-block; }
+@keyframes lpHit { 30% { transform: scale(1.45); color: #ff6b6b; text-shadow: 0 0 12px #e5484d; } }
+html.reduce-fx .fx-lunge-up, html.reduce-fx .fx-lunge-down, html.reduce-fx .fx-hit,
+html.reduce-fx .lp-num.fx-hit { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .fx-lunge-up, .fx-lunge-down, .fx-hit, .lp-num.fx-hit { animation: none; }
+}
+
+/* 阵亡攻方冲撞残影：绝对定位幽灵卡，冲撞后灰化淡出自清 */
+.unit-row { position: relative; }
+.fx-ghost { position: absolute; left: 50%; top: 4px; margin-left: calc(var(--card-w) / -2);
+  pointer-events: none; opacity: .92; filter: grayscale(.4);
+  animation: lungeUp .42s ease, ghostFade .3s .25s forwards; }
+.fx-ghost.fx-lunge-down { animation: lungeDown .42s ease, ghostFade .3s .25s forwards; }
+@keyframes ghostFade { to { opacity: 0; } }
+html.reduce-fx .fx-ghost { display: none; }
+@media (prefers-reduced-motion: reduce) { .fx-ghost { display: none; } }
+
+/* ---------- 体验设计 round2（core-solution-architect 方案实施）----------
+   底部动作条 + 战报 ticker/抽屉 + ☰菜单 + 手机单屏 v2(svh+矮屏守卫) + 阶段降权 + 登场/LP动效 */
+/* z-index 注册表：0桌面 → 6卡面动效 → 30残影/飘字(pointer-events:none) → 40直攻钮 → 50modal
+   → 52战报抽屉 → 55响应横幅 → 58toast/60教学条 → 70胜负遮罩 */
+
+/* 桌面垂直分布：对手区贴顶 / 我方区贴底，中间空档=「对战场」（消除删中线后底部堆空白） */
+#table { justify-content: space-between; }
+
+/* 底部动作条（桌面手机同构） */
+#actionBar { display: flex; align-items: center; gap: 8px; flex: none; }
+.ab-left { flex: 1; min-width: 0; }
+#hint { font-size: 12.5px; color: var(--gold-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+#hint.warn { color: var(--gold-bright); }
+#ticker { font-size: 10.5px; color: #8fa5cc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; text-align: left; }
+#ticker:hover { color: #c6d4ef; }
+.ab-btn { min-height: 44px; padding: 8px 20px; flex: none; }
+.ab-sub { background: transparent; border: 1px solid var(--gold-dim); color: var(--gold-bright); border-radius: 9px;
+  min-height: 44px; padding: 6px 14px; font-size: 13px; cursor: pointer; flex: none; }
+.ab-sub:hover { background: rgba(212,175,55,.12); }
+.ab-sub.hidden, #btnToMain2.hidden { display: none; }
+
+/* 战报抽屉（点 ticker 展开；桌面 40vh / 手机 62svh，层内滚动） */
+.log-drawer { position: fixed; left: 0; right: 0; bottom: 0; max-height: min(62svh, 480px); overflow: hidden;
+  display: flex; flex-direction: column; background: linear-gradient(180deg, #0d1c3a, #0a1730);
+  border-top: 2px solid var(--gold-dim); border-radius: 14px 14px 0 0; padding: 10px 14px 18px;
+  transform: translateY(105%); transition: transform .25s ease; z-index: 52; box-shadow: 0 -8px 32px rgba(0,0,0,.5); }
+.log-drawer.open { transform: translateY(0); }
+.ld-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex: none; }
+.ld-head b { color: var(--gold-bright); font-size: 14px; }
+.ld-head button { background: transparent; border: 1px solid var(--gold-dim); color: var(--gold-bright);
+  border-radius: 7px; padding: 3px 12px; font-size: 12px; cursor: pointer; }
+#ldBody { overflow-y: auto; font-size: 12px; line-height: 1.55; color: #b9c9e6; }
+#ldBody .l { padding: 0 2px; }
+#ldBody .l.hl { color: var(--gold-bright); }
+
+/* ☰ 菜单按钮：桌面隐藏（top-actions 直显），手机显示 */
+.menu-btn { display: none; }
+.modal-box a.opt { display: block; text-decoration: none; color: var(--sea-cream); }
+
+/* 桌面：瞬过阶段（抽牌/准备/结束）降权——新手一眼看出「哪几个阶段需要你」 */
+@media (min-width: 721px) {
+  .ph[data-ph="draw"], .ph[data-ph="standby"], .ph[data-ph="end"] { opacity: .45; }
+}
+
+/* 登场动画 + LP 飘字 */
+.fx-summon { animation: summonIn .38s ease; }
+@keyframes summonIn { 0% { transform: scale(.6) translateY(10px); opacity: 0; filter: brightness(2); }
+  60% { transform: scale(1.06); opacity: 1; } 100% { transform: scale(1); } }
+.lp-wrap { position: relative; }
+.fx-lpfloat { position: absolute; right: 0; top: -6px; font-size: 14px; font-weight: 900; color: #ff6b6b;
+  text-shadow: 0 0 8px rgba(229,72,77,.8); pointer-events: none; z-index: 30;
+  animation: floatUp .9s ease forwards; }
+@keyframes floatUp { 0% { opacity: 0; transform: translateY(2px); } 25% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-20px); } }
+html.reduce-fx .fx-summon, html.reduce-fx .fx-lpfloat { animation: none; display: none; }
+@media (prefers-reduced-motion: reduce) { .fx-summon, .fx-lpfloat { animation: none; display: none; } }
+
+/* 卡面数值胶囊（攻/守权重已加标签，胶囊消除「挨着摆放」的拥挤感） */
+.card .stats span { background: rgba(255,255,255,.55); border-radius: 4px; padding: 0 4px; }
+
+/* ---------- 手机单屏 v2：svh + 矮屏守卫 + 横屏放行 ---------- */
+@media (max-width: 720px) and (orientation: portrait) and (min-height: 480px) {
+  html, body { height: 100vh; height: 100svh; overflow: hidden; }
+  #app { height: 100vh; height: 100svh; }
+  #table { flex: 1; min-height: 0; overflow: hidden; } /* 极端时裁桌面不裁动作条 */
+  #actionBar { flex: none; }
+  /* 卡尺寸随视口高度自适应（320 档也放得下）；替代旧 57×81 硬编码 */
+  :root { --card-h: clamp(60px, 15svh, 81px); --card-w: calc(var(--card-h) * 0.704); }
+  /* 顶栏合一：标题与按钮组隐藏，☰ 接管 */
+  .duel-title, .top-actions { display: none; }
+  .menu-btn { display: inline-block; min-width: 40px; min-height: 36px; font-size: 16px; }
+  #phaseBar, .foe-hand { display: none; } /* 阶段名并入 turnChip；对手手牌数 chip 已示 */
+  .turn-chip { font-size: 12.5px; max-width: 82vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* 手牌 8 张防溢出：加深重叠 */
+  .my-hand .card { margin: 0 -10px; }
+  .my-hand .card:nth-child(odd) { transform: rotate(-2deg) translateY(2px); }
+  .my-hand .card:nth-child(even) { transform: rotate(2deg) translateY(2px); }
+  .my-hand .card.playable:hover { transform: translateY(-10px) scale(1.12); z-index: 5; }
+  #hint { font-size: 11.5px; }
+  #ticker { font-size: 10px; }
+  .ab-btn { min-height: 42px; padding: 6px 16px; font-size: 13px; }
+  .ab-sub { min-height: 42px; padding: 4px 10px; font-size: 12px; }
+  .log-drawer { max-height: 62svh; }
+}
+/* 横屏 / 矮屏：回退可滚动 + 动作条吸附底部 */
+@media (max-width: 720px) and (orientation: landscape), (max-height: 479px) {
+  #actionBar { position: sticky; bottom: 0; background: rgba(6,13,31,.94); padding: 6px 8px;
+    border-top: 1px solid #1d3a6b; border-radius: 10px; z-index: 20; }
+}
