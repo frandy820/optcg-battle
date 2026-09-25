@@ -1,9 +1,10 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js';
-import { DUEL_AI } from './duel/ai.js';
-import DUEL_CARDS_DATA from './data/duel-cards.js';
+import { DUEL } from './duel/engine.js?v=1189296';
+import { DUEL_AI } from './duel/ai.js?v=1189296';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=1189296';
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=1189296';
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -18,12 +19,14 @@ const els = {
   myDeckN: $('myDeckN'), myGraveN: $('myGraveN'), myBoard: $('myBoard'), myHand: $('myHand'),
   foeSpells: $('foeSpells'), mySpells: $('mySpells'),
   rb: $('respondBanner'), rbText: $('rbText'), rbBtns: $('rbBtns'),
-  log: $('battleLog'), btnNext: $('btnNext'), btnRestart: $('btnRestart'), btnHelp: $('btnHelp'),
+  ldBody: $('ldBody'), logDrawer: $('logDrawer'), ticker: $('ticker'), btnMenu: $('btnMenu'),
+  btnNext: $('btnNext'), btnRestart: $('btnRestart'), btnHelp: $('btnHelp'),
   modal: $('modal'), modalBox: $('modalBox'), toast: $('toast'),
   btnDirect: $('btnDirect'), endOverlay: $('endOverlay'), endTitle: $('endTitle'), endSub: $('endSub'), btnAgain: $('btnAgain'),
 };
 
 const PH_CN = { draw: '抽牌', standby: '准备', main1: '主要阶段1', battle: '战斗阶段', main2: '主要阶段2', end: '结束阶段' };
+const PH_SHORT = { draw: '抽牌', standby: '准备', main1: '出牌', battle: '战斗', main2: '出牌', end: '结束' };
 const AI_DELAY = 620;
 
 let g = null;
@@ -32,10 +35,54 @@ let logShown = 0;
 let aiTimer = null;
 let busy = false;        // 动画/AI 播放中锁输入（与"等待响应"视觉区分，规则 §七.5）
 let pendingCampaign = null; // 闯关配置（campaign 页写入 localStorage，本局生效）
+let resuming = false;    // 恢复存档流程中（跳过自动保存，防恢复瞬间回写）
+let tut = null;          // 当前教学段定义（g.tutorial=id 时有效）
+let tutStep = 0;         // 教学步指针
+let tutFlags = {};       // 教学观察标志（directDone/turnPassed/responded/attackResolved）
+
+// ---------- 对局中存档（Phase 5；key 与旧 DEMO optcg_save_v2/optcg_match_v2 天然隔离） ----------
+const LIVE_KEY = 'gld_live_game';
+function saveLive() {
+  if (!g || g.winner !== null || resuming || g.tutorial) return; // 教学局=演练，不落档
+  try {
+    // g 为纯数据（rng 函数被 JSON.stringify 自然丢弃；对局中无 rng 调用——洗牌仅在建局）
+    localStorage.setItem(LIVE_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), pendingCampaign, g }));
+  } catch (e) { /* 存储满等异常不阻断对局 */ }
+}
+function clearLive() { localStorage.removeItem(LIVE_KEY); }
+function readLive() {
+  try {
+    const s = JSON.parse(localStorage.getItem(LIVE_KEY));
+    if (s && s.v === 1 && s.g && s.g.players && s.g.players.length === 2) return s;
+  } catch (e) { /* 损坏走安全路径 */ }
+  if (localStorage.getItem(LIVE_KEY)) { // 损坏/版本不符：清理并提示，不白屏
+    clearLive();
+    return { corrupt: true };
+  }
+  return null;
+}
+// 恢复：补 rng 引用与初始派生状态；失败返回 null（调用方走新局）
+function restoreLive(saved) {
+  try {
+    const gg = saved.g;
+    gg.rng = DUEL.mkRng(gg.seed || 1); // 对局中不再调用（洗牌仅建局），仅防未来引用
+    g = gg;
+    pendingCampaign = saved.pendingCampaign || null;
+    sel = null; logShown = 0; busy = false;
+    els.ldBody.innerHTML = ''; els.ticker.textContent = '';
+    els.endOverlay.classList.add('hidden');
+    els.modal.classList.add('hidden');
+    pushLog(`— 已恢复对局（第 ${gg.turn} 回合 ${PH_CN[gg.phase] || ''}）—`);
+    render();
+    return true;
+  } catch (e) { clearLive(); return false; }
+}
 
 // ---------- 建局 ----------
 function start() {
   stopAi();
+  tut = null; tutEnded = false; // 退出教学态（横幅在 renderTutBanner 自动移除）
+  clearLive(); // 新局作废旧存档
   // 闯关模式：读取一次性对局配置（campaign.html「开战」写入）
   try { pendingCampaign = JSON.parse(localStorage.getItem('gld_duel_pending')); } catch (e) { pendingCampaign = null; }
   let decks, names, aiProfile = 'aggro', intro;
@@ -44,19 +91,19 @@ function start() {
     decks = [pendingCampaign.myDeck, pendingCampaign.foeDeck];
     names = ['玩家', `${pendingCampaign.foeName}（AI）`];
     aiProfile = pendingCampaign.aiProfile || 'aggro';
-    intro = `【东海篇·第 ${pendingCampaign.stageId} 关「${pendingCampaign.stageName}」】与「${pendingCampaign.foeName}」的决斗开始！`;
+    intro = `【东海篇·第 ${pendingCampaign.stageId} 关「${pendingCampaign.stageName}」】对手：${pendingCampaign.foeName}`;
   } else {
     pendingCampaign = null;
     decks = [DUEL_CARDS_DATA.decks.strawhat_default.cards, DUEL_CARDS_DATA.decks.eastblue_aggro.cards];
     names = ['玩家', '亚尔丽塔（AI）'];
-    intro = '【快速对决】与「东海野心家」亚尔丽塔的决斗开始！想闯关请点顶部「闯关模式」。';
+    intro = '【快速对决】想闯关请点顶部「闯关模式」。';
   }
   const seed = (Date.now() ^ (Math.random() * 1e9)) >>> 0;
   g = DUEL.newGame(cardsById, {
     seed, decks, names, aiProfile,
   });
   sel = null; logShown = 0; busy = false;
-  els.log.innerHTML = '';
+  els.ldBody.innerHTML = ''; els.ticker.textContent = '';
   els.endOverlay.classList.add('hidden');
   els.modal.classList.add('hidden');
   els.rb.classList.add('hidden');
@@ -68,11 +115,163 @@ function start() {
   render();
 }
 
+// ---------- 新手教学（Phase 5；?tutorial=1|2|3 进入） ----------
+function startTutorial(id) {
+  stopAi();
+  clearLive();
+  pendingCampaign = null;
+  const made = newTutorialGame(cardsById, id);
+  g = made.g; tut = made.tut;
+  tutStep = 0; tutFlags = {}; tutEnded = false;
+  sel = null; logShown = 0; busy = false;
+  els.ldBody.innerHTML = ''; els.ticker.textContent = '';
+  els.endOverlay.classList.add('hidden');
+  els.modal.classList.add('hidden');
+  els.rb.classList.add('hidden');
+  pushLog(`【教学 ${id} · ${tut.name}】${tut.intro}`);
+  DUEL.applyAction(g, cardsById, 0, { t: 'nextPhase' }); // draw → standby
+  DUEL.applyAction(g, cardsById, 0, { t: 'nextPhase' }); // standby → main1
+  render();
+}
+// 动作观察器：包装 applyAction，成功后更新教学标志（供 steps[].check 的第二参数）
+function tutObserve(a) {
+  if (!g.tutorial) return;
+  if (a.t === 'attack' && a.target === null) tutFlags.directDone = true;
+  if (a.t === 'attack') tutFlags.attacked = true;
+  if (a.t === 'respond') tutFlags.responded = true;
+  if (a.t === 'endTurn') tutFlags.turnPassed = true;
+}
+// 每步结算完成检查（attackResolved：战斗日志出现「攻击」且不在窗口中）
+function tutAttackResolved() {
+  if (!g || !g.tutorial) return false;
+  if (g.pending) return false;
+  return tutFlags.attacked && !g.log.slice(-3).some(l => l.msg.includes('响应窗口'));
+}
+// 统一动作入口包装：成功后喂给教学观察器 + 捕捉登场/攻击/LP变化驱动战斗动效（Phase 5 用户反馈）
+let fxAttack = null, fxLp = null, fxSummon = null;
+function act(pi, a) {
+  const lp0 = [g.players[0].lp, g.players[1].lp];
+  const board0 = g.players[pi].board.map(u => u.uid);
+  const r = DUEL.applyAction(g, cardsById, pi, a);
+  if (r.ok) {
+    tutObserve(a);
+    const nu = g.players[pi].board.find(u => !board0.includes(u.uid));
+    if (nu) fxSummon = { uid: nu.uid, t: Date.now() }; // 登场动画
+    if (a.t === 'attack') {
+      const au = g.players[pi].board.find(u => u.uid === a.uid) || g.players[pi].grave.find(u => u.uid === a.uid);
+      const ad = au && cardsById[au.cardId];
+      fxAttack = { uid: a.uid, target: a.target, side: pi, t: Date.now(),
+        art: ad ? ad.art : null, name: ad ? ad.name : '' }; // 快照：攻方阵亡时渲染冲撞残影
+    }
+    const d0 = lp0[0] - g.players[0].lp, d1 = lp0[1] - g.players[1].lp;
+    if (d0 !== 0 || d1 !== 0) {
+      fxLp = { side: d0 > 0 ? 0 : 1, delta: Math.max(d0, d1), t: Date.now() }; // 扣血方闪红+飘字
+    }
+  }
+  return r;
+}
+// render 后注入动效类：攻方冲撞（我打敌=向上/敌打我=向下）、目标受击红闪、LP 数字跳动（450ms 窗口，过窗自清）
+function fxPlay() {
+  const now = Date.now();
+  if (fxAttack) {
+    if (now - fxAttack.t < 450) {
+      const atkEl = document.querySelector(`[data-uid="${fxAttack.uid}"]`);
+      if (atkEl) atkEl.classList.add(fxAttack.side === 0 ? 'fx-lunge-up' : 'fx-lunge-down');
+      else if (fxAttack.art) {
+        // 攻方阵亡（撞击反噬/同归于尽）：在其场地渲染冲撞残影，动画结束自清（800ms 兜底）
+        const host = fxAttack.side === 0 ? els.myBoard : els.foeBoard;
+        if (host && !host.querySelector('.fx-ghost')) {
+          const ghost = document.createElement('div');
+          ghost.className = `card fx-ghost ${fxAttack.side === 0 ? 'fx-lunge-up' : 'fx-lunge-down'}`;
+          ghost.innerHTML = `<img class="art" src="art/${fxAttack.art}.webp"><div class="nm">${fxAttack.name}</div>`;
+          ghost.addEventListener('animationend', () => ghost.remove(), { once: true });
+          setTimeout(() => ghost.remove(), 800);
+          host.appendChild(ghost);
+        }
+      }
+      if (fxAttack.target) {
+        const tgtEl = document.querySelector(`[data-uid="${fxAttack.target}"]`);
+        if (tgtEl) tgtEl.classList.add('fx-hit');
+      }
+    } else fxAttack = null;
+  }
+  if (fxLp) {
+    if (now - fxLp.t < 450) {
+      const el = fxLp.side === 0 ? els.myLpNum : els.foeLpNum;
+      el.classList.remove('fx-hit'); void el.offsetWidth; // 重排触发同类动画重播
+      el.classList.add('fx-hit');
+      // LP 飘字：-N 红字从数字旁上飘淡出（一次元素，animationend 自清）
+      if (fxLp.delta > 0 && !document.querySelector('.fx-lpfloat')) {
+        const wrap = el.closest('.lp-wrap');
+        if (wrap) {
+          const f = document.createElement('span');
+          f.className = 'fx-lpfloat';
+          f.textContent = `-${fxLp.delta}`;
+          f.addEventListener('animationend', () => f.remove(), { once: true });
+          setTimeout(() => f.remove(), 1100);
+          wrap.appendChild(f);
+        }
+      }
+    } else fxLp = null;
+  }
+  if (fxSummon) {
+    if (now - fxSummon.t < 450) {
+      const el = document.querySelector(`[data-uid="${fxSummon.uid}"]`);
+      if (el) el.classList.add('fx-summon');
+    } else fxSummon = null;
+  }
+}
+let tutEnded = false; // 终步已触发（防重复弹完成窗）
+function tutCheck() {
+  if (!tut || tutEnded) return;
+  if (tutFlags.attacked && !tutFlags.attackResolved) tutFlags.attackResolved = tutAttackResolved(); // 结算完成态（窗口关闭后）
+  while (!tutEnded) { // 连续推进：恒真终步（如 T2 步5）不再等下一次 render
+    const step = tut.steps[tutStep];
+    if (!step || !step.check(g, tutFlags)) break; // 终步 check 允许读 g.winner（如 T1 胜利判完成），故不在头部拦截 winner
+    tutStep++;
+    toast(`✓ 教学 ${tut.id}-${tutStep} 步完成`);
+    if (tutStep >= tut.steps.length) { tutEnded = true; tutFinish(); }
+    else renderTutBanner();
+  }
+}
+function tutFinish() {
+  const done = JSON.parse(localStorage.getItem('gld_tut_done') || '[]');
+  if (!done.includes(g.tutorial)) { done.push(g.tutorial); localStorage.setItem('gld_tut_done', JSON.stringify(done)); }
+  const next = TUTORIALS.find(t => t.id === g.tutorial + 1);
+  els.modalBox.innerHTML = `<h3>🎓 教学 ${g.tutorial}「${tut.name}」完成！</h3>
+    <div class="meta" style="margin:8px 0">${next ? '继续下一段教学？' : '三段教学全部完成——去闯东海篇吧！'}</div>
+    ${next ? `<button class="opt" id="tNext">▶ 进入教学 ${next.id}：${next.name}</button>` : ''}
+    <button class="opt" id="tStage">🗺 前往闯关模式</button>
+    <button class="opt" id="tReplay">↺ 重玩本段</button>`;
+  els.modal.classList.remove('hidden');
+  if (next) $('tNext').onclick = () => { els.modal.classList.add('hidden'); location.href = `?tutorial=${next.id}`; };
+  $('tStage').onclick = () => location.href = 'campaign.html';
+  $('tReplay').onclick = () => { els.modal.classList.add('hidden'); startTutorial(g.tutorial); };
+}
+function renderTutBanner() {
+  let bar = document.getElementById('tutBanner');
+  if (!tut) { if (bar) bar.remove(); return; }
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'tutBanner';
+    bar.className = 'tut-banner';
+    document.body.appendChild(bar);
+  }
+  const step = tut.steps[tutStep];
+  const done = tutStep, total = tut.steps.length;
+  bar.innerHTML = `<div class="tb-head">🎓 教学 ${g.tutorial}「${tut.name}」 <span class="tb-prog">${done}/${total}</span>
+      <button class="tb-skip" id="tutSkip">跳过教学</button></div>
+    <div class="tb-say">${step ? step.say : '…'}</div>`;
+  $('tutSkip').onclick = () => {
+    if (confirm('跳过教学？可直接去闯关或快速对决')) location.href = 'campaign.html';
+  };
+}
+
 // ---------- 渲染 ----------
 function render() {
   if (!g) return;
   const [P, E] = g.players;
-  els.turnChip.textContent = `第 ${g.turn} 回合 · ${g.active === 0 ? '你的回合' : '对方回合'}`;
+  els.turnChip.textContent = `第 ${g.turn} 回合 · ${g.active === 0 ? '你的回合' : '对方回合'} · ${PH_SHORT[g.phase] || ''}`;
   els.foeName.textContent = E.name;
   els.myName.textContent = P.name;
   document.querySelectorAll('.ph').forEach(el => el.classList.toggle('active', el.dataset.ph === g.phase));
@@ -97,7 +296,14 @@ function render() {
   updateNextBtn();
   renderRespond();
   if (g.winner !== null) showEnd();
-  if (g.winner === null && !aiTimer && (g.active === 1 || (g.pending && g.pending.turnPtr === 1))) scheduleAi();
+  // AI 节奏：仅 AI 自己回合（无窗口）或窗口轮到 AI 时拉起；窗口轮到玩家时绝不重开 timer
+  // （否则 stopAi→render→scheduleAi 无限 ping-pong，busy 每拍震荡吞掉玩家点击——R1-P0#1）
+  const aiTurn = g.active === 1 && !g.pending;
+  const aiRespond = !!g.pending && g.pending.turnPtr === 1;
+  if (g.winner === null && !aiTimer && (aiTurn || aiRespond)) scheduleAi();
+  tutCheck(); renderTutBanner(); // 教学步进（非教学局为空操作）
+  fxPlay(); // 战斗动效注入（攻击冲撞/受击/LP 跳动；reduce-fx 下由 CSS 静默）
+  saveLive(); // 每次状态渲染后落档（结束局/恢复流程自动跳过）
 }
 
 function emptySlots(n) { return Array.from({ length: 3 - n }, () => '<div class="slot"></div>').join(''); }
@@ -113,7 +319,7 @@ function unitCard(u, mine) {
     <span class="lv">${d.level}</span>
     ${eqN ? `<span class="eq-badge">⚒${eqN}</span>` : ''}
     <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
-    <div class="stats"><span class="atk">${d.atk}</span><span class="def">${d.def}</span></div>
+    <div class="stats"><span class="atk"><i>攻</i>${d.atk}</span><span class="def"><i>守</i>${d.def}</span></div>
   </div>`;
 }
 // 招式/伏笔效果短描述（手牌/弹层共用）
@@ -152,7 +358,7 @@ function handCard(h) {
     <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
     <span class="lv">${d.level}</span>
     <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
-    <div class="stats"><span class="atk">${d.atk}</span><span class="def">${d.def}</span></div>
+    <div class="stats"><span class="atk"><i>攻</i>${d.atk}</span><span class="def"><i>守</i>${d.def}</span></div>
   </div>`;
 }
 // 我方招式/伏笔区条目
@@ -178,14 +384,19 @@ function clickable(u) { // 我方场上人物：战斗阶段可攻击者 或 攻
 }
 
 function renderLog() {
+  // 全量进抽屉；最新一条有效战报进 ticker（过滤「— xx阶段 —」分隔行——低信息噪音不占黄金位）
+  let tick = '';
   while (logShown < g.log.length) {
     const l = g.log[logShown++];
     const div = document.createElement('div');
-    div.className = 'l' + (/获胜|平局|直接攻击|解放/.test(l.msg) ? ' hl' : '') + (/LP -0|落空/.test(l.msg) ? '' : '');
+    div.className = 'l' + (/获胜|平局|直接攻击|解放/.test(l.msg) ? ' hl' : '');
     div.textContent = l.msg;
-    els.log.appendChild(div);
+    els.ldBody.appendChild(div);
+    if (!/^—.*—$/.test(l.msg)) tick = l.msg;
   }
-  els.log.scrollTop = els.log.scrollHeight;
+  els.ldBody.scrollTop = els.ldBody.scrollHeight;
+  if (tick) els.ticker.textContent = tick;
+  else if (g.winner !== null) els.ticker.textContent = '';
 }
 
 function renderHint() {
@@ -198,11 +409,12 @@ function renderHint() {
   if (busy) { setHint('对方思考中…', true); return; }
   if (g.active === 1) { setHint('对方回合', true); return; }
   const who = `${PH_CN[g.phase]}：`;
+  const hasPlayableHand = document.querySelectorAll('#myHand .hand-card.playable').length > 0;
   const map = {
     draw: '抽牌阶段', standby: '准备阶段',
-    main1: '点手牌登场人物 · 点场上人物无操作 · 完成后按「下一步」',
-    battle: sel ? '选择攻击目标（高亮的敌方人物）或「直接攻击」' : '点自己的攻击表示人物发起攻击，或「下一步」跳过',
-    main2: '还可登场/切换表示，或「下一步」进入结束',
+    main1: hasPlayableHand ? '点亮的手牌可登场或使用 · 完成后按「进入战斗」' : '没有可出的牌，直接按「进入战斗」',
+    battle: sel ? '选择攻击目标（高亮的敌方人物）或「直接攻击」' : '点自己亮起的人物发起攻击，或结束回合',
+    main2: '还可登场/盖伏/切换表示，或按「结束回合 ✓」交回合',
     end: '按「结束回合」交给对方',
   };
   setHint(who + map[g.phase], true);
@@ -210,11 +422,18 @@ function renderHint() {
 function setHint(t, warn) { els.hint.textContent = t; els.hint.className = warn ? 'warn' : ''; }
 
 function updateNextBtn() {
-  const b = els.btnNext;
+  const b = els.btnNext, sub = $('btnToMain2');
+  sub.classList.add('hidden');
   if (g.winner !== null) { b.disabled = true; b.textContent = '对决结束'; return; }
   if (g.pending) { b.disabled = true; b.textContent = '等待响应…'; return; }
   b.disabled = g.active !== 0 || busy;
-  b.textContent = g.phase === 'end' ? '结束回合 ✓' : g.phase === 'main1' ? '进入战斗 ⚔' : '下一步 ›';
+  if (g.active !== 0) { b.textContent = '对方回合…'; return; }
+  if (g.phase === 'battle') {
+    b.textContent = '结束回合 ✓';
+    if (battleHasActions()) sub.classList.remove('hidden'); // 有攻击手时给「战后出牌」次链接
+  }
+  else if (g.phase === 'main1') b.textContent = '进入战斗 ⚔';
+  else b.textContent = '结束回合 ✓'; // main2/end 一步交回合
 }
 
 // ---------- 响应窗口横幅（规则 §七：玩家为响应方时操作入口） ----------
@@ -247,14 +466,20 @@ function renderRespond() {
   for (const s of g.players[0].spells) {
     if (!DUEL.canRespond(g, cardsById, 0, s).ok) continue;
     const d = cardsById[s.cardId];
-    btns.push(`<button data-suid="${s.uid}" title="${d.desc}">发动「${d.name}」</button>`);
+    // R2-01：defDelta-only 伏笔在「目标为攻击表示 / 直接攻击」时不改变结算（攻vs攻比 ATK、直攻扣 LP），
+    // 按钮上加 ⚠ 警示降透明度（不禁用：规则允许发动，保留老手自由度，但新手不再白点）
+    const ops = d.effect.ops || [];
+    const defOnly = ops.some(o => o.op === 'defDelta') && !ops.some(o => o.op === 'negateAttack' || o.op === 'atkDelta' || o.op === 'damage' || o.op === 'destroy');
+    const tgt = pd.kind === 'attack' && pd.ev.targetUid ? g.players[0].board.find(u => u.uid === pd.ev.targetUid) : null;
+    const useless = pd.kind === 'attack' && defOnly && (!tgt || tgt.pos === 'atk');
+    btns.push(`<button data-suid="${s.uid}" class="${useless ? 'dim' : ''}" title="${d.desc}${useless ? '\n⚠ 目标为攻击表示（或直接攻击），DEF 增益不会改变本次战斗结果' : ''}">发动「${d.name}」${useless ? ' ⚠' : ''}</button>`);
   }
   btns.push(`<button class="pass" data-suid="">不响应</button>`);
   els.rbBtns.innerHTML = btns.join('');
   els.rbBtns.querySelectorAll('button').forEach(b => b.onclick = () => {
     if (busy) return;
     const a = b.dataset.suid ? { t: 'respond', spellUid: b.dataset.suid } : { t: 'pass' };
-    const r = DUEL.applyAction(g, cardsById, 0, a);
+    const r = act(0, a);
     if (!r.ok) return toast(r.reason);
     render();
   });
@@ -308,7 +533,7 @@ function showSpellModal(src, d) {
       <div class="nm">${d.name}</div><div class="sub">${d.sub}</div><div class="fx">${shortFx(d)}</div></div>
     <div class="meta"><b>${d.name}</b>（${d.type === 'move' ? (d.moveKind === 'equip' ? '装备招式' : '通常招式') : '伏笔'}）<br>${d.desc}</div>
   </div>`];
-  const act = src.kind === 'hand' ? 'activateMove' : 'activateSpell';
+  const actKind = src.kind === 'hand' ? 'activateMove' : 'activateSpell'; // 注意勿与全局 act() 同名
   const key = src.kind === 'hand' ? 'handUid' : 'spellUid';
   if (d.type === 'trap') {
     parts.push(`<div id="posOpts" style="margin-top:10px">
@@ -332,11 +557,11 @@ function showSpellModal(src, d) {
   els.modalBox.innerHTML = parts.join('');
   els.modal.classList.remove('hidden');
   els.modalBox.querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
-    const a = { t: b.dataset.act === 'set' ? 'setSpell' : act };
+    const a = { t: b.dataset.act === 'set' ? 'setSpell' : actKind };
     a[key] = src.uid;
     if (b.dataset.tgt !== undefined) a.target = b.dataset.tgt;
     els.modal.classList.add('hidden');
-    const r = DUEL.applyAction(g, cardsById, 0, a);
+    const r = act(0, a);
     if (!r.ok) return toast(r.reason);
     render();
   });
@@ -351,7 +576,7 @@ function showSummonModal(h, d, need) {
   html.push(`<div class="card-preview">
     <div class="card"><img class="art" src="art/${d.art}.webp"><span class="lv">${d.level}</span>
       <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
-      <div class="stats"><span class="atk">${d.atk}</span><span class="def">${d.def}</span></div></div>
+      <div class="stats"><span class="atk"><i>攻</i>${d.atk}</span><span class="def"><i>守</i>${d.def}</span></div></div>
     <div class="meta"><b>${d.name}</b>（Lv${d.level}）<br>攻击力 ${d.atk} / 守备力 ${d.def}<br>${d.role}<br>${d.desc}</div>
   </div>`);
   if (need > 0) {
@@ -385,7 +610,7 @@ function showSummonModal(h, d, need) {
   });
   els.modalBox.querySelectorAll('.opt[data-pos]').forEach(b => b.onclick = () => {
     if (need > 0 && tributeSel.length !== need) return toast(`先选择 ${need} 名解放对象`);
-    const r = DUEL.applyAction(g, cardsById, 0, { t: 'summon', handUid: h.uid, pos: b.dataset.pos, tributes: tributeSel });
+    const r = act(0, { t: 'summon', handUid: h.uid, pos: b.dataset.pos, tributes: tributeSel });
     els.modal.classList.add('hidden');
     if (!r.ok) return toast(r.reason);
     render();
@@ -412,7 +637,7 @@ function onMyUnitClick(uid) {
     const u = g.players[0].board.find(x => x.uid === uid);
     if (!u) return;
     const to = u.pos === 'atk' ? 'def' : 'atk';
-    const r = DUEL.applyAction(g, cardsById, 0, { t: 'setPos', uid, pos: to });
+    const r = act(0, { t: 'setPos', uid, pos: to });
     if (!r.ok) return toast(r.reason);
     render();
   }
@@ -421,7 +646,7 @@ function onMyUnitClick(uid) {
 function onFoeUnitClick(uid) {
   if (busy || g.winner !== null) return;
   if (g.phase !== 'battle' || g.active !== 0 || !sel) return;
-  const r = DUEL.applyAction(g, cardsById, 0, { t: 'attack', uid: sel, target: uid });
+  const r = act(0, { t: 'attack', uid: sel, target: uid });
   if (!r.ok) return toast(r.reason);
   sel = null; hideDirectBtn();
   render();
@@ -441,21 +666,50 @@ function hideDirectBtn() { els.btnDirect.classList.add('hidden'); }
 
 els.btnDirect.onclick = () => {
   if (!sel) return;
-  const r = DUEL.applyAction(g, cardsById, 0, { t: 'attack', uid: sel, target: null });
+  const r = act(0, { t: 'attack', uid: sel, target: null });
   if (!r.ok) return toast(r.reason);
   sel = null; hideDirectBtn(); render();
 };
 
+// 战斗阶段是否还有可攻击动作（空战自动跳过的判据）
+function battleHasActions() {
+  return g.players[0].board.some(u =>
+    DUEL.canAttack(g, cardsById, 0, u.uid, g.players[1].board.length ? g.players[1].board[0].uid : null).ok
+    || DUEL.canAttack(g, cardsById, 0, u.uid, null).ok);
+}
 els.btnNext.onclick = () => {
   if (busy || g.winner !== null || g.active !== 0) return;
-  const r = DUEL.applyAction(g, cardsById, 0, { t: g.phase === 'end' ? 'endTurn' : 'nextPhase' });
+  if (g.phase === 'battle' && !g.tutorial) {
+    // 战斗阶段一键结束：链式 nextPhase→main2→endTurn（均合法引擎动作；「出牌 ›」次链接保留战后出牌入口）
+    let r = act(0, { t: 'nextPhase' });
+    if (r.ok && g.active === 0 && g.phase === 'main2' && g.winner === null) r = act(0, { t: 'endTurn' });
+    if (!r.ok) { toast(r.reason); render(); return; }
+  } else {
+    const endIt = g.phase === 'end' || (g.phase === 'main2' && !g.tutorial);
+    let r = act(0, { t: endIt ? 'endTurn' : 'nextPhase' });
+    if (!r.ok) { toast(r.reason); render(); return; }
+    // 空战斗自动跳过（非教学）：进战斗后发现无任何攻击动作 → 推进 main2，省一次空点击
+    if (!g.tutorial && g.phase === 'battle' && g.active === 0 && g.winner === null && !battleHasActions()) {
+      act(0, { t: 'nextPhase' });
+      toast('本回合没有可攻击的人物，跳过战斗');
+    }
+  }
+  sel = null; hideDirectBtn(); render();
+};
+// 「出牌 ›」：战斗阶段仅推进到主要2（战后盖伏/登场的次链接）
+$('btnToMain2').onclick = () => {
+  if (busy || g.winner !== null || g.active !== 0 || g.phase !== 'battle') return;
+  const r = act(0, { t: 'nextPhase' });
   if (!r.ok) return toast(r.reason);
   sel = null; hideDirectBtn(); render();
 };
+// 战报抽屉与 ☰ 菜单
+els.ticker.onclick = () => els.logDrawer.classList.add('open');
+$('ldClose').onclick = () => els.logDrawer.classList.remove('open');
+els.btnMenu.onclick = showMenu;
 
-els.btnRestart.onclick = () => { if (confirm('重新开局？当前对局作废')) start(); };
-els.btnAgain.onclick = () => start();
-els.btnHelp.onclick = () => showModal(`
+function showRules() {
+  showModal(`
   <h3>决斗规则速览</h3>
   <div class="meta" style="line-height:1.9">
   · 双方 LP 4000，降到 0 获胜；必须抽牌而牌组为空则败。<br>
@@ -471,6 +725,23 @@ els.btnHelp.onclick = () => showModal(`
   · 想闯东海篇 8 关或自组牌组？点顶部「闯关模式」。<br>
   · 完整规则见 docs/duel-rules.md。
   </div>`);
+}
+// ☰ 菜单（手机顶栏收纳全部入口；桌面 top-actions 直显、☰ 隐藏）
+function showMenu() {
+  const fxOn = !document.documentElement.classList.contains('reduce-fx');
+  showModal(`<h3>菜单</h3>
+    <button class="opt" id="mHelp">📖 决斗规则速览</button>
+    <button class="opt" id="mFx">✨ 动效：${fxOn ? '开（点击关闭）' : '关（点击开启）'}</button>
+    <a class="opt" href="campaign.html">🗺 闯关模式 / 牌组工坊</a>
+    <button class="opt" id="mRestart">↺ 重新开局</button>
+    <a class="opt" href="index.html">⛵ 旧版入口</a>`);
+  $('mHelp').onclick = () => { els.modal.classList.add('hidden'); showRules(); };
+  $('mFx').onclick = () => { els.btnFx.onclick(); els.modal.classList.add('hidden'); };
+  $('mRestart').onclick = () => { if (confirm('重新开局？当前对局作废')) { els.modal.classList.add('hidden'); start(); } };
+}
+els.btnRestart.onclick = () => { if (confirm('重新开局？当前对局作废')) start(); };
+els.btnAgain.onclick = () => start();
+els.btnHelp.onclick = showRules;
 
 function showModal(html) {
   els.modalBox.innerHTML = html + '<button class="cancel">关闭</button>';
@@ -500,26 +771,28 @@ function aiTimerStep() {
   if (!g || g.winner !== null) { stopAi(); busy = false; render(); return; }
   if (g.pending) {
     if (g.pending.turnPtr !== 1) { stopAi(); busy = false; render(); return; } // 窗口轮到玩家
-    const step = DUEL_AI.aiStep(g, cardsById, 1);
-    const r = DUEL.applyAction(g, cardsById, 1, step || { t: 'pass' });
+    const step = g.tutorial ? tutorialAiStep(g, cardsById) : DUEL_AI.aiStep(g, cardsById, 1);
+    const r = act(1, step || { t: 'pass' });
     if (!r.ok) { stopAi(); busy = false; render(); return; }
     render();
     if (!g.pending) { stopAi(); busy = false; render(); } // 窗口关闭交回正常节奏
     return;
   }
   if (g.active !== 1) { stopAi(); busy = false; render(); return; }
-  const step = DUEL_AI.aiStep(g, cardsById, 1);
+  const step = g.tutorial ? tutorialAiStep(g, cardsById) : DUEL_AI.aiStep(g, cardsById, 1);
   if (!step) { stopAi(); busy = false; render(); return; }
-  const r = DUEL.applyAction(g, cardsById, 1, step);
+  const r = act(1, step);
   if (!r.ok) { stopAi(); busy = false; render(); return; }
   render();
-  if (g.active === 0 || g.winner !== null) { stopAi(); busy = false; render(); }
+  // 开窗轮到玩家（AI 攻击宣言触发 W1）：立即解锁，不等下一 tick——否则窗口弹出后 620ms 内的玩家点击被 busy 吞（R1-P0#1 残留）
+  if (g.active === 0 || g.winner !== null || (g.pending && g.pending.turnPtr === 0)) { stopAi(); busy = false; render(); }
 }
 function stopAi() { if (aiTimer) { clearInterval(aiTimer); aiTimer = null; } }
 
 // ---------- 结束 ----------
 function showEnd() {
   stopAi();
+  clearLive(); // 对局结束，存档使命完成
   const w = g.winner;
   els.endTitle.textContent = w === -1 ? '平局' : w === 0 ? '胜 利' : '败 北';
   let sub = w === -1 ? '双方同时倒下' :
@@ -545,6 +818,9 @@ function showEnd() {
     } else if (w === 1) {
       sub += ' · 重整旗鼓，回闯关页再战';
     }
+  } else if (g.tutorial) {
+    els.btnAgain.textContent = '重玩本段教学';
+    els.btnAgain.onclick = () => startTutorial(g.tutorial); // 教学局：不写通关、不落档
   } else {
     els.btnAgain.textContent = '再战一局';
     els.btnAgain.onclick = start;
@@ -553,4 +829,49 @@ function showEnd() {
   els.endOverlay.classList.remove('hidden');
 }
 
-start();
+// ---------- 动效开关（Phase 5 任务6）：手动优先（localStorage），系统 prefers-reduced-motion 自动跟随 ----------
+const btnFx = $('btnFx');
+function applyFx() {
+  const manual = localStorage.getItem('gld_reduce_fx');
+  const off = manual === '1' || (manual === null && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  document.documentElement.classList.toggle('reduce-fx', off);
+  if (btnFx) btnFx.textContent = off ? '动效：关' : '动效：开';
+}
+if (btnFx) btnFx.onclick = () => {
+  localStorage.setItem('gld_reduce_fx', document.documentElement.classList.contains('reduce-fx') ? '0' : '1');
+  applyFx();
+};
+
+// ---------- 启动：教学直达 > 存档恢复 > 新局（campaign 开战的 pending 最优先） ----------
+function boot() {
+  applyFx();
+  const tm = location.search.match(/[?&]tutorial=([123])/);
+  if (tm) { startTutorial(+tm[1]); return; }
+  if (localStorage.getItem('gld_duel_pending')) { start(); return; } // 闯关开战直达
+  const saved = readLive();
+  if (saved && saved.corrupt) {
+    start();
+    toast('检测到损坏的对局存档，已清理并开新局');
+    return;
+  }
+  if (saved) {
+    const meta = `第 ${saved.g.turn} 回合 · ${PH_CN[saved.g.phase] || ''}` +
+      (saved.pendingCampaign ? ` · 东海篇「${saved.pendingCampaign.stageName}」` : ' · 快速对决');
+    els.modalBox.innerHTML = `<h3>发现未完成的对局</h3>
+      <div class="meta" style="margin-bottom:10px">${meta}<br>离开页面时的局面已被保留。</div>
+      <button class="opt" id="rsYes">▶ 继续对局</button>
+      <button class="opt" id="rsNo">🗑 放弃，开新局</button>`;
+    els.modal.classList.remove('hidden');
+    $('rsYes').onclick = () => {
+      els.modal.classList.add('hidden');
+      resuming = true;
+      const ok = restoreLive(saved);
+      resuming = false;
+      if (!ok) { toast('存档恢复失败，已开新局'); start(); }
+    };
+    $('rsNo').onclick = () => { els.modal.classList.add('hidden'); clearLive(); start(); };
+    return;
+  }
+  start();
+}
+boot();
