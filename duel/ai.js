@@ -52,7 +52,15 @@ function aiStep(g, cardsById, pi = (g.pending ? g.pending.turnPtr : g.active)) {
         const curAtk = p.board.reduce((s, u) => s + A(u), 0);
         const d = cardsById[p.hand.find(h => h.uid === best.handUid).cardId];
         const loss = (best.tributes || []).reduce((s, uid) => s + A(p.board.find(u => u.uid === uid)), 0);
-        if (curAtk - loss + d.atk >= curAtk) {
+        // R2-02：解放「本回合尚可攻击」的怪换登场 = 失去本回合攻击权（新怪登场回合不可攻）。
+        // 手牌同名大怪会导致无限解放循环（克利克换克利克，每回合白亏一次攻击）——
+        // 解放系登场须净攻提升 >300 才做；无解放登场维持 >=（白赚场攻）。
+        const lostAttacks = (best.tributes || []).some(uid => {
+          const tu = p.board.find(u => u.uid === uid);
+          return tu && !tu.attacked && tu.summonedTurn < g.turn && tu.pos === 'atk';
+        });
+        const gain = curAtk - loss + d.atk - (lostAttacks ? 300 : 0);
+        if (gain > curAtk || (gain >= curAtk && !(best.tributes || []).length)) {
           // control 型：对方场攻压迫时改守备登场（攒伏笔等反击），否则照常攻击表示
           if (PROF === 'control') {
             const foeAtk = e.board.reduce((s, u) => s + A(u), 0);
@@ -61,6 +69,12 @@ function aiStep(g, cardsById, pi = (g.pending ? g.pending.turnPtr : g.active)) {
           return best;
         }
       }
+    }
+    // 1.5) 被转守的攻击手切回攻击表示（否则被催眠曲/包围网/赞高永久锁攻空转——R1 逻辑缺口）；
+    //      control 型守备是主动战术故不切
+    if (PROF !== 'control') {
+      const flip = moves.find(m => m.t === 'setPos' && m.pos === 'atk');
+      if (flip) return flip;
     }
     // 2) 盖伏伏笔（招式倾向直接发动，符合激进原型）
     const trapSet = moves.find(m => {
@@ -81,6 +95,7 @@ function aiStep(g, cardsById, pi = (g.pending ? g.pending.turnPtr : g.active)) {
   if (g.phase === 'battle') {
     const atks = moves.filter(m => m.t === 'attack');
     const margin = PROF === 'control' ? 200 : 0; // 控制型只在明显有利时换血
+    const desperate = p.deck.length <= 3; // 终局意识：自己几回合内将抽空——降低门槛换血抢时间（防对墙空转到 deckout）
     for (const m of atks) {
       const u = p.board.find(x => x.uid === m.uid);
       if (!u) continue;
@@ -90,9 +105,11 @@ function aiStep(g, cardsById, pi = (g.pending ? g.pending.turnPtr : g.active)) {
       if (t.pos === 'atk') {
         const b = A(t);
         if (a > b + margin) return m;                          // 有利：破坏+差额
+        if (desperate && a > b - 300) return m;                // 快抽空：小亏也换（可能换掉对方攻手）
         if (a === b && e.board.length === 1 && PROF !== 'control') return m; // 换掉对方唯一怪
       } else {
         if (a > DF(t)) return m;                      // 破守备
+        if (desperate && a > DF(t) - 300) return m;   // 快抽空：贴着破防也撞
       }
     }
     return { t: 'nextPhase' }; // 无有利攻击 → 主2
@@ -130,12 +147,18 @@ function pickMove(g, cardsById, pi, mvs) {
       if (m) return m;
     }
   }
-  // 4) 增攻（鬼斩：主1 给最强攻击者 +800）
+  // 4) 增攻（鬼斩：主1 给最强攻击者 +800；目标已有本回合攻增益则不重复叠——R1-04）
   const buff = mvs.filter(m => { const d = cardOf(m); return d && d.effect.ops.some(o => o.op === 'atkDelta' && o.amount > 0); });
   if (buff.length && g.phase === 'main1' && p.board.length) {
-    buff.sort((x, y) => unitAtk(cardsById, p.board.find(u => u.uid === y.target)) -
-                     unitAtk(cardsById, p.board.find(u => u.uid === x.target)));
-    return buff[0];
+    const clean = buff.filter(m => {
+      const u = p.board.find(x => x.uid === m.target);
+      return u && !(u.buffs || []).some(b => b.stat === 'atk' && b.amount > 0);
+    });
+    if (clean.length) {
+      clean.sort((x, y) => unitAtk(cardsById, p.board.find(u => u.uid === y.target)) -
+                       unitAtk(cardsById, p.board.find(u => u.uid === x.target)));
+      return clean[0];
+    }
   }
   // 5) 装备（给 ATK≥1600 的人物）
   const eq = mvs.filter(m => { const d = cardOf(m); return d && d.moveKind === 'equip'; });
@@ -145,8 +168,8 @@ function pickMove(g, cardsById, pi, mvs) {
     const u0 = p.board.find(u => u.uid === eq[0].target);
     if (u0 && unitAtk(cardsById, u0) >= 1600) return eq[0];
   }
-  // 6) 普通烧血（雷光：对方 LP 偏低或自己无场面优势时用）
-  if (burn.length && (e.lp <= 1800 || p.board.length === 0)) return burn[0];
+  // 6) 普通烧血（雷光：对方 LP 偏低、自己无场面、或自己快抽空须抢斩杀时用——终局意识）
+  if (burn.length && (e.lp <= 1800 || p.board.length === 0 || p.deck.length <= 5)) return burn[0];
   return null;
 }
 
