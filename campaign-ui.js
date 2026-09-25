@@ -1,8 +1,8 @@
 // 东海篇闯关 + 牌组工坊 UI（Phase 4）
 // 进度/牌组存 localStorage；开战写 gld_duel_pending → duel.html 开局；胜利由 duel-ui 回写通关。
 'use strict';
-import DATA from './data/duel-cards.js?v=1189296';
-import STAGES from './data/duel-stages.js?v=1189296';
+import DATA from './data/duel-cards.js?v=bae6d0d';
+import STAGES from './data/duel-stages.js?v=bae6d0d';
 
 const cardsById = {};
 for (const c of DATA.cards) cardsById[c.id] = c;
