@@ -1,13 +1,13 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=a653202';
-import { DUEL_AI } from './duel/ai.js?v=a653202';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=a653202';
-import POOL_DATA from './data/duel-pool.js?v=a653202'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=a653202';
-import { FXM } from './fx-manager.js?v=a653202'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=a653202'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=23f3fe8';
+import { DUEL_AI } from './duel/ai.js?v=23f3fe8';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=23f3fe8';
+import POOL_DATA from './data/duel-pool.js?v=23f3fe8'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=23f3fe8';
+import { FXM } from './fx-manager.js?v=23f3fe8'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=23f3fe8'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
