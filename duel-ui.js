@@ -1,10 +1,12 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=a40a236';
-import { DUEL_AI } from './duel/ai.js?v=a40a236';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=a40a236';
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=a40a236';
+import { DUEL } from './duel/engine.js?v=98f9858';
+import { DUEL_AI } from './duel/ai.js?v=98f9858';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=98f9858';
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=98f9858';
+import { FXM } from './fx-manager.js?v=98f9858'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=98f9858'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -28,6 +30,9 @@ const els = {
 const PH_CN = { draw: '抽牌', standby: '准备', main1: '主要阶段1', battle: '战斗阶段', main2: '主要阶段2', end: '结束阶段' };
 const PH_SHORT = { draw: '抽牌', standby: '准备', main1: '出牌', battle: '战斗', main2: '出牌', end: '结束' };
 const AI_DELAY = 620;
+// round5 C8：E2E 模式（?e2e=1）——会话级强制 reduce-fx（不碰用户 gld_reduce_fx 键）、
+// AI 步进恒基线（演出感知间隔在虚拟时钟下无意义且引入不确定性）、?seed=N 确定性开局。
+const E2E = /[?&]e2e=1/.test(location.search);
 
 let g = null;
 let sel = null;          // 当前选中攻击者 uid（战斗阶段）
@@ -69,6 +74,7 @@ function restoreLive(saved) {
     g = gg;
     pendingCampaign = saved.pendingCampaign || null;
     sel = null; logShown = 0; busy = false;
+    turnKeyShown = gg.turn + '|' + gg.active; // 恢复对局不弹回合横幅
     els.ldBody.innerHTML = ''; els.ticker.textContent = '';
     els.endOverlay.classList.add('hidden');
     els.modal.classList.add('hidden');
@@ -98,7 +104,9 @@ function start() {
     names = ['玩家', '亚尔丽塔（AI）'];
     intro = '【快速对决】想闯关请点顶部「闯关模式」。';
   }
-  const seed = (Date.now() ^ (Math.random() * 1e9)) >>> 0;
+  const seed = E2E && (location.search.match(/[?&]seed=(\d+)/) || [])[1]
+    ? +location.search.match(/[?&]seed=(\d+)/)[1] // 仅 E2E 模式读 ?seed（确定性开局）
+    : (Date.now() ^ (Math.random() * 1e9)) >>> 0;
   g = DUEL.newGame(cardsById, {
     seed, decks, names, aiProfile,
   });
@@ -148,10 +156,23 @@ function tutAttackResolved() {
   return tutFlags.attacked && !g.log.slice(-3).some(l => l.msg.includes('响应窗口'));
 }
 // 统一动作入口包装：成功后喂给教学观察器 + 捕捉登场/攻击/LP变化/卡牌发动驱动战斗动效
-let fxAttack = null, fxLp = null, fxSummon = null, fxCast = null;
+let fxAttack = null, fxSummon = null, fxCast = null;
+let fxAtkPend = null; // 攻击宣言快照（响应窗口场景下结算在关闭窗口的 act，时基重置用，C7）
+let fxLpQueue = []; // LP 伤害逐笔队列（round5 C5：多笔连跳各自步进+归因）
+let fxDissolveQ = []; // 离场溶解队列（round5 C6）
 function act(pi, a) {
   const lp0 = [g.players[0].lp, g.players[1].lp];
+  const logLen0 = g.log.length;
   const board0 = g.players[pi].board.map(u => u.uid);
+  const pend0 = g.pending && g.pending.kind === 'attack' ? g.pending : null; // 攻击窗口关闭=战斗此刻结算（C7）
+  // C6：离场溶解快照——applyAction 前全场单位位置/卡面。战斗破坏常发生在「关闭响应窗口的 act」
+  // （pass/respond），宣言时判定 destroyed 会漏；统一改「快照后离板→溶解」。仅玩家侧动作结算
+  // 才溶解（AI 普攻短链无溶解，M1）；攻方自身阵亡走 ghost 残影，消费时剔除
+  const leave0 = [];
+  for (const p of g.players) for (const u of p.board) {
+    const el = document.querySelector(`[data-uid="${u.uid}"]`);
+    if (el) leave0.push({ uid: u.uid, rect: el.getBoundingClientRect(), art: (cardsById[u.cardId] || {}).art || null });
+  }
   // 发动卡快照（applyAction 前取——发动后卡即离场进连锁/墓场）
   let castD = null;
   if (a.t === 'respond' || a.t === 'activateSpell' || a.t === 'activateMove') {
@@ -163,8 +184,14 @@ function act(pi, a) {
   const r = DUEL.applyAction(g, cardsById, pi, a);
   if (r.ok) {
     tutObserve(a);
+    // C7：攻击响应窗口关闭（pass/respond 落定）= 战斗此刻才结算——重置 fxAttack 时基，
+    // 宣言快照由 fxAtkPend 保管（中间 render 的 fxPlay 已把旧 fxAttack 清出 450ms 窗）
+    if (pend0 && !g.pending && fxAtkPend) {
+      fxAttack = { ...fxAtkPend, t: Date.now() };
+      fxAtkPend = null;
+    } else if (!g.pending) fxAtkPend = null;
     const nu = g.players[pi].board.find(u => !board0.includes(u.uid));
-    if (nu) fxSummon = { uid: nu.uid, t: Date.now() }; // 登场动画
+    if (nu) { fxSummon = { uid: nu.uid, t: Date.now() }; SND.play('summon'); } // 登场动画+琶音
     if (a.t === 'attack') {
       const au = g.players[pi].board.find(u => u.uid === a.uid) || g.players[pi].grave.find(u => u.uid === a.uid);
       const ad = au && cardsById[au.cardId];
@@ -177,31 +204,80 @@ function act(pi, a) {
       }
       fxAttack = { uid: a.uid, target: a.target, side: pi, t: Date.now(), tgtRect,
         art: ad ? ad.art : null, name: ad ? ad.name : '' }; // 快照：攻方阵亡时渲染冲撞残影
+      fxAtkPend = fxAttack; // 宣言快照存档：若开响应窗口，结算在关闭窗口的 act（C7 重置时基用）
     }
     if (castD) fxCast = { d: castD, t: Date.now() }; // 发动闪卡演出（伏笔/招式）
+    // C6：快照后离板 → 溶解队列（玩家侧动作；上限 3 防连锁刷屏）
+    if (pi === 0 && leave0.length) {
+      const onBoard = new Set([...g.players[0].board, ...g.players[1].board].map(u => u.uid));
+      for (const s0 of leave0) if (!onBoard.has(s0.uid)) fxDissolveQ.push(s0);
+      if (fxDissolveQ.length > 3) fxDissolveQ = fxDissolveQ.slice(-3);
+    }
     const d0 = lp0[0] - g.players[0].lp, d1 = lp0[1] - g.players[1].lp;
     if (d0 !== 0 || d1 !== 0) {
-      // 归因：本笔伤害的 why（damageLP 日志「XX LP -N（why）→ M」）——飘字带上卡名，多笔连跳可分清
-      const delta = Math.max(d0, d1);
-      const whyRow = g.log.slice().reverse().find(l => l.msg.includes(`LP -${delta}`));
-      const m = whyRow && whyRow.msg.match(/LP -\d+（(.+?)）/); // 锚定伤害括号（玩家名含括号如「（AI）」不误抓）
-      fxLp = { side: d0 > 0 ? 0 : 1, delta, why: m ? m[1] : '', t: Date.now() }; // 扣血方闪红+飘字
+      // round5 C5：逐笔入队——扫 applyAction 新增日志的 damageLP 归因行（「名字 LP -N（why）→ M」），
+      // from/to 链式推算；单笔 max 归因在多笔连跳（登场烧血+攻击差额两连）时只剩一笔，步进须逐笔
+      const curs = [lp0[0], lp0[1]];
+      const rows = g.log.slice(logLen0).filter(l => / LP -\d+（/.test(l.msg));
+      if (rows.length) {
+        for (const l of rows) {
+          const m = l.msg.match(/^(.+?) LP -(\d+)（(.+?)）/);
+          if (!m) continue;
+          const side = m[1] === g.players[0].name ? 0 : 1;
+          const delta = Math.min(+m[2], curs[side]);
+          if (delta <= 0) continue;
+          fxLpQueue.push({ side, from: curs[side], to: curs[side] - delta, delta, why: m[3] });
+          curs[side] -= delta;
+        }
+      } else { // 无归因行的新伤害路径：按合计兜底
+        for (const side of [0, 1]) {
+          const dd = side === 0 ? d0 : d1;
+          if (dd > 0) fxLpQueue.push({ side, from: lp0[side], to: g.players[side].lp, delta: dd, why: '' });
+        }
+      }
+      if (fxLpQueue.length > 5) fxLpQueue = fxLpQueue.slice(-5); // 极端连锁防刷屏
     }
   }
   return r;
 }
-// 命中点爆裂演出：冲击环×2 + 放射粒子×6（挂 #table，入参=页面坐标中心，900ms 自清）
-function spawnBurst(pt) {
+const rectCenter = r => ({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+// 命中点爆裂演出（M1 580-760ms；AI 短链=单环+单粒 300ms）：挂 #table，入参=页面坐标中心
+function spawnBurst(pt, small) {
   const host = document.getElementById('table');
-  if (!host || !pt || document.querySelector('.fx-burst')) return;
+  if (!host || !pt) return;
   const hr = host.getBoundingClientRect();
   const b = document.createElement('div');
-  b.className = 'fx-burst';
+  b.className = 'fx-burst' + (small ? ' sm' : '');
   b.style.left = (pt.x - hr.left) + 'px';
   b.style.top = (pt.y - hr.top) + 'px';
-  b.innerHTML = '<i></i><i></i>' + Array.from({ length: 6 }, (_, k) => `<s style="--a:${k * 60}deg"></s>`).join('');
-  setTimeout(() => b.remove(), 950);
+  b.innerHTML = small
+    ? '<i></i><s style="--a:35deg"></s>'
+    : '<i></i><i></i>' + [0, 120, 240].map(a => `<s style="--a:${a}deg"></s>`).join('');
+  FXM.register({ el: b, dur: small ? 700 : 1150, onDone: () => b.remove() });
   host.appendChild(b);
+}
+// 目标原位溶解（M1 650-1050ms）：卡图纵切三片 clip-path 飞散淡出——scale/fade 禁 blur（C3 红线）；
+// 片层从 fxPlay 起即静态可见（结算后 render 已移除目标 DOM，切片=连续性替身），650ms 起散开
+function spawnDissolve(rect, art) {
+  const host = document.getElementById('table');
+  if (!host || !rect || !art) return;
+  const hr = host.getBoundingClientRect();
+  const d = document.createElement('div');
+  d.className = 'fx-dissolve';
+  d.style.left = (rect.left - hr.left) + 'px';
+  d.style.top = (rect.top - hr.top) + 'px';
+  d.style.width = rect.width + 'px';
+  d.style.height = rect.height + 'px';
+  d.innerHTML = Array.from({ length: 3 }, (_, k) =>
+    `<i style="--fx:${(k - 1) * 26}px; --fy:${18 + k * 14}px; --fr:${(k - 1) * 16}deg; --fd:${k * 70}ms"><img src="art/${art}.webp" alt=""></i>`).join('');
+  FXM.register({ el: d, dur: 1100, onDone: () => d.remove() });
+  host.appendChild(d);
+}
+// 全桌震动（玩家链专属，M1 至 1000ms；AI 短链不震）
+function fxQuake() {
+  const tb = document.getElementById('table');
+  if (!tb || tb.classList.contains('fx-quake')) return;
+  FXM.register({ id: 'quake', el: tb, cls: 'fx-quake', dur: 1000, onDone: () => tb.classList.remove('fx-quake') });
 }
 // round4：飞行光剑（用户设计——选中卡持剑，确认目标后剑飞过去）。剑尖默认朝上，按航向旋转。
 const SWORD_SVG = `<svg viewBox="0 0 28 96" xmlns="http://www.w3.org/2000/svg">
@@ -230,43 +306,85 @@ function flySword(from, to) {
   s.style.setProperty('--rot', rot + 'deg');
   s.innerHTML = SWORD_SVG;
   s.addEventListener('animationend', () => s.remove(), { once: true });
-  setTimeout(() => s.remove(), 950);
+  setTimeout(() => s.remove(), 500); // .30s 航程（M1 0-300ms）+ 兜底
+  FXM.register({ el: s, dur: 300 }); // 快进：finish() 跳终态触发 animationend 自清
   document.body.appendChild(s);
+}
+// round5 C5：LP 大数字步进——rAF 0.6s 计数（textContent 最省；tabular-nums 定宽防抖动），
+// 同侧串行（promise 链）双侧并行；快进=FXM finish 写终值即收；教学局/reduce-fx 退化=只走飘字层
+// （底层数字条 render 已即时写终值，步进纯演出层，跳过零信息损失）
+const lpChain = { 0: Promise.resolve(), 1: Promise.resolve() };
+function lpBig(e) { lpChain[e.side] = lpChain[e.side].then(() => runLpBig(e)); }
+function runLpBig(e) {
+  return new Promise(res => {
+    const numEl = e.side === 0 ? els.myLpNum : els.foeLpNum;
+    numEl.classList.remove('fx-hit'); void numEl.offsetWidth; // 重排触发同类动画重播
+    numEl.classList.add('fx-hit');
+    const wrap = numEl.closest('.lp-wrap');
+    // 终值飘字（归因卡名）：同侧一次一枚
+    if (wrap && e.delta > 0 && !wrap.querySelector('.fx-lpfloat')) {
+      const f = document.createElement('span');
+      f.className = 'fx-lpfloat';
+      f.textContent = `-${e.delta}${e.why ? ` ${e.why}` : ''}`;
+      f.addEventListener('animationend', () => f.remove(), { once: true });
+      setTimeout(() => f.remove(), 1100);
+      wrap.appendChild(f);
+    }
+    if (!wrap || g.tutorial || document.documentElement.classList.contains('reduce-fx')) return res();
+    const el = document.createElement('div');
+    el.className = 'fx-lpbig';
+    el.textContent = e.from;
+    wrap.appendChild(el);
+    const DUR = 600, t0 = performance.now();
+    let raf = 0, done = false;
+    const end = () => { if (done) return; done = true; cancelAnimationFrame(raf); el.remove(); res(); };
+    FXM.register({ id: 'lpbig' + e.side, el, dur: DUR, onDone: end }); // 点击快进→写终值收场
+    const tick = now => {
+      if (done) return;
+      const p = Math.min(1, (now - t0) / DUR);
+      el.textContent = Math.round(e.from + (e.to - e.from) * p);
+      if (p >= 1) return end();
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    setTimeout(end, DUR + 500); // 兜底（标签页后台 rAF 停摆）
+  });
 }
 // render 后注入动效类：攻方冲撞（我打敌=向上/敌打我=向下）、目标受击红闪、LP 数字跳动（450ms 窗口，过窗自清）
 function fxPlay() {
   const now = Date.now();
   if (fxAttack) {
     if (now - fxAttack.t < 450) {
+      const byAi = fxAttack.side === 1;
+      // M1 玩家全链 1.2s：0-300 剑飞+冲撞（lunge 内嵌 hit-stop）→ 390 白闪 → 580 爆裂+桌震至 1000
+      // → 650-1050 目标溶解 → 1200 收尾；AI 普攻=短链 ~0.7s（冲撞+白闪+小爆，无剑/无溶解/无震）
       const atkEl = document.querySelector(`[data-uid="${fxAttack.uid}"]`);
-      if (atkEl) atkEl.classList.add(fxAttack.side === 0 ? 'fx-lunge-up' : 'fx-lunge-down');
+      if (atkEl) atkEl.classList.add(byAi ? 'fx-lunge-down' : 'fx-lunge-up');
       else if (fxAttack.art) {
-        // 攻方阵亡（撞击反噬/同归于尽）：在其场地渲染冲撞残影，动画结束自清（800ms 兜底）
-        const host = fxAttack.side === 0 ? els.myBoard : els.foeBoard;
+        // 攻方阵亡（撞击反噬/同归于尽）：在其场地渲染冲撞残影
+        const host = byAi ? els.foeBoard : els.myBoard;
         if (host && !host.querySelector('.fx-ghost')) {
           const ghost = document.createElement('div');
-          ghost.className = `card fx-ghost ${fxAttack.side === 0 ? 'fx-lunge-up' : 'fx-lunge-down'}`;
+          ghost.className = `card fx-ghost ${byAi ? 'fx-lunge-down' : 'fx-lunge-up'}`;
           ghost.innerHTML = `<img class="art" src="art/${fxAttack.art}.webp"><div class="nm">${fxAttack.name}</div>`;
           ghost.addEventListener('animationend', () => ghost.remove(), { once: true });
-          setTimeout(() => ghost.remove(), 800);
+          setTimeout(() => ghost.remove(), 1300);
+          FXM.register({ el: ghost, dur: 1040, onDone: () => ghost.remove() });
           host.appendChild(ghost);
         }
       }
-      // 命中演出（round4 剑飞行版）：光剑从攻方射向目标（0.4s 航程），命中点爆裂/震动 CSS delay 对齐 0.38s
       // 目标被破坏时 DOM 已重绘移除 → 用 act() 快照的攻击前位置（剑与爆裂打在目标倒下的原位）
       const tgtEl = fxAttack.target ? document.querySelector(`[data-uid="${fxAttack.target}"]`) : null;
-      const tgtC = fxCenter(tgtEl) || (fxAttack.tgtRect
-        ? { x: fxAttack.tgtRect.left + fxAttack.tgtRect.width / 2, y: fxAttack.tgtRect.top + fxAttack.tgtRect.height / 2 }
-        : null) || fxCenter(fxAttack.side === 0 ? els.foeLpNum : els.myLpNum); // 直攻=LP 区
-      const from = atkEl || document.querySelector('.fx-ghost') || (fxAttack.side === 0 ? els.myBoard : els.foeBoard);
-      flySword(from, tgtC);
+      const tgtC = fxCenter(tgtEl) || (fxAttack.tgtRect ? rectCenter(fxAttack.tgtRect) : null)
+        || fxCenter(byAi ? els.myLpNum : els.foeLpNum); // 直攻=LP 区
+      const from = atkEl || document.querySelector('.fx-ghost') || (byAi ? els.foeBoard : els.myBoard);
+      SND.play('attack');                                             // 低频冲刺（宣言即起）
+      SND.play('clash', byAi ? 280 : 390);                            // 命中噪声：AI lunge 58%≈278 / 玩家 --t-hit=390
+      if (!byAi) flySword(from, tgtC);
       if (tgtEl) tgtEl.classList.add('fx-hit');
-      spawnBurst(tgtC);
-      const tb = document.getElementById('table');
-      if (tb && !tb.classList.contains('fx-quake')) {
-        tb.classList.add('fx-quake');
-        setTimeout(() => tb.classList.remove('fx-quake'), 850);
-      }
+      spawnBurst(tgtC, byAi);
+      if (!byAi) fxQuake();
+      FXM.register({ id: 'atkchain', dur: byAi ? 700 : 1200 }); // 纯节奏登记：AI 步进间隔感知（无视觉元素）
     } else fxAttack = null;
   }
   if (fxCast) {
@@ -279,27 +397,24 @@ function fxPlay() {
         c.addEventListener('animationend', () => c.remove(), { once: true });
         setTimeout(() => c.remove(), 1150);
         document.body.appendChild(c);
+        // 背景暗化一拍（round5 C2 账实修正：CSS 规则一直存在但从未被创建）
+        const dim = document.createElement('div');
+        dim.className = 'cast-dim';
+        dim.addEventListener('animationend', () => dim.remove(), { once: true });
+        setTimeout(() => dim.remove(), 1150);
+        document.body.appendChild(dim);
       }
     } else fxCast = null;
   }
-  if (fxLp) {
-    if (now - fxLp.t < 450) {
-      const el = fxLp.side === 0 ? els.myLpNum : els.foeLpNum;
-      el.classList.remove('fx-hit'); void el.offsetWidth; // 重排触发同类动画重播
-      el.classList.add('fx-hit');
-      // LP 飘字：-N 卡名/原因 红字从数字旁上飘淡出（多笔伤害连跳可归因；animationend 自清）
-      if (fxLp.delta > 0 && !document.querySelector('.fx-lpfloat')) {
-        const wrap = el.closest('.lp-wrap');
-        if (wrap) {
-          const f = document.createElement('span');
-          f.className = 'fx-lpfloat';
-          f.textContent = `-${fxLp.delta}${fxLp.why ? ` ${fxLp.why}` : ''}`;
-          f.addEventListener('animationend', () => f.remove(), { once: true });
-          setTimeout(() => f.remove(), 1100);
-          wrap.appendChild(f);
-        }
-      }
-    } else fxLp = null;
+  if (fxLpQueue.length) {
+    const q = fxLpQueue;
+    fxLpQueue = [];
+    for (const e of q) lpBig(e); // 逐笔步进（队列在 act() 即时填充，此处无 450ms 窗口需求）
+  }
+  if (fxDissolveQ.length) { // 离场溶解（攻方自身阵亡走 ghost，剔除）
+    const q = fxDissolveQ;
+    fxDissolveQ = [];
+    for (const s0 of q) if (!fxAttack || s0.uid !== fxAttack.uid) { spawnDissolve(s0.rect, s0.art); SND.play('ko', 650); }
   }
   if (fxSummon) {
     if (now - fxSummon.t < 450) {
@@ -309,6 +424,24 @@ function fxPlay() {
   }
 }
 let tutEnded = false; // 终步已触发（防重复弹完成窗）
+// round5 C4：回合切换横幅——render 尾 turnKey 比对，变化才弹（0.8s 自清，FXM 可快进）；
+// 教学局/reduce-fx 豁免；恢复存档由 restoreLive 预置 key 不弹
+let turnKeyShown = null;
+function fxTurnBanner() {
+  if (!g || g.winner !== null || g.tutorial) return;
+  if (document.documentElement.classList.contains('reduce-fx')) return;
+  const key = g.turn + '|' + g.active;
+  if (key === turnKeyShown) return;
+  turnKeyShown = key;
+  const mine = g.active === 0;
+  const b = document.createElement('div');
+  b.className = 'turn-banner ' + (mine ? 'mine' : 'foe');
+  b.textContent = mine ? `第 ${g.turn} 回合 · 你的回合` : `第 ${g.turn} 回合 · 对方回合`;
+  b.addEventListener('animationend', () => b.remove(), { once: true });
+  document.body.appendChild(b);
+  FXM.register({ id: 'turnBanner', el: b, dur: 800, onDone: () => b.remove() });
+  setTimeout(() => b.remove(), 1300);
+}
 function tutCheck() {
   if (!tut || tutEnded) return;
   if (tutFlags.attacked && !tutFlags.attackResolved) tutFlags.attackResolved = tutAttackResolved(); // 结算完成态（窗口关闭后）
@@ -391,6 +524,7 @@ function render() {
   if (g.winner === null && !aiTimer && (aiTurn || aiRespond)) scheduleAi();
   tutCheck(); renderTutBanner(); // 教学步进（非教学局为空操作）
   fxPlay(); // 战斗动效注入（攻击冲撞/受击/LP 跳动；reduce-fx 下由 CSS 静默）
+  fxTurnBanner(); // 回合切换横幅（turnKey 变化才弹；教学/reduce-fx 豁免）
   saveLive(); // 每次状态渲染后落档（结束局/恢复流程自动跳过）
 }
 
@@ -801,6 +935,7 @@ function battleHasActions() {
     || DUEL.canAttack(g, cardsById, 0, u.uid, null).ok);
 }
 els.btnNext.onclick = () => {
+  SND.play('click');
   if (busy || g.winner !== null || g.active !== 0) return;
   if (g.phase === 'battle' && !g.tutorial) {
     // 战斗阶段一键结束：链式 nextPhase→main2→endTurn（均合法引擎动作；「出牌 ›」次链接保留战后出牌入口）
@@ -855,11 +990,13 @@ function showMenu() {
   showModal(`<h3>菜单</h3>
     <button class="opt" id="mHelp">📖 决斗规则速览</button>
     <button class="opt" id="mFx">✨ 动效：${fxOn ? '开（点击关闭）' : '关（点击开启）'}</button>
+    <button class="opt" id="mSnd">🔊 音效：${SND.isOn() ? '开（点击关闭）' : '关（点击开启）'}</button>
     <a class="opt" href="campaign.html">🗺 闯关模式 / 牌组工坊</a>
     <button class="opt" id="mRestart">↺ 重新开局</button>
     <a class="opt" href="index.html">⛵ 旧版入口</a>`);
   $('mHelp').onclick = () => { els.modal.classList.add('hidden'); showRules(); };
   $('mFx').onclick = () => { els.btnFx.onclick(); els.modal.classList.add('hidden'); };
+  $('mSnd').onclick = () => { SND.toggle(); applySnd(); els.modal.classList.add('hidden'); };
   $('mRestart').onclick = () => { if (confirm('重新开局？当前对局作废')) { els.modal.classList.add('hidden'); start(); } };
 }
 els.btnRestart.onclick = () => { if (confirm('重新开局？当前对局作废')) start(); };
@@ -883,13 +1020,20 @@ function toast(msg) {
 function pushLog(msg) { g.log.push({ seq: ++g.actionSeq, turn: g.turn, side: g.active, msg }); }
 
 // ---------- AI 回合播放 ----------
+// 步间 setTimeout 链（round5 C2，替代 setInterval）：演出期间 AI 让路——
+// wait = max(620, FXM.lastDurTake()+180)，无新演出回落基线；教学局固定 620（教学节奏稳定）。
+// 两不变量沿用（R1-P0#1 防回归注释保留）：①窗口轮到玩家立即停 ②render 尾仅 !aiTimer 才拉起——
+// setTimeout 句柄在链存活期间非空（fired 后不清引用），ping-pong 防护语义自动延续。
 function scheduleAi() {
   busy = true;
   updateNextBtn(); renderHint();
-  aiTimer = setInterval(() => {
-    aiTimerStep();
-  }, AI_DELAY);
+  queueAiStep(AI_DELAY);
 }
+function queueAiStep(wait) {
+  clearTimeout(aiTimer); // 防双排（render 尾拉起与本函数竞争）
+  aiTimer = setTimeout(aiTimerStep, wait);
+}
+function aiWait() { return (g.tutorial || E2E) ? AI_DELAY : Math.max(AI_DELAY, FXM.lastDurTake() + 180); }
 function aiTimerStep() {
   if (!g || g.winner !== null) { stopAi(); busy = false; render(); return; }
   if (g.pending) {
@@ -898,7 +1042,8 @@ function aiTimerStep() {
     const r = act(1, step || { t: 'pass' });
     if (!r.ok) { stopAi(); busy = false; render(); return; }
     render();
-    if (!g.pending) { stopAi(); busy = false; render(); } // 窗口关闭交回正常节奏
+    if (!g.pending) { stopAi(); busy = false; render(); return; } // 窗口关闭交回正常节奏（render 尾按需重拉）
+    queueAiStep(aiWait()); // 窗口仍开且轮 AI：继续响应步
     return;
   }
   if (g.active !== 1) { stopAi(); busy = false; render(); return; }
@@ -908,15 +1053,17 @@ function aiTimerStep() {
   if (!r.ok) { stopAi(); busy = false; render(); return; }
   render();
   // 开窗轮到玩家（AI 攻击宣言触发 W1）：立即解锁，不等下一 tick——否则窗口弹出后 620ms 内的玩家点击被 busy 吞（R1-P0#1 残留）
-  if (g.active === 0 || g.winner !== null || (g.pending && g.pending.turnPtr === 0)) { stopAi(); busy = false; render(); }
+  if (g.active === 0 || g.winner !== null || (g.pending && g.pending.turnPtr === 0)) { stopAi(); busy = false; render(); return; }
+  queueAiStep(aiWait()); // AI 回合继续：下一步（演出感知间隔）
 }
-function stopAi() { if (aiTimer) { clearInterval(aiTimer); aiTimer = null; } }
+function stopAi() { if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; } }
 
 // ---------- 结束 ----------
 function showEnd() {
   stopAi();
   clearLive(); // 对局结束，存档使命完成
   const w = g.winner;
+  SND.play(w === 0 ? 'win' : 'lose'); // C7：胜负音（平局走 lose 低音）
   els.endTitle.textContent = w === -1 ? '平局' : w === 0 ? '胜 利' : '败 北';
   let sub = w === -1 ? '双方同时倒下' :
     (g.winReason === 'lp' ? '生命点数归零' : '牌组抽空') + ` · 历时 ${g.turn} 回合`;
@@ -965,9 +1112,16 @@ if (btnFx) btnFx.onclick = () => {
   applyFx();
 };
 
+// ---------- 音效开关（round5 C7）：独立键 gld_sound 默认静音，与动效开关零联动 ----------
+const btnSnd = $('btnSnd');
+function applySnd() { if (btnSnd) btnSnd.textContent = SND.isOn() ? '音效：开' : '音效：关'; }
+if (btnSnd) btnSnd.onclick = () => { SND.toggle(); applySnd(); };
+
 // ---------- 启动：教学直达 > 存档恢复 > 新局（campaign 开战的 pending 最优先） ----------
 function boot() {
   applyFx();
+  if ((navigator.hardwareConcurrency || 8) <= 4) document.documentElement.classList.add('lite-fx'); // round5 C3：弱核设备停常驻循环
+  if (E2E) document.documentElement.classList.add('reduce-fx'); // C8：E2E 会话级强制（不写用户键）
   const tm = location.search.match(/[?&]tutorial=([123])/);
   if (tm) { startTutorial(+tm[1]); return; }
   if (localStorage.getItem('gld_duel_pending')) { start(); return; } // 闯关开战直达
@@ -998,3 +1152,16 @@ function boot() {
   start();
 }
 boot();
+
+// round5 C8：E2E 只读快照（JSON 深拷贝天然剥 rng 函数；供 duel-flow 断言与近终局注入采样）
+window.__GLD = {
+  state() {
+    if (!g) return null;
+    return JSON.parse(JSON.stringify({
+      turn: g.turn, phase: g.phase, active: g.active, winner: g.winner,
+      myLp: g.players[0].lp, foeLp: g.players[1].lp,
+      myBoard: g.players[0].board.length, foeBoard: g.players[1].board.length,
+      pendingCampaign, e2e: E2E, g,
+    }));
+  },
+};
