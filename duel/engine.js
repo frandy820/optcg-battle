@@ -626,7 +626,10 @@ function resolvePending(g, cardsById) {
 
 // ---- 人物能力（Phase 4；规则 §十：登场时/被破坏时/每回合开始时/攻击宣言时）----
 // ability = { onSummon?/onDestroyed?/onTurnStart?/onAttackDecl?: { when?{ally}, text, ops } }
-const ABILITY_TARGETS = new Set(['self', 'foeStrongest', 'foeStrongestAtkPos', 'foeWeakestAtkPos', 'foeStrongestUnder']);
+// round6 R6-C：+allyAll/foeAll（群体 atkDelta）+foeWeakest（koWeakest 点杀）
+const ABILITY_TARGETS = new Set(['self', 'foeStrongest', 'foeStrongestAtkPos', 'foeWeakestAtkPos', 'foeStrongestUnder',
+  'allyAll', 'foeAll', 'foeWeakest']);
+const GROUP_TARGETS = new Set(['allyAll', 'foeAll']); // 展开为逐单位算子的群体词
 
 function triggerAbility(g, cardsById, pi, unit, hook) {
   const d = cardsById[unit.cardId];
@@ -655,6 +658,10 @@ function resolveAbilityTarget(g, cardsById, pi, unit, op) {
       const t = top(e.board.filter(u => unitAtk(cardsById, u) <= (op.cap || 1200)));
       return t ? t.uid : null;
     }
+    case 'foeWeakest': { // round6 R6-C：koWeakest 点杀（全场最弱，不限表示形式）
+      const t = e.board.slice().sort((a, b) => unitAtk(cardsById, a) - unitAtk(cardsById, b))[0];
+      return t ? t.uid : null;
+    }
     default: return null;
   }
 }
@@ -664,6 +671,13 @@ function applyAbilityOps(g, cardsById, pi, ops, unit) {
   for (const o of ops) {
     const m = { ...o };
     if (m.op === 'returnToHand') m.unitUid = unit.uid;
+    if (m.target && GROUP_TARGETS.has(m.target)) {
+      // round6 R6-C：群体目标展开为逐单位算子（buffAll/debuffFoeAll 转译来源）；空场静默
+      const e = g.players[1 - pi];
+      const uids = m.target === 'allyAll' ? g.players[pi].board.map(u => u.uid) : e.board.map(u => u.uid);
+      for (const uid of uids) mapped.push({ ...m, targetUid: uid });
+      continue;
+    }
     if (m.target && ABILITY_TARGETS.has(m.target)) {
       const uid = resolveAbilityTarget(g, cardsById, pi, unit, m);
       if (!uid) continue;
@@ -686,6 +700,41 @@ function applyOps(g, cardsById, pi, ops, pd) {
       case 'draw': {
         const tp = g.players[op.side === 'self' ? pi : 1 - pi];
         for (let i = 0; i < (op.amount || 1); i++) drawCard(g, tp);
+        break;
+      }
+      case 'healLP': { // round6 R6-C：回血（上限 LP_START；日志与 damageLP 对称）
+        const ti = op.side === 'foe' ? 1 - pi : pi;
+        const p0 = g.players[ti];
+        const amt = Math.min(op.amount || 0, LP_START - p0.lp);
+        if (amt <= 0) { log(g, `${p0.name} LP 已满，回血落空`); break; }
+        p0.lp += amt;
+        log(g, `${p0.name} LP +${amt}（${op.why || '招式/伏笔效果'}）→ ${p0.lp}`);
+        break;
+      }
+      case 'deckSearch': { // round6 R6-C：谓词检索（确定性：翻至多 7 张找匹配，其余按原序置牌库底，零 rng 消耗）
+        const tp = g.players[op.side === 'foe' ? 1 - pi : pi];
+        const want = op.filter || null; // {faction|fruit|name} 匹配；null=任意
+        const cid = row => (typeof row === 'string' ? row : row.cardId); // deck 元素为裸 id 字符串
+        const seen = [];
+        let hit = -1;
+        for (let i = 0; i < Math.min(7, tp.deck.length); i++) {
+          const d = cardsById[cid(tp.deck[i])];
+          seen.push(i);
+          if (!d) break; // 数据异常卡（卡面缺失）：视作未命中，安全兜底
+          if (!want || (!want.faction && !want.fruit && !want.name)
+            || (want.faction && d.faction === want.faction)
+            || (want.fruit && d.fruit === want.fruit)
+            || (want.name && d.name && d.name.includes(want.name))) { hit = i; break; }
+        }
+        if (hit < 0) {
+          for (let k = 0; k < seen.length; k++) tp.deck.push(tp.deck.shift()); // 未命中：翻过的按原序置底
+          log(g, `${tp.name} 检索未果（翻看 ${seen.length} 张）`);
+          break;
+        }
+        const [got] = tp.deck.splice(hit, 1);
+        tp.hand.push({ uid: 'h' + (++g.actionSeq) + '_s', cardId: cid(got) });
+        for (let k = 0; k < seen.length - 1; k++) tp.deck.push(tp.deck.shift()); // 其余翻过的置底
+        log(g, `${tp.name} 检索到「${cardsById[cid(got)].name}」加入手牌`);
         break;
       }
       case 'returnToHand': { // 复活类（巴基·四分五裂）：从墓场回到手牌
