@@ -90,3 +90,18 @@
   .pool-grid { max-height: 40vh; }
   .vs-line { flex-wrap: wrap; font-size: 13px; }
 }
+
+/* R7 工坊渐进显示（池 857：单阵营过滤可达 226 张） */
+.ws-more {
+  grid-column: 1 / -1;
+  justify-self: center;
+  margin: 10px 0 4px;
+  padding: 10px 22px;
+  border: 1px solid var(--gold-bright, #d4af37);
+  border-radius: 20px;
+  background: rgba(212, 175, 55, .08);
+  color: var(--gold-bright, #d4af37);
+  font-size: 13px;
+  cursor: pointer;
+}
+.ws-more:hover { background: rgba(212, 175, 55, .18); }
