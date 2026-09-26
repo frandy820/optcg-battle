@@ -2,8 +2,8 @@
 // 数据：DUEL_CARDS_DATA（32 张东海基础）+ duel-pool（339 张 GLD 转译）→ 全池 371
 // 对局交接：gld_duel_pending {mode:'vs', myDeck, foeDeck, aiProfile, foeName,...} → duel.html 一次性消费
 'use strict';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=23f3fe8';
-import POOL from './data/duel-pool.js?v=23f3fe8';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=69a4da6';
+import POOL from './data/duel-pool.js?v=69a4da6';
 
 const FACTION_CN = {
   navy: '海军', warlord: '王下七武海', strawhat: '草帽一伙', beast: '百兽海贼团',
@@ -25,27 +25,32 @@ try { Object.assign(state, JSON.parse(localStorage.getItem(LS_CFG) || '{}').stat
 const factions = {};
 for (const c of POOL.cards) {
   if (!c.faction) continue;
-  (factions[c.faction] = factions[c.faction] || { key: c.faction, chars: [], gears: [] });
+  (factions[c.faction] = factions[c.faction] || { key: c.faction, chars: [], gears: [], moves: [], traps: [] });
   if (c.type === 'char') factions[c.faction].chars.push(c);
-  else factions[c.faction].gears.push(c);
+  else if (c.type === 'trap') factions[c.faction].traps.push(c);       // R8 伏笔
+  else if (c.moveKind === 'equip') factions[c.faction].gears.push(c);
+  else factions[c.faction].moves.push(c);                              // R8 通常招式
 }
 for (const f of Object.values(factions)) {
   f.chars.sort((a, b) => b.atk - a.atk);
   FACTION_ART[f.key] = f.chars[0].art;
 }
 
-// ---------- 推荐牌组：阵营曲线取样（12 种 char 各 1 + 低级补 2 张 + gear 2 = 20） ----------
+// ---------- 推荐牌组：阵营曲线取样（R8 起 16 char+1 招式+1 伏笔+2 装备 = 20） ----------
+const R_ORDER = { SSS: 4, SS: 3, S: 2, B: 1, A: 0 };
 function autoDeck(fk) {
   const f = factions[fk];
   const lv = n => f.chars.filter(c => c.level === n);
   const pick = [];   // 候选序列（曲线：中坚为主，高低两端适量）
   const bands = [[2, 2], [3, 4], [4, 3], [5, 2], [6, 1], [1, 1], [7, 1]]; // [level, 取几张]
   for (const [n, k] of bands) for (const c of lv(n).slice(0, k)) pick.push(c.id);
-  // 不足 18 char 用全阵营补
-  for (const c of f.chars) { if (pick.length >= 18) break; if (!pick.includes(c.id)) pick.push(c.id); }
-  // 低级卡补第 2 张至 18
-  for (const c of f.chars.slice().reverse()) { if (pick.length >= 18) break; if (pick.filter(x => x === c.id).length === 1) pick.push(c.id); }
-  const deck = pick.slice(0, 18);
+  for (const c of f.chars) { if (pick.length >= 16) break; if (!pick.includes(c.id)) pick.push(c.id); }
+  for (const c of f.chars.slice().reverse()) { if (pick.length >= 16) break; if (pick.filter(x => x === c.id).length === 1) pick.push(c.id); }
+  const deck = pick.slice(0, 16);
+  // R8：招式/伏笔各 1（tier 高优先——SSS>SS>S>B>A）
+  const byTier = arr => arr.slice().sort((a, b) => (R_ORDER[b.rarity] || 0) - (R_ORDER[a.rarity] || 0));
+  const mv = byTier(f.moves)[0]; if (mv) deck.push(mv.id);
+  const tp = byTier(f.traps)[0]; if (tp) deck.push(tp.id);
   for (const g of f.gears.slice(0, 2)) deck.push(g.id); // 装备招式 2 张
   while (deck.length < 20) { const c = f.chars[deck.length % f.chars.length]; if (deck.filter(x => x === c.id).length < 2) deck.push(c.id); else break; }
   return deck.slice(0, 20);
@@ -128,7 +133,7 @@ function renderWorkshop() {
   const fbox = $('wsFilter');
   const filters = [['all', '全部'], ['myF', FACTION_CN[state.my] + '（我方）'],
     ...Object.keys(factions).filter(k => k !== state.my).map(k => [k, FACTION_CN[k]]),
-    ['char', '人物'], ['equip', '装备'], ['DUE', '东海基础']];
+    ['char', '人物'], ['equip', '装备'], ['move', '招式'], ['trap', '伏笔'], ['DUE', '东海基础']];
   fbox.innerHTML = filters.map(([k, n]) => `<button data-k="${k}" class="${state.wsFilter === k ? 'on' : ''}">${n}</button>`).join('');
   fbox.querySelectorAll('button').forEach(el => el.onclick = () => { state.wsFilter = el.dataset.k; state.wsLimit = 120; renderWorkshop(); });
   // 池网格
@@ -137,6 +142,8 @@ function renderWorkshop() {
   if (fk === 'myF') pool = pool.filter(c => c.faction === state.my);
   else if (fk === 'char') pool = pool.filter(c => c.type === 'char');
   else if (fk === 'equip') pool = pool.filter(c => c.moveKind === 'equip');
+  else if (fk === 'move') pool = pool.filter(c => c.type === 'move' && c.moveKind !== 'equip'); // R8 招式
+  else if (fk === 'trap') pool = pool.filter(c => c.type === 'trap');                           // R8 伏笔
   else if (fk === 'DUE') pool = pool.filter(c => c.id.startsWith('DUE-'));
   else if (fk !== 'all') pool = pool.filter(c => c.faction === fk);
   pool.sort((a, b) => (b.atk || 0) - (a.atk || 0));
