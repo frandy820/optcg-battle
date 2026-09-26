@@ -2,7 +2,7 @@
 // 设计约束：真实点击驱动（check 验证局面而非按钮点击）；可跳过/重看；教学局不落档不写通关（duel-ui 配合）。
 // 教学局仍走 applyAction 合法路径（AI 用剧本而非 aiStep）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=98f9858';
+import { DUEL } from './duel/engine.js?v=bf9aa59';
 
 // 固定起手：通过注入手牌实现确定性（不走洗牌运气）
 const HAND1 = ['DUE-001', 'DUE-003'];            // T1：路飞+娜美
