@@ -1,12 +1,12 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=98f9858';
-import { DUEL_AI } from './duel/ai.js?v=98f9858';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=98f9858';
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=98f9858';
-import { FXM } from './fx-manager.js?v=98f9858'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=98f9858'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=bf9aa59';
+import { DUEL_AI } from './duel/ai.js?v=bf9aa59';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=bf9aa59';
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=bf9aa59';
+import { FXM } from './fx-manager.js?v=bf9aa59'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=bf9aa59'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -74,6 +74,7 @@ function restoreLive(saved) {
     g = gg;
     pendingCampaign = saved.pendingCampaign || null;
     sel = null; logShown = 0; busy = false;
+    endShown = false;
     turnKeyShown = gg.turn + '|' + gg.active; // 恢复对局不弹回合横幅
     els.ldBody.innerHTML = ''; els.ticker.textContent = '';
     els.endOverlay.classList.add('hidden');
@@ -88,6 +89,7 @@ function restoreLive(saved) {
 function start() {
   stopAi();
   tut = null; tutEnded = false; // 退出教学态（横幅在 renderTutBanner 自动移除）
+  endShown = false;
   clearLive(); // 新局作废旧存档
   // 闯关模式：读取一次性对局配置（campaign.html「开战」写入）
   try { pendingCampaign = JSON.parse(localStorage.getItem('gld_duel_pending')); } catch (e) { pendingCampaign = null; }
@@ -127,6 +129,7 @@ function start() {
 function startTutorial(id) {
   stopAi();
   clearLive();
+  endShown = false;
   pendingCampaign = null;
   const made = newTutorialGame(cardsById, id);
   g = made.g; tut = made.tut;
@@ -202,9 +205,12 @@ function act(pi, a) {
         const tEl = document.querySelector(`[data-uid="${a.target}"]`);
         if (tEl) tgtRect = tEl.getBoundingClientRect();
       }
-      fxAttack = { uid: a.uid, target: a.target, side: pi, t: Date.now(), tgtRect,
+      const snap = { uid: a.uid, target: a.target, side: pi, t: Date.now(), tgtRect,
         art: ad ? ad.art : null, name: ad ? ad.name : '' }; // 快照：攻方阵亡时渲染冲撞残影
-      fxAtkPend = fxAttack; // 宣言快照存档：若开响应窗口，结算在关闭窗口的 act（C7 重置时基用）
+      fxAtkPend = snap; // 宣言快照存档：若开响应窗口，结算在关闭窗口的 act（C7 重置时基用）
+      // round6 R4：开了响应窗口=战斗尚未结算（伤害/破坏都没发生）——宣言 act 不播攻击链，
+      // 只存快照；关窗 act 落定后由上方 pend0 分支设 fxAttack 唯一播一遍（旧版两遍=「数字对不上爆裂」）
+      if (!g.pending) fxAttack = snap;
     }
     if (castD) fxCast = { d: castD, t: Date.now() }; // 发动闪卡演出（伏笔/招式）
     // C6：快照后离板 → 溶解队列（玩家侧动作；上限 3 防连锁刷屏）
@@ -224,7 +230,9 @@ function act(pi, a) {
           const m = l.msg.match(/^(.+?) LP -(\d+)（(.+?)）/);
           if (!m) continue;
           const side = m[1] === g.players[0].name ? 0 : 1;
-          const delta = Math.min(+m[2], curs[side]);
+          // round6 R7 修正：delta=日志原值，不做「不低于 0」截断——引擎允许 LP 扣成负数
+          // （致死过量打击 foeLp=-1100 实测），Math.min 截断=UI 弹 800 而实际扣 1900 的真凶
+          const delta = +m[2];
           if (delta <= 0) continue;
           fxLpQueue.push({ side, from: curs[side], to: curs[side] - delta, delta, why: m[3] });
           curs[side] -= delta;
@@ -235,7 +243,7 @@ function act(pi, a) {
           if (dd > 0) fxLpQueue.push({ side, from: lp0[side], to: g.players[side].lp, delta: dd, why: '' });
         }
       }
-      if (fxLpQueue.length > 5) fxLpQueue = fxLpQueue.slice(-5); // 极端连锁防刷屏
+      if (fxLpQueue.length > 8) fxLpQueue = fxLpQueue.slice(-8); // 极端连锁防刷屏（3连锁+战斗+双方亡语=5 笔上限，留余量）
     }
   }
   return r;
@@ -310,44 +318,32 @@ function flySword(from, to) {
   FXM.register({ el: s, dur: 300 }); // 快进：finish() 跳终态触发 animationend 自清
   document.body.appendChild(s);
 }
-// round5 C5：LP 大数字步进——rAF 0.6s 计数（textContent 最省；tabular-nums 定宽防抖动），
-// 同侧串行（promise 链）双侧并行；快进=FXM finish 写终值即收；教学局/reduce-fx 退化=只走飘字层
-// （底层数字条 render 已即时写终值，步进纯演出层，跳过零信息损失）
+// round6：命中点伤害数字（round5 C5 LP 余量滚动的替代）——「-N」为唯一伤害语义，
+// 归因卡名随数字同体弹出；同侧串行（promise 链）双侧并行，每枚 0.55s 依次弹出。
+// 旧版三病根除：R1 基线/滚动两数字并存值不同；R2 飘字同侧一枚吞第二笔；R3 大数字是余量非伤害。
+// （lp-num 基线由 render 即时写终值，始终为真值；本层纯演出，跳过零信息损失）
 const lpChain = { 0: Promise.resolve(), 1: Promise.resolve() };
-function lpBig(e) { lpChain[e.side] = lpChain[e.side].then(() => runLpBig(e)); }
-function runLpBig(e) {
+const dmgLog = []; // E2E 对账用：每笔 {side,delta,why}（与引擎 LP -N 行同源）
+function lpBig(e) { lpChain[e.side] = lpChain[e.side].then(() => runDmgPop(e)); }
+function runDmgPop(e) {
   return new Promise(res => {
+    dmgLog.push({ side: e.side, delta: e.delta, why: e.why });
+    if (dmgLog.length > 40) dmgLog.shift();
     const numEl = e.side === 0 ? els.myLpNum : els.foeLpNum;
     numEl.classList.remove('fx-hit'); void numEl.offsetWidth; // 重排触发同类动画重播
     numEl.classList.add('fx-hit');
     const wrap = numEl.closest('.lp-wrap');
-    // 终值飘字（归因卡名）：同侧一次一枚
-    if (wrap && e.delta > 0 && !wrap.querySelector('.fx-lpfloat')) {
-      const f = document.createElement('span');
-      f.className = 'fx-lpfloat';
-      f.textContent = `-${e.delta}${e.why ? ` ${e.why}` : ''}`;
-      f.addEventListener('animationend', () => f.remove(), { once: true });
-      setTimeout(() => f.remove(), 1100);
-      wrap.appendChild(f);
-    }
-    if (!wrap || g.tutorial || document.documentElement.classList.contains('reduce-fx')) return res();
+    if (!wrap || e.delta <= 0) return res();
+    // reduce-fx / 教学局：无动画弹出（信息不丢——基线与战报都在），直接收场
+    if (g.tutorial || document.documentElement.classList.contains('reduce-fx')) return res();
     const el = document.createElement('div');
-    el.className = 'fx-lpbig';
-    el.textContent = e.from;
+    el.className = 'fx-dmg';
+    el.innerHTML = `<b>-${e.delta}</b>${e.why ? `<small>${e.why}</small>` : ''}`;
+    const end = () => { el.remove(); res(); };
+    el.addEventListener('animationend', (ev) => { if (ev.target === el) end(); }, { once: true });
+    setTimeout(end, 900); // 兜底（后台标签页 animationend 不触发）
+    FXM.register({ id: 'dmgpop' + e.side, el, dur: 700, onDone: end }); // 点击快进→立即收场
     wrap.appendChild(el);
-    const DUR = 600, t0 = performance.now();
-    let raf = 0, done = false;
-    const end = () => { if (done) return; done = true; cancelAnimationFrame(raf); el.remove(); res(); };
-    FXM.register({ id: 'lpbig' + e.side, el, dur: DUR, onDone: end }); // 点击快进→写终值收场
-    const tick = now => {
-      if (done) return;
-      const p = Math.min(1, (now - t0) / DUR);
-      el.textContent = Math.round(e.from + (e.to - e.from) * p);
-      if (p >= 1) return end();
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    setTimeout(end, DUR + 500); // 兜底（标签页后台 rAF 停摆）
   });
 }
 // render 后注入动效类：攻方冲撞（我打敌=向上/敌打我=向下）、目标受击红闪、LP 数字跳动（450ms 窗口，过窗自清）
@@ -390,6 +386,7 @@ function fxPlay() {
   if (fxCast) {
     if (now - fxCast.t < 450) {
       if (!document.querySelector('.fx-cast')) {
+        SND.play('cast'); // round6：发动采样（switch 咔哒+上扫点缀）
         const d = fxCast.d;
         const c = document.createElement('div');
         c.className = `fx-cast ${d.type === 'trap' ? 't-trap' : 't-move'}`;
@@ -1059,7 +1056,10 @@ function aiTimerStep() {
 function stopAi() { if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; } }
 
 // ---------- 结束 ----------
+let endShown = false; // 遮罩只弹一次（败北后偶发 render 重入）
 function showEnd() {
+  if (endShown) return;
+  endShown = true;
   stopAi();
   clearLive(); // 对局结束，存档使命完成
   const w = g.winner;
@@ -1096,7 +1096,9 @@ function showEnd() {
     els.btnAgain.onclick = start;
   }
   els.endSub.textContent = sub;
-  els.endOverlay.classList.remove('hidden');
+  // round6 R8：结算遮罩延迟 800ms——末笔伤害数字先弹完（致死一击「-2500」被遮罩立即盖掉，
+  // 实测+VLM 双确认）；期间输入已由 winner!==null 拦截，安全
+  setTimeout(() => els.endOverlay.classList.remove('hidden'), 800);
 }
 
 // ---------- 动效开关（Phase 5 任务6）：手动优先（localStorage），系统 prefers-reduced-motion 自动跟随 ----------
@@ -1155,6 +1157,7 @@ boot();
 
 // round5 C8：E2E 只读快照（JSON 深拷贝天然剥 rng 函数；供 duel-flow 断言与近终局注入采样）
 window.__GLD = {
+  dmgLog() { return dmgLog.slice(); }, // round6：弹出伤害数字流水（E2E 断言=与引擎日志每笔 LP -N 同源）
   state() {
     if (!g) return null;
     return JSON.parse(JSON.stringify({
