@@ -748,6 +748,16 @@ function applyOps(g, cardsById, pi, ops, pd) {
         break;
       }
       case 'atkDelta': case 'defDelta': {
+        // round8 R8：群体目标（招式/伏笔上下文；ability 的 GROUP_TARGETS 展开后带 targetUid 走单目标路径，
+        // 不带 targetUid 才进群体分支——防双结算）
+        if ((op.target === 'allyAll' || op.target === 'foeAll') && !op.targetUid) {
+          const tp = op.target === 'allyAll' ? p : g.players[1 - pi];
+          for (const gu of tp.board) {
+            (gu.buffs = gu.buffs || []).push({ stat: op.op === 'atkDelta' ? 'atk' : 'def', amount: op.amount, until: op.until || 'turn' });
+          }
+          log(g, `${tp.name} 场上全体${op.op === 'atkDelta' ? 'ATK' : 'DEF'}${op.amount >= 0 ? '+' : ''}${op.amount}（${op.until === 'battle' ? '直至战斗阶段结束' : '直至回合结束'}）`);
+          break;
+        }
         const u = resolveOpTarget(g, op, pd);
         if (!u) { log(g, '效果目标已离场，落空'); break; }
         const stat = op.op === 'atkDelta' ? 'atk' : 'def';
