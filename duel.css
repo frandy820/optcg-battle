@@ -471,24 +471,28 @@ html.reduce-fx .fx-dissolve { display: none; }
 @keyframes summonIn { 0% { transform: scale(.6) translateY(10px); opacity: 0; }
   60% { transform: scale(1.06); opacity: 1; } 100% { transform: scale(1); } }
 .lp-wrap { position: relative; }
-.fx-lpfloat { position: absolute; right: 0; top: -6px; font-size: 12.5px; font-weight: 900; color: #ff6b6b;
-  white-space: nowrap; text-shadow: 0 0 8px rgba(229,72,77,.8); pointer-events: none; z-index: 30;
-  animation: floatUp .9s ease forwards; }
-@keyframes floatUp { 0% { opacity: 0; transform: translateY(2px); } 25% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-20px); } }
-html.reduce-fx .fx-summon, html.reduce-fx .fx-lpfloat { animation: none; display: none; }
-@media (prefers-reduced-motion: reduce) { .fx-summon, .fx-lpfloat { animation: none; display: none; } }
-/* round5 C5：LP 步进大数字（rAF 计数 0.6s；tabular-nums 定宽防抖动；我方上浮/对方下沉入桌心） */
-.fx-lpbig { position: absolute; left: 50%; transform: translateX(-50%); z-index: 30; pointer-events: none;
-  font-size: clamp(44px, 9vw, 74px); font-weight: 900; line-height: 1; white-space: nowrap;
-  color: #ff6b6b; font-variant-numeric: tabular-nums; letter-spacing: 2px;
-  text-shadow: 0 0 20px rgba(229,72,77,.7), 0 3px 10px rgba(0,0,0,.65);
-  animation: lpBigIn .18s ease; }
-@keyframes lpBigIn { from { opacity: 0; transform: translateX(-50%) scale(.55); } }
-.zone.mine .lp-wrap .fx-lpbig { bottom: 30px; }
-.zone.foe .lp-wrap .fx-lpbig { top: 30px; }
-html.reduce-fx .fx-lpbig { display: none; }
-@media (prefers-reduced-motion: reduce) { .fx-lpbig { display: none; } }
+html.reduce-fx .fx-summon { animation: none; }
+@media (prefers-reduced-motion: reduce) { .fx-summon { animation: none; } }
+/* round6：命中点伤害数字（round5 LP 余量滚动的替代）——「-N」=唯一伤害语义，归因卡名随体弹出；
+   同侧串行依次弹出（0.7s/枚），不再吞第二笔（旧 fx-lpfloat 同侧一枚之病） */
+.fx-dmg { position: absolute; left: 50%; transform: translateX(-50%); z-index: 30; pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; line-height: 1; white-space: nowrap;
+  animation: dmgPop .7s cubic-bezier(.2,.85,.3,1) forwards; }
+.fx-dmg b { font-size: clamp(34px, 7vw, 56px); font-weight: 900; color: #ff5252;
+  font-variant-numeric: tabular-nums; letter-spacing: 1px;
+  text-shadow: 0 0 18px rgba(229,72,77,.75), 0 0 2px #fff, 0 3px 8px rgba(0,0,0,.7); }
+.fx-dmg small { margin-top: 4px; font-size: 12px; font-weight: 700; color: #ffd9d9;
+  background: rgba(6,13,31,.72); border: 1px solid rgba(229,72,77,.5); border-radius: 999px; padding: 1px 10px; }
+@keyframes dmgPop {
+  0% { opacity: 0; transform: translateX(-50%) scale(.5) translateY(6px); }
+  16% { opacity: 1; transform: translateX(-50%) scale(1.18) translateY(0); }
+  30% { transform: translateX(-50%) scale(1); }
+  72% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) scale(1.03) translateY(-18px); } }
+.zone.mine .lp-wrap .fx-dmg { bottom: 30px; }
+.zone.foe .lp-wrap .fx-dmg { top: 30px; }
+html.reduce-fx .fx-dmg { display: none; }
+@media (prefers-reduced-motion: reduce) { .fx-dmg { display: none; } }
 
 /* 卡面数值胶囊（攻/守权重已加标签，胶囊消除「挨着摆放」的拥挤感） */
 .card .stats span { background: rgba(255,255,255,.55); border-radius: 4px; padding: 0 4px; }
