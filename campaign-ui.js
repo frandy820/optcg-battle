@@ -1,8 +1,8 @@
 // 东海篇闯关 + 牌组工坊 UI（Phase 4）
 // 进度/牌组存 localStorage；开战写 gld_duel_pending → duel.html 开局；胜利由 duel-ui 回写通关。
 'use strict';
-import DATA from './data/duel-cards.js?v=a40a236';
-import STAGES from './data/duel-stages.js?v=a40a236';
+import DATA from './data/duel-cards.js?v=98f9858';
+import STAGES from './data/duel-stages.js?v=98f9858';
 
 const cardsById = {};
 for (const c of DATA.cards) cardsById[c.id] = c;
@@ -115,7 +115,7 @@ function startStage(stageId) {
     stageId: st.id, stageName: st.name, foeName: st.foeName, aiProfile: st.aiProfile,
     foeDeck: st.deck, myDeck: my, unlockCard: st.unlock || null,
   }));
-  location.href = 'duel.html';
+  location.href = 'duel.html' + (new URLSearchParams(location.search).get('e2eSeed') ? `?e2e=1&seed=${new URLSearchParams(location.search).get('e2eSeed')}` : ''); // C8：E2E 种子透传（仅显式带参时）
 }
 
 // ---------- 牌组工坊 ----------
