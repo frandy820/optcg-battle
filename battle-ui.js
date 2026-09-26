@@ -2,8 +2,8 @@
 // 数据：DUEL_CARDS_DATA（32 张东海基础）+ duel-pool（339 张 GLD 转译）→ 全池 371
 // 对局交接：gld_duel_pending {mode:'vs', myDeck, foeDeck, aiProfile, foeName,...} → duel.html 一次性消费
 'use strict';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=a653202';
-import POOL from './data/duel-pool.js?v=a653202';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=23f3fe8';
+import POOL from './data/duel-pool.js?v=23f3fe8';
 
 const FACTION_CN = {
   navy: '海军', warlord: '王下七武海', strawhat: '草帽一伙', beast: '百兽海贼团',
@@ -17,7 +17,7 @@ const $ = id => document.getElementById(id);
 const LS_CFG = 'gld_vs_cfg';   // 上次配置（阵营/对手/强度/牌组）
 const state = {
   my: null, foe: null, ai: 'aggro', deck: [],
-  wsFilter: 'all', editing: false,
+  wsFilter: 'all', editing: false, wsLimit: 120, // R7：池扩至 857，工坊网格渐进显示
 };
 try { Object.assign(state, JSON.parse(localStorage.getItem(LS_CFG) || '{}').state || {}); } catch (e) { /* */ }
 
@@ -130,7 +130,7 @@ function renderWorkshop() {
     ...Object.keys(factions).filter(k => k !== state.my).map(k => [k, FACTION_CN[k]]),
     ['char', '人物'], ['equip', '装备'], ['DUE', '东海基础']];
   fbox.innerHTML = filters.map(([k, n]) => `<button data-k="${k}" class="${state.wsFilter === k ? 'on' : ''}">${n}</button>`).join('');
-  fbox.querySelectorAll('button').forEach(el => el.onclick = () => { state.wsFilter = el.dataset.k; renderWorkshop(); });
+  fbox.querySelectorAll('button').forEach(el => el.onclick = () => { state.wsFilter = el.dataset.k; state.wsLimit = 120; renderWorkshop(); });
   // 池网格
   let pool = [...DUEL_CARDS_DATA.cards, ...POOL.cards];
   const fk = state.wsFilter;
@@ -140,7 +140,7 @@ function renderWorkshop() {
   else if (fk === 'DUE') pool = pool.filter(c => c.id.startsWith('DUE-'));
   else if (fk !== 'all') pool = pool.filter(c => c.faction === fk);
   pool.sort((a, b) => (b.atk || 0) - (a.atk || 0));
-  $('poolGrid').innerHTML = pool.slice(0, 120).map(c => {
+  $('poolGrid').innerHTML = pool.slice(0, state.wsLimit).map(c => {
     const n = cnt[c.id] || 0;
     return `<div class="pc ${n ? 'picked' : ''} ${n >= 2 ? 'maxed' : ''}" data-id="${c.id}" title="${c.name} ${c.desc || ''}">
       ${n ? `<span class="pickn">${n}</span>` : ''}
@@ -148,7 +148,8 @@ function renderWorkshop() {
       <div class="nm">${c.name}</div>
       <div class="st">${c.type === 'char' ? `Lv${c.level} ${c.atk}/${c.def}` : c.moveKind === 'equip' ? '装备' : (c.type === 'trap' ? '伏笔' : '招式')}</div>
     </div>`;
-  }).join('');
+  }).join('') + (pool.length > state.wsLimit
+    ? `<button class="ws-more" id="wsMore">显示更多（${pool.length - state.wsLimit} 张未显示）</button>` : '');
   $('poolGrid').querySelectorAll('.pc').forEach(el => el.onclick = () => {
     const id = el.dataset.id;
     const n = state.deck.filter(x => x === id).length;
@@ -156,6 +157,8 @@ function renderWorkshop() {
     if (state.deck.length >= 20) return toast('牌组已满 20 张，先移除一张');
     state.deck.push(id); saveCfg(); renderDeck();
   });
+  const more = $('wsMore');
+  if (more) more.onclick = () => { state.wsLimit += 240; renderWorkshop(); };
   // 已选清单
   $('wsPicked').innerHTML = Object.keys(cnt).map(id => {
     const c = byId[id];
