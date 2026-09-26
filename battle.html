@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>直接对战 · 伟大航路决斗</title>
+<link rel="stylesheet" href="duel.css?v=a653202">
+<link rel="stylesheet" href="battle.css?v=a653202">
+</head>
+<body class="duel-scene battle-scene">
+  <div id="app">
+    <header id="topbar">
+      <span class="duel-title">⚔️ 直接对战</span>
+      <nav class="top-actions">
+        <a class="ghost-btn" href="mode.html">模式</a>
+        <a class="ghost-btn" href="campaign.html">故事模式</a>
+      </nav>
+    </header>
+
+    <!-- 步骤 1：我方阵营 -->
+    <section id="stepFaction" class="panel">
+      <h2 class="step-h"><i>1</i> 选择你的阵营</h2>
+      <div id="factionGrid" class="faction-grid"></div>
+    </section>
+
+    <!-- 步骤 2：对手 + 强度 -->
+    <section id="stepFoe" class="panel hidden">
+      <h2 class="step-h"><i>2</i> 选择对手与强度</h2>
+      <div id="foeChips" class="chips"></div>
+      <div class="row-lv">
+        <b>AI 强度</b>
+        <div id="aiChips" class="chips"></div>
+      </div>
+      <button id="btnDeck" class="next-btn">下一步：牌组 ▸</button>
+    </section>
+
+    <!-- 步骤 3：牌组（推荐 + 工坊） -->
+    <section id="stepDeck" class="panel hidden">
+      <h2 class="step-h"><i>3</i> 你的牌组 <button id="btnEdit" class="ghost-btn small">✎ 编辑</button></h2>
+      <div id="deckSummary" class="deck-summary"></div>
+      <div id="workshop" class="workshop hidden">
+        <div class="ws-pool">
+          <div class="ws-filter" id="wsFilter"></div>
+          <div id="poolGrid" class="pool-grid"></div>
+        </div>
+        <aside class="ws-side">
+          <div class="ws-count" id="wsCount"></div>
+          <div id="wsPicked" class="ws-picked"></div>
+          <div class="ws-btns">
+            <button id="wsSave" class="next-btn small">保存牌组</button>
+            <button id="wsAuto" class="ghost-btn small">↺ 推荐牌组</button>
+          </div>
+        </aside>
+      </div>
+      <div class="vs-line" id="vsLine"></div>
+      <button id="btnFight" class="next-btn big">开 战 ⚔</button>
+    </section>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+  <script type="module" src="battle-ui.js?v=a653202"></script>
+</body>
+</html>
