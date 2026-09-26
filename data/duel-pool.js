@@ -2,7 +2,7 @@
 // 源=data/cards.json（OPTCG 861 卡）；技能映射/数值锚点真值源=scripts/convert-pool.mjs
 // 许可随源库（角色形象版权见 docs/legacy-baseline.md 版权窗口期说明）
 const POOL = {
- "version": "r7",
+ "version": "r8",
  "cards": [
   {
    "id": "GLD-C0001",
@@ -17638,6 +17638,3136 @@ const POOL = {
    "desc": "装备自己 1 名人物：ATK+300。装备留在场上，装备者离场时随之进墓。",
    "faction": "yonko",
    "rarity": "S"
+  },
+  {
+   "id": "GLD-M0001",
+   "name": "橡胶机关枪",
+   "sub": "招式·蒙奇·D·路飞",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-27",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（路飞东海至伟大航路前期的常用连打招式，双手高速交替连击敌人）",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0002",
+   "name": "火拳枪",
+   "sub": "招式·蒙奇·D·路飞",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-27",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（路飞二档状态下继承艾斯之火的火拳枪（红狗），鱼人岛一击贯穿霍迪·琼斯）",
+   "faction": "strawhat",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0003",
+   "name": "橡胶象枪",
+   "sub": "招式·蒙奇·D·路飞·新世界",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-118",
+   "level": 3,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 800,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+800。（路飞三档巨大化手臂的象枪，鱼人岛之战轰碎诺亚船体）",
+   "faction": "strawhat",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0004",
+   "name": "三刀流奥义·三千世界",
+   "sub": "招式·罗罗诺亚·索隆",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-82",
+   "level": 3,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 800,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+800。（索隆三刀流居合奥义，阿拉巴斯坦对Mr.1斩铁之战的决胜一击）",
+   "faction": "strawhat",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0005",
+   "name": "三刀流·鬼斩",
+   "sub": "招式·罗罗诺亚·索隆",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-82",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（索隆最常用的三刀流交叉斩击，东海时期起频繁使用）",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0006",
+   "name": "恶魔风脚·画龙点睛 shoot",
+   "sub": "招式·山治",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-168",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（山治恶魔风脚奥义，恐怖三桅帆船对奥兹的必杀踢击）",
+   "faction": "strawhat",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0007",
+   "name": "雷霆时速",
+   "sub": "招式·娜美",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-172",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（娜美天候棒经典组合，黑云与雷云相接落雷直击敌人（Thunderbolt Tempo））",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0008",
+   "name": "旋风天候",
+   "sub": "招式·娜美·新世界",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-100",
+   "level": 2,
+   "effect": {
+    "need": "foeUnitAtkPos",
+    "ops": [
+     {
+      "op": "setPosDef",
+      "target": "chosen"
+     }
+    ]
+   },
+   "desc": "将对方 1 名攻击表示的人物转为守备表示。（娜美天候棒Tempo系招式，旋风将敌人吹飞卷走（Cyclone Tempo））",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0009",
+   "name": "必杀·火鸟星",
+   "sub": "招式·乌索普",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-28",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（乌索普标志性火鸟形火药弹，多场战斗中的远程狙杀王牌）",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0010",
+   "name": "百花缭乱",
+   "sub": "招式·妮可·罗宾",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-92",
+   "level": 2,
+   "effect": {
+    "need": "foeUnitAtkPos",
+    "ops": [
+     {
+      "op": "setPosDef",
+      "target": "chosen"
+     }
+    ]
+   },
+   "desc": "将对方 1 名攻击表示的人物转为守备表示。（罗宾花花果实千手招式，多条手臂在敌人身上绽出将其缠住压制）",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0011",
+   "name": "百花缭乱·大飞燕草",
+   "sub": "招式·妮可·罗宾·新世界",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-156",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（罗宾对奥兹使用的千手合掌重击（Delphinium 大飞燕草））",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0012",
+   "name": "风来炮",
+   "sub": "招式·弗兰奇",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-08",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（弗兰奇将军鼻部发射的激光炮（Franky Radical Beam），鱼人岛一击贯穿对手）",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0013",
+   "name": "鱼人空手道·枪波",
+   "sub": "招式·甚平",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-09",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（甚平鱼人空手道远程水弹掌击，鱼人岛对霍迪·琼斯部下使用）",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0014",
+   "name": "鱼人空手道·五千瓦正拳",
+   "sub": "招式·甚平",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-09",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（甚平五千枚瓦正拳，鱼人岛正面击破霍迪·琼斯的重拳）",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0015",
+   "name": "鼻歌三丁·燕尾斩",
+   "sub": "招式·布鲁克",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-63",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（布鲁克居合斩成名技，恐怖三桅帆船与龙马对刀时使用）",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0016",
+   "name": "狐火流·火焰斩",
+   "sub": "招式·锦卫门",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-44",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（锦卫门狐火流剑技，火焰缠绕刀身斩烧敌人，和之国多次使用）",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0017",
+   "name": "鸟笼",
+   "sub": "招式·唐吉诃德·多弗朗明戈",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "PURPLE-30",
+   "level": 2,
+   "effect": {
+    "need": "foeUnitAtkPos",
+    "ops": [
+     {
+      "op": "setPosDef",
+      "target": "chosen"
+     }
+    ]
+   },
+   "desc": "将对方 1 名攻击表示的人物转为守备表示。（明哥线线果实终极手段，无形线织成不断收缩的巨笼碾压德雷斯罗萨全岛）",
+   "faction": "warlord",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0018",
+   "name": "手术ROOM·伽马刀",
+   "sub": "招式·特拉法尔加·罗",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-124",
+   "level": 3,
+   "effect": {
+    "need": "foeUnitAtkPos",
+    "ops": [
+     {
+      "op": "destroy",
+      "target": "chosen"
+     }
+    ]
+   },
+   "desc": "破坏对方 1 名攻击表示的人物。（罗在ROOM内凝聚的伽马能量刀，德雷斯罗萨一战刺穿明哥脏腑（Gamma Knife））",
+   "faction": "warlord",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0019",
+   "name": "ROOM·交涉",
+   "sub": "招式·特拉法尔加·罗",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-124",
+   "level": 1,
+   "effect": {
+    "ops": [
+     {
+      "op": "deckSearch",
+      "filter": {
+       "faction": "warlord"
+      }
+     }
+    ]
+   },
+   "desc": "从牌组检索 1 张同阵营卡加入手牌。（罗手术果实Shambles（交涉），ROOM内随意调换物体与人的位置，庞克哈萨特反复使用）",
+   "faction": "warlord",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0020",
+   "name": "ROOM·扫描",
+   "sub": "招式·特拉法尔加·罗·王下",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "PURPLE-171",
+   "level": 2,
+   "effect": {
+    "ops": [
+     {
+      "op": "draw",
+      "amount": 1
+     }
+    ]
+   },
+   "desc": "抽 1 张牌。（罗手术果实Scan（扫描），不接触即可取走ROOM内目标物，曾用来交换斯摩格心脏）",
+   "faction": "warlord",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-M0021",
+   "name": "沙漠宝刀",
+   "sub": "招式·沙尔·克洛克达尔",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "PURPLE-158",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（克洛克达尔沙沙果实剑状沙漠波浪，阿拉巴斯坦连斩路飞（Desert Spada））",
+   "faction": "warlord",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0022",
+   "name": "沙漠向日葵",
+   "sub": "招式·克洛克达尔",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-38",
+   "level": 3,
+   "effect": {
+    "need": "foeUnitMax1200",
+    "ops": [
+     {
+      "op": "destroy",
+      "target": "chosen"
+     }
+    ]
+   },
+   "desc": "破坏对方 1 名 ATK1200 以下的人物。（克洛克达尔令大地旋出巨型流沙坑的招式，将路飞埋入地底（Desert Girasole））",
+   "faction": "warlord",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0023",
+   "name": "俘虏之箭",
+   "sub": "招式·波雅·汉库珂",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-68",
+   "level": 2,
+   "effect": {
+    "need": "foeUnitAtkPos",
+    "ops": [
+     {
+      "op": "setPosDef",
+      "target": "chosen"
+     }
+    ]
+   },
+   "desc": "将对方 1 名攻击表示的人物转为守备表示。（汉库珂甜甜果实的石化之箭，被射中者化为石头，顶上战争对海军使用（Slave Arrow））",
+   "faction": "warlord",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0024",
+   "name": "熊掌冲击",
+   "sub": "招式·巴索罗缪·熊",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-49",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（熊肉球果实压缩空气释放的巨大冲击波，恐怖三桅帆船重创草帽团全员（Ursus Shock））",
+   "faction": "warlord",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0025",
+   "name": "拍飞",
+   "sub": "招式·巴索罗缪·熊·王下",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-64",
+   "level": 2,
+   "effect": {
+    "need": "foeUnitAtkPos",
+    "ops": [
+     {
+      "op": "setPosDef",
+      "target": "chosen"
+     }
+    ]
+   },
+   "desc": "将对方 1 名攻击表示的人物转为守备表示。（熊以肉球弹力将目标拍飞三天三夜，恐怖三桅帆船把草帽团全员弹散至世界各地）",
+   "faction": "warlord",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-M0026",
+   "name": "影之集合地",
+   "sub": "招式·月光·莫利亚",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "PURPLE-145",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（莫利亚吞噬千影化为影魔人的强化形态，恐怖三桅帆船对路飞使用（Shadows Asgard））",
+   "faction": "warlord",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0027",
+   "name": "巴基玉",
+   "sub": "招式·巴基",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "PURPLE-103",
+   "level": 2,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 300 伤害。（巴基的特制巨型炮弹巴基玉，罗格镇轰击处刑台救下路飞）",
+   "faction": "warlord",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-M0028",
+   "name": "武器变身·镰女",
+   "sub": "招式·贝比5",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-81",
+   "level": 2,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 300 伤害。（贝比5武器果实变化为镰刀形态作战（镰女 Sickle Girl），德雷斯罗萨登场）",
+   "faction": "warlord",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-M0029",
+   "name": "枪吻",
+   "sub": "招式·九蛇岛的守护 汉库珂&玛格丽特",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-29",
+   "level": 2,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 300 伤害。（汉库珂甜甜果实的手指气弹之吻，亚马逊百合对路飞使用（Pistol Kiss））",
+   "faction": "warlord",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-M0030",
+   "name": "覇海",
+   "sub": "招式·万国的威压 玲玲&斯慕吉",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-20",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（BIG MOM普罗米修斯与宙斯合体的魂之奔流，鬼岛决战重创基德与罗）",
+   "faction": "warlord",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0031",
+   "name": "天丛云剑",
+   "sub": "招式·波尔萨利诺",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-30",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（黄猿光光果实凝成的光之太刀，顶上战争与雷利对斩（天之丛云））",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0032",
+   "name": "八尺琼勾玉",
+   "sub": "招式·波尔萨利诺·大将",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-99",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（黄猿的光弹连射，顶上战争对白胡子海贼团倾泻而下的弹幕（Yasakani no Magatama））",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0033",
+   "name": "流星火山",
+   "sub": "招式·萨卡斯基",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-19",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（赤犬岩浆果实双拳化作陨石雨轰落，顶上战争大范围碾压白胡子海贼团（Meigo 流星火山））",
+   "faction": "navy",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0034",
+   "name": "大喷火",
+   "sub": "招式·萨卡斯基·大将",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-144",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（赤犬喷出的巨型岩浆火拳，顶上战争与白胡子正面互轰（大成火））",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0035",
+   "name": "冰河时代",
+   "sub": "招式·库赞",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-106",
+   "level": 2,
+   "effect": {
+    "need": "foeUnitAtkPos",
+    "ops": [
+     {
+      "op": "setPosDef",
+      "target": "chosen"
+     }
+    ]
+   },
+   "desc": "将对方 1 名攻击表示的人物转为守备表示。（青雉冻结整片海域的大招，奥哈拉与长环岛两次封锁海洋（Ice Age））",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0036",
+   "name": "猛虎",
+   "sub": "招式·一笑",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-119",
+   "level": 2,
+   "effect": {
+    "need": "foeUnitAtkPos",
+    "ops": [
+     {
+      "op": "setPosDef",
+      "target": "chosen"
+     }
+    ]
+   },
+   "desc": "将对方 1 名攻击表示的人物转为守备表示。（藤虎重重果实的猛虎重力压制，德雷斯罗萨对路飞施放压场）",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0037",
+   "name": "陨石召唤",
+   "sub": "招式·一笑·大将",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLACK-119",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（藤虎以引力从天外拉落陨石，德雷斯罗萨召落庞克哈萨特的名场面）",
+   "faction": "navy",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0038",
+   "name": "拳骨陨石",
+   "sub": "招式·蒙奇·D·卡普",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-167",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（卡普手掷巨大铁球的轰击，顶上战争对白胡子海贼团投掷（拳骨系必杀））",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0039",
+   "name": "冲击波",
+   "sub": "招式·战国",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLACK-149",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（佛之战国金身形态放出的冲击波，顶上战争一击轰飞黑胡子海贼团）",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0040",
+   "name": "白蛇",
+   "sub": "招式·斯摩格",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-170",
+   "level": 2,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 300 伤害。（斯摩格烟烟果实化作白蛇状的缠绕冲击，罗格镇与顶上战争对路飞使用）",
+   "faction": "navy",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-M0041",
+   "name": "剃",
+   "sub": "招式·克比",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "PURPLE-72",
+   "level": 2,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 300 伤害。（海军六式之剃，高速瞬步突进，克比两年修行中习得并在顶上战争使用）",
+   "faction": "navy",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-M0042",
+   "name": "毒龙",
+   "sub": "招式·麦哲伦",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLACK-31",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（麦哲伦毒毒果实的三头毒龙，推进城追击路飞越狱一行（Hydra））",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0043",
+   "name": "雷鸣八卦",
+   "sub": "招式·凯多",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-12",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（凯多狼牙棒一击携雷的招牌技，和之国一棒击溃路飞（923话））",
+   "faction": "beast",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0044",
+   "name": "热息",
+   "sub": "招式·凯多",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-12",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（凯多青龙形态口中喷出的火球轰炸，鬼岛对锦卫门等赤鞘武士使用（Bolo Breath））",
+   "faction": "beast",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0045",
+   "name": "降三世引奈落",
+   "sub": "招式·凯多·百兽海贼团",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLACK-133",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（凯多龙形态的雷云大招，鬼岛决战轰向大和的巨大雷束）",
+   "faction": "beast",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0046",
+   "name": "黑穴",
+   "sub": "招式·马歇尔·D·蒂奇",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLACK-26",
+   "level": 3,
+   "effect": {
+    "need": "foeUnitAtkPos",
+    "ops": [
+     {
+      "op": "destroy",
+      "target": "chosen"
+     }
+    ]
+   },
+   "desc": "破坏对方 1 名攻击表示的人物。（黑胡子黑暗果实吞噬一切的黑洞，巴纳罗岛吸碎艾斯的火焰（Black Hole））",
+   "faction": "beast",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0047",
+   "name": "暗水",
+   "sub": "招式·马歇尔·D·蒂奇",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLACK-26",
+   "level": 2,
+   "effect": {
+    "need": "foeUnitAtkPos",
+    "ops": [
+     {
+      "op": "setPosDef",
+      "target": "chosen"
+     }
+    ]
+   },
+   "desc": "将对方 1 名攻击表示的人物转为守备表示。（黑胡子的黑暗引力将敌人强行拉近身侧，巴纳罗岛把艾斯拉到近身（Kurouzu））",
+   "faction": "beast",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-M0048",
+   "name": "解放",
+   "sub": "招式·黑团双巨头 蒂奇&希留",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLACK-26",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（黑胡子将黑穴吞噬之物反向喷出的破坏洪流，巴纳罗岛对艾斯释放）",
+   "faction": "beast",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0049",
+   "name": "炎皇",
+   "sub": "招式·金",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-08",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（KING月月族火焰操纵的火焰拳，鬼岛对索隆使用（Andon 炎皇））",
+   "faction": "beast",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0050",
+   "name": "火龙皇",
+   "sub": "招式·金·百兽海贼团",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "PURPLE-116",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（KING翼龙形态喷出烈焰龙卷的必杀，鬼岛对索隆决胜（Karyudon 火龙皇））",
+   "faction": "beast",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0051",
+   "name": "冰鬼",
+   "sub": "招式·奎因",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-38",
+   "level": 2,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 300 伤害。（奎因发射的瘟祸弹奇病冰鬼，鬼岛宴会让感染者全身冰冻失控（Ice Oni））",
+   "faction": "beast",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-M0052",
+   "name": "地狱审判",
+   "sub": "招式·海底监狱的铁壁 麦哲伦&汉尼拔",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLACK-31",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（麦哲伦奥义毒之巨兵，推进城LEVEL4对黑胡子海贼团轰杀（地狱之审判））",
+   "faction": "beast",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0053",
+   "name": "海震",
+   "sub": "招式·白胡子",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-10",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（白胡子震震果实掀翻海洋的大招，顶上战争开场两击掀起巨型海啸）",
+   "faction": "whitebeard",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0054",
+   "name": "火拳",
+   "sub": "招式·艾斯",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-08",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（艾斯烧烧果实成名技巨型火焰拳，阿拉巴斯坦与顶上战争的标志性大招）",
+   "faction": "whitebeard",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0055",
+   "name": "十字火",
+   "sub": "招式·波特卡斯·D·艾斯",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-29",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（艾斯十字交汇的火焰弹，巴纳罗岛对黑胡子使用（十字火））",
+   "faction": "whitebeard",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0056",
+   "name": "大炎戒·炎帝",
+   "sub": "招式·波特卡斯·D·艾斯·一番队",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-72",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（艾斯最强奥义旋涡状巨大日轮，对黑胡子之战的全力一击（大炎戒 炎帝））",
+   "faction": "whitebeard",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0057",
+   "name": "桃源白泷",
+   "sub": "招式·光月御田",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-39",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（御田缠绕武装色的双刀斩击，曾将巨大山神一刀两断（桃源白泷））",
+   "faction": "whitebeard",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0058",
+   "name": "桃源十拳",
+   "sub": "招式·光月御田",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-39",
+   "level": 3,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 800,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+800。（御田双刀流奥义，在四皇凯多身上划出十字伤疤的传说一刀（桃源十拳））",
+   "faction": "whitebeard",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0059",
+   "name": "凤凰印",
+   "sub": "招式·马尔科",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-59",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（马尔科不死鸟蓝炎的爪踢，顶上战争踹飞青雉（凤凰印））",
+   "faction": "whitebeard",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0060",
+   "name": "青炎雁",
+   "sub": "招式·马尔科·一番队",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-155",
+   "level": 2,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 300 伤害。（马尔科蓝色火焰的连续踢击招式（Blue Bird 青炎雁））",
+   "faction": "whitebeard",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-M0061",
+   "name": "闪亮冲击",
+   "sub": "招式·乔兹",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-161",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（乔兹闪耀果实全身钻石化的冲撞，顶上战争撞伤克洛克达尔（闪亮冲击））",
+   "faction": "whitebeard",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0062",
+   "name": "电磁炮",
+   "sub": "招式·尤斯塔斯·基德",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-93",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（基德以磁气组成巨型磁轨炮轰出炮弹，鬼岛决战重创BIG MOM（Damned Punk））",
+   "faction": "supernova",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0063",
+   "name": "磁气大魔牛",
+   "sub": "招式·尤斯塔斯·基德",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-93",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（基德用磁气吸铁组成巨型金属牛冲撞，鬼岛对BIG MOM使用（Punk Corna Dio））",
+   "faction": "supernova",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0064",
+   "name": "磁气魔人",
+   "sub": "招式·尤斯塔斯·基德·最恶世代",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-164",
+   "level": 3,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 800,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+800。（基德吸附铁器组成恶魔外型巨大魔人并肩作战，鬼岛决战BIG MOM（Punk Rotten））",
+   "faction": "supernova",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0065",
+   "name": "斩首爪",
+   "sub": "招式·基拉",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "PURPLE-06",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（基拉双镰刀的斩首爪连击，鬼岛决战配合基德作战）",
+   "faction": "supernova",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0066",
+   "name": "X·猛击",
+   "sub": "招式·X·德雷克",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-105",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（德雷克异特龙形态以尾锤猛击对手（X Caliber））",
+   "faction": "supernova",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0067",
+   "name": "降魔之相",
+   "sub": "招式·霍金斯",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "PURPLE-32",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（霍金斯以稻草化身巨大稻草魔人的形态，对索隆与基德使用（降魔之相））",
+   "faction": "supernova",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0068",
+   "name": "因果展现",
+   "sub": "招式·乌尔基",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-87",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（乌尔基将承受的伤害转化为力量巨大化反击，香波地对和平主义者使用（因果晒））",
+   "faction": "supernova",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0069",
+   "name": "龙爪拳",
+   "sub": "招式·萨波",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-98",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（萨博龙爪拳基本技，三根龙爪手势捏碎刀剑与钢铁，德雷斯罗萨展示）",
+   "faction": "supernova",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0070",
+   "name": "燃烧的龙爪拳·火焰龙王",
+   "sub": "招式·萨波",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "GREEN-98",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（萨博继承艾斯烧烧果实后的火焰龙爪复合技，德岛决战对藤虎使用）",
+   "faction": "supernova",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0071",
+   "name": "神避",
+   "sub": "招式·哥尔·D·罗杰",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-37",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（罗杰以无上大快刀艾斯挥出的一击将光月御田打飞，966话霸王色对撞名场面（神避））",
+   "faction": "yonko",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0072",
+   "name": "威国",
+   "sub": "招式·夏洛特·玲玲",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-41",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（BIG MOM骑乘雷云宙斯放出的雷霆轰击，鬼岛对基德使用（威国））",
+   "faction": "yonko",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0073",
+   "name": "力饼",
+   "sub": "招式·卡塔库栗",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-63",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（卡塔库栗年糕果实硬化巨锤拳，万国镜界对路飞连击（力饼））",
+   "faction": "yonko",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0074",
+   "name": "无双甜甜圈",
+   "sub": "招式·卡塔库栗",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-63",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（卡塔库栗年糕多臂连环拳，万国篇对路飞的压制连击（无双甜甜圈））",
+   "faction": "yonko",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0075",
+   "name": "雷迎",
+   "sub": "招式·艾涅尔",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-36",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（艾涅尔轰落的巨大雷球毁灭一切，空岛对路飞的终极一击（El Thor 雷迎））",
+   "faction": "yonko",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0076",
+   "name": "万雷",
+   "sub": "招式·艾涅尔",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "YELLOW-36",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（艾涅尔借方舟箴言的雷云放出超广范围落雷轰击（Mamaragan 万雷））",
+   "faction": "yonko",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0077",
+   "name": "死亡眨眼",
+   "sub": "招式·安布里奥·伊万科夫",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLACK-104",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 500 伤害。（伊万科夫荷尔蒙果实的眨眼冲击爆风，推进城对狱卒兽使用（DEATH WINK））",
+   "faction": "revolutionary",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-M0078",
+   "name": "地狱眨眼",
+   "sub": "招式·安布里奥·伊万科夫·革命军",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-142",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（伊万科夫颜面成长荷尔蒙强化后的地狱级眨眼冲击波，顶上战争对赤犬（HELL WINK））",
+   "faction": "revolutionary",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0079",
+   "name": "银河眨眼",
+   "sub": "招式·伊万科夫",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "RED-20",
+   "level": 3,
+   "effect": {
+    "ops": [
+     {
+      "op": "damage",
+      "amount": 800
+     }
+    ]
+   },
+   "desc": "对对方 LP 造成 800 伤害。（伊万科夫GANMEN残像状态下无数分身同时眨眼的终极连击，推进城使用（银河WINK））",
+   "faction": "revolutionary",
+   "rarity": "SS"
+  },
+  {
+   "id": "GLD-M0080",
+   "name": "龙之钩爪",
+   "sub": "招式·萨博·革命军",
+   "type": "move",
+   "moveKind": "normal",
+   "art": "BLUE-86",
+   "level": 2,
+   "effect": {
+    "need": "ownUnit",
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "chosen",
+      "amount": 600,
+      "until": "turn"
+     }
+    ]
+   },
+   "desc": "选自己 1 名人物：本回合 ATK+600。（萨博武装色缠绕高速冲刺的龙爪重击，德雷斯罗萨对藤虎使用（龙之钩爪））",
+   "faction": "revolutionary",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0001",
+   "name": "橡胶气球",
+   "sub": "伏笔·蒙奇·D·路飞",
+   "type": "trap",
+   "art": "RED-27",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 300 伤害。（路飞鼓起肚子弹开攻击的防御招式，东海起多次硬接炮弹与拳击并反弹）",
+   "faction": "strawhat",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0002",
+   "name": "烦恼风",
+   "sub": "伏笔·罗罗诺亚·索隆",
+   "type": "trap",
+   "art": "RED-82",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 300 伤害。（索隆挥刀射出的飞行斩击波，可远程迎击来敌（烦恼风））",
+   "faction": "strawhat",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0003",
+   "name": "黑云天候",
+   "sub": "伏笔·娜美",
+   "type": "trap",
+   "art": "RED-172",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（娜美天候棒制造黑云与雷云的组合云层，伏击接近之敌并接雷霆时速）",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0004",
+   "name": "雾天候",
+   "sub": "伏笔·娜美·新世界",
+   "type": "trap",
+   "art": "GREEN-100",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（娜美天候棒制造的浓雾迷惑敌人视线，恐怖三桅帆船与空岛多次脱身使用（Fog Tempo））",
+   "faction": "strawhat",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0005",
+   "name": "绿星·恶魔",
+   "sub": "伏笔·乌索普",
+   "type": "trap",
+   "art": "GREEN-28",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 300 伤害。（乌索普波普格林的食人植物恶魔，pop green种子瞬间长成咬噬敌人的食人草）",
+   "faction": "strawhat",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0006",
+   "name": "绿星·拉夫雷西亚",
+   "sub": "伏笔·乌索普",
+   "type": "trap",
+   "art": "GREEN-28",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（乌索普波普格林的巨大腐臭花拉夫雷西亚，臭气削弱周围敌人）",
+   "faction": "strawhat",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0007",
+   "name": "三十轮花·绞首",
+   "sub": "伏笔·妮可·罗宾",
+   "type": "trap",
+   "art": "GREEN-92",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（罗宾在敌人身上绽出三十条手臂绞住颈部的束缚技，司法岛对卡莉法使用）",
+   "faction": "strawhat",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0008",
+   "name": "黄泉的寒气",
+   "sub": "伏笔·布鲁克",
+   "type": "trap",
+   "art": "BLUE-63",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（布鲁克黄泉果实散发的冥界寒气，鬼岛冻结霍米兹与幽灵系敌人）",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0009",
+   "name": "催眠歌·FLANCY",
+   "sub": "伏笔·布鲁克·新世界",
+   "type": "trap",
+   "art": "RED-138",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（布鲁克的催眠演奏曲，恐怖三桅帆船令龙马与僵尸军团昏睡（眠り歌FLANCY））",
+   "faction": "strawhat",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0010",
+   "name": "毛皮强化",
+   "sub": "伏笔·托尼托尼·乔巴",
+   "type": "trap",
+   "art": "GREEN-32",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 500,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+500 直至战斗阶段结束。（乔巴人兽形的皮毛强化形态，蓬起毛发缓冲抵御冲击）",
+   "faction": "strawhat",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0011",
+   "name": "咆雷八卦",
+   "sub": "伏笔·鬼岛决战 凯多&大和",
+   "type": "trap",
+   "art": "GREEN-12",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 500 伤害。（凯多雷鸣八卦的升级版，鬼岛决战再度一击击溃路飞（咆雷八卦））",
+   "faction": "strawhat",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0012",
+   "name": "寄生线",
+   "sub": "伏笔·唐吉诃德·多弗朗明戈",
+   "type": "trap",
+   "art": "PURPLE-30",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（明哥线线果实操纵他人身体的寄生线，德雷斯罗萨操纵居鲁士与雷贝卡相斗（Parasite））",
+   "faction": "warlord",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0013",
+   "name": "蛛网",
+   "sub": "伏笔·多弗朗明戈",
+   "type": "trap",
+   "art": "YELLOW-09",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 700,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+700 直至战斗阶段结束。（明哥以线织成的巨网防御并困住对手，德雷斯罗萨对路飞的竞技场大战使用（Spider's Web 蛛网））",
+   "faction": "warlord",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0014",
+   "name": "侵蚀轮回",
+   "sub": "伏笔·沙尔·克洛克达尔",
+   "type": "trap",
+   "art": "PURPLE-158",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（克洛克达尔吸干接触物水分的右手之触，阿拉巴斯坦把路飞吸成干尸（Ground Death 侵蚀轮回））",
+   "faction": "warlord",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0015",
+   "name": "甜甜甘风",
+   "sub": "伏笔·波雅·汉库珂",
+   "type": "trap",
+   "art": "BLUE-68",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（汉库珂甜甜果实的爱心光波，心存邪念者触之即石化，亚马逊百合对路飞使用（Slave Arrow 前置技））",
+   "faction": "warlord",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0016",
+   "name": "影箱",
+   "sub": "伏笔·月光·莫利亚",
+   "type": "trap",
+   "art": "PURPLE-145",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 500,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+500 直至战斗阶段结束。（莫利亚以影子构筑的防护箱，抵挡敌人攻击的影子屏障（影箱））",
+   "faction": "warlord",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0017",
+   "name": "消极幽灵",
+   "sub": "伏笔·佩罗娜",
+   "type": "trap",
+   "art": "PURPLE-135",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（佩罗娜幽灵果实的消极幽灵，穿过身体者陷入极度消极瘫软，恐怖三桅帆船团灭草帽团男性战力）",
+   "faction": "warlord",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0018",
+   "name": "蜡烛墙",
+   "sub": "伏笔·Mr.3",
+   "type": "trap",
+   "art": "YELLOW-73",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 500,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+500 直至战斗阶段结束。（Mr.3蜡蜡果实的蜡烛之墙，小花园与推进城多次硬化成防御壁垒（Candle Wall））",
+   "faction": "warlord",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0019",
+   "name": "八咫镜",
+   "sub": "伏笔·波尔萨利诺",
+   "type": "trap",
+   "art": "BLUE-30",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：无效该次攻击。（黄猿光光果实的光路瞬移，本体沿反射光瞬间转移避开攻击（八咫镜））",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0020",
+   "name": "爱的铁拳",
+   "sub": "伏笔·蒙奇·D·卡普",
+   "type": "trap",
+   "art": "BLUE-167",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 300 伤害。（卡普的铁拳制裁，风车镇把路飞艾斯打得满头包的爱的铁拳）",
+   "faction": "navy",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0021",
+   "name": "纸绘",
+   "sub": "伏笔·路奇",
+   "type": "trap",
+   "art": "BLACK-99",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：无效该次攻击。（海军六式之纸绘，卸力飘动使攻击落空，路奇与CP9的看家回避技）",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0022",
+   "name": "铁块·钢",
+   "sub": "伏笔·加布拉",
+   "type": "trap",
+   "art": "GREEN-151",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 700,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+700 直至战斗阶段结束。（六式铁块的强化版钢，加布拉人狼形硬质化身体正面承受斩击（铁块钢））",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0023",
+   "name": "空气门",
+   "sub": "伏笔·布鲁诺",
+   "type": "trap",
+   "art": "YELLOW-123",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：无效该次攻击。（布鲁诺门门果实的空气门，开门遁入异空间完全回避攻击（空气门））",
+   "faction": "navy",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0024",
+   "name": "冰冻时刻",
+   "sub": "伏笔·库赞",
+   "type": "trap",
+   "art": "BLUE-106",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（青雉贴身接触将对手整体冻结的招式，长环岛一触冻住路飞与罗宾（Ice Time））",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0025",
+   "name": "黑槛",
+   "sub": "伏笔·缇娜",
+   "type": "trap",
+   "art": "BLACK-134",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（缇娜黑槛果实的手铐束缚，罗格镇逮捕路飞未遂、顶上战争束缚海贼（黑槛））",
+   "faction": "navy",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0026",
+   "name": "催眠术",
+   "sub": "伏笔·赞高",
+   "type": "trap",
+   "art": "GREEN-70",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（赞高以一月二月赞高咒语发动的催眠术，东海篇连自己舰队一起催眠的名场面）",
+   "faction": "navy",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0027",
+   "name": "冰球",
+   "sub": "伏笔·青雉",
+   "type": "trap",
+   "art": "BLUE-10",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（青雉瞬间冻住对手的大冰球，顶上战争开局冻住白胡子遏制其猛攻（Ice Ball 冰球））",
+   "faction": "navy",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0028",
+   "name": "奇病·木乃伊",
+   "sub": "伏笔·奎因",
+   "type": "trap",
+   "art": "GREEN-38",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（奎因的瘟祸弹奇病木乃伊，接触感染全身干枯石化失去战力（Mummy））",
+   "faction": "beast",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0029",
+   "name": "漆黑隐伏",
+   "sub": "伏笔·奎因",
+   "type": "trap",
+   "art": "GREEN-38",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：无效该次攻击。（奎因腕龙形态的变色龙隐身能力，鬼岛对山治隐匿行踪（Stealth Black 漆黑隐伏））",
+   "faction": "beast",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0030",
+   "name": "刃里双皇",
+   "sub": "伏笔·金",
+   "type": "trap",
+   "art": "GREEN-08",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 300 伤害。（KING人兽型快速摆动双翼射出多发风刃，鬼岛对索隆使用（刃里双皇））",
+   "faction": "beast",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0031",
+   "name": "铁块·牙闪",
+   "sub": "伏笔·福兹弗",
+   "type": "trap",
+   "art": "PURPLE-117",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 700,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+700 直至战斗阶段结束。（原CP9福兹弗的六式铁块强化版，剑齿虎形态硬质化防御（铁块牙闪））",
+   "faction": "beast",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0032",
+   "name": "玛丽亚之网",
+   "sub": "伏笔·黑色玛利亚",
+   "type": "trap",
+   "art": "GREEN-42",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（黑色玛利亚蜘蛛丝织成的大网，鬼岛困住山治逼其唤罗宾前来（Marionette 玛丽亚之网））",
+   "faction": "beast",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0033",
+   "name": "此路不通亚",
+   "sub": "伏笔·黑色玛利亚",
+   "type": "trap",
+   "art": "GREEN-42",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 500,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+500 直至战斗阶段结束。（黑色玛利亚封锁敌人退路的防守反击姿态，鬼岛宅邸战的游廓女主人做派（此路不通亚））",
+   "faction": "beast",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0034",
+   "name": "乌尔头枪",
+   "sub": "伏笔·润媞",
+   "type": "trap",
+   "art": "PURPLE-101",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 300 伤害。（乌尔蒂威力媲美大炮的头槌，鬼岛一头撞穿地板吹飞周围敌人（乌尔头枪））",
+   "faction": "beast",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0035",
+   "name": "毒云",
+   "sub": "伏笔·海底监狱的铁壁 麦哲伦&汉尼拔",
+   "type": "trap",
+   "art": "BLACK-31",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（麦哲伦身旁弥漫的毒之云雾，LEVEL4毒之河周边触之即中毒（毒云））",
+   "faction": "beast",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0036",
+   "name": "镜火炎",
+   "sub": "伏笔·艾斯",
+   "type": "trap",
+   "art": "RED-08",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 500 伤害。（艾斯制造的反射火焰壁，弹开对手的火焰攻击，对黑胡子团使用（镜火炎））",
+   "faction": "whitebeard",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0037",
+   "name": "炎上网",
+   "sub": "伏笔·波特卡斯·D·艾斯",
+   "type": "trap",
+   "art": "RED-29",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 700,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+700 直至战斗阶段结束。（艾斯织出的火焰之网，阻挡与灼烧来犯之敌（炎上网））",
+   "faction": "whitebeard",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0038",
+   "name": "阳炎",
+   "sub": "伏笔·波特卡斯·D·艾斯·一番队",
+   "type": "trap",
+   "art": "RED-72",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：无效该次攻击。（艾斯的火焰残像幻影，实体化作阳炎晃动令攻击落空（阳炎））",
+   "faction": "whitebeard",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0039",
+   "name": "火枪",
+   "sub": "伏笔·波特卡斯·D·艾斯·一番队",
+   "type": "trap",
+   "art": "RED-72",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 300 伤害。（艾斯手指连发火弹的火枪，指先火弹如机关枪连射迎击（火铳））",
+   "faction": "whitebeard",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0040",
+   "name": "不死蓟",
+   "sub": "伏笔·马尔科·一番队",
+   "type": "trap",
+   "art": "RED-155",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 700,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+700 直至战斗阶段结束。（马尔科不死鸟蓝炎的再生之蓟，顶上战争中弹与被斩后蓝焰重组伤口（不死蓟））",
+   "faction": "whitebeard",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0041",
+   "name": "鹤爪",
+   "sub": "伏笔·马尔科",
+   "type": "trap",
+   "art": "BLUE-59",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 300 伤害。（马尔科鹤形爪击的回旋踢，顶上战争与鬼岛对KING、奎因缠斗使用（鹤爪））",
+   "faction": "whitebeard",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0042",
+   "name": "神火·不知火",
+   "sub": "伏笔·艾斯",
+   "type": "trap",
+   "art": "RED-08",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（艾斯凝聚火焰镰刀的远距斩击，巴纳罗岛对黑胡子海贼团使用（神火 不知火））",
+   "faction": "whitebeard",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0043",
+   "name": "炎戒·火柱",
+   "sub": "伏笔·波特卡斯·D·艾斯",
+   "type": "trap",
+   "art": "RED-29",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（艾斯全身缠绕上升的螺旋火柱，对黑胡子团烧尽四周（炎戒 火柱））",
+   "faction": "whitebeard",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0044",
+   "name": "磁力·反斥",
+   "sub": "伏笔·尤斯塔斯·基德",
+   "type": "trap",
+   "art": "GREEN-93",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 500 伤害。（基德以磁气反弹飞来炮弹与子弹的招式，香波地对海军、鬼岛对大妈团使用（Repel 反发））",
+   "faction": "supernova",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0045",
+   "name": "稻草人",
+   "sub": "伏笔·巴兹尔·霍金斯",
+   "type": "trap",
+   "art": "RED-132",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 700,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+700 直至战斗阶段结束。（霍金斯以稻草人偶承接伤害的诅咒转嫁，被击中时伤害由人偶代替（Strawman 稻草人））",
+   "faction": "supernova",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0046",
+   "name": "稻草人卡片",
+   "sub": "伏笔·巴兹尔·霍金斯·最恶世代",
+   "type": "trap",
+   "art": "RED-92",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（霍金斯抽卡占卜定夺命运的诅咒之卡，香波地以此预判战局伤人（稻草人卡片））",
+   "faction": "supernova",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0047",
+   "name": "老化冲击",
+   "sub": "伏笔·乔艾莉·波妮",
+   "type": "trap",
+   "art": "GREEN-111",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（波妮年龄果实的老化之力，将被触碰者急速衰老削弱（老化冲击））",
+   "faction": "supernova",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0048",
+   "name": "屏障",
+   "sub": "伏笔·巴托洛米奥",
+   "type": "trap",
+   "art": "RED-53",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 700,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+700 直至战斗阶段结束。（巴托洛米奥屏障果实的透明屏障，德雷斯罗萨正面挡下王者之拳（屏障））",
+   "faction": "supernova",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0049",
+   "name": "战斗音乐",
+   "sub": "伏笔·阿普",
+   "type": "trap",
+   "art": "PURPLE-43",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（阿普身体乐器的音波攻击，鬼岛以突袭音波重创基德与索隆（战斗音乐））",
+   "faction": "supernova",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0050",
+   "name": "心网",
+   "sub": "伏笔·艾涅尔",
+   "type": "trap",
+   "art": "YELLOW-36",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：无效该次攻击。（艾涅尔覆盖全空岛的见闻色心网，预知一切攻击动向令其落空（心网））",
+   "faction": "yonko",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0051",
+   "name": "镜世界",
+   "sub": "伏笔·夏洛特·布蕾",
+   "type": "trap",
+   "art": "PURPLE-21",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：无效该次攻击。（布蕾镜镜果实的镜中世界，万国篇将草帽团引入镜世界搅乱追击战（镜世界））",
+   "faction": "yonko",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0052",
+   "name": "冲击贝",
+   "sub": "伏笔·甘福尔",
+   "type": "trap",
+   "art": "PURPLE-22",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 500
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 500 伤害。（甘福尔的空岛贝武器冲击贝，贮存冲击后反向释放，神之岛决战对艾涅尔使用（Impact Dial））",
+   "faction": "yonko",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0053",
+   "name": "见闻色·未来预知",
+   "sub": "伏笔·卡塔库栗",
+   "type": "trap",
+   "art": "RED-63",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：无效该次攻击。（卡塔库栗将见闻色练至预见未来的境界，万国镜界完全回避路飞一切攻击）",
+   "faction": "yonko",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0054",
+   "name": "霸王色的威压",
+   "sub": "伏笔·香克斯",
+   "type": "trap",
+   "art": "YELLOW-120",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（香克斯的顶级霸王色霸气威压，和之国近海隔空逼退海军大将绿牛）",
+   "faction": "yonko",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0055",
+   "name": "饼干士兵",
+   "sub": "伏笔·克力架",
+   "type": "trap",
+   "art": "YELLOW-44",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 700,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+700 直至战斗阶段结束。（克力架饼干果实无限再造的饼干士兵，万国篇以假身硬盾耗战路飞十一小时）",
+   "faction": "yonko",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0056",
+   "name": "雷云·宙斯",
+   "sub": "伏笔·夏洛特·玲玲",
+   "type": "trap",
+   "art": "YELLOW-41",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（BIG MOM头顶盘旋的雷云霍米兹宙斯，万国追击娜美乌索普时随时落雷伏击）",
+   "faction": "yonko",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0057",
+   "name": "乌鸦煤",
+   "sub": "伏笔·卡拉斯",
+   "type": "trap",
+   "art": "BLACK-141",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（革命军西军军队长卡拉斯化身乌鸦群的袭击，世界会议篇对桃胡子海贼团使用（乌鸦煤））",
+   "faction": "revolutionary",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0058",
+   "name": "方尖煤",
+   "sub": "伏笔·卡拉斯·革命军",
+   "type": "trap",
+   "art": "BLUE-72",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -600,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-600 直至战斗阶段结束。（卡拉斯乌鸦群聚成方尖碑状冲撞的强化技，鲁鲁西亚王国保卫战使用（方尖煤））",
+   "faction": "revolutionary",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0059",
+   "name": "乌鸦连魂",
+   "sub": "伏笔·卡拉斯",
+   "type": "trap",
+   "art": "BLACK-141",
+   "triggers": [
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     },
+     {
+      "op": "damage",
+      "amount": 300
+     }
+    ]
+   },
+   "desc": "对方直接攻击时：无效该攻击，并给予对方 LP 300 伤害。（卡拉斯乌鸦群的连续俯冲反击，玛丽乔亚潜入战的名技（乌鸦连魂））",
+   "faction": "revolutionary",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0060",
+   "name": "冰冷射击",
+   "sub": "伏笔·林德伯格",
+   "type": "trap",
+   "art": "BLUE-120",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "atkDelta",
+      "target": "attacker",
+      "amount": -400,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：该攻击人物 ATK-400 直至战斗阶段结束。（革命军南军军队长林德伯格的冷冻武器射击，冻结敌人行动（冰冷射击））",
+   "faction": "revolutionary",
+   "rarity": "A"
+  },
+  {
+   "id": "GLD-T0061",
+   "name": "光束射击",
+   "sub": "伏笔·林德伯格·革命军",
+   "type": "trap",
+   "art": "BLUE-127",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：无效该次攻击。（林德伯格的科学家制武装光束射击，玛丽乔亚潜入战封住敌人行动（Beam Freeze Shot））",
+   "faction": "revolutionary",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0062",
+   "name": "罗格镇的风暴",
+   "sub": "伏笔·蒙奇·D·龙",
+   "type": "trap",
+   "art": "GREEN-33",
+   "triggers": [
+    "onAttacked",
+    "onDirectAttack"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "negateAttack"
+     }
+    ]
+   },
+   "desc": "对方攻击宣言时：无效该次攻击。（罗格镇处刑时刻骤起的风暴与雷击劈碎处刑台掩护路飞脱身，多拉格操控天象的名场面）",
+   "faction": "revolutionary",
+   "rarity": "S"
+  },
+  {
+   "id": "GLD-T0063",
+   "name": "鼓舞",
+   "sub": "伏笔·贝洛·贝蒂",
+   "type": "trap",
+   "art": "BLUE-160",
+   "triggers": [
+    "onAttacked"
+   ],
+   "effect": {
+    "ops": [
+     {
+      "op": "defDelta",
+      "target": "defender",
+      "amount": 500,
+      "until": "battle"
+     }
+    ]
+   },
+   "desc": "自己人物被攻击时：该人物 DEF+500 直至战斗阶段结束。（革命军东军军队长贝洛·贝蒂的鼓舞果实，挥旗唤起民众勇气奋起反抗，鲁鲁西亚对桃胡子海贼团）",
+   "faction": "revolutionary",
+   "rarity": "A"
   }
  ]
 };
