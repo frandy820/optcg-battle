@@ -1,15 +1,17 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=bf9aa59';
-import { DUEL_AI } from './duel/ai.js?v=bf9aa59';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=bf9aa59';
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=bf9aa59';
-import { FXM } from './fx-manager.js?v=bf9aa59'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=bf9aa59'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=a653202';
+import { DUEL_AI } from './duel/ai.js?v=a653202';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=a653202';
+import POOL_DATA from './data/duel-pool.js?v=a653202'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=a653202';
+import { FXM } from './fx-manager.js?v=a653202'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=a653202'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
+for (const c of POOL_DATA.cards) cardsById[c.id] = c; // 合并池（GLD 与 DUE 编号不冲突）
 
 const $ = id => document.getElementById(id);
 const els = {
@@ -99,7 +101,9 @@ function start() {
     decks = [pendingCampaign.myDeck, pendingCampaign.foeDeck];
     names = ['玩家', `${pendingCampaign.foeName}（AI）`];
     aiProfile = pendingCampaign.aiProfile || 'aggro';
-    intro = `【东海篇·第 ${pendingCampaign.stageId} 关「${pendingCampaign.stageName}」】对手：${pendingCampaign.foeName}`;
+    intro = pendingCampaign.mode === 'vs'
+      ? `【阵营对战】你的牌组 VS ${pendingCampaign.foeName}（${{ aggro: '凶猛', control: '老练', boss: '残暴' }[aiProfile] || '标准'} AI）`
+      : `【东海篇·第 ${pendingCampaign.stageId} 关「${pendingCampaign.stageName}」】对手：${pendingCampaign.foeName}`;
   } else {
     pendingCampaign = null;
     decks = [DUEL_CARDS_DATA.decks.strawhat_default.cards, DUEL_CARDS_DATA.decks.eastblue_aggro.cards];
@@ -989,6 +993,7 @@ function showMenu() {
     <button class="opt" id="mFx">✨ 动效：${fxOn ? '开（点击关闭）' : '关（点击开启）'}</button>
     <button class="opt" id="mSnd">🔊 音效：${SND.isOn() ? '开（点击关闭）' : '关（点击开启）'}</button>
     <a class="opt" href="campaign.html">🗺 闯关模式 / 牌组工坊</a>
+    <a class="opt" href="battle.html">⚔ 直接对战（选阵营 / 全卡池）</a>
     <button class="opt" id="mRestart">↺ 重新开局</button>
     <a class="opt" href="index.html">⛵ 旧版入口</a>`);
   $('mHelp').onclick = () => { els.modal.classList.add('hidden'); showRules(); };
@@ -1069,6 +1074,11 @@ function showEnd() {
     (g.winReason === 'lp' ? '生命点数归零' : '牌组抽空') + ` · 历时 ${g.turn} 回合`;
   // 闯关模式：胜利回写通关进度 + 解锁提示；按钮改为返回闯关（可再战同关）
   if (pendingCampaign) {
+    if (pendingCampaign.mode === 'vs') { // round6 R6-D：阵营对战——不写闯关进度，按钮回对战页
+      els.btnAgain.textContent = '换个对手再战';
+      els.btnAgain.onclick = () => { location.href = 'battle.html'; };
+      sub += w === 0 ? ' · 对战胜利！' : ' · 回对战页重整旗鼓';
+    } else {
     els.btnAgain.textContent = '返回闯关';
     els.btnAgain.onclick = () => { location.href = 'campaign.html'; };
     if (w === 0) {
@@ -1088,6 +1098,7 @@ function showEnd() {
     } else if (w === 1) {
       sub += ' · 重整旗鼓，回闯关页再战';
     }
+    } // mode!=='vs' 分支闭合
   } else if (g.tutorial) {
     els.btnAgain.textContent = '重玩本段教学';
     els.btnAgain.onclick = () => startTutorial(g.tutorial); // 教学局：不写通关、不落档
@@ -1135,7 +1146,9 @@ function boot() {
   }
   if (saved) {
     const meta = `第 ${saved.g.turn} 回合 · ${PH_CN[saved.g.phase] || ''}` +
-      (saved.pendingCampaign ? ` · 东海篇「${saved.pendingCampaign.stageName}」` : ' · 快速对决');
+      (saved.pendingCampaign
+        ? (saved.pendingCampaign.mode === 'vs' ? ` · 阵营对战「${saved.pendingCampaign.stageName || ''}」` : ` · 东海篇「${saved.pendingCampaign.stageName}」`)
+        : ' · 快速对决');
     els.modalBox.innerHTML = `<h3>发现未完成的对局</h3>
       <div class="meta" style="margin-bottom:10px">${meta}<br>离开页面时的局面已被保留。</div>
       <button class="opt" id="rsYes">▶ 继续对局</button>
