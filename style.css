@@ -254,16 +254,38 @@ body {
 .card.playable::before, .card.targetable::before { opacity: 1; animation: holoSpin 4.5s linear infinite; }
 @keyframes holoSpin { to { transform: rotate(1turn); } }
 
-.card .cost {
-  position: absolute; top: -6px; left: -6px;
-  min-width: 24px; height: 22px; padding: 0 4px; border-radius: 11px;
-  background: radial-gradient(circle at 32% 28%, #ffefb8, #e3b84e 60%, #a87e1e);
-  border: 1.5px solid #fff3c9;
-  color: #3a2b04; font-weight: 800; font-size: 12px;
-  display: flex; align-items: center; justify-content: center; gap: 1px;
-  box-shadow: 0 0 8px rgba(227,184,78,.75); z-index: 3;
+/* round10 四角合一数据行：费用·战力·反击·词条点·稀有度点收进底部一条（角标时代结束）；
+   全量数值与词条文案走 #cardTip 悬停卡 / 图鉴放大（cardInfoHtml 不变） */
+.card .dline {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center; gap: 2px;
+  padding: 2px 2px 3px;
+  background: linear-gradient(180deg, rgba(20,16,4,.02), rgba(20,16,4,.16));
 }
-.card .cost .beli { font-size: 9px; font-weight: 700; line-height: 1; opacity: .85; }
+.card .dline .d-cost {
+  font-size: 9.5px; font-weight: 800; color: #6b5416; letter-spacing: -.2px;
+  white-space: nowrap;
+}
+.card .dline .d-cnt {
+  font-size: 8.5px; font-weight: 800; color: #fff; white-space: nowrap;
+  background: radial-gradient(circle at 35% 30%, #8fd3ff, #1d6fb8 70%);
+  border: 1px solid #cfeaff; border-radius: 6px; padding: 0 2px;
+}
+/* 词条/装备/果实小色点（4px；hover title 显名）——kw-gear/kw-gear-on 类名保留为 E2E 契约 */
+.card .dline .d-kw, .card .dline .d-rar {
+  width: 4px; height: 4px; border-radius: 50%; flex: none;
+  box-shadow: 0 0 2px rgba(0,0,0,.35);
+}
+.d-kw.kw-rush { background: #c0392b; } .d-kw.kw-blocker { background: #1f7a4d; }
+.d-kw.kw-doubleAttack { background: #8e44ad; } .d-kw.kw-banish { background: #2c3e50; }
+.d-kw.fr-paramecia { background: #c05621; } .d-kw.fr-logia { background: #0e7490; } .d-kw.fr-zoan { background: #6d4c41; }
+.d-kw.kw-gear { background: #7c5cbf; } .d-kw.kw-gear-on { background: #b8860b; }
+/* 稀有度色点（A 灰 / B 绿 / S 蓝 / SS 紫 / SSS 金；图鉴扫卡可辨，不再占右上角） */
+.d-rar.r-A   { background: linear-gradient(160deg, #9aa7bd, #5c6b84); }
+.d-rar.r-B   { background: linear-gradient(160deg, #6fd39b, #2f8f5b); }
+.d-rar.r-S   { background: linear-gradient(160deg, #7cb6ff, #2f6cd8); }
+.d-rar.r-SS  { background: linear-gradient(160deg, #c79bff, #7b3fd4); }
+.d-rar.r-SSS { background: linear-gradient(160deg, #ffe9a8, #d9aa45 60%, #a87c22); box-shadow: 0 0 4px rgba(255,233,168,.85); }
 .card .art {
   position: absolute; top: 4px; left: 4px; right: 4px; height: 52%;
   border-radius: 4px; overflow: hidden;
@@ -287,23 +309,13 @@ body {
   position: absolute; bottom: 16px; left: 0; right: 0;
   text-align: center; font-size: 8px; color: #5c4d22; letter-spacing: 1px;
 }
-.card .power {
-  position: absolute; bottom: -2px; left: 0;
-  min-width: 32px; padding: 0 3px; text-align: center;
+.card .dline .power {
+  min-width: 20px; padding: 0 4px; text-align: center;
   background: linear-gradient(180deg, #c99b2e, #9a720e);
-  color: #fff8e0; font-weight: 900; font-size: 11px;
-  border-radius: 6px 6px 0 0; border: 1px solid #f5d76e; border-bottom: none;
+  color: #fff8e0; font-weight: 900; font-size: 10.5px;
+  border-radius: 4px; border: 1px solid #f5d76e;
   text-shadow: 0 1px 2px rgba(0,0,0,.5);
 }
-.card .counter-badge {
-  position: absolute; bottom: -5px; right: -2px;
-  background: radial-gradient(circle at 35% 30%, #8fd3ff, #1d6fb8 70%);
-  border: 1px solid #cfeaff; color: #fff;
-  font-size: 8.5px; font-weight: 800; border-radius: 8px;
-  padding: 1px 3px; box-shadow: 0 0 7px rgba(61,139,253,.8); z-index: 3;
-  white-space: nowrap;
-}
-.card .kw-badges { position: absolute; top: 3px; right: 3px; display: flex; flex-direction: column; gap: 2px; z-index: 2; }
 /* 船长技能点（试玩反馈：文字徽章遮立绘）——每技一点，觉醒=亮金；完整文案走 ?按钮/长按/图鉴放大 */
 .card .skill-dots { position: absolute; top: 4px; right: 4px; z-index: 2; display: flex; gap: 3px; }
 .card .skill-dots .sdot { width: 5px; height: 5px; border-radius: 50%; background: rgba(246,210,107,.55); box-shadow: 0 0 3px rgba(246,210,107,.5); }
@@ -323,8 +335,8 @@ body {
 /* 船长技能徽章：金字重底（批3 六色差异化技能） */
 .kw-badge.kw-skill { background: linear-gradient(135deg,#8a6d1d,#b8860b); max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .kw-badge.kw-gear-on { background: #b8860b; max-width: 58px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* 装备卡攻击角标（+NK，金色描边区分本体战力） */
-.power.gear-atk { background: linear-gradient(135deg,#8a6d1d,#c9a227); border-color: #f5d76e; }
+/* 装备卡攻击段（+NK，金色描边区分本体战力；round10 起并入 .dline） */
+.card .dline .power.gear-atk { background: linear-gradient(135deg,#8a6d1d,#c9a227); border-color: #f5d76e; }
 /* 装备目标高亮：已带装备=半亮（可换装但弃旧件） */
 .card.targetable.replaceable { opacity: .55; }
 
@@ -1090,10 +1102,12 @@ button:disabled {
   .don-zone { max-width: 120px; }
   #logPanel { display: none; }
   .card .name { font-size: 8.5px; }
-  .card .power { font-size: 9.5px; min-width: 30px; padding: 0 3px; }
-  /* 反击徽章缩写：小卡宽下「反击 1K」会压住左下战力，收成「1K」（长按信息卡仍看全称）*/
-  .card .counter-badge .cb-t { display: none; }
-  .card .counter-badge { padding: 1px 3px; font-size: 8px; }
+  /* round10 数据行移动端降档（58×82 小卡宽度预算）：反击去 ↩ 前缀、power 槽收窄、gap 压线 */
+  .card .dline { gap: 0; padding: 0 0 1px; }
+  .card .dline .power { font-size: 9px; min-width: 16px; padding: 0 2px; }
+  .card .dline .d-cost { font-size: 8.5px; }
+  .card .dline .d-cnt { font-size: 7.5px; padding: 0 2px; }
+  .card .dline .d-kw, .card .dline .d-rar { width: 4px; height: 4px; }
   /* 手牌：不溢出时居中（safe center 溢出时自动回退可滚动起点——老浏览器不识别整条失效，
      保留 flex-start 兜底），修 390 档整体偏左（实测内容中心 119 vs 容器中心 195）*/
   .hand-row { overflow-x: auto; justify-content: flex-start; justify-content: safe center; }
@@ -1150,6 +1164,12 @@ button:disabled {
   :root { --card-w: 52px; --card-h: 74px; }
   /* 手牌过挤：缩小重叠量，保证点击热区 */
   #myHand .card { margin: 0 -3px; }
+  /* round10 数据行 390 档再压（52×74 卡可用宽仅 ~48px，实测收口）：点 3px + power 槽 14px */
+  .card .dline { gap: 0; }
+  .card .dline .d-cost { font-size: 8px; }
+  .card .dline .power { min-width: 14px; }
+  .card .dline .d-cnt { padding: 0 1px; }
+  .card .dline .d-kw, .card .dline .d-rar { width: 3px; height: 3px; }
 }
 
 /* ============================================================
@@ -1502,19 +1522,7 @@ html.reduced-motion #onboard .ob-hole { transition: none; }
 /* ---- 大厅第三模式卡 ---- */
 .mode-card.story { --mc: #d9aa45; --mc-deep: #3a2e10; }
 
-/* ---- 卡面稀有度角标（G3：A 灰 / B 绿 / S 蓝 / SS 紫 / SSS 金，右上角；船长卡无）---- */
-.rar-badge {
-  position: absolute; top: -6px; right: -6px; z-index: 4;
-  min-width: 18px; height: 16px; padding: 0 4px; border-radius: 8px;
-  font: 800 9px/16px var(--font-main, inherit); text-align: center; letter-spacing: .5px;
-  border: 1px solid rgba(255,255,255,.35); box-shadow: 0 1px 4px rgba(0,0,0,.5);
-  pointer-events: none;
-}
-.rar-badge.r-A   { background: linear-gradient(160deg, #9aa7bd, #5c6b84); color: #f2f5fa; }
-.rar-badge.r-B   { background: linear-gradient(160deg, #6fd39b, #2f8f5b); color: #08281a; }
-.rar-badge.r-S   { background: linear-gradient(160deg, #7cb6ff, #2f6cd8); color: #07172e; }
-.rar-badge.r-SS  { background: linear-gradient(160deg, #c79bff, #7b3fd4); color: #1b0a30; }
-.rar-badge.r-SSS { background: linear-gradient(160deg, #ffe9a8, #d9aa45 60%, #a87c22); color: #3a2b04; border-color: #fff3c9; }
+/* ---- 卡面稀有度（G3 配色；round10 起右上角字母角标退役，改数据行色点 .d-rar，色值见卡面段）---- */
 
 /* ---- 关卡选择面板 ---- */
 .story-card-panel { max-width: 760px; display: flex; flex-direction: column; max-height: 88vh; }
