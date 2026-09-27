@@ -182,9 +182,7 @@ body.duel-scene {
   border: 1px solid #8d6bd6; display: flex; align-items: center; justify-content: center;
   color: #b9a3e8; font-size: 10px; }
 
-/* 装备角标 */
-.card .eq-badge { position: absolute; top: 2px; right: 2px; background: rgba(212,175,55,.92); color: #161006;
-  border-radius: 4px; font-size: 9px; font-weight: 800; padding: 1px 4px; box-shadow: 0 1px 4px rgba(0,0,0,.5); }
+/* 装备角标（round9 R9-A：场上卡角标已并入 stats 行，规则随 HTML 移除） */
 
 /* 响应窗口横幅（与普通提示区分：红边脉冲 + 顶部吸附） */
 .respond-banner { position: fixed; top: 64px; left: 50%; transform: translateX(-50%); z-index: 55;
