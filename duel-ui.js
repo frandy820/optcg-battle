@@ -1,13 +1,13 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=69a4da6';
-import { DUEL_AI } from './duel/ai.js?v=69a4da6';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=69a4da6';
-import POOL_DATA from './data/duel-pool.js?v=69a4da6'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=69a4da6';
-import { FXM } from './fx-manager.js?v=69a4da6'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=69a4da6'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=62fc0c0';
+import { DUEL_AI } from './duel/ai.js?v=62fc0c0';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=62fc0c0';
+import POOL_DATA from './data/duel-pool.js?v=62fc0c0'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=62fc0c0';
+import { FXM } from './fx-manager.js?v=62fc0c0'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=62fc0c0'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -327,11 +327,11 @@ function flySword(from, to) {
 // 旧版三病根除：R1 基线/滚动两数字并存值不同；R2 飘字同侧一枚吞第二笔；R3 大数字是余量非伤害。
 // （lp-num 基线由 render 即时写终值，始终为真值；本层纯演出，跳过零信息损失）
 const lpChain = { 0: Promise.resolve(), 1: Promise.resolve() };
-const dmgLog = []; // E2E 对账用：每笔 {side,delta,why}（与引擎 LP -N 行同源）
+const dmgLog = []; // E2E 对账用：每枚 {side,delta,why,n}（聚合后；n=合并笔数，切分对账用）
 function lpBig(e) { lpChain[e.side] = lpChain[e.side].then(() => runDmgPop(e)); }
 function runDmgPop(e) {
   return new Promise(res => {
-    dmgLog.push({ side: e.side, delta: e.delta, why: e.why });
+    dmgLog.push({ side: e.side, delta: e.delta, why: e.why, n: e.n || 1 });
     if (dmgLog.length > 40) dmgLog.shift();
     const numEl = e.side === 0 ? els.myLpNum : els.foeLpNum;
     numEl.classList.remove('fx-hit'); void numEl.offsetWidth; // 重排触发同类动画重播
@@ -408,9 +408,20 @@ function fxPlay() {
     } else fxCast = null;
   }
   if (fxLpQueue.length) {
+    // round9 R9-B：同侧同批聚合——总数一枚弹出（用户主诉：反击连锁逐笔扣太慢）。
+    // 一次结算（连锁关闭/攻击结算）产生的同侧多笔 → 一枚：delta=Σ；why 单来源保留归因名，
+    // 多来源改「连锁合计 · N 笔」；n=合并笔数。批间独立（AI 连续两次攻击=两次结算各自弹），
+    // 引擎日志保持逐笔（数学审计真值源不动），聚合纯 UI 演出层。
     const q = fxLpQueue;
     fxLpQueue = [];
-    for (const e of q) lpBig(e); // 逐笔步进（队列在 act() 即时填充，此处无 450ms 窗口需求）
+    const first = { 0: null, 1: null }, order = [];
+    for (const e of q) {
+      const a = first[e.side];
+      if (!a) { first[e.side] = { ...e, n: 1 }; order.push(first[e.side]); }
+      else { a.to = e.to; a.delta += e.delta; a.n++; if (a.why !== e.why) a.why = ''; }
+    }
+    for (const o of order) if (o.n > 1 && !o.why) o.why = `连锁合计 · ${o.n} 笔`;
+    for (const o of order) lpBig(o);
   }
   if (fxDissolveQ.length) { // 离场溶解（攻方自身阵亡走 ghost，剔除）
     const q = fxDissolveQ;
@@ -541,12 +552,11 @@ function unitCard(u, mine) {
   const cls = ['card', 'unit', u.pos === 'def' ? 'pos-def' : '', u.attacked ? 'attacked' : '',
     mine && clickable(u) ? 'playable' : '', sel === u.uid ? 'selected' : '',
     !mine && sel ? 'targetable' : ''].join(' ');
-  return `<div class="${cls}" data-uid="${u.uid}" title="${d.name} Lv${d.level} 攻${A}/守${D0}${eqN ? `（装备×${eqN}）` : ''}">
+  // round9 R9-A：四角角标清零——Lv/装备数并入攻胶囊前缀、副标题进 title；卡面=图+名称+底部一条数据行
+  return `<div class="${cls}" data-uid="${u.uid}" title="${d.name} Lv${d.level} 攻${A}/守${D0}${eqN ? `（装备×${eqN}）` : ''}${d.sub ? ` · ${d.sub}` : ''}">
     <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
-    <span class="lv">${d.level}</span>
-    ${eqN ? `<span class="eq-badge">⚒${eqN}</span>` : ''}
-    <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
-    <div class="stats"><span class="atk ${aCls}"><i>攻</i>${A}${aCls === 'up' ? '▲' : aCls === 'down' ? '▼' : ''}</span><span class="def ${dCls}"><i>守</i>${D0}${dCls === 'up' ? '▲' : dCls === 'down' ? '▼' : ''}</span></div>
+    <div class="nm">${d.name}</div>
+    <div class="stats"><span class="atk ${aCls}"><i>Lv${d.level}${eqN ? ` ⚒${eqN}` : ''} </i><b>${A}</b>${aCls === 'up' ? '▲' : aCls === 'down' ? '▼' : ''}</span><span class="def ${dCls}"><i>守 </i><b>${D0}</b>${dCls === 'up' ? '▲' : dCls === 'down' ? '▼' : ''}</span></div>
   </div>`;
 }
 // 招式/伏笔效果短描述（手牌/弹层共用）
@@ -576,19 +586,19 @@ function handCard(h) {
       d.type === 'trap'
         ? (my.setsThisTurn < 2 && my.spells.length < 3)
         : true); // 招式：发动或盖伏至少一头可行
-    return `<div class="card hand-card spell-card t-${d.type} ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}：${d.desc}">
+    return `<div class="card hand-card spell-card t-${d.type} ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}${d.sub ? ` · ${d.sub}` : ''}：${d.desc}">
       <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
       <span class="tbadge">${d.type === 'move' ? '招' : '伏'}</span>
-      <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
+      <div class="nm">${d.name}</div>
       <div class="fx">${shortFx(d)}</div>
     </div>`;
   }
   const can = myPhaseMain() && g.players[0].summoned === 0 && (d.level <= 4 ? g.players[0].board.length < 3 : true);
-  return `<div class="card hand-card ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}">
+  // round9 R9-A：Lv 并入攻胶囊（数值包 <b>——E2E bot 读 .stats .atk b，Lv 前缀不污染取数）
+  return `<div class="card hand-card ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}${d.sub ? ` · ${d.sub}` : ''}">
     <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
-    <span class="lv">${d.level}</span>
-    <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
-    <div class="stats"><span class="atk"><i>攻</i>${d.atk}</span><span class="def"><i>守</i>${d.def}</span></div>
+    <div class="nm">${d.name}</div>
+    <div class="stats"><span class="atk"><i>Lv${d.level} </i><b>${d.atk}</b></span><span class="def"><i>守 </i><b>${d.def}</b></span></div>
   </div>`;
 }
 // 我方招式/伏笔区条目
