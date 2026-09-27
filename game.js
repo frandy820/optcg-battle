@@ -159,26 +159,24 @@
     el.tabIndex = 0; // 键盘可达（Enter/Space 激活，委托见 initFocusManager）
     el.setAttribute('role', 'button');
     el.setAttribute('aria-label', def.name + (def.cost != null ? `，费用 ${def.cost}` : '') + (def.power ? `，战力 ${def.power / 1000}K` : '') + (def.fruit ? `，${FRUIT_LABEL[def.fruit]}系` : ''));
-    const fruitHtml = def.fruit ? `<span class="kw-badge fr-${def.fruit}">${FRUIT_LABEL[def.fruit]}系</span>` : '';
     // 船长技能可视化（试玩反馈：文字徽章遮立绘）→ 轻量技能点：每技一点、觉醒=亮金；
     // 完整技能文案走三通道：船长「?」按钮 / 长按信息卡 / 图鉴放大视图
     const skillDotHtml = def.type === 'leader'
       ? `<div class="skill-dots" aria-hidden="true">${(def.skills || (def.skill ? [{ name: def.skill }] : [])).map((s) => `<span class="sdot${/觉醒/.test(s.name) ? ' awaken' : ''}" title="${s.name}"></span>`).join('')}</div>`
       : '';
-    // 装备：卡面「装备」徽章 + 增益角标（武器纯攻 / 甲胄含坚壁）；已装上的单位在词条区亮出装备名
-    const gearDefHtml = def.type === 'gear' && def.gear
-      ? `<span class="kw-badge kw-gear">装备</span>${def.gear.gives ? def.gear.gives.map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('') : ''}` : '';
-    const unitGearHtml = (def.gears || []).map((g) => `<span class="kw-badge kw-gear-on" title="已装备 ${g.name}">⚔${g.name}</span>`).join('');
-    const kwHtml = gearDefHtml + unitGearHtml + fruitHtml + (def.keywords || []).map((k) => `<span class="kw-badge kw-${k}">${KW_LABEL[k] || k}</span>`).join('');
-    const costHtml = def.type === 'leader' ? '' : `<div class="cost" title="费用：打出这张卡要消耗的贝里数（左下角贝里区支付）"><span class="beli">฿</span>${def.cost}</div>`;
-    // G3 稀有度角标（卡面右上角；A 灰/B 绿/S 蓝/SS 紫/SSS 金；船长卡无 rarity 不加）
-    const rarHtml = (def.rarity && def.type !== 'leader') ? `<span class="rar-badge r-${def.rarity}" title="稀有度 ${def.rarity}">${def.rarity}</span>` : '';
+    // round10 四角合一：费用/战力/反击/词条/稀有度合成底部一条数据行（.dline）——用户主诉「每个角都有标记太复杂」。
+    // 词条与装备收为行内小色点（hover title 显名），全量文案走 #cardTip 悬停卡/图鉴放大（cardInfoHtml 不动）。
+    // E2E 契约保留：.power 类+「NK」文本恒一元素；.kw-gear（手牌装备卡）/ .kw-gear-on（已装备）类名在卡内。
+    const isGear = def.type === 'gear' && def.gear;
+    const kwDots =
+      (isGear ? `<i class="d-kw kw-gear" title="装备卡"></i>` : '')
+      + (def.gears || []).map((g) => `<i class="d-kw kw-gear-on" title="已装备 ${g.name}"></i>`).join('')
+      + (def.fruit ? `<i class="d-kw fr-${def.fruit}" title="${FRUIT_LABEL[def.fruit]}系"></i>` : '')
+      + (def.keywords || []).map((k) => `<i class="d-kw kw-${k}" title="${KW_LABEL[k] || k}"></i>`).join('');
+    const rarDot = (def.rarity && def.type !== 'leader') ? `<i class="d-rar r-${def.rarity}" title="稀有度 ${def.rarity}"></i>` : '';
     const artUrl = `art/${def.art || def.id}.webp`;
     el.innerHTML = `
-      ${costHtml}
-      ${rarHtml}
       ${skillDotHtml}
-      <div class="kw-badges">${kwHtml}</div>
       <div class="art">
         <img src="${artUrl}" alt="" loading="lazy" style="opacity:0"
           onload="this.style.opacity='1';this.parentNode.querySelector('.fallback').style.display='none'"
@@ -187,9 +185,13 @@
       </div>
       <div class="name">${def.name}</div>
       <div class="sub">${def.sub || ''}</div>
-      ${shownPower ? `<div class="power"${opts.livePower != null && opts.livePower !== def.power ? ' title="含贝里/装备/增益的当前战力"' : ''}>${shownPower / 1000}K</div>` : ''}
-      ${def.type === 'gear' && def.gear ? `<div class="power gear-atk">+${def.gear.atk / 1000}K</div>` : ''}
-      ${def.counter ? `<div class="counter-badge"><span class="cb-t">反击 </span>${def.counter / 1000}K</div>` : ''}
+      <div class="dline">
+        ${def.type === 'leader' ? '' : `<span class="d-cost" title="费用 ${def.cost}（打出消耗的贝里）">฿${def.cost}</span>`}
+        ${isGear ? `<b class="power gear-atk" title="装备攻击 +${def.gear.atk / 1000}K">+${def.gear.atk / 1000}K</b>`
+        : (shownPower ? `<b class="power"${opts.livePower != null && opts.livePower !== def.power ? ' title="含贝里/装备/增益的当前战力"' : ''}>${shownPower / 1000}K</b>` : '')}
+        ${def.counter ? `<span class="d-cnt" title="反击 +${def.counter / 1000}K">${def.counter / 1000}K</span>` : ''}
+        ${kwDots}${rarDot}
+      </div>
     `;
     // 悬停详情交给 #cardTip（initCardTip）；原生 title 移除避免与富信息卡双弹
     if ((def.keywords || []).length) el.setAttribute('aria-label', el.getAttribute('aria-label') + '，' + def.keywords.map((k) => KW_LABEL[k] || k).join('/'));
