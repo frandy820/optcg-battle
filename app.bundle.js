@@ -101,16 +101,17 @@ function leaderPower(pl, phase) {
 
 // 阵型光环（design-system §4.1，标签制方案 C）：只在战斗结算相位生效（UI 基础显示不含光环，
 // 真实对比体现在 dmg-calc 伤害算式浮字）。旧卡/旧快照无 formation 字段=无光环，天然兼容。
-//   vanguard 突击：攻击相位，攻击者每多 1 名场上突击单位 +500
-//   bulwark  铁壁：防守相位，防守方每多 1 名场上铁壁单位 +500
+//   vanguard 突击：攻击相位，攻击者每多 1 名场上突击单位 +1000
+//   bulwark  铁壁：防守相位，防守方每多 1 名场上铁壁单位 +1000
 //   skirmish 游击：非光环——登场计数触发（见 phases.js summon 点）
+// v0.9.5 整数化：+500→+1000 粒度——500 档光环让战斗算式浮字出现 x.5K 小数（用户「不要小数」）
 function formationEdge(pl, formation, phase) {
   if (!pl || !formation) return 0;
   if (formation === 'vanguard' && phase === 'attack') {
-    return Math.max(0, formationCount(pl, 'vanguard') - 1) * 500;
+    return Math.max(0, formationCount(pl, 'vanguard') - 1) * 1000;
   }
   if (formation === 'bulwark' && phase === 'defense') {
-    return Math.max(0, formationCount(pl, 'bulwark') - 1) * 500;
+    return Math.max(0, formationCount(pl, 'bulwark') - 1) * 1000;
   }
   return 0;
 }
@@ -1527,7 +1528,7 @@ const POOL = {
       "sub": "死之外科医生",
       "type": "leader",
       "color": "purple",
-      "power": 5500,
+      "power": 5000,
       "life": 4,
       "keywords": [],
       "art": "captains/law",
@@ -1706,7 +1707,7 @@ const POOL = {
       "sub": "蛇姬",
       "type": "leader",
       "color": "yellow",
-      "power": 5500,
+      "power": 5000,
       "life": 4,
       "keywords": [],
       "art": "captains/hancock",
@@ -1752,7 +1753,7 @@ const POOL = {
       "sub": "天夜叉",
       "type": "leader",
       "color": "purple",
-      "power": 5500,
+      "power": 5000,
       "life": 4,
       "keywords": [],
       "art": "captains/doflamingo",
