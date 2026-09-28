@@ -1134,6 +1134,7 @@
   }
 
   // ===== 开局 =====
+  let e2eSeq = 0; // ?seed= 连打多局的局号偏移（见 startMatch 内 seedUsed——各局确定且互异）
   function deckOf(color) {
     // 委托 engine/deck.js（分层均匀采样：char40/event6/stage2/gear2，POOL-3 扩池后顺序敏感修复）
     return O.deckOf(O.POOL, color);
@@ -1336,12 +1337,16 @@
     // 对手从全部船长随机（排除自己所选；同色对手允许——艾斯 vs 路飞）；
     // opts.foeLeader = 完整合成首领定义（故事之旅 Boss：名字/战力/技能按关卡定制，模式层传入）
     const foePool = O.POOL.leaders.filter((l) => l.id !== myLeader.id);
+    // E2E 确定性开局（对齐 duel-ui.js ?seed 先例）：仅显式带 ?seed= 时读 URL——线上/日常玩不受影响。
+    // 双随机源一起收敛（对局 seed + 对手抽取；deckOf 本身确定性无 rng），根治「随机 AI 0 出牌局」flaky。
+    const urlSeed = (location.search.match(/[?&]seed=(\d+)/) || [])[1];
+    const seedUsed = urlSeed ? ((+urlSeed + (e2eSeq++) * 101) >>> 0) : ((Date.now() % 100000) + 1);
+    const foeRng = urlSeed ? O.makeRng(seedUsed ^ 0x9E3779B9) : null;
     const foeLeader = (opts.foeLeaderId && O.POOL.leaders.find((l) => l.id === opts.foeLeaderId))
       || (opts.foeLeader && opts.foeLeader.color && opts.foeLeader.power ? opts.foeLeader : null)
-      || foePool[Math.floor(Math.random() * foePool.length)];
+      || foePool[Math.floor((foeRng ? foeRng() : Math.random()) * foePool.length)];
     // opts.deckB = 模式层定制对手卡组（故事之旅强度曲线）；缺省按对手颜色默认组
     const deckB = (opts.deckB && opts.deckB.length === 50) ? opts.deckB : deckOf(foeLeader.color);
-    const seedUsed = (Date.now() % 100000) + 1;
     G = O.newGame({
       leaderA: myLeaderOut, deckA,
       leaderB: foeLeader, deckB,
