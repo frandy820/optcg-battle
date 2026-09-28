@@ -83,6 +83,9 @@
   .battle-scene #app { padding: 8px 10px 16px; gap: 10px; }
   .duel-title { font-size: 16px; letter-spacing: 2px; }
   .ghost-btn { font-size: 12px; padding: 3px 9px; }
+  /* 触屏热区扩展：编辑/保存等小钮视觉不变，点击热区 ≥40px（对齐 R2-03 触达基线） */
+  .ghost-btn.small { position: relative; }
+  .ghost-btn.small::after { content: ''; position: absolute; inset: -8px; }
   .panel { padding: 12px; }
   .faction-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .workshop { flex-direction: column; }
