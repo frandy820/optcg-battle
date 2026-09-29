@@ -15,7 +15,8 @@ body.campaign-scene {
 .pg-title { font-size: 19px; letter-spacing: 4px; color: var(--gold-bright); text-shadow: 0 0 12px rgba(212,175,55,.35); }
 .top-actions { display: flex; gap: 8px; }
 .ghost-btn { background: transparent; border: 1px solid var(--gold-dim); color: var(--gold-bright);
-  border-radius: 7px; padding: 4px 12px; font-size: 13px; cursor: pointer; text-decoration: none; }
+  border-radius: 7px; padding: 4px 12px; font-size: 13px; cursor: pointer; text-decoration: none;
+  white-space: nowrap; }
 .ghost-btn:hover { background: rgba(212,175,55,.12); }
 
 /* tabs */
@@ -218,8 +219,17 @@ body.campaign-scene {
 .stage .st-place { margin: 1px 0 0; }
 .stage.open .st-intro { margin-top: 4px; }
 .st-toggle { padding: 2px 0; }
+/* round12 试玩修补：place 行单行化（长地名截断、船长名保全）——防 390 下两行卡高不齐 */
+.stage .st-place { white-space: nowrap; overflow: hidden; }
+.stage .st-pn { display: inline-block; max-width: 54%; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
 @media (max-width: 720px) {
   .stage .art-wrap { width: 48px; height: 70px; }
   .stage { padding: 7px 8px; gap: 8px; }
   .st-toggle { font-size: 11px; }
+  /* 教学区「从头开始」挤到第二行时独占整行、不折字 */
+  .tut-entry .tut-link.all { flex: 1 1 100%; white-space: nowrap; text-align: center; }
+  /* 右列收窄：锁定/状态长文案改为竖排小字（防撑宽挤 info → 关名换行卡高不齐） */
+  .stage .st-right { width: 64px; min-width: 64px; }
+  .stage .st-right .st-state { font-size: 9.5px; line-height: 1.35; display: block; }
+  .stage .fight-btn { padding: 10px 4px; width: 100%; }
 }
