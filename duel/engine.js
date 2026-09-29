@@ -31,7 +31,8 @@ function shuffle(arr, rng) {
 }
 
 // ---------- 建局 ----------
-// opts: { seed, decks:[playerDeckIds, aiDeckIds], first: 0|1(默认0=玩家先手), names:[..], aiProfile }
+// opts: { seed, decks:[playerDeckIds, aiDeckIds], first: 0|1(默认0=玩家先手), names:[..], aiProfile,
+//          boss: {name, atk}（round11：AI 侧 Boss 船长——每回合一击、不可被指定为目标、撞不过不沉只吃差额 LP；缺省 null=现行为） }
 function newGame(cardsById, opts) {
   const rng = mkRng(opts.seed || 20260924);
   const g = {
@@ -45,6 +46,7 @@ function newGame(cardsById, opts) {
       deck: shuffle(opts.decks[i].slice(), rng),
       hand: [], board: [], spells: [], grave: [],
       summoned: 0, setsThisTurn: 0, // 本回合通常登场次数 / 盖伏张数
+      boss: i === 1 && opts.boss ? { name: opts.boss.name, atk: opts.boss.atk, attacked: false } : null,
     })),
     pending: null,   // 响应窗口（Phase 3 启用；结构留位）
     chain: [],
@@ -174,12 +176,29 @@ function canAttack(g, cardsById, pi, uid, targetUid) {
   return ok();
 }
 
+// Boss 船长攻击（round11）：目标规则与单位攻击一致（对方空场才可直攻）
+function canBossAttack(g, pi, targetUid) {
+  const p = g.players[pi], e = g.players[1 - pi];
+  if (g.winner !== null) return no('对局已结束');
+  if (g.active !== pi) return no('不是你的回合');
+  if (g.phase !== 'battle') return no('只能在战斗阶段攻击');
+  if (!p.boss) return no('本局没有参战船长');
+  if (p.boss.attacked) return no('船长本回合已攻击');
+  if (targetUid === null || targetUid === undefined) {
+    if (e.board.length > 0) return no('对方场上有人物时不能直接攻击');
+    return ok();
+  }
+  if (!e.board.some(x => x.uid === targetUid)) return no('攻击目标不在对方场上');
+  return ok();
+}
+
 // ---------- 动作执行（唯一入口） ----------
 // action: {t:'summon',handUid,pos,tributes} | {t:'setPos',uid,pos} |
 //         {t:'attack',uid,target} | {t:'nextPhase'} | {t:'endTurn'} |
 //         {t:'setSpell',handUid}（盖伏招式/伏笔） |
 //         {t:'activateMove',handUid,target?}（直接发动招式） |
 //         {t:'activateSpell',spellUid,target?}（翻开已盖伏的招式） |
+//         {t:'bossAttack',target}（round11：Boss 船长攻击，每回合一击） |
 //         {t:'respond',spellUid,target?}（响应窗口发动伏笔） | {t:'pass'}（窗口跳过）
 function applyAction(g, cardsById, pi, action) {
   if (g.winner !== null) return { ok: false, reason: '对局已结束', fatal: false };
@@ -198,6 +217,7 @@ function dispatch(g, cardsById, pi, a) {
     case 'summon': return doSummon(g, cardsById, pi, a);
     case 'setPos': return doSetPos(g, pi, a);
     case 'attack': return doAttack(g, cardsById, pi, a);
+    case 'bossAttack': return doBossAttack(g, cardsById, pi, a);
     case 'nextPhase': return doNextPhase(g, cardsById);
     case 'endTurn': return doEndTurn(g, cardsById, pi);
     case 'setSpell': return doSetSpell(g, cardsById, pi, a);
@@ -301,6 +321,49 @@ function destroy(g, p, u, cardsById) {
   triggerAbility(g, cardsById, g.players.indexOf(p), u, 'onDestroyed'); // 触发点在墓场之后（回手类效果可从墓取回）
 }
 
+// ---------- Boss 船长攻击（round11）----------
+// 与单位攻击同入 W1 响应窗口（attackerUid='boss'）；结算独立：船长撞不过不沉、只受差额 LP（船长不可被破坏）。
+function doBossAttack(g, cardsById, pi, a) {
+  const c = canBossAttack(g, pi, a.target);
+  if (!c.ok) return c;
+  const p = g.players[pi];
+  p.boss.attacked = true; // 宣言即锁定（同单位攻击：被无效也不返还）
+  const ev = { kind: 'attack', attackerUid: 'boss', targetUid: (a.target ?? null), direct: a.target == null };
+  log(g, `${p.name} 的船长「${p.boss.name}」宣告攻击！(${p.boss.atk})`);
+  const wnd = openResponseWindow(g, cardsById, ev);
+  if (wnd) return wnd;
+  resolveBossAttack(g, cardsById, pi, a.target);
+  return { ok: true };
+}
+
+function resolveBossAttack(g, cardsById, pi, targetUid) {
+  const p = g.players[pi], e = g.players[1 - pi];
+  const boss = p.boss;
+  const A = boss.atk;
+  const nm = `船长「${boss.name}」`;
+  if (targetUid === null || targetUid === undefined) {
+    log(g, `${p.name} 的${nm}直接攻击！(${A})`);
+    damageLP(g, 1 - pi, A, '船长直接攻击');
+    return;
+  }
+  const t = e.board.find(x => x.uid === targetUid);
+  if (!t) { log(g, `攻击目标已离场，攻击落空`); return; }
+  const td = def(cardsById, t);
+  if (t.pos === 'atk') {
+    const B = unitAtk(cardsById, t);
+    log(g, `${nm}(${A}) 攻击 「${td.name}」(${B})`);
+    if (A > B) { destroy(g, e, t, cardsById); damageLP(g, 1 - pi, A - B, '船长攻击·战斗伤害'); }
+    else if (A < B) damageLP(g, pi, B - A, '船长受创（船长不会被破坏）'); // 船长不沉：只吃差额
+    else { destroy(g, e, t, cardsById); log(g, '同归于尽——但船长毫发无伤！'); } // 等值：目标死、船长不沉
+  } else {
+    const B = unitDef(cardsById, t) + ((td.keywords || []).includes('guard') ? 500 : 0);
+    log(g, `${nm}(${A}) 攻击守备的「${td.name}」(守${B})`);
+    if (A > B) destroy(g, e, t, cardsById);
+    else if (A < B) damageLP(g, pi, B - A, '船长受创（攻守逆转）');
+    else log(g, '势均力敌，无事发生');
+  }
+}
+
 // 卸下某人物的全部装备 → 墓场（人物被破坏/被解放时）
 function unequipAll(g, p, u, cardsById) {
   const keeps = [];
@@ -385,6 +448,7 @@ function doEndTurn(g, cardsById, pi) {
   // 换边
   clearBuffs(g, 'all'); // 回合结束 → 清所有限时增益（双方）
   for (const u of me(g).board) { u.attacked = false; u.posChanged = false; }
+  if (me(g).boss) me(g).boss.attacked = false; // round11：船长攻击权随拥有者回合结束重置（每回合一击）
   me(g).summoned = 0; me(g).setsThisTurn = 0;
   g.active = 1 - g.active;
   if (g.active === 0) g.turn++;
@@ -601,13 +665,18 @@ function resolvePending(g, cardsById) {
   }
   if (pd.kind === 'attack') {
     const actor = g.players[pd.actor];
-    const u = actor.board.find(x => x.uid === pd.ev.attackerUid);
-    if (pd.ev.negated) {
-      log(g, `攻击宣言被无效！${u ? `「${cardsById[u.cardId].name}」` : '攻击方'}本回合不能再攻击`);
-    } else if (!u) {
-      log(g, '攻击方已离场，攻击落空');
+    if (pd.ev.attackerUid === 'boss') { // round11：Boss 船长攻击（negateAttack 可无效；船长不存在"离场"）
+      if (pd.ev.negated) log(g, `攻击宣言被无效！船长「${actor.boss.name}」本回合不能再攻击`);
+      else resolveBossAttack(g, cardsById, pd.actor, pd.ev.targetUid);
     } else {
-      resolveAttack(g, cardsById, pd.actor, u, pd.ev.targetUid);
+      const u = actor.board.find(x => x.uid === pd.ev.attackerUid);
+      if (pd.ev.negated) {
+        log(g, `攻击宣言被无效！${u ? `「${cardsById[u.cardId].name}」` : '攻击方'}本回合不能再攻击`);
+      } else if (!u) {
+        log(g, '攻击方已离场，攻击落空');
+      } else {
+        resolveAttack(g, cardsById, pd.actor, u, pd.ev.targetUid);
+      }
     }
   } else { // move
     const p = g.players[pd.actor];
@@ -868,6 +937,10 @@ function legalMoves(g, cardsById, pi) {
       if (g.players[1 - pi].board.length === 0) { if (canAttack(g, cardsById, pi, u.uid, null).ok) moves.push({ t: 'attack', uid: u.uid, target: null }); }
       else for (const t of g.players[1 - pi].board) { if (canAttack(g, cardsById, pi, u.uid, t.uid).ok) moves.push({ t: 'attack', uid: u.uid, target: t.uid }); }
     }
+    if (p.boss && !p.boss.attacked) { // round11：Boss 船长攻击权（目标规则同单位）
+      if (g.players[1 - pi].board.length === 0) { if (canBossAttack(g, pi, null).ok) moves.push({ t: 'bossAttack', target: null }); }
+      else for (const t of g.players[1 - pi].board) { if (canBossAttack(g, pi, t.uid).ok) moves.push({ t: 'bossAttack', target: t.uid }); }
+    }
   }
   if (g.phase !== 'end') moves.push({ t: 'nextPhase' });
   if (g.phase === 'end') moves.push({ t: 'endTurn' });
@@ -879,7 +952,7 @@ const DUEL = {
   PHASES, LP_START, HAND_START, HAND_MAX, BOARD_MAX, SPELL_MAX,
   SUMMON_LIMIT, SET_LIMIT, CHAIN_MAX, DECK_SIZE,
   newGame, applyAction, legalMoves, mkRng,
-  canSummon, canSetPos, canAttack,
+  canSummon, canSetPos, canAttack, canBossAttack,
   canSetSpell, canActivateMove, canRespond, moveTargets,
   drawCard, damageLP, resolveAttack, unitAtk, unitDef, def, destroy,
 };
