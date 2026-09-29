@@ -32,12 +32,14 @@ function shuffle(arr, rng) {
 
 // ---------- 建局 ----------
 // opts: { seed, decks:[playerDeckIds, aiDeckIds], first: 0|1(默认0=玩家先手), names:[..], aiProfile,
-//          boss: {name, atk}（round11：AI 侧 Boss 船长——每回合一击、不可被指定为目标、撞不过不沉只吃差额 LP；缺省 null=现行为） }
+//          boss: {name, atk}（round11：AI 侧 Boss 船长——每回合一击、不可被指定为目标、撞不过不沉只吃差额 LP；缺省 null=现行为），
+//          handicap: N（round12：AI 前 N 个回合不发起攻击——新手关安全发育窗口；0=缺省现行为） }
 function newGame(cardsById, opts) {
   const rng = mkRng(opts.seed || 20260924);
   const g = {
     v: 1, seed: opts.seed || 20260924, rng,
     aiProfile: opts.aiProfile || 'aggro', // AI 战术原型: 'aggro'|'control'|'boss'（§九.4 权重区分，非规则豁免）
+    handicap: opts.handicap || 0, // round12：AI 让先回合数（ai.js 战斗分支读；随 g 序列化入对局存档）
     turn: 1, active: (opts.first === 1 ? 1 : 0), firstTurnDone: false,
     phase: 'draw',
     players: [0, 1].map(i => ({
