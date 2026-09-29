@@ -93,6 +93,9 @@ function aiStep(g, cardsById, pi = (g.pending ? g.pending.turnPtr : g.active)) {
   }
 
   if (g.phase === 'battle') {
+    // round12 新手让先：handicap 窗口内 AI 不发起任何攻击（单位/船长都歇）——只出牌盖伏，
+    // 给新手「我的回合安全、对方回合也在铺」的学习节奏；窗口过后恢复原决策
+    if (g.handicap && g.turn <= g.handicap) return { t: 'nextPhase' };
     const atks = moves.filter(m => m.t === 'attack');
     const margin = PROF === 'control' ? 200 : 0; // 控制型只在明显有利时换血
     const desperate = p.deck.length <= 3; // 终局意识：自己几回合内将抽空——降低门槛换血抢时间（防对墙空转到 deckout）
