@@ -1,13 +1,13 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=300963f';
-import { DUEL_AI } from './duel/ai.js?v=300963f';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=300963f';
-import POOL_DATA from './data/duel-pool.js?v=300963f'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=300963f';
-import { FXM } from './fx-manager.js?v=300963f'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=300963f'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=7e226cd';
+import { DUEL_AI } from './duel/ai.js?v=7e226cd';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=7e226cd';
+import POOL_DATA from './data/duel-pool.js?v=7e226cd'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=7e226cd';
+import { FXM } from './fx-manager.js?v=7e226cd'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=7e226cd'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -103,7 +103,8 @@ function start() {
     aiProfile = pendingCampaign.aiProfile || 'aggro';
     intro = pendingCampaign.mode === 'vs'
       ? `【阵营对战】你的牌组 VS ${pendingCampaign.foeName}（${{ aggro: '凶猛', control: '老练', boss: '残暴' }[aiProfile] || '标准'} AI）`
-      : `【东海篇·第 ${pendingCampaign.stageId} 关「${pendingCampaign.stageName}」】对手：${pendingCampaign.foeName}`;
+      : `【${pendingCampaign.islandName || '东海篇'}·第 ${pendingCampaign.stageId} 关「${pendingCampaign.stageName}」】对手：${pendingCampaign.foeName}`
+        + (pendingCampaign.boss ? `——对方船长「${pendingCampaign.boss.name}」将亲自参战（每回合一击）！` : '');
   } else {
     pendingCampaign = null;
     decks = [DUEL_CARDS_DATA.decks.strawhat_default.cards, DUEL_CARDS_DATA.decks.eastblue_aggro.cards];
@@ -115,6 +116,7 @@ function start() {
     : (Date.now() ^ (Math.random() * 1e9)) >>> 0;
   g = DUEL.newGame(cardsById, {
     seed, decks, names, aiProfile,
+    boss: pendingCampaign && pendingCampaign.mode !== 'vs' ? pendingCampaign.boss : null, // round11：AI 船长参战
   });
   sel = null; logShown = 0; busy = false;
   els.ldBody.innerHTML = ''; els.ticker.textContent = '';
@@ -199,9 +201,12 @@ function act(pi, a) {
     } else if (!g.pending) fxAtkPend = null;
     const nu = g.players[pi].board.find(u => !board0.includes(u.uid));
     if (nu) { fxSummon = { uid: nu.uid, t: Date.now() }; SND.play('summon'); } // 登场动画+琶音
-    if (a.t === 'attack') {
-      const au = g.players[pi].board.find(u => u.uid === a.uid) || g.players[pi].grave.find(u => u.uid === a.uid);
-      const ad = au && cardsById[au.cardId];
+    if (a.t === 'attack' || a.t === 'bossAttack') {
+      const isBoss = a.t === 'bossAttack';
+      const au = isBoss ? null : (g.players[pi].board.find(u => u.uid === a.uid) || g.players[pi].grave.find(u => u.uid === a.uid));
+      const ad = isBoss ? null : au && cardsById[au.cardId];
+      // round11：Boss 船长攻击——无场上卡 DOM，残影演出用 Boss 卡图（pendingCampaign.foeId）
+      const bossDef = isBoss && pendingCampaign && pendingCampaign.foeId ? cardsById[pendingCampaign.foeId] : null;
       // 目标位置快照（applyAction 前，目标还在场）——破坏性攻击结算后目标 DOM 即被重绘移除，
       // 剑与爆裂须打在目标倒下的原位（round4 用户反馈：剑要飞到攻击的对象）
       let tgtRect = null;
@@ -209,8 +214,9 @@ function act(pi, a) {
         const tEl = document.querySelector(`[data-uid="${a.target}"]`);
         if (tEl) tgtRect = tEl.getBoundingClientRect();
       }
-      const snap = { uid: a.uid, target: a.target, side: pi, t: Date.now(), tgtRect,
-        art: ad ? ad.art : null, name: ad ? ad.name : '' }; // 快照：攻方阵亡时渲染冲撞残影
+      const snap = { uid: isBoss ? 'boss' : a.uid, target: a.target, side: pi, t: Date.now(), tgtRect,
+        art: bossDef ? bossDef.art : (ad ? ad.art : null),
+        name: isBoss ? (g.players[pi].boss ? g.players[pi].boss.name : '') : (ad ? ad.name : '') }; // 快照：攻方阵亡/Boss 攻击时渲染冲撞残影
       fxAtkPend = snap; // 宣言快照存档：若开响应窗口，结算在关闭窗口的 act（C7 重置时基用）
       // round6 R4：开了响应窗口=战斗尚未结算（伤害/破坏都没发生）——宣言 act 不播攻击链，
       // 只存快照；关窗 act 落定后由上方 pend0 分支设 fxAttack 唯一播一遍（旧版两遍=「数字对不上爆裂」）
@@ -687,8 +693,9 @@ function renderRespond() {
   if (pd.actor === 1) { // 对方宣言，我首次反制
     if (pd.kind === 'attack') {
       const atkU = g.players[1].board.find(u => u.uid === pd.ev.attackerUid);
+      const atkBoss = pd.ev.attackerUid === 'boss' && g.players[1].boss; // round11：Boss 船长攻击宣言
       const tU = pd.ev.targetUid ? g.players[0].board.find(u => u.uid === pd.ev.targetUid) : null;
-      text = `对方宣言攻击！${atkU ? `「${cardsById[atkU.cardId].name}」` : ''}${tU ? ` → 「${cardsById[tU.cardId].name}」` : ' → 直接攻击！'}`;
+      text = `对方宣言攻击！${atkU ? `「${cardsById[atkU.cardId].name}」` : atkBoss ? `船长「${atkBoss.name}」` : ''}${tU ? ` → 「${cardsById[tU.cardId].name}」` : ' → 直接攻击！'}`;
       sub = '可发动伏笔反制，或选择不响应';
     } else {
       text = `对方发动招式「${cardsById[pd.ev.cardId].name}」！`;
@@ -1075,6 +1082,21 @@ function stopAi() { if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; } }
 
 // ---------- 结束 ----------
 let endShown = false; // 遮罩只弹一次（败北后偶发 render 重入）
+// round11 星级行（闯关胜利局显示；3=满血 2=LP≥2000 1=通关）
+function showEndStars(n) {
+  let el = document.getElementById('endStars');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'endStars'; el.className = 'end-stars';
+    els.endTitle.insertAdjacentElement('afterend', el);
+  }
+  el.innerHTML = '<span class="on">★</span>'.repeat(n) + '<span class="off">★</span>'.repeat(3 - n);
+  el.classList.remove('hidden');
+}
+function hideEndStars() {
+  const el = document.getElementById('endStars');
+  if (el) el.classList.add('hidden');
+}
 function showEnd() {
   if (endShown) return;
   endShown = true;
@@ -1095,18 +1117,26 @@ function showEnd() {
     els.btnAgain.textContent = '返回闯关';
     els.btnAgain.onclick = () => { location.href = 'campaign.html'; };
     if (w === 0) {
+      // round11 星级：3=满血通关 / 2=LP≥2000 / 1=通关；重玩只升不降
+      const myLp = g.players[0].lp;
+      const stars = myLp >= DUEL.LP_START ? 3 : myLp >= 2000 ? 2 : 1;
       let s = null;
       try { s = JSON.parse(localStorage.getItem('gld_campaign_v1')); } catch (e) { s = null; }
       if (!s || !Array.isArray(s.cleared)) s = { cleared: [], decks: {}, activeDeck: 'default' };
-      if (!s.cleared.includes(pendingCampaign.stageId)) {
-        s.cleared.push(pendingCampaign.stageId);
-        if (!s.decks) s.decks = {};
-        localStorage.setItem('gld_campaign_v1', JSON.stringify(s));
-        const bits = [`第 ${Math.min(pendingCampaign.stageId + 1, 8)} 关解锁`];
+      if (!s.stars || typeof s.stars !== 'object') s.stars = {};
+      const firstClear = !s.cleared.includes(pendingCampaign.stageId);
+      if (firstClear) s.cleared.push(pendingCampaign.stageId);
+      const oldStars = s.stars[pendingCampaign.stageId] || 0;
+      s.stars[pendingCampaign.stageId] = Math.max(oldStars, stars);
+      if (!s.decks) s.decks = {};
+      localStorage.setItem('gld_campaign_v1', JSON.stringify(s));
+      showEndStars(stars);
+      if (firstClear) {
+        const bits = [];
         if (pendingCampaign.unlockCard) bits.push(`新卡「${cardsById[pendingCampaign.unlockCard].name}」入池`);
-        sub += ' · 通关！' + bits.join('，');
+        sub += ' · 通关！' + (bits.length ? bits.join('，') : '下一关解锁');
       } else {
-        sub += ' · 再次通关';
+        sub += stars > oldStars ? ` · 星级提升 ${'★'.repeat(stars)}！` : ` · 再次通关（${'★'.repeat(stars)}）`;
       }
     } else if (w === 1) {
       sub += ' · 重整旗鼓，回闯关页再战';
@@ -1120,6 +1150,7 @@ function showEnd() {
     els.btnAgain.onclick = start;
   }
   els.endSub.textContent = sub;
+  if (!(pendingCampaign && pendingCampaign.mode !== 'vs' && w === 0)) hideEndStars(); // 非闯关胜利局不显示星级
   // round6 R8：结算遮罩延迟 800ms——末笔伤害数字先弹完（致死一击「-2500」被遮罩立即盖掉，
   // 实测+VLM 双确认）；期间输入已由 winner!==null 拦截，安全
   setTimeout(() => els.endOverlay.classList.remove('hidden'), 800);
@@ -1160,7 +1191,8 @@ function boot() {
   if (saved) {
     const meta = `第 ${saved.g.turn} 回合 · ${PH_CN[saved.g.phase] || ''}` +
       (saved.pendingCampaign
-        ? (saved.pendingCampaign.mode === 'vs' ? ` · 阵营对战「${saved.pendingCampaign.stageName || ''}」` : ` · 东海篇「${saved.pendingCampaign.stageName}」`)
+        ? (saved.pendingCampaign.mode === 'vs' ? ` · 阵营对战「${saved.pendingCampaign.stageName || ''}」`
+          : ` · ${saved.pendingCampaign.islandName || '东海篇'}「${saved.pendingCampaign.stageName}」`)
         : ' · 快速对决');
     els.modalBox.innerHTML = `<h3>发现未完成的对局</h3>
       <div class="meta" style="margin-bottom:10px">${meta}<br>离开页面时的局面已被保留。</div>
