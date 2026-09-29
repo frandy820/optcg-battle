@@ -138,6 +138,11 @@ body.duel-scene {
 .end-box { text-align: center; }
 .end-title { font-size: 34px; font-weight: 900; color: var(--gold-bright); letter-spacing: 6px; text-shadow: 0 0 24px rgba(245,215,110,.5); margin-bottom: 8px; }
 .end-sub { color: #b9c9e6; margin-bottom: 22px; font-size: 15px; }
+/* round11 通关星级行：3=满血 2=LP≥2000 1=通关 */
+.end-stars { font-size: 26px; letter-spacing: 10px; margin: 2px 0 6px; }
+.end-stars .on { color: #ffd76a; text-shadow: 0 0 14px rgba(255,215,106,.75); }
+.end-stars .off { color: rgba(120, 130, 155, .45); }
+.end-stars.hidden { display: none; }
 
 #hint { text-align: center; font-size: 13px; color: #8fa5cc; min-height: 20px; }
 #hint.warn { color: var(--gold-bright); }
