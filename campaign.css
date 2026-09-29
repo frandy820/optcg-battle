@@ -164,3 +164,43 @@ body.campaign-scene {
   .bclose { display: block; text-align: center; color: var(--gold-bright); font-size: 13px;
     padding: 2px 0 6px; cursor: pointer; border-bottom: 1px solid #1d3a6b; margin-bottom: 6px; }
 }
+
+/* ---------- round11：岛屿大地图（横轨）+ 星级 + 隐藏关 ---------- */
+#mapRail { display: flex; gap: 8px; overflow-x: auto; padding: 8px 2px 10px; scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch; }
+#mapRail::-webkit-scrollbar { height: 5px; }
+#mapRail::-webkit-scrollbar-thumb { background: #27406b; border-radius: 3px; }
+.isle { scroll-snap-align: center; flex: none; width: 108px; padding: 8px 8px 7px; border-radius: 12px;
+  border: 1px solid #1d3a6b; background: linear-gradient(180deg, #0d1c3a, #0a1730); color: var(--sea-cream);
+  cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; position: relative; }
+.isle:hover { border-color: var(--gold-dim); }
+.isle.cur { border-color: var(--gold-bright); box-shadow: 0 0 0 2px rgba(245,215,110,.35), 0 4px 16px rgba(0,0,0,.45); }
+.isle.locked { opacity: .5; filter: saturate(.3); cursor: not-allowed; }
+.isle.done::after { content: '✓ 制霸'; position: absolute; top: -7px; right: -5px; font-size: 9px;
+  background: var(--c-green); color: #fff; border-radius: 6px; padding: 1px 6px; font-weight: 700; }
+.isle-dot { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, var(--isle-c), #0a1730 78%);
+  border: 2px solid var(--isle-c); box-shadow: 0 0 10px color-mix(in srgb, var(--isle-c) 55%, transparent); }
+.isle-name { font-size: 14px; font-weight: 800; color: var(--gold-bright); letter-spacing: 2px; }
+.isle-fac { font-size: 10px; color: #7e93ba; }
+.isle-stars { font-size: 11px; color: #ffd76a; letter-spacing: 1px; }
+.isle-stars i { font-style: normal; color: #7e93ba; font-size: 10px; }
+/* 关卡星级行 */
+.stars { color: #ffd76a; font-size: 13px; letter-spacing: 2px; text-shadow: 0 0 8px rgba(255,215,106,.5); }
+.gold { color: #ffd76a; font-weight: 800; }
+/* 决战/隐藏关标识 */
+.kind-tag { display: inline-block; font-size: 10px; border-radius: 4px; padding: 1px 6px; margin-left: 6px; vertical-align: 2px; font-weight: 700; }
+.kind-tag.boss { background: linear-gradient(180deg, #e5484d, #b3261e); color: #fff; }
+.kind-tag.hidden { background: repeating-linear-gradient(135deg, #231542 0 4px, #170c2e 4px 8px); color: #d9c9f5; border: 1px solid #8d6bd6; }
+.stage.is-boss { border-color: #a33; background: linear-gradient(180deg, rgba(42,15,24,.5), rgba(10,26,53,.4)); }
+.stage.is-hidden { border-color: #8d6bd6; }
+.st-boss { font-size: 12px; color: #ff9b9b; margin-top: 2px; }
+.st-boss b { color: #ffd9d9; }
+/* 隐藏关 ??? 遮罩 */
+.art-wrap.mystery { display: flex; align-items: center; justify-content: center;
+  background: repeating-linear-gradient(135deg, #231542 0 5px, #170c2e 5px 10px); border: 1px solid #8d6bd6; }
+.art-wrap.mystery span { font-size: 30px; font-weight: 900; color: #b9a3e8; text-shadow: 0 0 14px rgba(141,107,214,.8); }
+@media (max-width: 720px) {
+  .isle { width: 92px; padding: 6px 6px 5px; }
+  .isle-name { font-size: 12.5px; letter-spacing: 1px; }
+  .isle-fac { display: none; }
+}
