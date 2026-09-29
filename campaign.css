@@ -204,3 +204,22 @@ body.campaign-scene {
   .isle-name { font-size: 12.5px; letter-spacing: 1px; }
   .isle-fac { display: none; }
 }
+
+/* ---------- round12：关卡卡瘦身——详情折叠 + 紧凑排版 ---------- */
+.stage { cursor: default; }
+.stage .st-detail { display: none; }
+.stage.open .st-detail { display: block; animation: stDetailIn .18s ease; }
+@keyframes stDetailIn { from { opacity: 0; transform: translateY(-3px); } }
+.st-toggle { font-size: 11.5px; color: #7e93ba; margin-top: 3px; cursor: pointer; user-select: none; }
+.st-toggle:hover { color: var(--gold-bright); }
+/* 紧凑：卡高收一档、间距呼吸感 */
+.stage { padding: 8px 10px; gap: 10px; }
+.stage .art-wrap { width: 56px; height: 80px; }
+.stage .st-place { margin: 1px 0 0; }
+.stage.open .st-intro { margin-top: 4px; }
+.st-toggle { padding: 2px 0; }
+@media (max-width: 720px) {
+  .stage .art-wrap { width: 48px; height: 70px; }
+  .stage { padding: 7px 8px; gap: 8px; }
+  .st-toggle { font-size: 11px; }
+}
