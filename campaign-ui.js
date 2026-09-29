@@ -1,9 +1,9 @@
 // 伟大航路闯关（round11 岛屿大地图）+ 牌组工坊 UI
 // 进度/牌组存 localStorage；开战写 gld_duel_pending → duel.html 开局；胜利由 duel-ui 回写通关/星级。
 'use strict';
-import DATA from './data/duel-cards.js?v=7e226cd';
-import POOL_DATA from './data/duel-pool.js?v=7e226cd';
-import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=7e226cd';
+import DATA from './data/duel-cards.js?v=0e31d88';
+import POOL_DATA from './data/duel-pool.js?v=0e31d88';
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=0e31d88';
 
 const cardsById = {};
 for (const c of DATA.cards) cardsById[c.id] = c;
@@ -158,18 +158,24 @@ function renderStages() {
     const art = hiddenLocked
       ? `<div class="art-wrap mystery"><span>?</span></div>`
       : `<div class="art-wrap"><img src="art/${cardsById[st.foeId].art}.webp" alt="${st.foeName}" loading="lazy"></div>`;
+    // round12 版面瘦身：intro/船长参战/解锁奖励收进折叠详情（默认一行卡——文字墙主诉）；
+    // 点卡片切换展开；隐藏关锁定态保留 ??? 语义文案在主区
     const info = hiddenLocked
       ? `<div class="info">
           <div class="st-name"><span class="idx">第 ${st.id} 关</span>？？？${kindTag}</div>
           <div class="st-place">${isl.name} · 隐秘海域</div>
-          <div class="st-intro">传说中的亡灵在此沉睡——岛内其余 5 关全部 3 星（★${islandStars(st.islandId, st.id)}/${st.needStars || 15}），它将现形。</div>
+          <div class="st-intro">岛内其余 5 关全部 3 星（★${islandStars(st.islandId, st.id)}/${st.needStars || 15}），它将现形。</div>
         </div>`
       : `<div class="info">
           <div class="st-name"><span class="idx">第 ${st.id} 关</span>${st.name}${kindTag}<span class="badge ${st.aiProfile}">${profCN}</span></div>
-          <div class="st-place">${st.place}</div>
-          <div class="st-foe">船长：<b>${st.foeName}</b>（${st.foeTitle}）</div>
-          ${bossLine}
-          <div class="st-intro">${st.intro}</div>
+          <div class="st-place">${st.place} · 船长 <b>${st.foeName}</b></div>
+          <div class="st-detail">
+            ${st.foeTitle ? `<div class="st-foe">${st.foeTitle}</div>` : ''}
+            ${bossLine}
+            <div class="st-intro">${st.intro}</div>
+            ${unl}
+          </div>
+          <div class="st-toggle">▸ 关卡情报</div>
         </div>`;
     return `<div class="${cls}">
       ${art}
@@ -177,10 +183,18 @@ function renderStages() {
       <div class="st-right">${state}
         ${open && !cleared ? `<button class="fight-btn" data-st="${st.id}">开战</button>` : ''}
         ${cleared ? `<button class="fight-btn" data-st="${st.id}" style="background:linear-gradient(180deg,#3d8bfd,#1d4ed8)">再战</button>` : ''}
-        ${unl}
       </div>
     </div>`;
   }).join('');
+  // 折叠交互（round12）：点卡身切详情（开战按钮/星行等按钮区不触发——stopPropagation 于绑定顺序天然分离）
+  els.stageList.querySelectorAll('.stage .info').forEach(el => {
+    el.querySelector('.st-toggle')?.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const card = el.closest('.stage');
+      card.classList.toggle('open');
+      el.querySelector('.st-toggle').textContent = card.classList.contains('open') ? '▾ 收起情报' : '▸ 关卡情报';
+    });
+  });
   els.stageList.querySelectorAll('.fight-btn').forEach(b => b.onclick = () => startStage(+b.dataset.st));
 }
 // 岛屿横轨（点岛切换；锁岛灰态；当前岛金框）
@@ -233,6 +247,7 @@ function startStage(stageId) {
   localStorage.setItem(PENDING_KEY, JSON.stringify({
     stageId: st.id, stageName: st.name, islandName: st.islandName || '', islandId: st.islandId || 1,
     foeName: st.foeName, foeId: st.foeId, aiProfile: st.aiProfile, boss: st.boss || null,
+    aiHandicap: st.aiHandicap || 0,
     foeDeck: st.deck, myDeck: my, unlockCard: st.unlock || null,
   }));
   location.href = 'duel.html' + (new URLSearchParams(location.search).get('e2eSeed') ? `?e2e=1&seed=${new URLSearchParams(location.search).get('e2eSeed')}` : ''); // C8：E2E 种子透传（仅显式带参时）
