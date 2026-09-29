@@ -2,8 +2,8 @@
 // 数据：DUEL_CARDS_DATA（32 张东海基础）+ duel-pool（339 张 GLD 转译）→ 全池 371
 // 对局交接：gld_duel_pending {mode:'vs', myDeck, foeDeck, aiProfile, foeName,...} → duel.html 一次性消费
 'use strict';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=0e31d88';
-import POOL from './data/duel-pool.js?v=0e31d88';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=339af0f';
+import POOL from './data/duel-pool.js?v=339af0f';
 
 const FACTION_CN = {
   navy: '海军', warlord: '王下七武海', strawhat: '草帽一伙', beast: '百兽海贼团',
