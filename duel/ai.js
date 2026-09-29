@@ -112,6 +112,16 @@ function aiStep(g, cardsById, pi = (g.pending ? g.pending.turnPtr : g.active)) {
         if (desperate && a > DF(t) - 300) return m;   // 快抽空：贴着破防也撞
       }
     }
+    // round11：Boss 船长攻击（每回合一击；撞不过不沉只吃差额，等值=目标死船长活=净赚）
+    // 直攻永远打；对攻表示等值也打（净赚）；对守备破防才打；A<B 一律不打（白扣自己 LP）
+    for (const m of moves.filter(x => x.t === 'bossAttack')) {
+      if (m.target === null) return m;
+      const t = e.board.find(x => x.uid === m.target);
+      if (!t) continue;
+      if (t.pos === 'atk') {
+        if (p.boss.atk >= A(t)) return m;
+      } else if (p.boss.atk > DF(t)) return m;
+    }
     return { t: 'nextPhase' }; // 无有利攻击 → 主2
   }
 
@@ -193,10 +203,15 @@ function decideRespond(g, cardsById, pi) {
 
   // W1 攻击宣言：模拟「不响应的损失」，逐伏笔比较改善量
   const atkPi = 1 - pi;
-  const attacker = g.players[atkPi].board.find(u => u.uid === pd.ev.attackerUid);
+  const isBossAtk = pd.ev.attackerUid === 'boss'; // round11：Boss 船长攻击（atkDelta 类伏笔对其无效——resolveOpTarget 查不到 boss）
+  const attacker = isBossAtk ? { __boss: true } : g.players[atkPi].board.find(u => u.uid === pd.ev.attackerUid);
   if (!attacker) return { t: 'pass' };
   const target = pd.ev.targetUid ? p.board.find(u => u.uid === pd.ev.targetUid) : null;
-  const base = simulateAttack(g, cardsById, attacker, target, p);
+  // boss 恒挂 1 号位（AI 侧）——连锁续开时响应方可能是 AI 自己（atkPi=0 无 boss），不可按 atkPi 推断
+  const bossAtk = isBossAtk && g.players[1].boss ? g.players[1].boss.atk : 0;
+  const base = isBossAtk
+    ? simulateBossAttack(bossAtk, target, p, cardsById)
+    : simulateAttack(g, cardsById, attacker, target, p);
   const baseLoss = base.lp + Math.max(0, base.unit);
   let best = null, bestGain = 0;
   for (const s of elig) {
@@ -205,7 +220,7 @@ function decideRespond(g, cardsById, pi) {
     const ops = d.effect.ops || [];
     if (ops.some(o => o.op === 'negateAttack')) {
       gain = baseLoss + (ops.some(o => o.op === 'damage') ? 250 : 0); // 全免 + 反伤折算
-    } else {
+    } else if (!isBossAtk) { // 减攻/加防对 Boss 攻击者/防守目标重模拟（Boss 免疫减攻，只评估加防）
       const dA = ops.find(o => o.op === 'atkDelta');
       const dD = ops.find(o => o.op === 'defDelta');
       if (dA) {
@@ -214,6 +229,12 @@ function decideRespond(g, cardsById, pi) {
       } else if (dD && target && target.pos === 'def') {
         const alt = simulateAttack(g, cardsById, attacker, target, p, 0, dD.amount);
         gain = baseLoss - (alt.lp + Math.max(0, alt.unit)) + 100; // 反噬潜力略加成
+      }
+    } else {
+      const dD = ops.find(o => o.op === 'defDelta');
+      if (dD && target && target.pos === 'def') {
+        const alt = simulateBossAttack(bossAtk, target, p, cardsById, dD.amount);
+        gain = baseLoss - (alt.lp + Math.max(0, alt.unit)) + 100;
       }
     }
     if (gain > bestGain) { bestGain = gain; best = s; }
@@ -237,6 +258,21 @@ function simulateAttack(g, cardsById, u, t, defP, aAdd = 0, dAdd = 0) {
   const B = unitDef(cardsById, t) + ((td.keywords || []).includes('guard') ? 500 : 0) + dAdd;
   if (A > B) return { lp: 0, unit: B };
   if (A < B) return { lp: 0, unit: -Math.min(A, B - A) };
+  return { lp: 0, unit: 0 };
+}
+
+// round11：Boss 船长攻击推演（船长不沉：A<B 时 Boss 侧损失不计防守收益）
+function simulateBossAttack(atk, t, defP, cardsById, dAdd = 0) {
+  if (!t) return { lp: Math.min(atk, defP.lp), unit: 0 };
+  const td = def(cardsById, t);
+  if (t.pos === 'atk') {
+    const B = unitAtk(cardsById, t);
+    if (atk > B) return { lp: Math.min(atk - B, defP.lp), unit: B };
+    if (atk === B) return { lp: 0, unit: B }; // 等值：目标死船长不沉
+    return { lp: 0, unit: 0 };
+  }
+  const B = unitDef(cardsById, t) + ((td.keywords || []).includes('guard') ? 500 : 0) + dAdd;
+  if (atk > B) return { lp: 0, unit: B };
   return { lp: 0, unit: 0 };
 }
 
