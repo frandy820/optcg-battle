@@ -1,9 +1,9 @@
 // 伟大航路闯关（round11 岛屿大地图）+ 牌组工坊 UI
 // 进度/牌组存 localStorage；开战写 gld_duel_pending → duel.html 开局；胜利由 duel-ui 回写通关/星级。
 'use strict';
-import DATA from './data/duel-cards.js?v=0e31d88';
-import POOL_DATA from './data/duel-pool.js?v=0e31d88';
-import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=0e31d88';
+import DATA from './data/duel-cards.js?v=339af0f';
+import POOL_DATA from './data/duel-pool.js?v=339af0f';
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=339af0f';
 
 const cardsById = {};
 for (const c of DATA.cards) cardsById[c.id] = c;
@@ -168,7 +168,7 @@ function renderStages() {
         </div>`
       : `<div class="info">
           <div class="st-name"><span class="idx">第 ${st.id} 关</span>${st.name}${kindTag}<span class="badge ${st.aiProfile}">${profCN}</span></div>
-          <div class="st-place">${st.place} · 船长 <b>${st.foeName}</b></div>
+          <div class="st-place"><span class="st-pn">${st.place}</span> · 船长 <b>${st.foeName}</b></div>
           <div class="st-detail">
             ${st.foeTitle ? `<div class="st-foe">${st.foeTitle}</div>` : ''}
             ${bossLine}
