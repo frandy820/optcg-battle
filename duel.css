@@ -37,8 +37,6 @@ body.duel-scene {
 .pinfo { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .pname { font-size: 14px; color: var(--gold-bright); min-width: 130px; }
 .lp-wrap { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 160px; max-width: 300px; }
-.lp-bar { flex: 1; height: 10px; border-radius: 6px; background: #16233f; overflow: hidden; border: 1px solid #27406b; }
-.lp-bar > i { display: block; height: 100%; background: linear-gradient(90deg, #e5484d, #f2994a, #f2c94c); transition: width .5s; }
 .lp-num { font-size: 14px; font-weight: 700; color: var(--gold-bright); min-width: 42px; }
 .pcounts { display: flex; gap: 6px; }
 .chip { background: #0e1c38; border: 1px solid #24406e; border-radius: 6px; padding: 2px 8px; font-size: 12px; color: #a9bde0; }
@@ -52,26 +50,41 @@ body.duel-scene {
 
 /* 人物区 */
 .unit-row { display: flex; gap: 10px; min-height: calc(var(--card-h) + 14px); align-items: center; padding: 4px 6px;
-  border-radius: 10px; background: rgba(8,16,34,.35); border: 1px dashed #24406e; }
+  position: relative; border-radius: 10px; background: rgba(8,16,34,.35); border: 1px dashed rgba(212,175,55,.28); } /* round13 C3：海图深褐底上暗金虚线（旧 #24406e 深蓝在褐底突兀） */
 .slot { width: var(--card-w); height: var(--card-h); border-radius: var(--r-card); border: 1px dashed rgba(212,175,55,.38); opacity: .6;
   background: rgba(212,175,55,.04); }
 .zone.foe .unit-row { justify-content: center; }
 .zone.mine .unit-row { justify-content: center; }
 
-/* 卡面 */
+/* 卡面（round13 C1：Master Duel 式——全幅卡图 + 底部渐变信息条，数值内嵌任何卡宽不溢出） */
 .card { width: var(--card-w); height: var(--card-h); border-radius: var(--r-card); position: relative; flex: none;
-  background: linear-gradient(165deg, #f8f1dd 0%, #efe3c3 100%); border: 2px solid var(--gold);
-  box-shadow: 0 3px 10px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.5);
+  background: linear-gradient(165deg, #f8f1dd 0%, #efe3c3 100%); border: 1.5px solid var(--gold);
+  box-shadow: 0 2px 6px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.4);
   color: var(--ink); overflow: hidden; cursor: default; user-select: none;
   transition: transform .18s, box-shadow .18s, filter .18s; }
-.card .art { height: 54%; width: 100%; object-fit: cover; object-position: center 10%; display: block; background: #0c1730; }
+.card .art { position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center 12%; display: block; background: #0c1730; }
 .card .lv { position: absolute; top: 3px; left: 3px; background: var(--gold); color: #161006; font-size: 10px; font-weight: 800;
-  border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,.6); }
-.card .nm { font-size: 10.5px; font-weight: 700; padding: 2px 3px 0; text-align: center; line-height: 1.15; }
-.card .sub { font-size: 8.5px; color: #6b5a33; text-align: center; padding: 0 2px; }
-.card .stats { position: absolute; bottom: 3px; left: 4px; right: 4px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; }
-.card .stats .atk { color: #b3261e; } .card .stats .def { color: #1d4ed8; }
-.card .stats i { font-style: normal; font-size: 8px; font-weight: 700; opacity: .68; margin-right: 1px; }
+  border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,.6); z-index: 1; }
+/* 信息条：底部渐变深底（0→.78→.92），名牌单行省略、攻/守徽章内嵌——42px 最窄卡已验算放得下 */
+.card .info { position: absolute; left: 0; right: 0; bottom: 0; height: 34%; min-height: 20px;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 1px;
+  padding: 4px calc(var(--card-w) * .05) calc(var(--card-w) * .045);
+  background: linear-gradient(180deg, rgba(6,13,31,0) 0%, rgba(6,13,31,.78) 34%, rgba(4,9,22,.92) 100%); }
+.card .nm { font-size: clamp(6.5px, calc(var(--card-w) * .125), 10.5px); font-weight: 700; line-height: 1.2;
+  color: var(--sea-cream); text-shadow: 0 1px 2px rgba(0,0,0,.85);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card .sub { font-size: clamp(5.5px, calc(var(--card-w) * .09), 8.5px); color: #b9c9e6; text-shadow: 0 1px 2px rgba(0,0,0,.8);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+.card .stats { display: flex; justify-content: space-between; gap: 2px; align-items: baseline; min-width: 0; }
+.card .stats span { display: inline-flex; align-items: baseline; gap: 1px; min-width: 0;
+  padding: 0 calc(var(--card-w) * .035); border-radius: calc(var(--r-card) * .4); background: rgba(0,0,0,.42); }
+.card .stats b { font-size: clamp(6px, calc(var(--card-w) * .115), 9px); font-weight: 800;
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.card .stats .atk b { color: #ff8f93; } .card .stats .def b { color: #8fb8ff; }
+.card .stats i { font-style: normal; font-size: .8em; font-weight: 700; opacity: .75; color: var(--sea-cream); }
+.card .fx { font-size: clamp(5.5px, calc(var(--card-w) * .105), 8.5px); color: #e8d9a8; text-shadow: 0 1px 2px rgba(0,0,0,.8);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25; }
 /* 守备表示：横置 */
 .card.pos-def { transform: rotate(90deg) scale(.82); }
 /* 已攻击 */
@@ -82,7 +95,10 @@ body.duel-scene {
 .card.playable { cursor: pointer; box-shadow: 0 0 0 2px var(--gold-bright), 0 4px 14px rgba(245,215,110,.35); }
 .card.playable:hover { transform: translateY(-5px); }
 .card.playable.pos-def:hover { transform: rotate(90deg) scale(.82) translateY(-5px); }
-.card.selected { box-shadow: 0 0 0 3px #f5d76e, 0 0 22px rgba(245,215,110,.7); }
+/* round13 C1：选中浮起（发光+抬升放大=「拿起这张卡」的物理感）；pos-def 防御性回落（引擎已挡守备不可攻） */
+.card.selected { transform: translateY(-5px) scale(1.06); z-index: 5;
+  box-shadow: 0 0 0 3px #f5d76e, 0 8px 22px rgba(245,215,110,.55); }
+.card.selected.pos-def { transform: rotate(90deg) scale(.82); }
 /* round5 C3：目标红环静态化（原 tgtBlink 动 box-shadow=每帧 paint 且循环闪烁踩玩家雷区；hover 放大即活动感） */
 .card.targetable { cursor: pointer; box-shadow: 0 0 0 2px #e5484d, 0 0 14px rgba(229,72,77,.45); }
 .card.targetable:hover { transform: scale(1.06); }
@@ -93,12 +109,7 @@ body.duel-scene {
 .my-hand .card:nth-child(even) { transform: rotate(2deg) translateY(3px); }
 .my-hand .card.playable:hover { transform: translateY(-12px) scale(1.14); z-index: 5; }
 
-/* 战报 */
-#midline { border-top: 1px solid #1d3a6b; border-bottom: 1px solid #1d3a6b; padding: 4px 8px; }
-#battleLog { max-height: 96px; overflow-y: auto; font-size: 12px; line-height: 1.55; color: #b9c9e6; }
-#battleLog .l { padding: 0 2px; }
-#battleLog .l.hl { color: var(--gold-bright); }
-#battleLog .l.bad { color: #ff9b9b; }
+/* 战报：midline/battleLog 死规则已清（round2 起走抽屉；round13 桌面侧栏见 .log-side） */
 
 /* 按钮 */
 .next-btn { background: linear-gradient(180deg, var(--gold-bright), var(--gold)); color: #141006; border: none;
@@ -107,13 +118,74 @@ body.duel-scene {
 .next-btn:hover { filter: brightness(1.1); }
 .next-btn:disabled { filter: grayscale(.6) brightness(.6); cursor: not-allowed; }
 .next-btn.big { font-size: 17px; padding: 10px 30px; }
-.direct-btn { position: fixed; z-index: 40; background: linear-gradient(180deg, #ff6b6b, #c22525); color: #fff; border: none;
-  border-radius: 10px; padding: 9px 20px; font-size: 15px; font-weight: 800; cursor: pointer;
-  box-shadow: 0 4px 18px rgba(229,72,77,.5); }
+
+/* ---------- round13 C2：对手 LP 徽章=直攻入口（一元素双语义，替代旧游离红按钮） ---------- */
+.lp-badge { position: relative; flex: none; width: 46px; height: 46px; min-width: 0; max-width: none; border-radius: 50%;
+  border: 2px solid var(--gold); background: radial-gradient(circle at 38% 32%, #16305c, #0a1730 78%);
+  display: flex; align-items: center; justify-content: center; cursor: default; padding: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.14); }
+.lp-badge .lp-num { min-width: 0; font-size: 11.5px; font-weight: 800; color: var(--sea-cream); }
+.lp-badge .dp-hint { position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%);
+  font-style: normal; font-size: 8.5px; font-weight: 800; white-space: nowrap; color: #fff;
+  background: linear-gradient(180deg, #ff6b6b, #c22525); border-radius: 6px; padding: 0 6px;
+  opacity: 0; transition: opacity .2s; pointer-events: none; box-shadow: 0 1px 6px rgba(229,72,77,.6); }
+.lp-badge.directable { cursor: pointer; border-color: #e5484d;
+  box-shadow: 0 0 0 2px #e5484d, 0 0 14px rgba(229,72,77,.5), inset 0 0 0 1px rgba(255,255,255,.14); }
+.lp-badge.directable .lp-num { color: #ffd9d9; }
+.lp-badge.directable .dp-hint { opacity: 1; }
+@keyframes dpPing { 0%, 100% { box-shadow: 0 0 0 2px #e5484d, 0 0 14px rgba(229,72,77,.5); }
+  50% { box-shadow: 0 0 0 5px rgba(229,72,77,.9), 0 0 22px rgba(229,72,77,.75); } }
+.lp-badge.directable { animation: dpPing .9s ease-in-out 2; } /* 两拍呼吸后落静态红环（非常驻循环） */
+html.reduce-fx .lp-badge.directable, html.lite-fx .lp-badge.directable { animation: none; }
+@media (prefers-reduced-motion: reduce) { .lp-badge.directable { animation: none; } }
+
+/* round13 C3：LP 环形进度（conic + @property 过渡；不支持 @property 的环境降级瞬跳=信息无损） */
+@property --lp { syntax: '<number>'; inherits: false; initial-value: 100; }
+.lp-badge::before { content: ''; position: absolute; inset: -4px; border-radius: 50%;
+  background: conic-gradient(var(--gold-bright) calc(var(--lp, 100) * 1%), rgba(255,255,255,.09) 0);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px));
+  mask: radial-gradient(closest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px));
+  transition: --lp .5s ease; pointer-events: none; }
+.lp-badge.lp-low::before { background: conic-gradient(#e5484d calc(var(--lp, 100) * 1%), rgba(255,255,255,.09) 0); }
+html.reduce-fx .lp-badge::before { transition: none; }
+@media (prefers-reduced-motion: reduce) { .lp-badge::before { transition: none; } }
+/* 对角布局：我方徽章推到行尾（对手在首位=左上，我方=右下视觉锚点） */
+.zone.mine .pinfo .lp-badge { margin-left: auto; }
+/* 我方徽章非按钮样式归一（div 版） */
+.zone.mine .lp-badge { border: 2px solid var(--gold); }
+
+/* 攻击路径箭头 overlay（选中攻击者时显示；hover 目标端点吸附） */
+.atk-arrow { position: absolute; inset: 0; pointer-events: none; z-index: 25; width: 100%; height: 100%;
+  opacity: 0; transition: opacity .15s; }
+.atk-arrow.show { opacity: 1; }
+.atk-arrow .glow { fill: none; stroke: rgba(255,215,106,.25); stroke-width: 7; stroke-linecap: round; }
+.atk-arrow .core { fill: none; stroke: #ffd76e; stroke-width: 2.5; stroke-linecap: round;
+  stroke-dasharray: 7 9; animation: arrowFlow 1s linear infinite; } /* 常驻循环第 3 个（贴 ≤3 红线） */
+@keyframes arrowFlow { to { stroke-dashoffset: -32; } }
+html.reduce-fx .atk-arrow .core, html.lite-fx .atk-arrow .core { animation: none; stroke-dasharray: none; }
+@media (prefers-reduced-motion: reduce) { .atk-arrow .core { animation: none; stroke-dasharray: none; } }
+
+/* ---------- round13 C3：桌面端战报侧栏（≥721px；手机隐藏走抽屉） ---------- */
+.log-side { display: none; }
+@media (min-width: 721px) {
+  #app { display: grid; grid-template-columns: minmax(0, 1fr) 280px;
+    grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 8px; }
+  #topbar, #phaseBar { grid-column: 1 / -1; }
+  #table { grid-column: 1; grid-row: 3; }
+  .log-side { display: flex; flex-direction: column; grid-column: 2; grid-row: 3 / 5; min-height: 0;
+    border: 1px solid #1d3a6b; border-radius: 12px; background: linear-gradient(180deg, rgba(10,26,53,.6), rgba(6,13,31,.85)); }
+  .log-side .ls-head { font-size: 13px; font-weight: 800; color: var(--gold-bright); letter-spacing: 2px;
+    padding: 9px 12px 6px; border-bottom: 1px solid #1d3a6b; }
+  .log-side .ls-body { flex: 1; min-height: 0; overflow-y: auto; padding: 6px 10px;
+    font-size: 12px; line-height: 1.6; color: #b9c9e6; }
+  .log-side .ls-body .l { padding: 1px 2px; }
+  .log-side .ls-body .l.hl { color: var(--gold-bright); }
+  #actionBar { grid-column: 1; grid-row: 4; }
+}
 
 /* 弹层 */
 .modal { position: fixed; inset: 0; background: rgba(3,7,16,.72); display: flex; align-items: center; justify-content: center; z-index: 50; }
-.modal.hidden, .toast.hidden, .end-overlay.hidden, #btnDirect.hidden { display: none; }
+.modal.hidden, .toast.hidden, .end-overlay.hidden { display: none; }
 .modal-box { background: linear-gradient(180deg, #0d1c3a, #0a1730); border: 1px solid var(--gold-dim); border-radius: 14px;
   padding: 18px 20px; min-width: 300px; max-width: 460px; box-shadow: 0 10px 40px rgba(0,0,0,.6); }
 .modal-box h3 { color: var(--gold-bright); font-size: 16px; margin-bottom: 10px; }
@@ -150,7 +222,9 @@ body.duel-scene {
 /* 窄屏 */
 @media (max-width: 720px) {
   :root { --card-w: 62px; --card-h: 88px; }
-  .card .nm { font-size: 8.5px; } .card .sub { display: none; }
+  .card .sub { display: none; }
+  /* 窄卡纯数字 + 红蓝配色（Lv/守 标签与 ▲▼ 隐藏——title 属性全端可查，不丢信息） */
+  .card .stats .lbl, .card .stats .mk { display: none; }
   .pname { min-width: 90px; font-size: 12px; }
   .duel-title { font-size: 15px; letter-spacing: 2px; }
   .ph { padding: 2px 8px; font-size: 11px; }
@@ -221,17 +295,15 @@ body.duel-scene {
    原则：停循环闪烁/脉冲（保静态高亮可辨识），过渡时长归零（状态即时反映）——
    动画纯装饰层，关闭不影响任何操作与信息获取。 */
 html.reduce-fx .card.targetable,
-html.reduce-fx .direct-btn { animation: none; box-shadow: 0 0 0 2px #e5484d; }
 html.reduce-fx .respond-banner { animation: none; box-shadow: 0 6px 26px rgba(229,72,77,.45); }
 html.reduce-fx .toast { animation: none; }
-html.reduce-fx .lp-bar > i,
 html.reduce-fx .card,
 html.reduce-fx .ph { transition-duration: 0s; }
 @media (prefers-reduced-motion: reduce) { /* 纯 CSS 兜底：JS 未跑/被禁时也生效 */
-  .card.targetable, .direct-btn { animation: none; box-shadow: 0 0 0 2px #e5484d; }
+  .card.targetable { animation: none; box-shadow: 0 0 0 2px #e5484d; }
   .respond-banner { animation: none; box-shadow: 0 6px 26px rgba(229,72,77,.45); }
   .toast { animation: none; }
-  .lp-bar > i, .card, .ph { transition-duration: 0s; }
+  .card, .ph { transition-duration: 0s; }
 }
 
 /* R2-01：defDelta 伏笔对攻表示目标无效的视觉警示（可点但降透明度） */
@@ -272,9 +344,9 @@ html.reduce-fx .ph { transition-duration: 0s; }
   /* 玩家信息行紧凑：chip 缩小、LP 条变细 */
   .pinfo { gap: 6px; }
   .pname { min-width: 0; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 34vw; }
-  .lp-wrap { min-width: 90px; }
-  .lp-bar { height: 7px; }
-  .lp-num { font-size: 12px; min-width: 34px; }
+  .lp-badge { width: 38px; height: 38px; }
+  .lp-badge .lp-num { font-size: 10px; }
+  .lp-num { min-width: 34px; }
   .chip { padding: 1px 5px; font-size: 10px; }
   #btnNext { padding: 5px 12px; font-size: 12.5px; }
 
@@ -492,16 +564,14 @@ html.reduce-fx .fx-summon { animation: none; }
   30% { transform: translateX(-50%) scale(1); }
   72% { opacity: 1; }
   100% { opacity: 0; transform: translateX(-50%) scale(1.03) translateY(-18px); } }
-.zone.mine .lp-wrap .fx-dmg { bottom: 30px; }
-.zone.foe .lp-wrap .fx-dmg { top: 30px; }
+.zone.mine .lp-wrap .fx-dmg { bottom: calc(100% + 6px); } /* round13：徽章化后朝场地中央弹（我方上方/对方下方） */
+.zone.foe .lp-wrap .fx-dmg { top: calc(100% + 6px); }
 html.reduce-fx .fx-dmg { display: none; }
 @media (prefers-reduced-motion: reduce) { .fx-dmg { display: none; } }
 
-/* 卡面数值胶囊（攻/守权重已加标签，胶囊消除「挨着摆放」的拥挤感） */
-.card .stats span { background: rgba(255,255,255,.55); border-radius: 4px; padding: 0 4px; }
-/* round4 P0：实时战斗力偏离印刷值时▲绿/▼红（结算值=显示值，分数看得懂） */
-.card .stats span.up { background: #d9f6e2; color: #0d7a3a !important; }
-.card .stats span.down { background: #f6dcdc; color: #8a1f1f !important; }
+/* round4 P0（round13 暗底信息条适配）：实时战斗力偏离印刷值时▲绿/▼红（色+箭头双通道） */
+.card .stats span.up b { color: #6fe3a1 !important; }
+.card .stats span.down b { color: #ff6b6b !important; }
 
 /* ---------- 手机单屏 v2：svh + 矮屏守卫 + 横屏放行 ---------- */
 @media (max-width: 720px) and (orientation: portrait) and (min-height: 480px) {
@@ -555,21 +625,34 @@ html.reduce-fx .fx-dmg { display: none; }
 html.reduce-fx .fx-cast { display: none; }
 @media (prefers-reduced-motion: reduce) { .fx-cast { display: none; } }
 
-/* 决斗桌质感：深胡桃木面 + 金线镶边 + 内阴影（叠在深海背景上=牌桌意象） */
+/* 决斗桌质感（round13 C3）：海图羊皮纸桌面 + 金线镶边 + 内阴影（叠在深海背景上=深海中的海图桌） */
 #table {
   background:
-    linear-gradient(180deg, rgba(10,26,53,.16), rgba(6,13,31,.38)),
-    repeating-linear-gradient(90deg, rgba(212,175,55,.05) 0 2px, transparent 2px 24px),
-    repeating-linear-gradient(0deg, rgba(0,0,0,.1) 0 1px, transparent 1px 11px),
-    linear-gradient(180deg, #3d2c16, #241a0c);
+    radial-gradient(120% 90% at 50% 0%, rgba(212,175,55,.06), transparent 55%),          /* 顶部金晖 */
+    repeating-linear-gradient(0deg,  rgba(70,50,18,.16) 0 1px, transparent 1px 26px),    /* 经线 */
+    repeating-linear-gradient(90deg, rgba(70,50,18,.14) 0 1px, transparent 1px 26px),    /* 纬线 */
+    radial-gradient(26% 32% at 16% 20%, rgba(120,86,30,.20), transparent 70%),           /* 渍斑×3 */
+    radial-gradient(22% 28% at 84% 76%, rgba(90,62,20,.18), transparent 70%),
+    radial-gradient(30% 24% at 66% 10%, rgba(140,100,40,.12), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%23d4af37' stroke-opacity='.055'%3E%3Ccircle cx='120' cy='120' r='58'/%3E%3Ccircle cx='120' cy='120' r='78'/%3E%3Cpath d='M120 42 L128 112 L120 198 L112 112 Z'/%3E%3Cpath d='M42 120 L112 112 L198 120 L112 128 Z'/%3E%3C/g%3E%3C/svg%3E") center 34% / 240px no-repeat, /* 罗盘玫瑰 */
+    linear-gradient(180deg, #2b2113, #1a1409 60%, #120e07);
   border: 1px solid #a5822e;
   box-shadow: inset 0 0 0 2px rgba(212,175,55,.4), inset 0 0 38px rgba(0,0,0,.55), 0 10px 34px rgba(0,0,0,.55); }
 /* 内嵌金线框（镶边层次；不挡操作） */
 #table::after { content: ''; position: absolute; inset: 5px; pointer-events: none; border-radius: 10px;
   border: 1px solid rgba(212,175,55,.28); }
-/* LP 底槽加深+条子提亮（对比度） */
-.lp-bar { background: #070f22; border-color: #3a5a95; }
-.lp-bar > i { filter: saturate(1.25) brightness(1.12); }
+
+/* 中场浪线（round13 C3）：绝对定位零占高；金色波纹 repeat-x */
+.sea-line { position: absolute; left: 16px; right: 16px; top: 50%; height: 12px; transform: translateY(-50%);
+  pointer-events: none; z-index: 1;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='12' viewBox='0 0 48 12'%3E%3Cpath d='M0 8 Q6 2 12 8 T24 8 T36 8 T48 8' fill='none' stroke='%23d4af37' stroke-opacity='.38' stroke-width='1.2'/%3E%3C/svg%3E") repeat-x center / 48px 12px; }
+
+/* 区域聚光（round13 C3）：有人物区的行亮起金色光斑（:has 不可用仅失装饰） */
+.unit-row::before { content: ''; position: absolute; inset: 0; border-radius: 10px; pointer-events: none;
+  background: radial-gradient(70% 85% at 50% 50%, rgba(212,175,55,.09), transparent 75%);
+  opacity: 0; transition: opacity .3s; }
+.unit-row:has(.card)::before { opacity: 1; }
+html.reduce-fx .unit-row::before { transition: none; }
 
 /* 背景氛围：顶部金光锥缓慢摇曳 + 四周渐晕（纯伪元素，无 DOM；reduce-fx 静止） */
 body.duel-scene::before { content: ''; position: fixed; inset: -20% -10% auto; height: 75%; z-index: 0;
@@ -596,12 +679,7 @@ html.lite-fx .card.selected:not(.attacked)::after { animation: none; }
 html.reduce-fx .card.playable:hover::before, html.reduce-fx .card.selected::before { animation: none; transform: none; background: none; }
 @media (prefers-reduced-motion: reduce) { .card.playable:hover::before, .card.selected::before { animation: none; transform: none; background: none; } }
 
-/* LP 条高光：静态光泽带（round5 C3：原 lpFlow 动 background-position=常驻循环每帧 paint，
-   踩「常驻无限循环 ≤3」红线改静态——纯静止光泽不属动态效果，reduce-fx 下保留） */
-.lp-bar > i { position: relative; overflow: hidden; }
-.lp-bar > i::after { content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(100deg, transparent 34%, rgba(255,255,255,.22) 50%, transparent 66%); }
-
+/* LP 条高光段已随 .lp-bar 移除（round13 C3 徽章化；lp-badge ::before conic 环接管） */
 /* 主按钮按压反馈 + 弹层禁用态 */
 .next-btn:active { transform: translateY(1px) scale(.97); filter: brightness(.95); }
 .ab-sub:active { transform: translateY(1px); }
@@ -630,3 +708,12 @@ html.reduce-fx .cast-dim { display: none; }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(1.04); } }
 html.reduce-fx .turn-banner { display: none; }
 @media (prefers-reduced-motion: reduce) { .turn-banner { display: none; } }
+
+/* ---------- round13 C3：短屏压缩层（≤560px 高——480px 准入下限的预算保底） ---------- */
+@media (max-width: 720px) and (orientation: portrait) and (max-height: 560px) {
+  .lp-badge { width: 34px; height: 34px; }
+  .lp-badge .lp-num { font-size: 9.5px; }
+  .spell-row { min-height: 28px; }
+  .zone { gap: 2px; }
+  .sea-line { display: none; }
+}
