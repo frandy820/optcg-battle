@@ -2,7 +2,7 @@
 // 设计约束：真实点击驱动（check 验证局面而非按钮点击）；可跳过/重看；教学局不落档不写通关（duel-ui 配合）。
 // 教学局仍走 applyAction 合法路径（AI 用剧本而非 aiStep）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=339af0f';
+import { DUEL } from './duel/engine.js?v=d9e7f5a';
 
 // 固定起手：通过注入手牌实现确定性（不走洗牌运气）
 const HAND1 = ['DUE-001', 'DUE-003'];            // T1：路飞+娜美
@@ -19,7 +19,7 @@ export const TUTORIALS = [
       { say: '点击手牌中的「蒙奇·D·路飞」直接登场（默认攻击表示，点一下就上）。', check: g => g.players[0].board.some(u => u.cardId === 'DUE-001') },
       { say: '登场成功！路飞的能力自动触发了 ⚡橡胶火箭炮（看战报，对方 LP-300）。重要规则：本回合登场的人物不能攻击——点「下一步」进入战斗阶段看看。', check: g => g.phase === 'battle' },
       { say: '战斗阶段中路飞灰着不可点（登场回合不能攻）。没关系：连续点「下一步」→ 主要2 → 结束回合，把回合交给对方。', check: (g, st) => st.turnPassed },
-      { say: '对方虚度了回合（陪练不出场）。先点「下一步」进入战斗阶段，再点你场上的路飞——选中后点出现的「⚔ 直接攻击」红色按钮（注意：主要阶段点人物=切换表示，别点错）。', check: (g, st) => st.directDone },
+      { say: '对方虚度了回合（陪练不出场）。先点「下一步」进入战斗阶段，再点你场上的路飞——选中后，对方的 LP 徽章（右上）会变红呼吸，点它就是直接攻击（注意：主要阶段点人物=切换表示，别点错）。', check: (g, st) => st.directDone },
       { say: '直接攻击命中 1900！对方只剩 1800——再连续「下一步」交回合，下回合再直攻一次即可获胜。', check: g => g.winner === 0 },
     ],
   },
