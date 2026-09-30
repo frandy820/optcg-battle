@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>伟大航路决斗 · 海贼王卡牌对战</title>
-<link rel="stylesheet" href="duel.css?v=339af0f">
+<link rel="stylesheet" href="duel.css?v=d9e7f5a">
 </head>
 <body class="duel-scene">
 <div id="app">
@@ -42,7 +42,11 @@
     <section class="zone foe" id="foeZone">
       <div class="pinfo">
         <div class="pname" id="foeName">亚尔丽塔（AI）</div>
-        <div class="lp-wrap"><div class="lp-bar" id="foeLpBar"></div><span class="lp-num" id="foeLpNum">4000</span></div>
+        <!-- round13 C2：对手 LP 徽章=直攻入口（一元素双语义；选中攻击者+对方空场时变红呼吸） -->
+        <button id="btnDirect" class="lp-wrap lp-badge" type="button"
+          aria-label="对方生命值；战斗阶段选中攻击者后变红，点击可直接攻击">
+          <span class="lp-num" id="foeLpNum">4000</span><i class="dp-hint">⚔ 直攻</i>
+        </button>
         <div class="pcounts">
           <span class="chip">牌组 <b id="foeDeckN">20</b></span>
           <span class="chip">手牌 <b id="foeHandN">5</b></span>
@@ -54,21 +58,37 @@
       <div class="spell-row foe-spells" id="foeSpells"></div>
     </section>
 
+    <!-- round13 C3：中场浪线（绝对定位零占高，海图桌面的分界装饰） -->
+    <div class="sea-line" aria-hidden="true"></div>
+
     <!-- 我方区 -->
     <section class="zone mine" id="mineZone">
       <div class="unit-row" id="myBoard"></div>
       <div class="spell-row my-spells" id="mySpells"></div>
       <div class="pinfo">
         <div class="pname" id="myName">玩家 · 草帽团·起航</div>
-        <div class="lp-wrap"><div class="lp-bar" id="myLpBar"></div><span class="lp-num" id="myLpNum">4000</span></div>
         <div class="pcounts">
           <span class="chip">牌组 <b id="myDeckN">20</b></span>
           <span class="chip">墓场 <b id="myGraveN">0</b></span>
         </div>
+        <div class="lp-wrap lp-badge" aria-label="我方生命值"><span class="lp-num" id="myLpNum">4000</span></div>
       </div>
       <div class="my-hand" id="myHand"></div>
     </section>
+    <!-- round13 C2：攻击路径箭头 overlay（选中攻击者时由 JS 画贝塞尔曲线，pointer-events 穿透） -->
+    <svg id="atkArrow" class="atk-arrow" aria-hidden="true">
+      <defs><marker id="atkArrowHead" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+        <path d="M0 0 L7 3.5 L0 7 Z" fill="#ffd76e" />
+      </marker></defs>
+      <path class="glow" /><path class="core" marker-end="url(#atkArrowHead)" />
+    </svg>
   </main>
+
+  <!-- round13 C3：桌面端战报侧栏（≥721px 常驻右列；手机隐藏走抽屉） -->
+  <aside id="logSide" class="log-side">
+    <div class="ls-head">⚙ 战报</div>
+    <div class="ls-body" id="ldSideBody"></div>
+  </aside>
 
   <!-- 底部动作条：提示 + 战报 ticker + 主按钮（桌面手机同构） -->
   <footer id="actionBar">
@@ -85,8 +105,6 @@
 <div id="modal" class="modal hidden">
   <div class="modal-box" id="modalBox"></div>
 </div>
-<!-- 目标直攻按钮 -->
-<button id="btnDirect" class="direct-btn hidden">⚔ 直接攻击</button>
 <!-- 响应窗口横幅 -->
 <div id="respondBanner" class="respond-banner hidden">
   <div class="rb-text" id="rbText"></div>
@@ -108,6 +126,6 @@
   </div>
 </div>
 
-<script type="module" src="duel-ui.js?v=339af0f"></script>
+<script type="module" src="duel-ui.js?v=d9e7f5a"></script>
 </body>
 </html>
