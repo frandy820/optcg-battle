@@ -1,13 +1,13 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=339af0f';
-import { DUEL_AI } from './duel/ai.js?v=339af0f';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=339af0f';
-import POOL_DATA from './data/duel-pool.js?v=339af0f'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=339af0f';
-import { FXM } from './fx-manager.js?v=339af0f'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=339af0f'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=d9e7f5a';
+import { DUEL_AI } from './duel/ai.js?v=d9e7f5a';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=d9e7f5a';
+import POOL_DATA from './data/duel-pool.js?v=d9e7f5a'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=d9e7f5a';
+import { FXM } from './fx-manager.js?v=d9e7f5a'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=d9e7f5a'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -23,10 +23,10 @@ const els = {
   myDeckN: $('myDeckN'), myGraveN: $('myGraveN'), myBoard: $('myBoard'), myHand: $('myHand'),
   foeSpells: $('foeSpells'), mySpells: $('mySpells'),
   rb: $('respondBanner'), rbText: $('rbText'), rbBtns: $('rbBtns'),
-  ldBody: $('ldBody'), logDrawer: $('logDrawer'), ticker: $('ticker'), btnMenu: $('btnMenu'),
+  ldBody: $('ldBody'), ldSideBody: $('ldSideBody'), logDrawer: $('logDrawer'), ticker: $('ticker'), btnMenu: $('btnMenu'),
   btnNext: $('btnNext'), btnRestart: $('btnRestart'), btnHelp: $('btnHelp'),
   modal: $('modal'), modalBox: $('modalBox'), toast: $('toast'),
-  btnDirect: $('btnDirect'), endOverlay: $('endOverlay'), endTitle: $('endTitle'), endSub: $('endSub'), btnAgain: $('btnAgain'),
+  btnDirect: $('btnDirect'), atkArrow: $('atkArrow'), endOverlay: $('endOverlay'), endTitle: $('endTitle'), endSub: $('endSub'), btnAgain: $('btnAgain'),
 };
 
 const PH_CN = { draw: '抽牌', standby: '准备', main1: '主要阶段1', battle: '战斗阶段', main2: '主要阶段2', end: '结束阶段' };
@@ -78,7 +78,7 @@ function restoreLive(saved) {
     sel = null; logShown = 0; busy = false;
     endShown = false;
     turnKeyShown = gg.turn + '|' + gg.active; // 恢复对局不弹回合横幅
-    els.ldBody.innerHTML = ''; els.ticker.textContent = '';
+    els.ldBody.innerHTML = ''; if (els.ldSideBody) els.ldSideBody.innerHTML = ''; els.ticker.textContent = '';
     els.endOverlay.classList.add('hidden');
     els.modal.classList.add('hidden');
     pushLog(`— 已恢复对局（第 ${gg.turn} 回合 ${PH_CN[gg.phase] || ''}）—`);
@@ -120,7 +120,7 @@ function start() {
     handicap: pendingCampaign && pendingCampaign.mode !== 'vs' ? (pendingCampaign.aiHandicap || 0) : 0, // round12：新手让先
   });
   sel = null; logShown = 0; busy = false;
-  els.ldBody.innerHTML = ''; els.ticker.textContent = '';
+  els.ldBody.innerHTML = ''; if (els.ldSideBody) els.ldSideBody.innerHTML = ''; els.ticker.textContent = '';
   els.endOverlay.classList.add('hidden');
   els.modal.classList.add('hidden');
   els.rb.classList.add('hidden');
@@ -142,7 +142,7 @@ function startTutorial(id) {
   g = made.g; tut = made.tut;
   tutStep = 0; tutFlags = {}; tutEnded = false;
   sel = null; logShown = 0; busy = false;
-  els.ldBody.innerHTML = ''; els.ticker.textContent = '';
+  els.ldBody.innerHTML = ''; if (els.ldSideBody) els.ldSideBody.innerHTML = ''; els.ticker.textContent = '';
   els.endOverlay.classList.add('hidden');
   els.modal.classList.add('hidden');
   els.rb.classList.add('hidden');
@@ -373,7 +373,7 @@ function fxPlay() {
         if (host && !host.querySelector('.fx-ghost')) {
           const ghost = document.createElement('div');
           ghost.className = `card fx-ghost ${byAi ? 'fx-lunge-down' : 'fx-lunge-up'}`;
-          ghost.innerHTML = `<img class="art" src="art/${fxAttack.art}.webp"><div class="nm">${fxAttack.name}</div>`;
+          ghost.innerHTML = `<img class="art" src="art/${fxAttack.art}.webp"><div class="info"><div class="nm">${fxAttack.name}</div></div>`;
           ghost.addEventListener('animationend', () => ghost.remove(), { once: true });
           setTimeout(() => ghost.remove(), 1300);
           FXM.register({ el: ghost, dur: 1040, onDone: () => ghost.remove() });
@@ -514,10 +514,15 @@ function render() {
   els.foeName.textContent = E.name;
   els.myName.textContent = P.name;
   document.querySelectorAll('.ph').forEach(el => el.classList.toggle('active', el.dataset.ph === g.phase));
+  // round13 C3：LP 徽章化——数字写终值 + --lp 环形进度（conic 过渡纯视觉层；伤害逐笔弹出走 fx 队列不变）
   els.foeLpNum.textContent = Math.max(0, E.lp);
-  els.foeLpBar.innerHTML = `<i style="width:${Math.max(0, E.lp) / 4000 * 100}%"></i>`;
   els.myLpNum.textContent = Math.max(0, P.lp);
-  els.myLpBar.innerHTML = `<i style="width:${Math.max(0, P.lp) / 4000 * 100}%"></i>`;
+  const badgeFoe = els.foeLpNum.closest('.lp-badge'), badgeMine = els.myLpNum.closest('.lp-badge');
+  for (const [b, lp] of [[badgeFoe, E.lp], [badgeMine, P.lp]]) {
+    if (!b) continue;
+    b.style.setProperty('--lp', Math.max(0, Math.min(100, lp / DUEL.LP_START * 100)));
+    b.classList.toggle('lp-low', lp > 0 && lp <= DUEL.LP_START * .25);
+  }
   els.foeDeckN.textContent = E.deck.length; els.foeHandN.textContent = E.hand.length; els.foeGraveN.textContent = E.grave.length;
   els.myDeckN.textContent = P.deck.length; els.myGraveN.textContent = P.grave.length;
 
@@ -535,6 +540,9 @@ function render() {
   renderHint();
   updateNextBtn();
   renderRespond();
+  // round13 C2：直攻入口与攻击箭头从状态派生（不漏态；替代旧 positionDirectBtn 时机定位）
+  els.btnDirect.classList.toggle('directable', directableNow());
+  drawAtkArrow();
   if (g.winner !== null) showEnd();
   // AI 节奏：仅 AI 自己回合（无窗口）或窗口轮到 AI 时拉起；窗口轮到玩家时绝不重开 timer
   // （否则 stopAi→render→scheduleAi 无限 ping-pong，busy 每拍震荡吞掉玩家点击——R1-P0#1）
@@ -562,8 +570,10 @@ function unitCard(u, mine) {
   // round9 R9-A：四角角标清零——Lv/装备数并入攻胶囊前缀、副标题进 title；卡面=图+名称+底部一条数据行
   return `<div class="${cls}" data-uid="${u.uid}" title="${d.name} Lv${d.level} 攻${A}/守${D0}${eqN ? `（装备×${eqN}）` : ''}${d.sub ? ` · ${d.sub}` : ''}">
     <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
-    <div class="nm">${d.name}</div>
-    <div class="stats"><span class="atk ${aCls}"><i>Lv${d.level}${eqN ? ` ⚒${eqN}` : ''} </i><b>${A}</b>${aCls === 'up' ? '▲' : aCls === 'down' ? '▼' : ''}</span><span class="def ${dCls}"><i>守 </i><b>${D0}</b>${dCls === 'up' ? '▲' : dCls === 'down' ? '▼' : ''}</span></div>
+    <div class="info">
+      <div class="nm">${d.name}</div>
+      <div class="stats"><span class="atk ${aCls}"><i class="lbl">Lv${d.level}${eqN ? ` ⚒${eqN}` : ''} </i><b>${A}</b><i class="mk">${aCls === 'up' ? '▲' : aCls === 'down' ? '▼' : ''}</i></span><span class="def ${dCls}"><i class="lbl">守 </i><b>${D0}</b><i class="mk">${dCls === 'up' ? '▲' : dCls === 'down' ? '▼' : ''}</i></span></div>
+    </div>
   </div>`;
 }
 // 招式/伏笔效果短描述（手牌/弹层共用）
@@ -596,16 +606,17 @@ function handCard(h) {
     return `<div class="card hand-card spell-card t-${d.type} ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}${d.sub ? ` · ${d.sub}` : ''}：${d.desc}">
       <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
       <span class="tbadge">${d.type === 'move' ? '招' : '伏'}</span>
-      <div class="nm">${d.name}</div>
-      <div class="fx">${shortFx(d)}</div>
+      <div class="info"><div class="nm">${d.name}</div><div class="fx">${shortFx(d)}</div></div>
     </div>`;
   }
   const can = myPhaseMain() && g.players[0].summoned === 0 && (d.level <= 4 ? g.players[0].board.length < 3 : true);
   // round9 R9-A：Lv 并入攻胶囊（数值包 <b>——E2E bot 读 .stats .atk b，Lv 前缀不污染取数）
   return `<div class="card hand-card ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}${d.sub ? ` · ${d.sub}` : ''}">
     <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
-    <div class="nm">${d.name}</div>
-    <div class="stats"><span class="atk"><i>Lv${d.level} </i><b>${d.atk}</b></span><span class="def"><i>守 </i><b>${d.def}</b></span></div>
+    <div class="info">
+      <div class="nm">${d.name}</div>
+      <div class="stats"><span class="atk"><i class="lbl">Lv${d.level} </i><b>${d.atk}</b></span><span class="def"><i class="lbl">守 </i><b>${d.def}</b></span></div>
+    </div>
   </div>`;
 }
 // 我方招式/伏笔区条目
@@ -631,7 +642,7 @@ function clickable(u) { // 我方场上人物：战斗阶段可攻击者 或 攻
 }
 
 function renderLog() {
-  // 全量进抽屉；最新一条有效战报进 ticker（过滤「— xx阶段 —」分隔行——低信息噪音不占黄金位）
+  // 全量进抽屉（+桌面侧栏双写）；最新一条有效战报进 ticker（过滤「— xx阶段 —」分隔行——低信息噪音不占黄金位）
   let tick = '';
   while (logShown < g.log.length) {
     const l = g.log[logShown++];
@@ -639,6 +650,10 @@ function renderLog() {
     div.className = 'l' + (/获胜|平局|直接攻击|解放/.test(l.msg) ? ' hl' : '');
     div.textContent = l.msg;
     els.ldBody.appendChild(div);
+    if (els.ldSideBody) { // round13 C3：桌面侧栏双容器（clone 追加，手机端 display:none 零成本）
+      els.ldSideBody.appendChild(div.cloneNode(true));
+      els.ldSideBody.scrollTop = els.ldSideBody.scrollHeight;
+    }
     if (!/^—.*—$/.test(l.msg)) tick = l.msg;
   }
   els.ldBody.scrollTop = els.ldBody.scrollHeight;
@@ -660,7 +675,7 @@ function renderHint() {
   const map = {
     draw: '抽牌阶段', standby: '准备阶段',
     main1: hasPlayableHand ? '点亮的手牌可登场或使用 · 完成后按「进入战斗」' : '没有可出的牌，直接按「进入战斗」',
-    battle: sel ? '选择攻击目标（高亮的敌方人物）或「直接攻击」' : '点自己亮起的人物发起攻击，或结束回合',
+    battle: sel ? '点高亮的敌方人物为目标，或点变红的对方 LP 徽章直接攻击' : '点自己亮起的人物发起攻击，或结束回合',
     main2: '还可登场/盖伏/切换表示，或按「结束回合 ✓」交回合',
     end: '按「结束回合」交给对方',
   };
@@ -744,6 +759,9 @@ function bindCards() {
   });
   els.foeBoard.querySelectorAll('.unit').forEach(el => {
     el.onclick = () => onFoeUnitClick(el.dataset.uid);
+    // round13 C2：目标 hover → 箭头端点吸附（仅 setAttribute，无 DOM 重建）
+    el.onpointerenter = () => { if (sel) { arrowTarget = el; drawAtkArrow(); } };
+    el.onpointerleave = () => { if (arrowTarget === el) { arrowTarget = null; drawAtkArrow(); } };
   });
   els.mySpells.querySelectorAll('.spellcard.set:not(.locked)').forEach(el => {
     el.onclick = () => onMySpellClick(el.dataset.suid);
@@ -785,7 +803,7 @@ function showSpellModal(src, d) {
   const parts = [`<div class="card-preview">
     <div class="card t-${d.type}"><img class="art" src="art/${d.art}.webp">
       <span class="tbadge">${d.type === 'move' ? '招式' : '伏笔'}</span>
-      <div class="nm">${d.name}</div><div class="sub">${d.sub}</div><div class="fx">${shortFx(d)}</div></div>
+      <div class="info"><div class="nm">${d.name}</div><div class="sub">${d.sub}</div><div class="fx">${shortFx(d)}</div></div></div>
     <div class="meta"><b>${d.name}</b>（${d.type === 'move' ? (d.moveKind === 'equip' ? '装备招式' : '通常招式') : '伏笔'}）<br>${d.desc}</div>
   </div>`];
   const actKind = src.kind === 'hand' ? 'activateMove' : 'activateSpell'; // 注意勿与全局 act() 同名
@@ -830,8 +848,8 @@ function showSummonModal(h, d, need) {
   const html = [];
   html.push(`<div class="card-preview">
     <div class="card"><img class="art" src="art/${d.art}.webp"><span class="lv">${d.level}</span>
-      <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
-      <div class="stats"><span class="atk"><i>攻</i>${d.atk}</span><span class="def"><i>守</i>${d.def}</span></div></div>
+      <div class="info"><div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
+      <div class="stats"><span class="atk"><i class="lbl">攻</i><b>${d.atk}</b></span><span class="def"><i class="lbl">守</i><b>${d.def}</b></span></div></div></div>
     <div class="meta"><b>${d.name}</b>（Lv${d.level}）<br>攻击力 ${d.atk} / 守备力 ${d.def}<br>${d.role}<br>${d.desc}</div>
   </div>`);
   html.push(`<h3 style="margin-top:12px">选择解放对象（${need} 名）</h3><div id="triList">`);
@@ -882,7 +900,6 @@ function onMyUnitClick(uid) {
     if (!chk.ok && !DUEL.canAttack(g, cardsById, 0, uid, null).ok) return toast(chk.reason);
     sel = (sel === uid) ? null : uid;
     render();
-    positionDirectBtn();
     return;
   }
   if (g.phase === 'main1' || g.phase === 'main2') {
@@ -899,8 +916,8 @@ function showUnitMenu(uid) {
   const canPos = DUEL.canSetPos(g, 0, uid, toPos);
   els.modalBox.innerHTML = `<div class="card-preview">
       <div class="card ${u.pos === 'def' ? 'pos-def' : ''}"><img class="art" src="art/${d.art}.webp"><span class="lv">${d.level}</span>
-        <div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
-        <div class="stats"><span class="atk"><i>攻</i>${d.atk}</span><span class="def"><i>守</i>${d.def}</span></div></div>
+        <div class="info"><div class="nm">${d.name}</div><div class="sub">${d.sub}</div>
+        <div class="stats"><span class="atk"><i class="lbl">攻</i><b>${d.atk}</b></span><span class="def"><i class="lbl">守</i><b>${d.def}</b></span></div></div></div>
       <div class="meta"><b>${d.name}</b>（${u.pos === 'atk' ? '攻击表示' : '守备表示'}${u.summonedTurn === g.turn ? ' · 本回合登场' : ''}）<br>${d.desc}</div>
     </div>
     <button class="opt" id="umPos" ${canPos.ok ? '' : 'disabled'}>↔ 切换为${toPos === 'def' ? '守备' : '攻击'}表示${canPos.ok ? '' : `（${canPos.reason}）`}</button>
@@ -927,28 +944,53 @@ function onFoeUnitClick(uid) {
   if (g.phase !== 'battle' || g.active !== 0 || !sel) return;
   const r = act(0, { t: 'attack', uid: sel, target: uid });
   if (!r.ok) return toast(r.reason);
-  sel = null; hideDirectBtn();
-  render();
+  sel = null; arrowTarget = null; render();
 }
 
-function positionDirectBtn() {
-  if (!sel || g.players[1].board.length > 0) { hideDirectBtn(); return; }
-  if (!DUEL.canAttack(g, cardsById, 0, sel, null).ok) { hideDirectBtn(); return; }
-  const el = els.myBoard.querySelector(`[data-uid="${sel}"]`);
-  if (!el) { hideDirectBtn(); return; }
-  const r = el.getBoundingClientRect();
-  els.btnDirect.style.left = (r.right + 12) + 'px';
-  els.btnDirect.style.top = (r.top + r.height / 2 - 18) + 'px';
-  els.btnDirect.classList.remove('hidden');
+// ---------- round13 C2：LP 徽章直攻入口 + 攻击路径箭头（状态派生，替代旧 fixed 按钮定位） ----------
+function directableNow() {
+  return !!(sel && g && g.winner === null && g.active === 0 && g.phase === 'battle'
+    && g.players[1].board.length === 0 && DUEL.canAttack(g, cardsById, 0, sel, null).ok);
 }
-function hideDirectBtn() { els.btnDirect.classList.add('hidden'); }
+let arrowTarget = null; // hover 中的攻击目标（.targetable 卡）；离开回落默认端点
+function drawAtkArrow() {
+  const svg = els.atkArrow;
+  if (!svg) return;
+  const card = sel && els.myBoard.querySelector(`[data-uid="${sel}"]`);
+  if (!card) { svg.classList.remove('show'); return; }
+  const host = svg.parentElement.getBoundingClientRect();
+  const a = card.getBoundingClientRect();
+  const ax = a.left + a.width / 2 - host.left, ay = a.top + a.height / 2 - host.top;
+  let tx, ty;
+  if (arrowTarget && document.contains(arrowTarget)) {
+    const t = arrowTarget.getBoundingClientRect();
+    tx = t.left + t.width / 2 - host.left; ty = t.top + t.height / 2 - host.top;
+  } else if (directableNow() && els.btnDirect) {
+    const t = els.btnDirect.getBoundingClientRect(); // 默认指向直攻徽章
+    tx = t.left + t.width / 2 - host.left; ty = t.top + t.height / 2 - host.top;
+  } else { tx = ax; ty = Math.max(6, ay - 60); } // 引导位：攻卡正上方
+  const mx = (ax + tx) / 2, my = (ay + ty) / 2 - Math.hypot(tx - ax, ty - ay) * .1;
+  const d = `M ${ax} ${ay} Q ${mx} ${my} ${tx} ${ty}`;
+  svg.querySelector('.glow').setAttribute('d', d);
+  svg.querySelector('.core').setAttribute('d', d);
+  svg.setAttribute('viewBox', `0 0 ${host.width} ${host.height}`);
+  svg.classList.add('show');
+}
+addEventListener('resize', drawAtkArrow);
 
 els.btnDirect.onclick = () => {
-  if (!sel) return;
+  if (busy || g.winner !== null) return;
+  if (!directableNow()) {
+    if (g && g.phase === 'battle' && g.active === 0 && !sel) toast('先点自己亮起的人物，再点这里直接攻击');
+    return;
+  }
   const r = act(0, { t: 'attack', uid: sel, target: null });
   if (!r.ok) return toast(r.reason);
-  sel = null; hideDirectBtn(); render();
+  sel = null; arrowTarget = null; render();
 };
+// 徽章 hover：箭头端点吸附
+els.btnDirect.addEventListener('pointerenter', () => { if (directableNow()) { arrowTarget = els.btnDirect; drawAtkArrow(); } });
+els.btnDirect.addEventListener('pointerleave', () => { arrowTarget = null; drawAtkArrow(); });
 
 // 战斗阶段是否还有可攻击动作（空战自动跳过的判据）
 function battleHasActions() {
@@ -974,14 +1016,14 @@ els.btnNext.onclick = () => {
       toast('本回合没有可攻击的人物，跳过战斗');
     }
   }
-  sel = null; hideDirectBtn(); render();
+  sel = null; arrowTarget = null; render();
 };
 // 「出牌 ›」：战斗阶段仅推进到主要2（战后盖伏/登场的次链接）
 $('btnToMain2').onclick = () => {
   if (busy || g.winner !== null || g.active !== 0 || g.phase !== 'battle') return;
   const r = act(0, { t: 'nextPhase' });
   if (!r.ok) return toast(r.reason);
-  sel = null; hideDirectBtn(); render();
+  sel = null; arrowTarget = null; render();
 };
 // 战报抽屉与 ☰ 菜单
 els.ticker.onclick = () => els.logDrawer.classList.add('open');
@@ -1072,8 +1114,13 @@ function aiTimerStep() {
   if (g.active !== 1) { stopAi(); busy = false; render(); return; }
   const step = g.tutorial ? tutorialAiStep(g, cardsById) : DUEL_AI.aiStep(g, cardsById, 1);
   if (!step) { stopAi(); busy = false; render(); return; }
-  const r = act(1, step);
-  if (!r.ok) { stopAi(); busy = false; render(); return; }
+  let r = act(1, step);
+  if (!r.ok) {
+    // round13 C2：决策被引擎拒（决策器与规则边缘漂移的局面）——nextPhase 兜底推进；
+    // 原实现 stopAi+render 会被 render 尾重拉→同动作再拒→死循环卡死 AI 回合（E2E E 场景实测 turn6 main1 停摆）
+    r = act(1, { t: 'nextPhase' });
+    if (!r.ok) { stopAi(); busy = false; render(); return; }
+  }
   render();
   // 开窗轮到玩家（AI 攻击宣言触发 W1）：立即解锁，不等下一 tick——否则窗口弹出后 620ms 内的玩家点击被 busy 吞（R1-P0#1 残留）
   if (g.active === 0 || g.winner !== null || (g.pending && g.pending.turnPtr === 0)) { stopAi(); busy = false; render(); return; }
