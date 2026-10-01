@@ -1,13 +1,13 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=d9e7f5a';
-import { DUEL_AI } from './duel/ai.js?v=d9e7f5a';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=d9e7f5a';
-import POOL_DATA from './data/duel-pool.js?v=d9e7f5a'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=d9e7f5a';
-import { FXM } from './fx-manager.js?v=d9e7f5a'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=d9e7f5a'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=45c4704';
+import { DUEL_AI } from './duel/ai.js?v=45c4704';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=45c4704';
+import POOL_DATA from './data/duel-pool.js?v=45c4704'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=45c4704';
+import { FXM } from './fx-manager.js?v=45c4704'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=45c4704'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -50,7 +50,7 @@ let tutFlags = {};       // 教学观察标志（directDone/turnPassed/responded
 // ---------- 对局中存档（Phase 5；key 与旧 DEMO optcg_save_v2/optcg_match_v2 天然隔离） ----------
 const LIVE_KEY = 'gld_live_game';
 function saveLive() {
-  if (!g || g.winner !== null || resuming || g.tutorial) return; // 教学局=演练，不落档
+  if (!g || g.winner !== null || resuming || g.tutorial || E2E) return; // 教学局=演练不落档；round14：E2E 局不落档（污染同浏览器上下文下次正常访问的恢复弹窗）
   try {
     // g 为纯数据（rng 函数被 JSON.stringify 自然丢弃；对局中无 rng 调用——洗牌仅在建局）
     localStorage.setItem(LIVE_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), pendingCampaign, g }));
@@ -73,6 +73,16 @@ function restoreLive(saved) {
   try {
     const gg = saved.g;
     gg.rng = DUEL.mkRng(gg.seed || 1); // 对局中不再调用（洗牌仅建局），仅防未来引用
+    // round14：旧档 board 无 slot 字段→归一化补齐（有效/冲突按 index+最小空位；写回持久化，
+    // 随后 render→saveLive 把 slot 落进 gld_live_game）
+    for (const p of gg.players) {
+      const taken = new Set();
+      p.board.forEach((u, i) => {
+        let s = Number.isInteger(u.slot) && u.slot >= 0 && u.slot < DUEL.BOARD_MAX && !taken.has(u.slot) ? u.slot : i;
+        if (taken.has(s)) { s = 0; while (taken.has(s)) s++; }
+        u.slot = s; taken.add(s);
+      });
+    }
     g = gg;
     pendingCampaign = saved.pendingCampaign || null;
     sel = null; logShown = 0; busy = false;
@@ -176,12 +186,13 @@ function act(pi, a) {
   const board0 = g.players[pi].board.map(u => u.uid);
   const pend0 = g.pending && g.pending.kind === 'attack' ? g.pending : null; // 攻击窗口关闭=战斗此刻结算（C7）
   // C6：离场溶解快照——applyAction 前全场单位位置/卡面。战斗破坏常发生在「关闭响应窗口的 act」
-  // （pass/respond），宣言时判定 destroyed 会漏；统一改「快照后离板→溶解」。仅玩家侧动作结算
-  // 才溶解（AI 普攻短链无溶解，M1）；攻方自身阵亡走 ghost 残影，消费时剔除
+  // （pass/respond），宣言时判定 destroyed 会漏；统一改「快照后离板→溶解」。round14：双方动作
+  // 的破坏都溶解（AI 杀玩家卡也碎裂，修「卡瞬间消失」观感；AI 链走 .sm 短版配短节奏）；
+  // 攻方自身阵亡走 ghost 残影，消费时剔除
   const leave0 = [];
   for (const p of g.players) for (const u of p.board) {
     const el = document.querySelector(`[data-uid="${u.uid}"]`);
-    if (el) leave0.push({ uid: u.uid, rect: el.getBoundingClientRect(), art: (cardsById[u.cardId] || {}).art || null });
+    if (el) leave0.push({ uid: u.uid, rect: el.getBoundingClientRect(), art: (cardsById[u.cardId] || {}).art || null, fast: pi === 1 });
   }
   // 发动卡快照（applyAction 前取——发动后卡即离场进连锁/墓场）
   let castD = null;
@@ -224,8 +235,8 @@ function act(pi, a) {
       if (!g.pending) fxAttack = snap;
     }
     if (castD) fxCast = { d: castD, t: Date.now() }; // 发动闪卡演出（伏笔/招式）
-    // C6：快照后离板 → 溶解队列（玩家侧动作；上限 3 防连锁刷屏）
-    if (pi === 0 && leave0.length) {
+    // C6：快照后离板 → 溶解队列（round14 双向：AI 破坏玩家卡也入队；上限 3 防连锁刷屏）
+    if (leave0.length) {
       const onBoard = new Set([...g.players[0].board, ...g.players[1].board].map(u => u.uid));
       for (const s0 of leave0) if (!onBoard.has(s0.uid)) fxDissolveQ.push(s0);
       if (fxDissolveQ.length > 3) fxDissolveQ = fxDissolveQ.slice(-3);
@@ -276,20 +287,23 @@ function spawnBurst(pt, small) {
   host.appendChild(b);
 }
 // 目标原位溶解（M1 650-1050ms）：卡图纵切三片 clip-path 飞散淡出——scale/fade 禁 blur（C3 红线）；
-// 片层从 fxPlay 起即静态可见（结算后 render 已移除目标 DOM，切片=连续性替身），650ms 起散开
-function spawnDissolve(rect, art) {
+// 片层从 fxPlay 起即静态可见（结算后 render 已移除目标 DOM，切片=连续性替身），650ms 起散开。
+// round14：fast=AI 链短版（.sm：300ms 起散 .34s——AI 击杀步间隔只 +50ms≈无感）；reduce-fx 早退
+// （CSS display:none 本就不可见，不 register 才不把 1100ms 喂进 lastDur 拖慢 AI 步进）
+function spawnDissolve(rect, art, fast) {
+  if (document.documentElement.classList.contains('reduce-fx')) return;
   const host = document.getElementById('table');
   if (!host || !rect || !art) return;
   const hr = host.getBoundingClientRect();
   const d = document.createElement('div');
-  d.className = 'fx-dissolve';
+  d.className = 'fx-dissolve' + (fast ? ' sm' : '');
   d.style.left = (rect.left - hr.left) + 'px';
   d.style.top = (rect.top - hr.top) + 'px';
   d.style.width = rect.width + 'px';
   d.style.height = rect.height + 'px';
   d.innerHTML = Array.from({ length: 3 }, (_, k) =>
     `<i style="--fx:${(k - 1) * 26}px; --fy:${18 + k * 14}px; --fr:${(k - 1) * 16}deg; --fd:${k * 70}ms"><img src="art/${art}.webp" alt=""></i>`).join('');
-  FXM.register({ el: d, dur: 1100, onDone: () => d.remove() });
+  FXM.register({ el: d, dur: fast ? 750 : 1100, onDone: () => d.remove() });
   host.appendChild(d);
 }
 // 全桌震动（玩家链专属，M1 至 1000ms；AI 短链不震）
@@ -349,17 +363,32 @@ function runDmgPop(e) {
     if (g.tutorial || document.documentElement.classList.contains('reduce-fx')) return res();
     const el = document.createElement('div');
     el.className = 'fx-dmg';
+    // round14：攻击伤害弹受击点（锚点随 entry 快照——直攻=LP 徽章中心/卡战=目标原位）；
+    // 命中锚后才起跳（玩家链 --t-hit=390ms / AI 链 280ms=AI 短链命中点）——「打中了才扣血」；
+    // 非攻击伤害（烧血等）无锚点，维持徽章处 0ms 弹出
+    let host = wrap;
+    if (e.pt) {
+      const tb = document.getElementById('table');
+      if (tb) {
+        const hr = tb.getBoundingClientRect();
+        el.style.left = (e.pt.x - hr.left) + 'px';
+        el.style.top = Math.max(6, e.pt.y - hr.top - 46) + 'px'; // 受击点上方（数字中心 ≈ 锚点上 46px）
+        host = tb;
+      }
+    }
+    if (e.pt) el.style.setProperty('--dmg-d', e.byAi ? '280ms' : 'var(--t-hit)');
     el.innerHTML = `<b>-${e.delta}</b>${e.why ? `<small>${e.why}</small>` : ''}`;
     const end = () => { el.remove(); res(); };
     el.addEventListener('animationend', (ev) => { if (ev.target === el) end(); }, { once: true });
-    setTimeout(end, 900); // 兜底（后台标签页 animationend 不触发）
-    FXM.register({ id: 'dmgpop' + e.side, el, dur: 700, onDone: end }); // 点击快进→立即收场
-    wrap.appendChild(el);
+    setTimeout(end, 1500); // 兜底（后台标签页 animationend 不触发；含命中延迟 390ms+0.7s）
+    FXM.register({ id: 'dmgpop' + e.side, el, dur: 700, onDone: end }); // 点击快进→立即收场（dur 是节奏注记，不含 CSS delay——防摊慢 AI 步进）
+    host.appendChild(el);
   });
 }
 // render 后注入动效类：攻方冲撞（我打敌=向上/敌打我=向下）、目标受击红闪、LP 数字跳动（450ms 窗口，过窗自清）
 function fxPlay() {
   const now = Date.now();
+  let atkPt = null, atkByAi = false; // round14：本帧攻击链的受击锚点（供 fxLpQueue 数字弹出定位；直攻=LP 徽章中心）
   if (fxAttack) {
     if (now - fxAttack.t < 450) {
       const byAi = fxAttack.side === 1;
@@ -384,6 +413,7 @@ function fxPlay() {
       const tgtEl = fxAttack.target ? document.querySelector(`[data-uid="${fxAttack.target}"]`) : null;
       const tgtC = fxCenter(tgtEl) || (fxAttack.tgtRect ? rectCenter(fxAttack.tgtRect) : null)
         || fxCenter(byAi ? els.myLpNum : els.foeLpNum); // 直攻=LP 区
+      atkPt = tgtC; atkByAi = byAi; // 交战锚点留给本帧 fxLpQueue 聚合（数字弹受击点，round14）
       const from = atkEl || document.querySelector('.fx-ghost') || (byAi ? els.foeBoard : els.myBoard);
       SND.play('attack');                                             // 低频冲刺（宣言即起）
       SND.play('clash', byAi ? 280 : 390);                            // 命中噪声：AI lunge 58%≈278 / 玩家 --t-hit=390
@@ -424,7 +454,7 @@ function fxPlay() {
     const first = { 0: null, 1: null }, order = [];
     for (const e of q) {
       const a = first[e.side];
-      if (!a) { first[e.side] = { ...e, n: 1 }; order.push(first[e.side]); }
+      if (!a) { first[e.side] = { ...e, n: 1, pt: atkPt, byAi: atkByAi }; order.push(first[e.side]); } // round14：锚点随 entry 快照（lpChain 串行链播放时 fxAttack 可能已出窗，不能 runDmgPop 里现读）
       else { a.to = e.to; a.delta += e.delta; a.n++; if (a.why !== e.why) a.why = ''; }
     }
     for (const o of order) if (o.n > 1 && !o.why) o.why = `连锁合计 · ${o.n} 笔`;
@@ -433,7 +463,7 @@ function fxPlay() {
   if (fxDissolveQ.length) { // 离场溶解（攻方自身阵亡走 ghost，剔除）
     const q = fxDissolveQ;
     fxDissolveQ = [];
-    for (const s0 of q) if (!fxAttack || s0.uid !== fxAttack.uid) { spawnDissolve(s0.rect, s0.art); SND.play('ko', 650); }
+    for (const s0 of q) if (!fxAttack || s0.uid !== fxAttack.uid) { spawnDissolve(s0.rect, s0.art, s0.fast); SND.play('ko', s0.fast ? 300 : 650); }
   }
   if (fxSummon) {
     if (now - fxSummon.t < 450) {
@@ -527,9 +557,9 @@ function render() {
   els.myDeckN.textContent = P.deck.length; els.myGraveN.textContent = P.grave.length;
 
   els.foeHand.innerHTML = E.hand.map(() => '<div class="cardback"></div>').join('');
-  // round3：5 格人物区——已登场卡 + 空槽并存（空位可见=场上格局一目了然）
-  els.foeBoard.innerHTML = E.board.map(u => unitCard(u, false)).join('') + emptySlots(E.board.length);
-  els.myBoard.innerHTML = P.board.map(u => unitCard(u, true)).join('') + emptySlots(P.board.length);
+  // round3：5 格人物区——已登场卡 + 空槽并存；round14：按 slot 落格（卡死格后其余卡原位不动，空槽留在原位）
+  els.foeBoard.innerHTML = boardRow(E.board, false);
+  els.myBoard.innerHTML = boardRow(P.board, true);
   els.myHand.innerHTML = P.hand.map(h => handCard(h)).join('');
   els.foeSpells.innerHTML = E.spells.map(() => '<div class="spellback-sm" title="对方盖伏的卡">伏</div>').join('')
     + Array.from({ length: Math.max(0, 3 - E.spells.length) }, () => '<div class="slot-sm"></div>').join('');
@@ -555,7 +585,18 @@ function render() {
   saveLive(); // 每次状态渲染后落档（结束局/恢复流程自动跳过）
 }
 
-function emptySlots(n) { return Array.from({ length: DUEL.BOARD_MAX - n }, () => '<div class="slot"></div>').join(''); }
+// round14：按 slot 渲染 5 格（纯函数不改 unit 不落档）——unit.slot 无效/冲突时最小空位容错
+// （旧档兜底走 restoreLive 归一化，此处仅兜测试注入/异常态）
+function boardRow(board, mine) {
+  const cells = new Array(DUEL.BOARD_MAX).fill(null);
+  const taken = new Set();
+  for (const u of board) {
+    let s = Number.isInteger(u.slot) && u.slot >= 0 && u.slot < DUEL.BOARD_MAX && !taken.has(u.slot) ? u.slot : -1;
+    if (s < 0) { s = 0; while (taken.has(s)) s++; }
+    taken.add(s); cells[s] = u;
+  }
+  return cells.map(u => u ? unitCard(u, mine) : '<div class="slot"></div>').join('');
+}
 
 function unitCard(u, mine) {
   const d = cardsById[u.cardId];
@@ -609,7 +650,7 @@ function handCard(h) {
       <div class="info"><div class="nm">${d.name}</div><div class="fx">${shortFx(d)}</div></div>
     </div>`;
   }
-  const can = myPhaseMain() && g.players[0].summoned === 0 && (d.level <= 4 ? g.players[0].board.length < 3 : true);
+  const can = myPhaseMain() && g.players[0].summoned === 0 && (d.level <= 4 ? g.players[0].board.length < DUEL.BOARD_MAX : true); // round14：3 格时代残留改齐（与 onHandClick 的 BOARD_MAX 校验一致，修「点不亮却能出」）
   // round9 R9-A：Lv 并入攻胶囊（数值包 <b>——E2E bot 读 .stats .atk b，Lv 前缀不污染取数）
   return `<div class="card hand-card ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}${d.sub ? ` · ${d.sub}` : ''}">
     <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
@@ -1067,6 +1108,8 @@ function showMenu() {
 els.btnRestart.onclick = () => { if (confirm('重新开局？当前对局作废')) start(); };
 els.btnAgain.onclick = () => start();
 els.btnHelp.onclick = showRules;
+// round14：点弹层遮罩空白处关闭（四处弹层统一受益；g 未初始化的存档恢复弹窗除外——关闭会停在无局态，必须显式二选一）
+els.modal.onclick = (ev) => { if (ev.target === els.modal && g) els.modal.classList.add('hidden'); };
 
 function showModal(html) {
   els.modalBox.innerHTML = html + '<button class="cancel">关闭</button>';
@@ -1150,6 +1193,8 @@ function showEnd() {
   endShown = true;
   stopAi();
   clearLive(); // 对局结束，存档使命完成
+  const oldRw = document.getElementById('endRewards');
+  if (oldRw) oldRw.remove(); // round14 R4：奖励区每局重建（防上一局残留）
   const w = g.winner;
   SND.play(w === 0 ? 'win' : 'lose'); // C7：胜负音（平局走 lose 低音）
   els.endTitle.textContent = w === -1 ? '平局' : w === 0 ? '胜 利' : '败 北';
@@ -1179,6 +1224,22 @@ function showEnd() {
       if (!s.decks) s.decks = {};
       localStorage.setItem('gld_campaign_v1', JSON.stringify(s));
       showEndStars(stars);
+      // round14 R4：通关奖励展示区（获得感——星级/新卡/解锁/进度明明白白，不再埋进 end-sub 小字）
+      const items = [];
+      items.push(`<div class="er-item"><span class="er-star">${'★'.repeat(stars)}${'<i>☆</i>'.repeat(3 - stars)}</span><b>${stars === 3 ? '完美通关' : `${stars} 星评价`}</b></div>`);
+      if (firstClear && pendingCampaign.unlockCard && cardsById[pendingCampaign.unlockCard]) {
+        const ud = cardsById[pendingCampaign.unlockCard];
+        const statLine = ud.atk != null
+          ? `<div class="stats"><span class="atk"><i class="lbl">Lv${ud.level} </i><b>${ud.atk}</b></span><span class="def"><i class="lbl">守 </i><b>${ud.def}</b></span></div>`
+          : `<div class="fx">${ud.type === 'move' ? '招式' : '伏笔'}卡</div>`;
+        items.push(`<div class="er-item"><div class="card" style="--card-w:56px;--card-h:79px"><img class="art" src="art/${ud.art}.webp" alt="${ud.name}"><div class="info"><div class="nm">${ud.name}</div>${statLine}</div></div><b>🎁 新卡入池</b><span>「${ud.name}」已加入牌组工坊卡池</span></div>`);
+      }
+      if (firstClear) items.push(`<div class="er-item"><span class="er-big">🔓</span><b>下一关解锁</b><span>征程 ${s.cleared.length} / 50 关</span></div>`);
+      else if (stars > oldStars) items.push(`<div class="er-item"><span class="er-big">⭐</span><b>星级提升</b><span>${oldStars}★ → ${stars}★</span></div>`);
+      const rw = document.createElement('div');
+      rw.id = 'endRewards'; rw.className = 'end-rewards';
+      rw.innerHTML = `<div class="er-title">— 通关奖励 —</div><div class="er-row">${items.join('')}</div>`;
+      document.getElementById('endStars').insertAdjacentElement('afterend', rw); // 星级行之下、endSub 之上
       if (firstClear) {
         const bits = [];
         if (pendingCampaign.unlockCard) bits.push(`新卡「${cardsById[pendingCampaign.unlockCard].name}」入池`);
@@ -1199,9 +1260,10 @@ function showEnd() {
   }
   els.endSub.textContent = sub;
   if (!(pendingCampaign && pendingCampaign.mode !== 'vs' && w === 0)) hideEndStars(); // 非闯关胜利局不显示星级
-  // round6 R8：结算遮罩延迟 800ms——末笔伤害数字先弹完（致死一击「-2500」被遮罩立即盖掉，
-  // 实测+VLM 双确认）；期间输入已由 winner!==null 拦截，安全
-  setTimeout(() => els.endOverlay.classList.remove('hidden'), 800);
+  // round6 R8：结算遮罩延迟——末笔伤害数字先弹完（致死一击「-2500」被遮罩立即盖掉，
+  // 实测+VLM 双确认）；期间输入已由 winner!==null 拦截，安全。
+  // round14：数字改命中点延迟起跳（390ms+0.7s），遮罩 800→1200 防盖尾巴（R8 修复不回退）
+  setTimeout(() => els.endOverlay.classList.remove('hidden'), 1200);
 }
 
 // ---------- 动效开关（Phase 5 任务6）：手动优先（localStorage），系统 prefers-reduced-motion 自动跟随 ----------
