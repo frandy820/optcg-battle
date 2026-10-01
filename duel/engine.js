@@ -217,7 +217,7 @@ function applyAction(g, cardsById, pi, action) {
 function dispatch(g, cardsById, pi, a) {
   switch (a.t) {
     case 'summon': return doSummon(g, cardsById, pi, a);
-    case 'setPos': return doSetPos(g, pi, a);
+    case 'setPos': return doSetPos(g, cardsById, pi, a);
     case 'attack': return doAttack(g, cardsById, pi, a);
     case 'bossAttack': return doBossAttack(g, cardsById, pi, a);
     case 'nextPhase': return doNextPhase(g, cardsById);
@@ -247,7 +247,12 @@ function doSummon(g, cardsById, pi, a) {
   }
   if (names.length) log(g, `${p.name} 解放了 ${names.join('、')}`);
   p.hand.splice(idx, 1);
-  p.board.push({ uid: 'u' + (++g.actionSeq), cardId: h.cardId, pos: a.pos,
+  // round14：格位固定——slot=0..BOARD_MAX-1 最小未占用（解放 splice 后计算，腾出的格自然复用）；
+  // 死亡/解放不回收 slot（卡死格后其余卡原位不动）；无 slot 的注入单位（测试）按数组序兜底
+  const used = new Set(p.board.map((u, i) =>
+    Number.isInteger(u.slot) && u.slot >= 0 && u.slot < BOARD_MAX ? u.slot : i));
+  let slotIdx = 0; while (used.has(slotIdx)) slotIdx++;
+  p.board.push({ uid: 'u' + (++g.actionSeq), cardId: h.cardId, slot: slotIdx, pos: a.pos,
     attacked: false, summonedTurn: g.turn, posChanged: false, buffs: [], equips: [] });
   p.summoned++;
   log(g, `${p.name} 通常登场「${d.name}」（Lv${d.level} ATK${d.atk}/${a.pos === 'atk' ? '攻' : '守'}表示）`);
@@ -255,13 +260,13 @@ function doSummon(g, cardsById, pi, a) {
   return { ok: true };
 }
 
-function doSetPos(g, pi, a) {
+function doSetPos(g, cardsById, pi, a) {
   const c = canSetPos(g, pi, a.uid, a.pos);
   if (!c.ok) return c;
   const p = g.players[pi];
   const u = p.board.find(x => x.uid === a.uid);
   u.pos = a.pos; u.posChanged = true;
-  log(g, `${p.name} 将「${u.cardId}」切换为${a.pos === 'atk' ? '攻击' : '守备'}表示`);
+  log(g, `${p.name} 将「${cardsById[u.cardId].name}」切换为${a.pos === 'atk' ? '攻击' : '守备'}表示`); // round14：裸 cardId→卡名（与其他日志一致）
   return { ok: true };
 }
 
