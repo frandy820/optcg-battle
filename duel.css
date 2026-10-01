@@ -216,6 +216,21 @@ html.reduce-fx .atk-arrow .core, html.lite-fx .atk-arrow .core { animation: none
 .end-stars .off { color: rgba(120, 130, 155, .45); }
 .end-stars.hidden { display: none; }
 
+/* round14 R4：通关奖励展示区（闯关胜利局；星级/新卡/解锁/进度——获得感落地） */
+.end-rewards { margin: 10px 0 4px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.end-rewards .er-title { font-size: 13px; font-weight: 800; color: var(--gold-bright); letter-spacing: 4px; text-shadow: 0 0 10px rgba(245,215,110,.4); }
+.end-rewards .er-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: min(92vw, 560px); }
+.end-rewards .er-item { background: linear-gradient(180deg, #13234a, #0b1631); border: 1px solid var(--gold-dim);
+  border-radius: 10px; padding: 9px 12px 7px; min-width: 92px; max-width: 150px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 11px; color: #b9c9e6; box-shadow: 0 3px 12px rgba(0,0,0,.45); }
+.end-rewards .er-item b { color: var(--gold-bright); font-size: 12.5px; font-weight: 800; }
+.end-rewards .er-item > span:not(.er-star):not(.er-big) { text-align: center; line-height: 1.45; }
+.end-rewards .er-star { font-size: 21px; color: #ffd76a; letter-spacing: 3px; text-shadow: 0 0 12px rgba(255,215,106,.7); }
+.end-rewards .er-star i { font-style: normal; color: rgba(120, 130, 155, .5); text-shadow: none; }
+.end-rewards .er-big { font-size: 24px; line-height: 1; margin: 2px 0; }
+.end-rewards .card { margin: 2px 0; box-shadow: 0 3px 10px rgba(0,0,0,.55), 0 0 16px rgba(245,215,110,.28); }
+
 #hint { text-align: center; font-size: 13px; color: #8fa5cc; min-height: 20px; }
 #hint.warn { color: var(--gold-bright); }
 
@@ -494,6 +509,8 @@ html.reduce-fx .fx-ghost { display: none; }
 @keyframes dissolveOut {
   0% { opacity: 1; transform: none; }
   100% { opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(.7); } }
+/* round14：AI 链短版（AI 短链命中锚 ~300ms；全长 650ms 会拖 AI 击杀步间隔 +400ms） */
+.fx-dissolve.sm i { animation-delay: calc(300ms + var(--fd)); animation-duration: .34s; }
 html.reduce-fx .fx-dissolve { display: none; }
 @media (prefers-reduced-motion: reduce) { .fx-dissolve { display: none; } }
 
@@ -552,7 +569,7 @@ html.reduce-fx .fx-summon { animation: none; }
    同侧串行依次弹出（0.7s/枚），不再吞第二笔（旧 fx-lpfloat 同侧一枚之病） */
 .fx-dmg { position: absolute; left: 50%; transform: translateX(-50%); z-index: 30; pointer-events: none;
   display: flex; flex-direction: column; align-items: center; line-height: 1; white-space: nowrap;
-  animation: dmgPop .7s cubic-bezier(.2,.85,.3,1) forwards; }
+  animation: dmgPop .7s var(--dmg-d, 0ms) cubic-bezier(.2,.85,.3,1) forwards; } /* round14：--dmg-d=命中锚延迟（攻击伤害 390/280ms 后起跳；非攻击 0ms） */
 .fx-dmg b { font-size: clamp(34px, 7vw, 56px); font-weight: 900; color: #ff5252;
   font-variant-numeric: tabular-nums; letter-spacing: 1px;
   text-shadow: 0 0 18px rgba(229,72,77,.75), 0 0 2px #fff, 0 3px 8px rgba(0,0,0,.7); }
