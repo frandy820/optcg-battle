@@ -12,7 +12,9 @@
 /* 阵营九宫格 */
 .faction-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .fc { border: 2px solid #2a4a7e; border-radius: 12px; background: #0e1c38; padding: 12px 12px 10px; cursor: pointer;
-  display: flex; flex-direction: column; gap: 4px; transition: transform .15s, border-color .15s, box-shadow .15s; text-align: left; }
+  display: flex; flex-direction: column; gap: 4px; transition: transform .15s, border-color .15s, box-shadow .15s; text-align: left;
+  /* round18 L4 阵营浮雕：内嵌冷蓝线+顶部渐光 */
+  box-shadow: inset 0 0 0 1px rgba(90,130,200,.16), inset 0 8px 14px -8px rgba(150,190,255,.16); }
 .fc:hover { transform: translateY(-3px); border-color: var(--gold); }
 .fc.sel { border-color: var(--gold-bright); box-shadow: 0 0 0 2px var(--gold-bright), 0 6px 20px rgba(245,215,110,.3); }
 .fc b { color: var(--sea-cream); font-size: 15px; }
