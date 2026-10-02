@@ -1,12 +1,16 @@
 // 伟大航路闯关（round11 岛屿大地图）+ 牌组工坊 UI
 // 进度/牌组存 localStorage；开战写 gld_duel_pending → duel.html 开局；胜利由 duel-ui 回写通关/星级。
 'use strict';
-import DATA from './data/duel-cards.js?v=f804c93';
-import POOL_DATA from './data/duel-pool.js?v=f804c93';
-import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=f804c93';
+import DATA from './data/duel-cards.js?v=eb73d85';
+import POOL_DATA from './data/duel-pool.js?v=eb73d85';
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=eb73d85';
 
 const cardsById = {};
-for (const c of DATA.cards) cardsById[c.id] = c;
+// round18 L3：DUE 旧线 32 张无 rarity——运行时按等级派生（与 duel-ui 同映射，改时两处同步）
+const deriveRarity = c => c.type === 'char'
+  ? (c.level >= 7 ? 'SSS' : c.level >= 6 ? 'SS' : c.level >= 5 ? 'S' : c.level >= 3 ? 'B' : 'A')
+  : 'B';
+for (const c of DATA.cards) cardsById[c.id] = c.rarity ? c : { ...c, rarity: deriveRarity(c) };
 for (const c of POOL_DATA.cards) cardsById[c.id] = c; // 合并池（DUE 东海 + GLD 千卡池）
 const $ = id => document.getElementById(id);
 const els = {
@@ -311,7 +315,7 @@ function renderDeck() {
     const stats = c.type === 'char'
       ? `<div class="stats"><span class="atk">${c.atk}</span><span style="color:#6b5a33">Lv${c.level}</span><span class="def">${c.def}</span></div>`
       : `<div class="stats"><span style="font-size:8.5px;color:#4a3d20;padding:0 2px 3px">${(c.effect.ops || []).length ? shortFx(c) : ''}</span></div>`;
-    return `<div class="pool-card ${c.type !== 'char' ? 't-' + c.type : ''}" data-id="${id}" title="${c.desc}">
+    return `<div class="pool-card ${c.type !== 'char' ? 't-' + c.type : ''} ${c.rarity ? 'r-' + c.rarity : ''}" data-id="${id}" title="${c.desc}">
       <img class="part" src="art/${c.art}.webp" alt="${c.name}" loading="lazy">
       ${c.type !== 'char' ? `<span class="tbadge">${c.type === 'move' ? '招' : '伏'}</span>` : ''}
       ${!baseSet.has(id) ? '<span class="newchip">NEW</span>' : ''}
