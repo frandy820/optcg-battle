@@ -1,13 +1,13 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=45c4704';
-import { DUEL_AI } from './duel/ai.js?v=45c4704';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=45c4704';
-import POOL_DATA from './data/duel-pool.js?v=45c4704'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=45c4704';
-import { FXM } from './fx-manager.js?v=45c4704'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=45c4704'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=06301cd';
+import { DUEL_AI } from './duel/ai.js?v=06301cd';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=06301cd';
+import POOL_DATA from './data/duel-pool.js?v=06301cd'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=06301cd';
+import { FXM } from './fx-manager.js?v=06301cd'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=06301cd'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -306,6 +306,22 @@ function spawnDissolve(rect, art, fast) {
   FXM.register({ el: d, dur: fast ? 750 : 1100, onDone: () => d.remove() });
   host.appendChild(d);
 }
+// round15 A：命中斩光——落点斜切白金弧光（与命中锚同拍起：玩家链 --t-hit / AI 链 300ms）；
+// reduce-fx/lite-fx 早退（CSS display:none 本就不可见，不 register 才不把 dur 喂进 lastDur 拖慢 AI 步进）
+function spawnSlash(pt, small) {
+  if (document.documentElement.classList.contains('reduce-fx')
+    || document.documentElement.classList.contains('lite-fx')) return;
+  const host = document.getElementById('table');
+  if (!host || !pt) return;
+  const hr = host.getBoundingClientRect();
+  const s = document.createElement('div');
+  s.className = 'fx-slash' + (small ? ' sm' : '');
+  s.style.left = (pt.x - hr.left) + 'px';
+  s.style.top = (pt.y - hr.top) + 'px';
+  s.innerHTML = '<i></i>';
+  FXM.register({ el: s, dur: small ? 680 : 890, onDone: () => s.remove() });
+  host.appendChild(s);
+}
 // 全桌震动（玩家链专属，M1 至 1000ms；AI 短链不震）
 function fxQuake() {
   const tb = document.getElementById('table');
@@ -420,6 +436,7 @@ function fxPlay() {
       if (!byAi) flySword(from, tgtC);
       if (tgtEl) tgtEl.classList.add('fx-hit');
       spawnBurst(tgtC, byAi);
+      spawnSlash(tgtC, byAi); // round15 A：命中斩光（落点弧光，与爆裂同拍）
       if (!byAi) fxQuake();
       FXM.register({ id: 'atkchain', dur: byAi ? 700 : 1200 }); // 纯节奏登记：AI 步进间隔感知（无视觉元素）
     } else fxAttack = null;
@@ -1012,9 +1029,17 @@ function drawAtkArrow() {
   } else { tx = ax; ty = Math.max(6, ay - 60); } // 引导位：攻卡正上方
   const mx = (ax + tx) / 2, my = (ay + ty) / 2 - Math.hypot(tx - ax, ty - ay) * .1;
   const d = `M ${ax} ${ay} Q ${mx} ${my} ${tx} ${ty}`;
-  svg.querySelector('.glow').setAttribute('d', d);
-  svg.querySelector('.core').setAttribute('d', d);
+  // round15 A：四层光刃（宽晕/渐变中光/亮芯/流动脉冲）+ 渐变沿攻击者→目标 + 锁定环落位
+  for (const k of ['.halo', '.glow', '.core', '.pulse']) svg.querySelector(k).setAttribute('d', d);
+  const grad = svg.querySelector('#bladeGrad');
+  if (grad) { grad.setAttribute('x1', ax); grad.setAttribute('y1', ay); grad.setAttribute('x2', tx); grad.setAttribute('y2', ty); }
+  const lock = svg.querySelector('.lock');
+  if (lock) lock.setAttribute('transform', `translate(${tx} ${ty})`);
   svg.setAttribute('viewBox', `0 0 ${host.width} ${host.height}`);
+  if (!svg.classList.contains('show')) { // 亮起瞬间重播锁定环两拍脉冲（元素常驻不重建，动画不会自触发）
+    const sp = svg.querySelector('.lock-spin');
+    if (sp) { sp.style.animation = 'none'; sp.getBoundingClientRect(); sp.style.animation = ''; }
+  }
   svg.classList.add('show');
 }
 addEventListener('resize', drawAtkArrow);
@@ -1174,6 +1199,7 @@ function stopAi() { if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; } }
 // ---------- 结束 ----------
 let endShown = false; // 遮罩只弹一次（败北后偶发 render 重入）
 // round11 星级行（闯关胜利局显示；3=满血 2=LP≥2000 1=通关）
+// round15 B：逐颗 span 带 --i 序号——stagger 弹出动画由 .end-box.reveal 门控（遮罩显示时才起播）
 function showEndStars(n) {
   let el = document.getElementById('endStars');
   if (!el) {
@@ -1181,12 +1207,33 @@ function showEndStars(n) {
     el.id = 'endStars'; el.className = 'end-stars';
     els.endTitle.insertAdjacentElement('afterend', el);
   }
-  el.innerHTML = '<span class="on">★</span>'.repeat(n) + '<span class="off">★</span>'.repeat(3 - n);
+  el.innerHTML = Array.from({ length: 3 }, (_, i) => `<span class="${i < n ? 'on' : 'off'}" style="--i:${i}">★</span>`).join('');
   el.classList.remove('hidden');
 }
 function hideEndStars() {
   const el = document.getElementById('endStars');
   if (el) el.classList.add('hidden');
+}
+// round15 B：新卡详情弹层（结算遮罩内盖层——点新卡弹完整卡面+数值+描述，点任意处收起）
+function showRewardDetail(d) {
+  if (!d) return;
+  let dt = document.getElementById('erDetail');
+  if (!dt) {
+    dt = document.createElement('div');
+    dt.id = 'erDetail'; dt.className = 'er-detail';
+    els.endOverlay.appendChild(dt);
+    dt.onclick = () => dt.classList.add('hidden'); // 点任意处收起
+  }
+  dt.innerHTML = `<button class="erd-close" title="关闭">✕</button>
+    <div class="card erd-card"><img class="art" src="art/${d.art}.webp" alt="${d.name}"><div class="info">
+      <div class="nm">${d.name}</div>${d.sub ? `<div class="sub">${d.sub}</div>` : ''}
+      ${d.atk != null
+        ? `<div class="stats"><span class="atk"><i class="lbl">Lv${d.level} 攻 </i><b>${d.atk}</b></span><span class="def"><i class="lbl">守 </i><b>${d.def}</b></span></div>`
+        : `<div class="fx">${d.type === 'move' ? '招式' : '伏笔'}卡</div>`}
+    </div></div>
+    <div class="erd-meta">${d.role ? d.role + '<br>' : ''}${d.desc || ''}</div>
+    <div class="erd-note">✓ 已加入牌组工坊卡池</div>`;
+  dt.classList.remove('hidden');
 }
 function showEnd() {
   if (endShown) return;
@@ -1195,6 +1242,8 @@ function showEnd() {
   clearLive(); // 对局结束，存档使命完成
   const oldRw = document.getElementById('endRewards');
   if (oldRw) oldRw.remove(); // round14 R4：奖励区每局重建（防上一局残留）
+  const oldDt = document.getElementById('erDetail');
+  if (oldDt) oldDt.remove(); // round15 B：详情层同款每局重建
   const w = g.winner;
   SND.play(w === 0 ? 'win' : 'lose'); // C7：胜负音（平局走 lose 低音）
   els.endTitle.textContent = w === -1 ? '平局' : w === 0 ? '胜 利' : '败 北';
@@ -1224,29 +1273,27 @@ function showEnd() {
       if (!s.decks) s.decks = {};
       localStorage.setItem('gld_campaign_v1', JSON.stringify(s));
       showEndStars(stars);
-      // round14 R4：通关奖励展示区（获得感——星级/新卡/解锁/进度明明白白，不再埋进 end-sub 小字）
+      // round15 B 奖励区重排：中间大星已示星级（去星评卡防重复）；新卡纯卡面零数值
+      // （数值/描述入点击详情弹层）；item 带 --i 供 reveal 门控 stagger；无内容局不显示奖励区
       const items = [];
-      items.push(`<div class="er-item"><span class="er-star">${'★'.repeat(stars)}${'<i>☆</i>'.repeat(3 - stars)}</span><b>${stars === 3 ? '完美通关' : `${stars} 星评价`}</b></div>`);
+      let ii = 0;
       if (firstClear && pendingCampaign.unlockCard && cardsById[pendingCampaign.unlockCard]) {
         const ud = cardsById[pendingCampaign.unlockCard];
-        const statLine = ud.atk != null
-          ? `<div class="stats"><span class="atk"><i class="lbl">Lv${ud.level} </i><b>${ud.atk}</b></span><span class="def"><i class="lbl">守 </i><b>${ud.def}</b></span></div>`
-          : `<div class="fx">${ud.type === 'move' ? '招式' : '伏笔'}卡</div>`;
-        items.push(`<div class="er-item"><div class="card" style="--card-w:56px;--card-h:79px"><img class="art" src="art/${ud.art}.webp" alt="${ud.name}"><div class="info"><div class="nm">${ud.name}</div>${statLine}</div></div><b>🎁 新卡入池</b><span>「${ud.name}」已加入牌组工坊卡池</span></div>`);
+        items.push(`<div class="er-item er-card" style="--i:${ii++}" data-card="${ud.id}" role="button" tabindex="0" title="点击查看卡片详情">
+          <div class="card reward-card"><img class="art" src="art/${ud.art}.webp" alt="${ud.name}"><div class="info"><div class="nm">${ud.name}</div></div></div>
+          <b>🎁 新卡入池</b><span>点击卡片查看详情</span></div>`);
       }
-      if (firstClear) items.push(`<div class="er-item"><span class="er-big">🔓</span><b>下一关解锁</b><span>征程 ${s.cleared.length} / 50 关</span></div>`);
-      else if (stars > oldStars) items.push(`<div class="er-item"><span class="er-big">⭐</span><b>星级提升</b><span>${oldStars}★ → ${stars}★</span></div>`);
-      const rw = document.createElement('div');
-      rw.id = 'endRewards'; rw.className = 'end-rewards';
-      rw.innerHTML = `<div class="er-title">— 通关奖励 —</div><div class="er-row">${items.join('')}</div>`;
-      document.getElementById('endStars').insertAdjacentElement('afterend', rw); // 星级行之下、endSub 之上
-      if (firstClear) {
-        const bits = [];
-        if (pendingCampaign.unlockCard) bits.push(`新卡「${cardsById[pendingCampaign.unlockCard].name}」入池`);
-        sub += ' · 通关！' + (bits.length ? bits.join('，') : '下一关解锁');
-      } else {
-        sub += stars > oldStars ? ` · 星级提升 ${'★'.repeat(stars)}！` : ` · 再次通关（${'★'.repeat(stars)}）`;
+      if (firstClear) items.push(`<div class="er-item" style="--i:${ii++}"><span class="er-big">🔓</span><b>下一关解锁</b><span>征程 ${s.cleared.length} / 50 关</span></div>`);
+      else if (stars > oldStars) items.push(`<div class="er-item" style="--i:${ii++}"><span class="er-big">⭐</span><b>星级提升</b><span>${oldStars}★ → ${stars}★</span></div>`);
+      if (items.length) {
+        const rw = document.createElement('div');
+        rw.id = 'endRewards'; rw.className = 'end-rewards';
+        rw.innerHTML = `<div class="er-title">— 通关奖励 —</div><div class="er-row">${items.join('')}</div>`;
+        document.getElementById('endStars').insertAdjacentElement('afterend', rw); // 星级行之下、endSub 之上
+        const cardItem = rw.querySelector('.er-card'); // round15 B：点新卡弹完整详情（数值/描述）
+        if (cardItem) cardItem.onclick = () => showRewardDetail(cardsById[cardItem.dataset.card]);
       }
+      sub += firstClear ? ' · 通关！' : stars > oldStars ? ` · 星级提升 ${'★'.repeat(stars)}！` : ` · 再次通关（${'★'.repeat(stars)}）`;
     } else if (w === 1) {
       sub += ' · 重整旗鼓，回闯关页再战';
     }
@@ -1263,7 +1310,13 @@ function showEnd() {
   // round6 R8：结算遮罩延迟——末笔伤害数字先弹完（致死一击「-2500」被遮罩立即盖掉，
   // 实测+VLM 双确认）；期间输入已由 winner!==null 拦截，安全。
   // round14：数字改命中点延迟起跳（390ms+0.7s），遮罩 800→1200 防盖尾巴（R8 修复不回退）
-  setTimeout(() => els.endOverlay.classList.remove('hidden'), 1200);
+  // round15 B：显示瞬间挂 .reveal——星星逐颗弹/奖励卡 stagger/标题弹入由此起播
+  //（否则动画在遮罩可见前已播完）
+  setTimeout(() => {
+    els.endOverlay.classList.remove('hidden');
+    const box = els.endOverlay.querySelector('.end-box');
+    if (box) { box.classList.remove('reveal'); box.getBoundingClientRect(); box.classList.add('reveal'); }
+  }, 1200);
 }
 
 // ---------- 动效开关（Phase 5 任务6）：手动优先（localStorage），系统 prefers-reduced-motion 自动跟随 ----------
