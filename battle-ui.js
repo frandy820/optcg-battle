@@ -2,8 +2,8 @@
 // 数据：DUEL_CARDS_DATA（32 张东海基础）+ duel-pool（339 张 GLD 转译）→ 全池 371
 // 对局交接：gld_duel_pending {mode:'vs', myDeck, foeDeck, aiProfile, foeName,...} → duel.html 一次性消费
 'use strict';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=f804c93';
-import POOL from './data/duel-pool.js?v=f804c93';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=eb73d85';
+import POOL from './data/duel-pool.js?v=eb73d85';
 
 const FACTION_CN = {
   navy: '海军', warlord: '王下七武海', strawhat: '草帽一伙', beast: '百兽海贼团',
@@ -149,7 +149,7 @@ function renderWorkshop() {
   pool.sort((a, b) => (b.atk || 0) - (a.atk || 0));
   $('poolGrid').innerHTML = pool.slice(0, state.wsLimit).map(c => {
     const n = cnt[c.id] || 0;
-    return `<div class="pc ${n ? 'picked' : ''} ${n >= 2 ? 'maxed' : ''}" data-id="${c.id}" title="${c.name} ${c.desc || ''}">
+    return `<div class="pc ${n ? 'picked' : ''} ${n >= 2 ? 'maxed' : ''} ${c.rarity ? 'r-' + c.rarity : ''}" data-id="${c.id}" title="${c.name} ${c.desc || ''}">
       ${n ? `<span class="pickn">${n}</span>` : ''}
       <img src="art/${c.art}.webp" loading="lazy" alt="${c.name}">
       <div class="nm">${c.name}</div>
