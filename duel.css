@@ -56,12 +56,29 @@ body.duel-scene {
 .zone.foe .unit-row { justify-content: center; }
 .zone.mine .unit-row { justify-content: center; }
 
-/* 卡面（round13 C1：Master Duel 式——全幅卡图 + 底部渐变信息条，数值内嵌任何卡宽不溢出） */
+/* 卡面（round13 C1：Master Duel 式——全幅卡图 + 底部渐变信息条，数值内嵌任何卡宽不溢出）
+   round18 L3 立体卡框：外斜面（上缘受月光/下缘压暗）+双层投影+内斜面四向压印——纯静态一次 paint */
 .card { width: var(--card-w); height: var(--card-h); border-radius: var(--r-card); position: relative; flex: none;
   background: linear-gradient(165deg, #f8f1dd 0%, #efe3c3 100%); border: 1.5px solid var(--gold);
-  box-shadow: 0 2px 6px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.4);
+  box-shadow:
+    0 -1px 0 rgba(246,241,222,.30),
+    0 2px 4px rgba(0,0,0,.45), 0 6px 16px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.45),
+    inset 0 -1px 0 rgba(110,84,32,.30),
+    inset 1px 0 0 rgba(255,255,255,.14),
+    inset -1px 0 0 rgba(110,84,32,.20);
   color: var(--ink); overflow: hidden; cursor: default; user-select: none;
   transition: transform .18s, box-shadow .18s, filter .18s; }
+/* round18 L3 稀有度卡框：边框色阶（静态）；SSS 另加金辉（非 selected 态——selected 金环为强状态覆盖）
+   无 rarity（duel-cards 32 张旧线）回落金框基线 */
+.card.r-A   { border-color: #7d93b8; }
+.card.r-B   { border-color: #4fae6d; }
+.card.r-S   { border-color: #4a8fd4; }
+.card.r-SS  { border-color: #9a6fd4; }
+.card.r-SSS { border-color: #f0c75e;
+  box-shadow: 0 -1px 0 rgba(246,241,222,.30), 0 2px 4px rgba(0,0,0,.45), 0 6px 16px rgba(0,0,0,.35),
+    0 0 12px rgba(240,199,94,.38), inset 0 1px 0 rgba(255,255,255,.5),
+    inset 0 -1px 0 rgba(110,84,32,.30), inset 1px 0 0 rgba(255,255,255,.14), inset -1px 0 0 rgba(110,84,32,.20); }
 .card .art { position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: center 12%; display: block; background: #0c1730; }
 .card .lv { position: absolute; top: 3px; left: 3px; background: var(--gold); color: #161006; font-size: 10px; font-weight: 800;
@@ -886,9 +903,11 @@ html.lite-fx .fx-pillar { display: none; }
    常驻循环现状盘点：glowDrift(scene.css)+swordIdle+bladeFlow 共 3；lite-fx 下 swordIdle/bladeFlow 停 */
 html.lite-fx .card.selected:not(.attacked)::after { animation: none; }
 
-/* 卡面质感：可点卡 hover 金泽斜扫（before 光泽层，attacked 徽章仍走 after） */
-.card.playable::before { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
-  background: linear-gradient(115deg, transparent 30%, rgba(255,244,200,.5) 46%, rgba(255,255,255,.85) 50%, rgba(255,244,200,.5) 54%, transparent 70%);
+/* 卡面质感：round18 L3 常驻静态斜光（所有卡含场上/对手卡——极低透明月光斜带，一次 paint 不循环）；
+   playable 覆盖为金泽扫光层（transform 藏起点+hover/selected sheen 扫过——原 round13 机制不变） */
+.card::before { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(115deg, transparent 28%, rgba(255,246,214,.07) 46%, rgba(255,255,255,.13) 50%, rgba(255,246,214,.07) 54%, transparent 72%); }
+.card.playable::before { background: linear-gradient(115deg, transparent 30%, rgba(255,244,200,.5) 46%, rgba(255,255,255,.85) 50%, rgba(255,244,200,.5) 54%, transparent 70%);
   transform: translateX(-130%); }
 .card.playable:hover::before, .card.selected::before { animation: sheen .8s ease; }
 @keyframes sheen { to { transform: translateX(130%); } }
