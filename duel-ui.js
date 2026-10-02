@@ -1,14 +1,14 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=602c866';
-import { DUEL_AI } from './duel/ai.js?v=602c866';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=602c866';
-import POOL_DATA from './data/duel-pool.js?v=602c866'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=602c866'; // round16 B：下一关直达（构关+解锁判定）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=602c866';
-import { FXM } from './fx-manager.js?v=602c866'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=602c866'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=990aae8';
+import { DUEL_AI } from './duel/ai.js?v=990aae8';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=990aae8';
+import POOL_DATA from './data/duel-pool.js?v=990aae8'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=990aae8'; // round16 B：下一关直达（构关+解锁判定）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=990aae8';
+import { FXM } from './fx-manager.js?v=990aae8'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=990aae8'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -47,6 +47,8 @@ let resuming = false;    // 恢复存档流程中（跳过自动保存，防恢�
 let tut = null;          // 当前教学段定义（g.tutorial=id 时有效）
 let tutStep = 0;         // 教学步指针
 let tutFlags = {};       // 教学观察标志（directDone/turnPassed/responded/attackResolved）
+let prevHandUids = new Set(); // round17 A：手牌 uid 快照（抽牌 diff 闪入；start/教程清空=首手齐飞入、恢复局预填充=静默）
+let recentDrawn = new Map(); // round17 A：uid→时刻，600ms 窗口内跨 render 保持 .fx-draw（AI 交回合同 tick 双 render 会抹类）
 
 // ---------- 对局中存档（Phase 5；key 与旧 DEMO optcg_save_v2/optcg_match_v2 天然隔离） ----------
 const LIVE_KEY = 'gld_live_game';
@@ -87,6 +89,7 @@ function restoreLive(saved) {
     g = gg;
     pendingCampaign = saved.pendingCampaign || null;
     sel = null; logShown = 0; busy = false;
+    prevHandUids = new Set(gg.players[0].hand.map(h => h.uid)); // round17 A：恢复局手牌静默出现（不闪入）
     endShown = false;
     turnKeyShown = gg.turn + '|' + gg.active; // 恢复对局不弹回合横幅
     els.ldBody.innerHTML = ''; if (els.ldSideBody) els.ldSideBody.innerHTML = ''; els.ticker.textContent = '';
@@ -135,6 +138,7 @@ function start() {
   els.endOverlay.classList.add('hidden');
   els.modal.classList.add('hidden');
   els.rb.classList.add('hidden');
+  prevHandUids = new Set(); // round17 A：首手齐飞入
   pushLog(intro);
   pushLog('提示：先手第一回合不抽牌；招式/伏笔卡可在主要阶段点击使用。');
   // 开局：先手玩家的抽牌阶段无动作 → 快速推进到 main1
@@ -157,6 +161,7 @@ function startTutorial(id) {
   els.endOverlay.classList.add('hidden');
   els.modal.classList.add('hidden');
   els.rb.classList.add('hidden');
+  prevHandUids = new Set(); // round17 A：教学首手齐飞入
   pushLog(`【教学 ${id} · ${tut.name}】${tut.intro}`);
   DUEL.applyAction(g, cardsById, 0, { t: 'nextPhase' }); // draw → standby
   DUEL.applyAction(g, cardsById, 0, { t: 'nextPhase' }); // standby → main1
@@ -323,6 +328,22 @@ function spawnSlash(pt, small) {
   FXM.register({ el: s, dur: small ? 680 : 890, onDone: () => s.remove() });
   host.appendChild(s);
 }
+// round17 E：落场涟漪——新单位落位处金色单环扩散（0.5s 一次性，与 summonIn/琶音同拍；
+// reduce-fx/lite-fx 早退——CSS display:none 本就不可见，不 register 才不把 dur 喂进 lastDur 拖慢 AI 步进）
+function spawnRing(el) {
+  if (document.documentElement.classList.contains('reduce-fx')
+    || document.documentElement.classList.contains('lite-fx')) return;
+  const host = document.getElementById('table');
+  if (!host || !el) return;
+  const hr = host.getBoundingClientRect();
+  const c = rectCenter(el.getBoundingClientRect());
+  const r = document.createElement('div');
+  r.className = 'fx-ring';
+  r.style.left = (c.x - hr.left) + 'px';
+  r.style.top = (c.y - hr.top) + 'px';
+  FXM.register({ el: r, dur: 500, onDone: () => r.remove() });
+  host.appendChild(r);
+}
 // 全桌震动（玩家链专属，M1 至 1000ms；AI 短链不震）
 function fxQuake() {
   const tb = document.getElementById('table');
@@ -486,7 +507,7 @@ function fxPlay() {
   if (fxSummon) {
     if (now - fxSummon.t < 450) {
       const el = document.querySelector(`[data-uid="${fxSummon.uid}"]`);
-      if (el) el.classList.add('fx-summon');
+      if (el) { el.classList.add('fx-summon'); spawnRing(el); } // round17 E：落位金环涟漪
     } else fxSummon = null;
   }
 }
@@ -584,6 +605,19 @@ function render() {
   els.mySpells.innerHTML = P.spells.map(s => mySpellCard(s)).join('')
     + Array.from({ length: Math.max(0, 3 - P.spells.length) }, () => '<div class="slot-sm"></div>').join('');
   bindCards();
+  // round17 A：新抽手牌闪入——uid diff 记时刻，600ms 窗口内跨 render 补挂 .fx-draw
+  // （AI 交回合路径同 tick render×2：首次挂类、二次 innerHTML 重建抹类，paint 只发生在
+  // 两次之后=动画永不可见；窗口保持后同 tick 双 render 净效果=一次起播）
+  const nowMs = Date.now();
+  for (const h of P.hand) if (!prevHandUids.has(h.uid)) recentDrawn.set(h.uid, nowMs);
+  if (recentDrawn.size) for (const [u, t] of recentDrawn) if (nowMs - t > 600) recentDrawn.delete(u);
+  for (const h of P.hand) {
+    if (recentDrawn.has(h.uid)) {
+      const el = els.myHand.querySelector(`[data-huid="${h.uid}"]`);
+      if (el) el.classList.add('fx-draw');
+    }
+  }
+  prevHandUids = new Set(P.hand.map(h => h.uid));
   renderLog();
   renderHint();
   updateNextBtn();
@@ -1268,6 +1302,7 @@ function showEnd() {
   const w = g.winner;
   SND.play(w === 0 ? 'win' : 'lose'); // C7：胜负音（平局走 lose 低音）
   els.endTitle.textContent = w === -1 ? '平局' : w === 0 ? '胜 利' : '败 北';
+  els.endOverlay.querySelector('.end-box').classList.toggle('lost', w !== 0); // round17 C：败北/平局冷色下沉（与 reveal 共存）
   let sub = w === -1 ? '双方同时倒下' :
     (g.winReason === 'lp' ? '生命点数归零' : '牌组抽空') + ` · 历时 ${g.turn} 回合`;
   // 闯关模式：胜利回写通关进度 + 解锁提示；按钮改为返回闯关（可再战同关）
@@ -1304,7 +1339,7 @@ function showEnd() {
         items.push(`<div class="er-item er-card" style="--i:${ii++}" data-card="${ud.id}" role="button" tabindex="0" title="点击立即翻开">
           <div class="flip-wrap"><div class="flip-inner">
             <div class="flip-face flip-back"><span class="fb-mark">⚓</span></div>
-            <div class="flip-face flip-front"><div class="card reward-card"><img class="art" src="art/${ud.art}.webp" alt="${ud.name}"><div class="info"><div class="nm">${ud.name}</div></div></div></div>
+            <div class="flip-face flip-front"><div class="card reward-card"><img class="art" src="art/${ud.art}.webp" alt="${ud.name}"><div class="info"><div class="nm">${ud.name}</div></div></div><div class="fb-stars" aria-hidden="true">${Array.from({ length: 5 }, (_, k) => `<i style="--i:${k}">✦</i>`).join('')}</div></div>
           </div></div>
           <b>🎁 新卡入池</b><span>点击卡片查看详情</span></div>`);
       }
