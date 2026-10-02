@@ -1,0 +1,47 @@
+/* round18 L1「月夜深海剧场」场景层 —— 全站共享（duel/campaign/battle/mode 四页 <link> 于主 CSS 之后）
+   来源：duel.css 原 body.duel-scene::before/::after 氛围层迁移+扩容（battle/mode 引 duel.css 同享）。
+   分层（远→近）：星域 tile → 月晕/月体 → 海面月光路 → 浪纹×2 → 海平线辉光（冷银+暖金双带）→ 金晖（原）→ 渐晕（上冷下暖）。
+   全部层共乘唯一循环 glowDrift 9s（常驻循环账本维持 3 不变）；纹理尺度不同→摆动时读感分层（视差假象）。
+   不用 background-attachment:fixed（iOS 抖动）——全走 fixed 伪元素。
+   伪元素盒=视口 -20%..55%（inset -20% / height 75%），background position y% 换算视口位 = -20 + .75y：
+   月体 34.5%→视口 6%（topbar 下沿）、海平线辉光 61.3%→视口 26%（campaign 岛轨上方独立光带）、
+   浪纹 63.3%/70.7%→视口 27.5%/33%、月光路 66%→视口 29.5%。（VLM 首审微调：月亮下移避开按钮排、
+   辉光上移免被岛轨切断、浪纹加强、渐晕降 15% 防四角黑洞） */
+body.duel-scene::before, body.campaign-scene::before {
+  content: ''; position: fixed; inset: -20% -10% auto; height: 75%; z-index: 0;
+  pointer-events: none;
+  background:
+    /* 星域 tile（星星只画 tile 上部 0-235px≈视口 0-30%；月体区 x130-170 上部避星） */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='640' viewBox='0 0 300 640'%3E%3Cg fill='%23fff8e7'%3E%3Ccircle cx='18' cy='36' r='1' opacity='.65'/%3E%3Ccircle cx='54' cy='88' r='.7' opacity='.35'/%3E%3Ccircle cx='88' cy='20' r='1.2' opacity='.8'/%3E%3Ccircle cx='128' cy='140' r='.8' opacity='.4'/%3E%3Ccircle cx='178' cy='64' r='.6' opacity='.3'/%3E%3Ccircle cx='196' cy='105' r='1.1' opacity='.7'/%3E%3Ccircle cx='238' cy='26' r='.9' opacity='.55'/%3E%3Ccircle cx='268' cy='150' r='.7' opacity='.35'/%3E%3Ccircle cx='285' cy='72' r='1.3' opacity='.85'/%3E%3Ccircle cx='36' cy='120' r='.7' opacity='.4'/%3E%3Ccircle cx='75' cy='180' r='.6' opacity='.3'/%3E%3Ccircle cx='145' cy='205' r='.9' opacity='.45'/%3E%3Ccircle cx='210' cy='230' r='.6' opacity='.3'/%3E%3Ccircle cx='250' cy='190' r='.8' opacity='.4'/%3E%3C/g%3E%3C/svg%3E") 50% 0 / 300px 640px repeat-x,
+    /* 月晕（冷银）+ 月体 */
+    radial-gradient(160px 100px at 50% 35%, rgba(232,238,248,.26), transparent 70%),
+    radial-gradient(24px 24px at 50% 34.5%, #f6f1de 0 58%, rgba(246,241,222,0) 100%),
+    /* 海面月光路（竖向渐隐光带） */
+    radial-gradient(15% 36% at 50% 66%, rgba(198,216,240,.12), transparent 70%),
+    /* 浪纹×2：海平线亮银 / 深海淡蓝（VLM 加强版） */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='16' viewBox='0 0 220 16'%3E%3Cpath d='M0 10 Q27.5 4 55 10 T110 10 T165 10 T220 10' fill='none' stroke='%23cfe0f2' stroke-opacity='.30' stroke-width='1.2'/%3E%3C/svg%3E") 50% 63.3% / 220px 16px repeat-x,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='18' viewBox='0 0 340 18'%3E%3Cpath d='M0 12 Q42.5 5 85 12 T170 12 T255 12 T340 12' fill='none' stroke='%239db8d8' stroke-opacity='.18' stroke-width='1'/%3E%3C/svg%3E") 50% 70.7% / 340px 18px repeat-x,
+    /* 海平线辉光双带：冷银主带 + 下缘暖金（月夜海面金反光——剧场感） */
+    linear-gradient(180deg, transparent 58%, rgba(172,198,232,.11) 61.3%, rgba(126,164,214,.05) 65%, transparent 68%),
+    linear-gradient(180deg, transparent 64%, rgba(212,180,110,.06) 67%, transparent 72%),
+    /* 原金晖（保留——暖金顶光，与冷月互补） */
+    radial-gradient(52% 62% at 50% -8%, rgba(212,175,55,.13), transparent 70%);
+  animation: glowDrift 9s ease-in-out infinite alternate;
+}
+@keyframes glowDrift { from { transform: translateX(-2.5%); opacity: .8; } to { transform: translateX(2.5%); opacity: 1; } }
+/* 渐晕扩容：四周压暗（VLM 降 15%）+ 上冷（月光天）+ 下暖（甲板光）—— theatrical framing */
+body.duel-scene::after, body.campaign-scene::after {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(3,7,16,.45) 100%),
+    linear-gradient(180deg, rgba(7,14,30,.30), transparent 13%),
+    linear-gradient(0deg, rgba(28,19,8,.15), transparent 15%);
+}
+/* 三通道成对豁免（沿用 duel.css 既有纪律） */
+html.reduce-fx body.duel-scene::before, html.lite-fx body.duel-scene::before,
+html.reduce-fx body.campaign-scene::before, html.lite-fx body.campaign-scene::before { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  body.duel-scene::before, body.campaign-scene::before { animation: none; }
+}
+/* campaign 页内容层抬升到场景之上（duel 页 #app 已有 position:relative;z-index:1） */
+body.campaign-scene #app { position: relative; z-index: 1; }
