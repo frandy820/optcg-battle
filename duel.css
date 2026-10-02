@@ -841,6 +841,47 @@ html.reduce-fx .unit-row::before { transition: none; }
 /* round18 L1：背景氛围（星域/月体/海平线/渐晕）已迁移至 scene.css 全站共享层——
    本页 <link> 于 duel.css 之后加载；glowDrift keyframes 与三通道豁免随迁 */
 #app { position: relative; z-index: 1; }
+
+/* round18 L2：决斗桌透视舞台——#table 只挂 perspective 属性（自身绝不变换，fx-quake 红线）。
+   对手区后仰入景深（远暗）/我方区前倾近焦（近亮）；origin 钉边 → 两区皆纯透视缩短无放大，零溢出 */
+#table { perspective: 1400px; }
+.zone { position: relative; }
+.zone.foe  { transform: rotateX(6.5deg); transform-origin: 50% 0; }
+.zone.mine { transform: rotateX(-4deg); transform-origin: 50% 100%; }
+/* 景深纱（静态渐变罩内容上、pointer-events:none 不挡操作）：对手=上深下浅冷暗雾；我方=底部金地灯 */
+.zone::before { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 6; border-radius: 10px; }
+.zone.foe::before { background: linear-gradient(180deg, rgba(9,18,38,.26), rgba(9,18,38,.08) 45%, transparent 75%); }
+.zone.mine::before { background: linear-gradient(0deg, rgba(212,168,80,.11), transparent 42%); }
+/* 舞台聚光（#table::before 此前空闲；::after 已被金线框占用）：左斜月光轴 + 我方区聚光池。
+   ::before 先于子元素渲染但 absolute 盖 static zone —— 极淡光渐变洒桌面即目标效果，unit-row(relative) 浮其上 */
+#table::before { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 14px;
+  background:
+    linear-gradient(115deg, rgba(198,216,240,.14), rgba(198,216,240,.05) 26%, transparent 44%),
+    radial-gradient(58% 46% at 50% 88%, rgba(255,222,140,.10), transparent 72%); }
+
+/* round18 L4：镜头推近（#app transform 空闲——modal/toast/endOverlay 全是 body 子级不被变换捕获；
+   与 burst 同 tick 注册 = rect 恒等系；pointerdown 快进 finish() 跳终态 scale(1) 无残留。
+   玩家链 1.045 全推 / AI 链 1.02 浅推） */
+#app.cam-punch    { animation: camPunch .34s cubic-bezier(.2,.8,.3,1); }
+#app.cam-punch-ai { animation: camPunchAi .30s cubic-bezier(.2,.8,.3,1); }
+@keyframes camPunch    { 0% { transform: scale(1); } 34% { transform: scale(1.045); } 100% { transform: scale(1); } }
+@keyframes camPunchAi  { 0% { transform: scale(1); } 40% { transform: scale(1.02); }  100% { transform: scale(1); } }
+html.reduce-fx #app.cam-punch, html.reduce-fx #app.cam-punch-ai { animation: none; }
+@media (prefers-reduced-motion: reduce) { #app.cam-punch, #app.cam-punch-ai { animation: none; } }
+
+/* round18 L4：登场光柱（spawnRing 伴生——天顶向下的梯形竖光带 scaleY 生长+fade，一次性 0.62s） */
+.fx-pillar { position: absolute; z-index: 8; pointer-events: none; overflow: hidden;
+  clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, rgba(255,236,170,.05), rgba(255,236,170,.18) 30%, rgba(255,236,170,.26) 60%, rgba(255,240,200,.10) 85%, transparent);
+  transform-origin: 50% 0;
+  animation: pillarGlow .62s ease-out forwards; }
+@keyframes pillarGlow {
+  0%   { opacity: 0; transform: scaleY(.15); }
+  35%  { opacity: 1; }
+  100% { opacity: 0; transform: scaleY(1); } }
+html.reduce-fx .fx-pillar { display: none; }
+html.lite-fx .fx-pillar { display: none; }
+@media (prefers-reduced-motion: reduce) { .fx-pillar { display: none; } }
 /* round5 C3：弱核设备（hardwareConcurrency≤4，boot 时 JS 加类）停常驻循环——
    常驻循环现状盘点：glowDrift(scene.css)+swordIdle+bladeFlow 共 3；lite-fx 下 swordIdle/bladeFlow 停 */
 html.lite-fx .card.selected:not(.attacked)::after { animation: none; }
