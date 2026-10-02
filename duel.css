@@ -269,13 +269,28 @@ html.reduce-fx .fx-slash, html.lite-fx .fx-slash { display: none; }
 .end-rewards .er-item b { color: var(--gold-bright); font-size: 12.5px; font-weight: 800; }
 .end-rewards .er-item > span:not(.er-big) { text-align: center; line-height: 1.45; }
 .end-rewards .er-big { font-size: 24px; line-height: 1; margin: 2px 0; }
-/* 新卡纯图卡面（round15 用户反馈：卡上不列数值，点击弹详情）——hover 轻浮起示意可点 */
+/* 新卡纯图卡面（round15：卡上不列数值点击详情；round16：3D 翻转——先卡背慢翻露正面，
+   未翻完点击=跳过翻完点击=详情）。hover 浮起挪到 .flip-wrap（浮起/翻转分层互不打架） */
 .end-rewards .er-card { cursor: pointer; border-color: rgba(212,175,55,.55); }
-.end-rewards .er-card:active { transform: scale(.97); }
-.end-rewards .reward-card { --card-w: 72px; --card-h: 102px; margin: 2px 0; transition: transform .18s;
+.end-rewards .flip-wrap { --card-w: 72px; --card-h: 102px; width: var(--card-w); height: var(--card-h);
+  margin: 2px 0; perspective: 700px; transition: transform .18s, filter .18s; }
+.end-rewards .er-card:hover .flip-wrap { transform: scale(1.07) translateY(-2px);
+  filter: drop-shadow(0 0 12px rgba(245,215,110,.4)); }
+.end-rewards .er-card:active .flip-wrap { transform: scale(.97); }
+.end-rewards .flip-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d;
+  transition: transform 1.15s cubic-bezier(.3, .7, .25, 1); }
+.end-rewards .flip-inner.flipped { transform: rotateY(180deg); }
+.end-rewards .flip-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.end-rewards .flip-front { transform: rotateY(180deg); }
+.end-rewards .reward-card { --card-w: 72px; --card-h: 102px;
   box-shadow: 0 3px 10px rgba(0,0,0,.55), 0 0 16px rgba(245,215,110,.28); }
-.end-rewards .er-card:hover .reward-card { transform: scale(1.07) translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,.6), 0 0 24px rgba(245,215,110,.45); }
+/* 卡背：与对手手牌 .cardback 同纹理 + 金锚徽记（「未知的奖励」语义） */
+.end-rewards .flip-back { border-radius: var(--r-card); border: 1.5px solid var(--gold-dim);
+  background: repeating-linear-gradient(135deg, #16305c 0 4px, #0d1e3d 4px 8px);
+  box-shadow: 0 3px 10px rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center; }
+.end-rewards .flip-back .fb-mark { font-size: 28px; color: var(--gold-bright); text-shadow: 0 0 14px rgba(245,215,110,.55); }
+html.reduce-fx .end-rewards .flip-inner { transition: none; }
+@media (prefers-reduced-motion: reduce) { .end-rewards .flip-inner { transition: none; } }
 /* 新卡详情弹层（结算遮罩内盖层，点任意处收起） */
 .er-detail { position: absolute; inset: 0; background: rgba(3,7,16,.84); z-index: 5; cursor: pointer;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
@@ -288,6 +303,13 @@ html.reduce-fx .fx-slash, html.lite-fx .fx-slash { display: none; }
 .er-detail .erd-close { position: absolute; top: 14px; right: 16px; width: 34px; height: 34px; border-radius: 50%;
   background: transparent; border: 1px solid var(--gold-dim); color: var(--gold-bright); font-size: 15px; cursor: pointer; }
 .er-detail .erd-close:hover { background: rgba(212,175,55,.15); }
+
+/* round16 B：结算按钮排——「下一关」主行动 + 「返回闯关」次按钮（ghosty）并排 */
+.end-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+.next-btn.ghosty { background: transparent; border: 1px solid var(--gold-dim); color: var(--gold-bright);
+  box-shadow: none; }
+.next-btn.ghosty:hover { background: rgba(212,175,55,.12); }
+#btnNextStage.hidden { display: none; }
 
 /* round15 B：结算入场编排（.reveal 由遮罩显示回调挂上——星星逐颗弹/奖励卡依次落场/标题弹入；
    全部一次性动画不占常驻循环；reduce-fx 关） */
