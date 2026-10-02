@@ -838,20 +838,11 @@ html.reduce-fx .fx-cast { display: none; }
 .unit-row:has(.card)::before { opacity: 1; }
 html.reduce-fx .unit-row::before { transition: none; }
 
-/* 背景氛围：顶部金光锥缓慢摇曳 + 四周渐晕（纯伪元素，无 DOM；reduce-fx 静止） */
-body.duel-scene::before { content: ''; position: fixed; inset: -20% -10% auto; height: 75%; z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(52% 62% at 50% -8%, rgba(212,175,55,.13), transparent 70%);
-  animation: glowDrift 9s ease-in-out infinite alternate; }
-body.duel-scene::after { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(3,7,16,.55) 100%); }
+/* round18 L1：背景氛围（星域/月体/海平线/渐晕）已迁移至 scene.css 全站共享层——
+   本页 <link> 于 duel.css 之后加载；glowDrift keyframes 与三通道豁免随迁 */
 #app { position: relative; z-index: 1; }
-@keyframes glowDrift { from { transform: translateX(-2.5%); opacity: .8; } to { transform: translateX(2.5%); opacity: 1; } }
-html.reduce-fx body.duel-scene::before { animation: none; }
-@media (prefers-reduced-motion: reduce) { body.duel-scene::before { animation: none; } }
-/* round5 C3：弱核设备（hardwareConcurrency≤4，boot 时 JS 加类）停两个常驻循环——
-   常驻循环现状盘点：glowDrift+swordIdle 共 2（tgtBlink/lpFlow 已裁）；lite-fx 下归零 */
-html.lite-fx body.duel-scene::before { animation: none; }
+/* round5 C3：弱核设备（hardwareConcurrency≤4，boot 时 JS 加类）停常驻循环——
+   常驻循环现状盘点：glowDrift(scene.css)+swordIdle+bladeFlow 共 3；lite-fx 下 swordIdle/bladeFlow 停 */
 html.lite-fx .card.selected:not(.attacked)::after { animation: none; }
 
 /* 卡面质感：可点卡 hover 金泽斜扫（before 光泽层，attacked 徽章仍走 after） */
