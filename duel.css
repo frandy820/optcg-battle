@@ -291,6 +291,27 @@ html.reduce-fx .fx-slash, html.lite-fx .fx-slash { display: none; }
 .end-rewards .flip-back .fb-mark { font-size: 28px; color: var(--gold-bright); text-shadow: 0 0 14px rgba(245,215,110,.55); }
 html.reduce-fx .end-rewards .flip-inner { transition: none; }
 @media (prefers-reduced-motion: reduce) { .end-rewards .flip-inner { transition: none; } }
+/* round17 B（用户点名）：新卡星星环绕——翻到正面后 ✦ 粒子自外围聚拢上轨，沿椭圆公转+错相闪烁；
+   挂 .flipped 状态驱动（点击跳过翻转时随类立即生效）；胜利页终态专属循环（对局中常驻循环预算不占）；
+   外层 scaleY 压扁=椭圆轨道，i 按 --i 均分 72° 分布、反向自转抵消保持正立 */
+.flip-front .fb-stars { position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  transform: scaleY(.6); }
+.flip-front .fb-stars i { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px;
+  font-style: normal; font-size: 13px; line-height: 14px; text-align: center;
+  color: var(--gold-bright); text-shadow: 0 0 9px rgba(245,215,110,.95), 0 0 2px #fff8dd;
+  opacity: 0; transform: rotate(calc(var(--i) * 72deg)) translateX(46px) rotate(calc(var(--i) * -72deg)); }
+.flip-inner.flipped .fb-stars { animation: starsSpin 7s linear infinite; }
+.flip-inner.flipped .fb-stars i {
+  animation: starGather .5s .12s cubic-bezier(.2,.8,.3,1) backwards,
+    starTwinkle 1.5s calc(.6s + var(--i) * .27s) ease-in-out infinite; }
+@keyframes starsSpin { to { transform: scaleY(.6) rotate(360deg); } }
+@keyframes starGather {
+  0% { transform: rotate(calc(var(--i) * 72deg)) translateX(118px) rotate(calc(var(--i) * -72deg)) scale(1.7); opacity: 0; }
+  45% { opacity: 1; }
+  100% { transform: rotate(calc(var(--i) * 72deg)) translateX(46px) rotate(calc(var(--i) * -72deg)) scale(1); opacity: .95; } }
+@keyframes starTwinkle { 0%, 100% { opacity: .95; } 50% { opacity: .25; } }
+html.reduce-fx .flip-front .fb-stars, html.lite-fx .flip-front .fb-stars { display: none; }
+@media (prefers-reduced-motion: reduce) { .flip-front .fb-stars { display: none; } }
 /* 新卡详情弹层（结算遮罩内盖层，点任意处收起） */
 .er-detail { position: absolute; inset: 0; background: rgba(3,7,16,.84); z-index: 5; cursor: pointer;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
@@ -331,6 +352,24 @@ html.reduce-fx .end-box.reveal .end-stars span,
 html.reduce-fx .end-box.reveal .end-rewards .er-item { animation: none; }
 @media (prefers-reduced-motion: reduce) {
   .end-box.reveal .end-title, .end-box.reveal .end-stars span, .end-box.reveal .end-rewards .er-item { animation: none; } }
+
+/* round17 C：败北/平局冷色下沉——与胜利金色弹入同语言的反向（冷灰蓝+自上而下坠落收拢）；
+   同特异性置于 reveal 段后，lost 局覆盖 titleIn */
+.end-box.lost .end-title { color: #a9bde0; text-shadow: 0 0 20px rgba(93,133,196,.4);
+  animation: lostIn .55s cubic-bezier(.22,.75,.3,1) both; }
+.end-box.lost .end-sub { color: #8fa5cc; }
+@keyframes lostIn {
+  0% { opacity: 0; transform: translateY(-30px); letter-spacing: 14px; }
+  62% { opacity: 1; transform: translateY(3px); }
+  100% { transform: none; letter-spacing: 6px; } }
+html.reduce-fx .end-box.lost .end-title { animation: none; }
+@media (prefers-reduced-motion: reduce) { .end-box.lost .end-title { animation: none; } }
+
+/* round17 D：下一关按钮弹入——主行动登场一拍弹性（display none→显示时动画自动重触发） */
+#btnNextStage:not(.hidden) { animation: btnPop .35s cubic-bezier(.2,.9,.3,1.35); }
+@keyframes btnPop { 0% { transform: scale(.55); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+html.reduce-fx #btnNextStage:not(.hidden) { animation: none; }
+@media (prefers-reduced-motion: reduce) { #btnNextStage:not(.hidden) { animation: none; } }
 
 #hint { text-align: center; font-size: 13px; color: #8fa5cc; min-height: 20px; }
 #hint.warn { color: var(--gold-bright); }
@@ -663,6 +702,31 @@ html.reduce-fx .fx-dissolve { display: none; }
 .fx-summon { animation: summonIn .38s ease; }
 @keyframes summonIn { 0% { transform: scale(.6) translateY(10px); opacity: 0; }
   60% { transform: scale(1.06); opacity: 1; } 100% { transform: scale(1); } }
+
+/* round17 A：抽卡闪入——新抽手牌从牌组侧飞入+金光内缘闪一拍（0.42s 一次性；
+   结束态=常规排布，被后续 render 截断=直接落位无残留；手牌卡永不 attacked，::after 无冲突） */
+.my-hand .card.fx-draw { animation: drawIn .42s cubic-bezier(.2,.85,.3,1); }
+@keyframes drawIn {
+  0% { transform: translateX(96px) translateY(10px) scale(.9); opacity: 0; }
+  55% { opacity: 1; }
+  100% { transform: none; opacity: 1; } }
+.my-hand .card.fx-draw::after { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  border-radius: var(--r-card);
+  box-shadow: inset 0 0 0 2px rgba(245,215,110,.85), inset 0 0 22px rgba(245,215,110,.5);
+  opacity: 0; animation: drawFlash .62s ease-out; }
+@keyframes drawFlash { 22% { opacity: 1; } 100% { opacity: 0; } }
+html.reduce-fx .my-hand .card.fx-draw, html.reduce-fx .my-hand .card.fx-draw::after { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .my-hand .card.fx-draw, .my-hand .card.fx-draw::after { animation: none; } }
+
+/* round17 E：落场涟漪——新单位落位处金色单环扩散（0.5s 一次性，与 summonIn/琶音同拍） */
+.fx-ring { position: absolute; z-index: 29; pointer-events: none; width: 0; height: 0; }
+.fx-ring::before { content: ''; position: absolute; left: -17px; top: -17px; width: 34px; height: 34px;
+  border-radius: 50%; border: 2.5px solid #ffd76e; box-shadow: 0 0 12px rgba(245,215,110,.55);
+  animation: ringGrow .5s cubic-bezier(.15,.7,.3,1) forwards; }
+@keyframes ringGrow { 0% { transform: scale(.35); opacity: .95; } 100% { transform: scale(2.7); opacity: 0; } }
+html.reduce-fx .fx-ring, html.lite-fx .fx-ring { display: none; }
+@media (prefers-reduced-motion: reduce) { .fx-ring { display: none; } }
 .lp-wrap { position: relative; }
 html.reduce-fx .fx-summon { animation: none; }
 @media (prefers-reduced-motion: reduce) { .fx-summon { animation: none; } }
