@@ -293,23 +293,25 @@ html.reduce-fx .end-rewards .flip-inner { transition: none; }
 @media (prefers-reduced-motion: reduce) { .end-rewards .flip-inner { transition: none; } }
 /* round17 B（用户点名）：新卡星星环绕——翻到正面后 ✦ 粒子自外围聚拢上轨，沿椭圆公转+错相闪烁；
    挂 .flipped 状态驱动（点击跳过翻转时随类立即生效）；胜利页终态专属循环（对局中常驻循环预算不占）；
-   外层 scaleY 压扁=椭圆轨道，i 按 --i 均分 72° 分布、反向自转抵消保持正立 */
+   外层 scaleY 压扁=椭圆轨道（390 纵向下方紧贴「新卡入池」文字，纯外圈必压字——横向全出卡+纵向贴缘掠过），
+   i 按 --i 均分 72° 分布、反向自转抵消保持正立。round17-R2 返工加强：19px 星体+满亮终态+
+   闪烁低点 0.5（VLM 分歧根因=13px 星在闪烁低谷 0.25 时不可辨识） */
 .flip-front .fb-stars { position: absolute; inset: 0; pointer-events: none; z-index: 2;
-  transform: scaleY(.6); }
-.flip-front .fb-stars i { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px;
-  font-style: normal; font-size: 13px; line-height: 14px; text-align: center;
-  color: var(--gold-bright); text-shadow: 0 0 9px rgba(245,215,110,.95), 0 0 2px #fff8dd;
-  opacity: 0; transform: rotate(calc(var(--i) * 72deg)) translateX(46px) rotate(calc(var(--i) * -72deg)); }
+  transform: scaleY(.58); }
+.flip-front .fb-stars i { position: absolute; left: 50%; top: 50%; width: 25px; height: 25px; margin: -12.5px 0 0 -12.5px;
+  font-style: normal; font-size: 22px; line-height: 25px; text-align: center;
+  color: #ffe9a0; text-shadow: 0 0 13px rgba(245,215,110,1), 0 0 4px #fff8dd, 0 2px 7px rgba(0,0,0,.55);
+  opacity: 0; transform: rotate(calc(var(--i) * 72deg)) translateX(48px) rotate(calc(var(--i) * -72deg)); }
 .flip-inner.flipped .fb-stars { animation: starsSpin 7s linear infinite; }
 .flip-inner.flipped .fb-stars i {
   animation: starGather .5s .12s cubic-bezier(.2,.8,.3,1) backwards,
     starTwinkle 1.5s calc(.6s + var(--i) * .27s) ease-in-out infinite; }
-@keyframes starsSpin { to { transform: scaleY(.6) rotate(360deg); } }
+@keyframes starsSpin { to { transform: scaleY(.58) rotate(360deg); } }
 @keyframes starGather {
-  0% { transform: rotate(calc(var(--i) * 72deg)) translateX(118px) rotate(calc(var(--i) * -72deg)) scale(1.7); opacity: 0; }
+  0% { transform: rotate(calc(var(--i) * 72deg)) translateX(124px) rotate(calc(var(--i) * -72deg)) scale(1.8); opacity: 0; }
   45% { opacity: 1; }
-  100% { transform: rotate(calc(var(--i) * 72deg)) translateX(46px) rotate(calc(var(--i) * -72deg)) scale(1); opacity: .95; } }
-@keyframes starTwinkle { 0%, 100% { opacity: .95; } 50% { opacity: .25; } }
+  100% { transform: rotate(calc(var(--i) * 72deg)) translateX(48px) rotate(calc(var(--i) * -72deg)) scale(1); opacity: 1; } }
+@keyframes starTwinkle { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
 html.reduce-fx .flip-front .fb-stars, html.lite-fx .flip-front .fb-stars { display: none; }
 @media (prefers-reduced-motion: reduce) { .flip-front .fb-stars { display: none; } }
 /* 新卡详情弹层（结算遮罩内盖层，点任意处收起） */
