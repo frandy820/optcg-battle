@@ -1,13 +1,14 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=06301cd';
-import { DUEL_AI } from './duel/ai.js?v=06301cd';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=06301cd';
-import POOL_DATA from './data/duel-pool.js?v=06301cd'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=06301cd';
-import { FXM } from './fx-manager.js?v=06301cd'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=06301cd'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=602c866';
+import { DUEL_AI } from './duel/ai.js?v=602c866';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=602c866';
+import POOL_DATA from './data/duel-pool.js?v=602c866'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=602c866'; // round16 B：下一关直达（构关+解锁判定）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=602c866';
+import { FXM } from './fx-manager.js?v=602c866'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=602c866'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -26,7 +27,7 @@ const els = {
   ldBody: $('ldBody'), ldSideBody: $('ldSideBody'), logDrawer: $('logDrawer'), ticker: $('ticker'), btnMenu: $('btnMenu'),
   btnNext: $('btnNext'), btnRestart: $('btnRestart'), btnHelp: $('btnHelp'),
   modal: $('modal'), modalBox: $('modalBox'), toast: $('toast'),
-  btnDirect: $('btnDirect'), atkArrow: $('atkArrow'), endOverlay: $('endOverlay'), endTitle: $('endTitle'), endSub: $('endSub'), btnAgain: $('btnAgain'),
+  btnDirect: $('btnDirect'), atkArrow: $('atkArrow'), endOverlay: $('endOverlay'), endTitle: $('endTitle'), endSub: $('endSub'), btnAgain: $('btnAgain'), btnNextStage: $('btnNextStage'),
 };
 
 const PH_CN = { draw: '抽牌', standby: '准备', main1: '主要阶段1', battle: '战斗阶段', main2: '主要阶段2', end: '结束阶段' };
@@ -1235,6 +1236,23 @@ function showRewardDetail(d) {
     <div class="erd-note">✓ 已加入牌组工坊卡池</div>`;
   dt.classList.remove('hidden');
 }
+// round16 B：下一关直达——DUEL_STAGES 线性链的下一项；刚通关即为其线性前序，
+// 普通/Boss/新岛首关恒解锁（解锁规则=线性前序通/Boss=岛内 4 关全通/岛首=上岛 Boss 通，
+// 与 campaign-ui stageOpen 同源口径——改解锁规则时两处同步）；唯 hidden 关仍需岛内其余 5 关全 3★
+function nextStageReady(save, next) {
+  if (!next) return false;
+  if (next.kind !== 'hidden') return true;
+  const isl = ISLANDS.find(x => x.id === next.islandId);
+  if (!isl) return false;
+  const others = [...isl.stages, isl.bossStage, isl.hiddenStage].filter(Boolean).filter(s => s.id !== next.id);
+  return others.every(s => ((save.stars || {})[s.id] || 0) >= 3);
+}
+// 玩家当前闯关牌组（与 campaign-ui currentDeckCards 同口径：activeDeck 无效回落 default）
+function campaignDeckCards(save) {
+  const slot = save.activeDeck && save.decks && save.decks[save.activeDeck] ? save.activeDeck : 'default';
+  if (slot === 'default') return DUEL_CARDS_DATA.decks.strawhat_default.cards.slice();
+  return save.decks[slot].cards.slice();
+}
 function showEnd() {
   if (endShown) return;
   endShown = true;
@@ -1244,6 +1262,9 @@ function showEnd() {
   if (oldRw) oldRw.remove(); // round14 R4：奖励区每局重建（防上一局残留）
   const oldDt = document.getElementById('erDetail');
   if (oldDt) oldDt.remove(); // round15 B：详情层同款每局重建
+  els.btnNextStage.classList.add('hidden'); // round16 B：下一关按钮每局重判（上一局显示过不残留）
+  els.btnAgain.classList.remove('ghosty');
+  let flipKick = null; // round16 A：新卡翻转起播钩子（遮罩 reveal 回调里调用）
   const w = g.winner;
   SND.play(w === 0 ? 'win' : 'lose'); // C7：胜负音（平局走 lose 低音）
   els.endTitle.textContent = w === -1 ? '平局' : w === 0 ? '胜 利' : '败 北';
@@ -1279,8 +1300,12 @@ function showEnd() {
       let ii = 0;
       if (firstClear && pendingCampaign.unlockCard && cardsById[pendingCampaign.unlockCard]) {
         const ud = cardsById[pendingCampaign.unlockCard];
-        items.push(`<div class="er-item er-card" style="--i:${ii++}" data-card="${ud.id}" role="button" tabindex="0" title="点击查看卡片详情">
-          <div class="card reward-card"><img class="art" src="art/${ud.art}.webp" alt="${ud.name}"><div class="info"><div class="nm">${ud.name}</div></div></div>
+        // round16 A：3D 翻转结构——先卡背，落场后慢翻露正面；未翻完点击=跳过、翻完点击=详情
+        items.push(`<div class="er-item er-card" style="--i:${ii++}" data-card="${ud.id}" role="button" tabindex="0" title="点击立即翻开">
+          <div class="flip-wrap"><div class="flip-inner">
+            <div class="flip-face flip-back"><span class="fb-mark">⚓</span></div>
+            <div class="flip-face flip-front"><div class="card reward-card"><img class="art" src="art/${ud.art}.webp" alt="${ud.name}"><div class="info"><div class="nm">${ud.name}</div></div></div></div>
+          </div></div>
           <b>🎁 新卡入池</b><span>点击卡片查看详情</span></div>`);
       }
       if (firstClear) items.push(`<div class="er-item" style="--i:${ii++}"><span class="er-big">🔓</span><b>下一关解锁</b><span>征程 ${s.cleared.length} / 50 关</span></div>`);
@@ -1290,10 +1315,53 @@ function showEnd() {
         rw.id = 'endRewards'; rw.className = 'end-rewards';
         rw.innerHTML = `<div class="er-title">— 通关奖励 —</div><div class="er-row">${items.join('')}</div>`;
         document.getElementById('endStars').insertAdjacentElement('afterend', rw); // 星级行之下、endSub 之上
-        const cardItem = rw.querySelector('.er-card'); // round15 B：点新卡弹完整详情（数值/描述）
-        if (cardItem) cardItem.onclick = () => showRewardDetail(cardsById[cardItem.dataset.card]);
+        const cardItem = rw.querySelector('.er-card'); // round16 A：翻转两段点击语义（未翻完=跳过/翻完=详情）
+        if (cardItem) {
+          const inner = cardItem.querySelector('.flip-inner');
+          const reduceFx = document.documentElement.classList.contains('reduce-fx');
+          let flipDone = false, tm1 = 0, tm2 = 0;
+          const markDone = () => { flipDone = true; cardItem.title = '点击查看卡片详情'; };
+          flipKick = () => { // 遮罩 reveal 后起翻（落场 stagger 完成再翻：700ms）
+            if (flipDone) return;
+            tm1 = setTimeout(() => {
+              inner.classList.add('flipped');
+              tm2 = setTimeout(markDone, 1250); // transitionend 兜底（后台标签页不触发动画事件）
+              inner.addEventListener('transitionend', function onTe(ev) {
+                if (ev.propertyName !== 'transform') return;
+                inner.removeEventListener('transitionend', onTe);
+                clearTimeout(tm2); markDone();
+              });
+            }, 700);
+          };
+          if (reduceFx) { inner.classList.add('flipped'); markDone(); flipKick = null; } // 减动效：直接正面零等待
+          cardItem.onclick = () => {
+            if (!flipDone) { // 翻转未完成：点击=跳过动画直接正面
+              clearTimeout(tm1); clearTimeout(tm2);
+              inner.style.transition = 'none'; inner.classList.add('flipped');
+              markDone();
+              return;
+            }
+            showRewardDetail(cardsById[cardItem.dataset.card]); // 翻转完成：点击=详情层
+          };
+        }
       }
       sub += firstClear ? ' · 通关！' : stars > oldStars ? ` · 星级提升 ${'★'.repeat(stars)}！` : ` · 再次通关（${'★'.repeat(stars)}）`;
+      // round16 B：下一关直达（进度已在上方同步落盘 localStorage——按钮点击时时序安全；
+      // 最后一关/下一关是未解锁的隐藏关时不显示，btnAgain 维持「返回闯关」）
+      const curIdx = DUEL_STAGES.findIndex(x => x.id === pendingCampaign.stageId);
+      const nextSt = curIdx >= 0 ? DUEL_STAGES[curIdx + 1] : null;
+      if (nextStageReady(s, nextSt)) {
+        els.btnNextStage.classList.remove('hidden');
+        els.btnAgain.classList.add('ghosty'); // 主行动让位「下一关」
+        els.btnNextStage.onclick = () => {
+          localStorage.setItem('gld_duel_pending', JSON.stringify({
+            stageId: nextSt.id, stageName: nextSt.name, islandName: nextSt.islandName || '', islandId: nextSt.islandId || 1,
+            foeName: nextSt.foeName, foeId: nextSt.foeId, aiProfile: nextSt.aiProfile, boss: nextSt.boss || null,
+            aiHandicap: nextSt.aiHandicap || 0, foeDeck: nextSt.deck, myDeck: campaignDeckCards(s), unlockCard: nextSt.unlock || null,
+          }));
+          location.reload(); // boot 读 pending 直达新局（与 campaign 开战同链路；?e2e/seed 随 query 保留）
+        };
+      }
     } else if (w === 1) {
       sub += ' · 重整旗鼓，回闯关页再战';
     }
@@ -1316,6 +1384,7 @@ function showEnd() {
     els.endOverlay.classList.remove('hidden');
     const box = els.endOverlay.querySelector('.end-box');
     if (box) { box.classList.remove('reveal'); box.getBoundingClientRect(); box.classList.add('reveal'); }
+    if (flipKick) flipKick(); // round16 A：新卡翻转起播（遮罩可见后）
   }, 1200);
 }
 
