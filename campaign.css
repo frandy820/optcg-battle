@@ -81,6 +81,12 @@ body.campaign-scene {
   background: linear-gradient(165deg, #f8f1dd, #efe3c3); border: 2px solid var(--gold);
   box-shadow: 0 2px 8px rgba(0,0,0,.45); transition: transform .15s; color: var(--ink); }
 .pool-card:hover { transform: translateY(-4px); }
+/* round18 L3：稀有度卡框（与 duel.css .card r-X 同色阶；无 rarity 回落金框） */
+.pool-card.r-A   { border-color: #7d93b8; }
+.pool-card.r-B   { border-color: #4fae6d; }
+.pool-card.r-S   { border-color: #4a8fd4; }
+.pool-card.r-SS  { border-color: #9a6fd4; }
+.pool-card.r-SSS { border-color: #f0c75e; box-shadow: 0 2px 8px rgba(0,0,0,.45), 0 0 12px rgba(240,199,94,.4); }
 .pool-card img.part { width: 100%; height: 64px; object-fit: cover; object-position: center 10%; display: block; background: #0c1730; }
 .pool-card .nm { font-size: 10.5px; font-weight: 700; text-align: center; padding: 2px 2px 0; line-height: 1.15; }
 .pool-card .sub { font-size: 8.5px; color: #6b5a33; text-align: center; }
