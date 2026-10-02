@@ -1,9 +1,9 @@
 // 伟大航路闯关（round11 岛屿大地图）+ 牌组工坊 UI
 // 进度/牌组存 localStorage；开战写 gld_duel_pending → duel.html 开局；胜利由 duel-ui 回写通关/星级。
 'use strict';
-import DATA from './data/duel-cards.js?v=b2e2e04';
-import POOL_DATA from './data/duel-pool.js?v=b2e2e04';
-import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=b2e2e04';
+import DATA from './data/duel-cards.js?v=1d20d65';
+import POOL_DATA from './data/duel-pool.js?v=1d20d65';
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=1d20d65';
 
 const cardsById = {};
 for (const c of DATA.cards) cardsById[c.id] = c;
