@@ -1,17 +1,22 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=f804c93';
-import { DUEL_AI } from './duel/ai.js?v=f804c93';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=f804c93';
-import POOL_DATA from './data/duel-pool.js?v=f804c93'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=f804c93'; // round16 B：下一关直达（构关+解锁判定）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=f804c93';
-import { FXM } from './fx-manager.js?v=f804c93'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=f804c93'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=eb73d85';
+import { DUEL_AI } from './duel/ai.js?v=eb73d85';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=eb73d85';
+import POOL_DATA from './data/duel-pool.js?v=eb73d85'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=eb73d85'; // round16 B：下一关直达（构关+解锁判定）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=eb73d85';
+import { FXM } from './fx-manager.js?v=eb73d85'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=eb73d85'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
-for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
+// round18 L3：DUE 旧线 32 张无 rarity——按等级运行时派生（Lv1-2 A/3-4 B/5 S/6 SS/7+ SSS；招式伏笔 B），
+// 快速对决也有稀有度卡框；GLD 池每卡自带 rarity 不走此分支
+const deriveRarity = c => c.type === 'char'
+  ? (c.level >= 7 ? 'SSS' : c.level >= 6 ? 'SS' : c.level >= 5 ? 'S' : c.level >= 3 ? 'B' : 'A')
+  : 'B';
+for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c.rarity ? c : { ...c, rarity: deriveRarity(c) };
 for (const c of POOL_DATA.cards) cardsById[c.id] = c; // 合并池（GLD 与 DUE 编号不冲突）
 
 const $ = id => document.getElementById(id);
@@ -676,7 +681,7 @@ function unitCard(u, mine) {
   const A = DUEL.unitAtk(cardsById, u), D0 = DUEL.unitDef(cardsById, u);
   const aCls = A > d.atk ? 'up' : A < d.atk ? 'down' : '';
   const dCls = D0 > d.def ? 'up' : D0 < d.def ? 'down' : '';
-  const cls = ['card', 'unit', u.pos === 'def' ? 'pos-def' : '', u.attacked ? 'attacked' : '',
+  const cls = ['card', 'unit', d.rarity ? 'r-' + d.rarity : '', u.pos === 'def' ? 'pos-def' : '', u.attacked ? 'attacked' : '',
     mine && clickable(u) ? 'playable' : '', sel === u.uid ? 'selected' : '',
     !mine && sel ? 'targetable' : ''].join(' ');
   // round9 R9-A：四角角标清零——Lv/装备数并入攻胶囊前缀、副标题进 title；卡面=图+名称+底部一条数据行
@@ -715,7 +720,7 @@ function handCard(h) {
       d.type === 'trap'
         ? (my.setsThisTurn < 2 && my.spells.length < 3)
         : true); // 招式：发动或盖伏至少一头可行
-    return `<div class="card hand-card spell-card t-${d.type} ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}${d.sub ? ` · ${d.sub}` : ''}：${d.desc}">
+    return `<div class="card hand-card spell-card t-${d.type} ${d.rarity ? 'r-' + d.rarity : ''} ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}${d.sub ? ` · ${d.sub}` : ''}：${d.desc}">
       <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
       <span class="tbadge">${d.type === 'move' ? '招' : '伏'}</span>
       <div class="info"><div class="nm">${d.name}</div><div class="fx">${shortFx(d)}</div></div>
@@ -723,7 +728,7 @@ function handCard(h) {
   }
   const can = myPhaseMain() && g.players[0].summoned === 0 && (d.level <= 4 ? g.players[0].board.length < DUEL.BOARD_MAX : true); // round14：3 格时代残留改齐（与 onHandClick 的 BOARD_MAX 校验一致，修「点不亮却能出」）
   // round9 R9-A：Lv 并入攻胶囊（数值包 <b>——E2E bot 读 .stats .atk b，Lv 前缀不污染取数）
-  return `<div class="card hand-card ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}${d.sub ? ` · ${d.sub}` : ''}">
+  return `<div class="card hand-card ${d.rarity ? 'r-' + d.rarity : ''} ${can ? 'playable' : ''}" data-huid="${h.uid}" title="${d.name}${d.sub ? ` · ${d.sub}` : ''}">
     <img class="art" src="art/${d.art}.webp" alt="${d.name}" loading="lazy">
     <div class="info">
       <div class="nm">${d.name}</div>
