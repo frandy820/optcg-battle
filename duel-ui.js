@@ -1,14 +1,14 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=eb73d85';
-import { DUEL_AI } from './duel/ai.js?v=eb73d85';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=eb73d85';
-import POOL_DATA from './data/duel-pool.js?v=eb73d85'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=eb73d85'; // round16 B：下一关直达（构关+解锁判定）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=eb73d85';
-import { FXM } from './fx-manager.js?v=eb73d85'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=eb73d85'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=ae07ccb';
+import { DUEL_AI } from './duel/ai.js?v=ae07ccb';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=ae07ccb';
+import POOL_DATA from './data/duel-pool.js?v=ae07ccb'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=ae07ccb'; // round16 B：下一关直达（构关+解锁判定）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=ae07ccb';
+import { FXM } from './fx-manager.js?v=ae07ccb'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=ae07ccb'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 // round18 L3：DUE 旧线 32 张无 rarity——按等级运行时派生（Lv1-2 A/3-4 B/5 S/6 SS/7+ SSS；招式伏笔 B），
