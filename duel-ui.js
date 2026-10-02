@@ -1,14 +1,14 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=1d20d65';
-import { DUEL_AI } from './duel/ai.js?v=1d20d65';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=1d20d65';
-import POOL_DATA from './data/duel-pool.js?v=1d20d65'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=1d20d65'; // round16 B：下一关直达（构关+解锁判定）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=1d20d65';
-import { FXM } from './fx-manager.js?v=1d20d65'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=1d20d65'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=f804c93';
+import { DUEL_AI } from './duel/ai.js?v=f804c93';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=f804c93';
+import POOL_DATA from './data/duel-pool.js?v=f804c93'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=f804c93'; // round16 B：下一关直达（构关+解锁判定）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=f804c93';
+import { FXM } from './fx-manager.js?v=f804c93'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=f804c93'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 for (const c of DUEL_CARDS_DATA.cards) cardsById[c.id] = c;
@@ -28,6 +28,7 @@ const els = {
   btnNext: $('btnNext'), btnRestart: $('btnRestart'), btnHelp: $('btnHelp'),
   modal: $('modal'), modalBox: $('modalBox'), toast: $('toast'),
   btnDirect: $('btnDirect'), atkArrow: $('atkArrow'), endOverlay: $('endOverlay'), endTitle: $('endTitle'), endSub: $('endSub'), btnAgain: $('btnAgain'), btnNextStage: $('btnNextStage'),
+  app: $('app'),
 };
 
 const PH_CN = { draw: '抽牌', standby: '准备', main1: '主要阶段1', battle: '战斗阶段', main2: '主要阶段2', end: '结束阶段' };
@@ -344,6 +345,23 @@ function spawnRing(el) {
   FXM.register({ el: r, dur: 500, onDone: () => r.remove() });
   host.appendChild(r);
 }
+// round18 L4：登场光柱——新单位落位处天顶向下的梯形光带（spawnRing 伴生同拍；早退同款防拖 AI 步进）
+function spawnPillar(el) {
+  if (document.documentElement.classList.contains('reduce-fx')
+    || document.documentElement.classList.contains('lite-fx')) return;
+  const host = document.getElementById('table');
+  if (!host || !el) return;
+  const hr = host.getBoundingClientRect();
+  const r = el.getBoundingClientRect();
+  const p = document.createElement('div');
+  p.className = 'fx-pillar';
+  p.style.left = (r.left - hr.left) + 'px';
+  p.style.top = '0px';
+  p.style.width = r.width + 'px';
+  p.style.height = (r.bottom - hr.top + r.height * .4) + 'px'; // 落到卡位中心稍下（地面向上淡出）
+  FXM.register({ el: p, dur: 620, onDone: () => p.remove() });
+  host.appendChild(p);
+}
 // 全桌震动（玩家链专属，M1 至 1000ms；AI 短链不震）
 function fxQuake() {
   const tb = document.getElementById('table');
@@ -459,6 +477,7 @@ function fxPlay() {
       if (tgtEl) tgtEl.classList.add('fx-hit');
       spawnBurst(tgtC, byAi);
       spawnSlash(tgtC, byAi); // round15 A：命中斩光（落点弧光，与爆裂同拍）
+      if (els.app) FXM.register({ id: 'campunch', el: els.app, cls: byAi ? 'cam-punch-ai' : 'cam-punch', dur: 380 }); // round18 L4：镜头推近（与爆裂同 tick=rect 恒等系）
       if (!byAi) fxQuake();
       FXM.register({ id: 'atkchain', dur: byAi ? 700 : 1200 }); // 纯节奏登记：AI 步进间隔感知（无视觉元素）
     } else fxAttack = null;
@@ -507,7 +526,7 @@ function fxPlay() {
   if (fxSummon) {
     if (now - fxSummon.t < 450) {
       const el = document.querySelector(`[data-uid="${fxSummon.uid}"]`);
-      if (el) { el.classList.add('fx-summon'); spawnRing(el); } // round17 E：落位金环涟漪
+      if (el) { el.classList.add('fx-summon'); spawnRing(el); spawnPillar(el); } // round17 E 涟漪 + round18 L4 登场光柱
     } else fxSummon = null;
   }
 }
