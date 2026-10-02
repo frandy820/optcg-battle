@@ -154,16 +154,58 @@ html.reduce-fx .lp-badge::before { transition: none; }
 /* 我方徽章非按钮样式归一（div 版） */
 .zone.mine .lp-badge { border: 2px solid var(--gold); }
 
-/* 攻击路径箭头 overlay（选中攻击者时显示；hover 目标端点吸附） */
+/* ---------- round15 A：攻击瞄准光刃（替代 round13 裸箭头线——用户「简单粗暴不好看」）----------
+   四层结构：宽晕（大范围氛围）→ 渐变中光（沿路径渐亮，能量向目标汇聚）→ 亮芯（锐利刃线）
+   → 流动脉冲（短亮段沿路径冲刺=能量输送感）；目标端锁定环（双环+准星点，两拍脉冲落静态）。
+   渐变坐标由 JS 按攻击者→目标端点实时更新（userSpaceOnUse）。 */
 .atk-arrow { position: absolute; inset: 0; pointer-events: none; z-index: 25; width: 100%; height: 100%;
   opacity: 0; transition: opacity .15s; }
 .atk-arrow.show { opacity: 1; }
-.atk-arrow .glow { fill: none; stroke: rgba(255,215,106,.25); stroke-width: 7; stroke-linecap: round; }
-.atk-arrow .core { fill: none; stroke: #ffd76e; stroke-width: 2.5; stroke-linecap: round;
-  stroke-dasharray: 7 9; animation: arrowFlow 1s linear infinite; } /* 常驻循环第 3 个（贴 ≤3 红线） */
-@keyframes arrowFlow { to { stroke-dashoffset: -32; } }
-html.reduce-fx .atk-arrow .core, html.lite-fx .atk-arrow .core { animation: none; stroke-dasharray: none; }
-@media (prefers-reduced-motion: reduce) { .atk-arrow .core { animation: none; stroke-dasharray: none; } }
+.atk-arrow .halo { fill: none; stroke: rgba(255, 200, 90, .10); stroke-width: 18; stroke-linecap: round; }
+.atk-arrow .glow { fill: none; stroke: url(#bladeGrad); stroke-width: 7; stroke-linecap: round; opacity: .8; }
+.atk-arrow .core { fill: none; stroke: url(#bladeGrad); stroke-width: 2.2; stroke-linecap: round; }
+.atk-arrow .pulse { fill: none; stroke: #fff8dd; stroke-width: 5.5; stroke-linecap: round;
+  stroke-dasharray: 16 340; opacity: .9; animation: bladeFlow .95s cubic-bezier(.35,.6,.45,1) infinite; }
+@keyframes bladeFlow { from { stroke-dashoffset: 356; } to { stroke-dashoffset: 0; } }
+/* 目标端锁定环：外环刻度（dasharray=雷达锁定感）+ 内环 + 准星点；两拍脉冲后落静态（不占常驻循环） */
+.atk-arrow .lock { transition: none; }
+.atk-arrow .lock .lock-ring { fill: none; stroke: rgba(255,215,106,.85); stroke-width: 2;
+  stroke-dasharray: 10 6.4; }
+.atk-arrow .lock .lock-ring2 { fill: none; stroke: rgba(255,248,221,.4); stroke-width: 1.2; }
+.atk-arrow .lock .lock-dot { fill: #fff8dd; }
+.atk-arrow .lock .lock-spin { animation: lockPulse 1s ease-in-out 2; transform-origin: 0 0; }
+@keyframes lockPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.22); } }
+html.reduce-fx .atk-arrow .pulse, html.lite-fx .atk-arrow .pulse { animation: none; stroke-dasharray: none; opacity: .5; }
+html.reduce-fx .atk-arrow .lock .lock-spin, html.lite-fx .atk-arrow .lock .lock-spin { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .atk-arrow .pulse { animation: none; stroke-dasharray: none; opacity: .5; }
+  .atk-arrow .lock .lock-spin { animation: none; } }
+
+/* round15 A：命中斩光——攻击落点斜切弧光（白金刃痕快进快出），与命中锚同拍（--t-hit / AI 300ms）；
+   主刃+副刃（::after 反向细光）双层，transform-only 动画 */
+.fx-slash { position: absolute; z-index: 31; width: 0; height: 0; pointer-events: none; }
+.fx-slash i { position: absolute; left: -52px; top: -5px; width: 104px; height: 10px; border-radius: 6px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,248,221,.9) 30%, #fff 55%, rgba(255,215,106,.85) 75%, transparent 100%);
+  transform: rotate(-32deg);
+  animation: slashCut .5s var(--t-hit) cubic-bezier(.15,.75,.3,1) forwards; }
+.fx-slash i::after { content: ''; position: absolute; left: 10px; top: 6px; width: 76px; height: 3px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.75), transparent);
+  animation: slashCutSub .5s calc(var(--t-hit) + 40ms) ease-out forwards; opacity: 0; }
+.fx-slash.sm i { animation-delay: .3s; animation-duration: .38s; }
+.fx-slash.sm i::after { animation-delay: calc(.3s + 30ms); animation-duration: .34s; }
+@keyframes slashCut {
+  0% { opacity: 0; transform: rotate(-32deg) scaleX(.25); }
+  22% { opacity: 1; transform: rotate(-32deg) scaleX(1.06); }
+  46% { opacity: .9; transform: rotate(-30deg) scaleX(1); }
+  100% { opacity: 0; transform: rotate(-27deg) scaleX(1.18) translateY(-4px); } }
+@keyframes slashCutSub {
+  0% { opacity: 0; }
+  25% { opacity: .9; }
+  100% { opacity: 0; } }
+html.reduce-fx .fx-slash, html.lite-fx .fx-slash { display: none; }
+@media (prefers-reduced-motion: reduce) { .fx-slash { display: none; } }
 
 /* ---------- round13 C3：桌面端战报侧栏（≥721px；手机隐藏走抽屉） ---------- */
 .log-side { display: none; }
@@ -216,7 +258,7 @@ html.reduce-fx .atk-arrow .core, html.lite-fx .atk-arrow .core { animation: none
 .end-stars .off { color: rgba(120, 130, 155, .45); }
 .end-stars.hidden { display: none; }
 
-/* round14 R4：通关奖励展示区（闯关胜利局；星级/新卡/解锁/进度——获得感落地） */
+/* ---------- round15 B：通关奖励区（重排版——大星示星级/新卡纯图+点击详情/stagger 落场） ---------- */
 .end-rewards { margin: 10px 0 4px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .end-rewards .er-title { font-size: 13px; font-weight: 800; color: var(--gold-bright); letter-spacing: 4px; text-shadow: 0 0 10px rgba(245,215,110,.4); }
 .end-rewards .er-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: min(92vw, 560px); }
@@ -225,11 +267,48 @@ html.reduce-fx .atk-arrow .core, html.lite-fx .atk-arrow .core { animation: none
   display: flex; flex-direction: column; align-items: center; gap: 4px;
   font-size: 11px; color: #b9c9e6; box-shadow: 0 3px 12px rgba(0,0,0,.45); }
 .end-rewards .er-item b { color: var(--gold-bright); font-size: 12.5px; font-weight: 800; }
-.end-rewards .er-item > span:not(.er-star):not(.er-big) { text-align: center; line-height: 1.45; }
-.end-rewards .er-star { font-size: 21px; color: #ffd76a; letter-spacing: 3px; text-shadow: 0 0 12px rgba(255,215,106,.7); }
-.end-rewards .er-star i { font-style: normal; color: rgba(120, 130, 155, .5); text-shadow: none; }
+.end-rewards .er-item > span:not(.er-big) { text-align: center; line-height: 1.45; }
 .end-rewards .er-big { font-size: 24px; line-height: 1; margin: 2px 0; }
-.end-rewards .card { margin: 2px 0; box-shadow: 0 3px 10px rgba(0,0,0,.55), 0 0 16px rgba(245,215,110,.28); }
+/* 新卡纯图卡面（round15 用户反馈：卡上不列数值，点击弹详情）——hover 轻浮起示意可点 */
+.end-rewards .er-card { cursor: pointer; border-color: rgba(212,175,55,.55); }
+.end-rewards .er-card:active { transform: scale(.97); }
+.end-rewards .reward-card { --card-w: 72px; --card-h: 102px; margin: 2px 0; transition: transform .18s;
+  box-shadow: 0 3px 10px rgba(0,0,0,.55), 0 0 16px rgba(245,215,110,.28); }
+.end-rewards .er-card:hover .reward-card { transform: scale(1.07) translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,.6), 0 0 24px rgba(245,215,110,.45); }
+/* 新卡详情弹层（结算遮罩内盖层，点任意处收起） */
+.er-detail { position: absolute; inset: 0; background: rgba(3,7,16,.84); z-index: 5; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  padding: 16px; animation: erdIn .22s ease; }
+.er-detail.hidden { display: none; }
+@keyframes erdIn { from { opacity: 0; } }
+.er-detail .erd-card { --card-w: min(150px, 34vw); --card-h: calc(min(150px, 34vw) / .704); }
+.er-detail .erd-meta { max-width: min(86vw, 430px); font-size: 12.5px; line-height: 1.7; color: #c6d4ef; text-align: center; }
+.er-detail .erd-note { font-size: 12.5px; font-weight: 700; color: var(--gold-bright); letter-spacing: 1px; }
+.er-detail .erd-close { position: absolute; top: 14px; right: 16px; width: 34px; height: 34px; border-radius: 50%;
+  background: transparent; border: 1px solid var(--gold-dim); color: var(--gold-bright); font-size: 15px; cursor: pointer; }
+.er-detail .erd-close:hover { background: rgba(212,175,55,.15); }
+
+/* round15 B：结算入场编排（.reveal 由遮罩显示回调挂上——星星逐颗弹/奖励卡依次落场/标题弹入；
+   全部一次性动画不占常驻循环；reduce-fx 关） */
+.end-box.reveal .end-title { animation: titleIn .6s cubic-bezier(.2,.85,.3,1) both; }
+.end-box.reveal .end-stars span { display: inline-block;
+  animation: starPop .55s calc(.18s + var(--i, 0) * .17s) cubic-bezier(.2,.85,.3,1) both; }
+.end-box.reveal .end-rewards .er-item { animation: erIn .5s calc(.55s + var(--i, 0) * .14s) cubic-bezier(.2,.85,.3,1) both; }
+@keyframes titleIn {
+  0% { opacity: 0; transform: scale(.55); letter-spacing: 18px; }
+  60% { opacity: 1; transform: scale(1.09); }
+  100% { opacity: 1; transform: scale(1); letter-spacing: 6px; } }
+@keyframes starPop {
+  0% { opacity: 0; transform: scale(.15) rotate(-25deg); }
+  62% { opacity: 1; transform: scale(1.3) rotate(6deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); } }
+@keyframes erIn { from { opacity: 0; transform: translateY(16px) scale(.9); } }
+html.reduce-fx .end-box.reveal .end-title,
+html.reduce-fx .end-box.reveal .end-stars span,
+html.reduce-fx .end-box.reveal .end-rewards .er-item { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .end-box.reveal .end-title, .end-box.reveal .end-stars span, .end-box.reveal .end-rewards .er-item { animation: none; } }
 
 #hint { text-align: center; font-size: 13px; color: #8fa5cc; min-height: 20px; }
 #hint.warn { color: var(--gold-bright); }
