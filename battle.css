@@ -51,6 +51,12 @@
 .pc { border: 2px solid #33507e; border-radius: 9px; background: linear-gradient(165deg, #f8f1dd, #efe3c3);
   cursor: pointer; overflow: hidden; position: relative; transition: transform .12s, border-color .12s; }
 .pc:hover { transform: translateY(-3px); border-color: var(--gold); }
+/* round18 L3：稀有度卡框（与 duel.css .card r-X 同色阶；无 rarity 回落蓝框基线） */
+.pc.r-A   { border-color: #7d93b8; }
+.pc.r-B   { border-color: #4fae6d; }
+.pc.r-S   { border-color: #4a8fd4; }
+.pc.r-SS  { border-color: #9a6fd4; }
+.pc.r-SSS { border-color: #f0c75e; box-shadow: 0 0 10px rgba(240,199,94,.38); }
 .pc img { width: 100%; aspect-ratio: .704; object-fit: cover; object-position: center 10%; display: block; background: #0c1730; }
 .pc .nm { font-size: 9.5px; font-weight: 700; color: var(--ink); text-align: center; padding: 2px 2px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
