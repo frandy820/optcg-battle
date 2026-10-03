@@ -906,6 +906,65 @@ html.reduce-fx #app.cam-punch, html.reduce-fx #app.cam-punch-ai { animation: non
 html.reduce-fx .fx-pillar { display: none; }
 html.lite-fx .fx-pillar { display: none; }
 @media (prefers-reduced-motion: reduce) { .fx-pillar { display: none; } }
+
+/* ============ round19 R19：五档分级登场演出（A/B 基线→S 增强→SS 光带→SSS 全屏） ============ */
+/* S 档：错相双环（蓝）+增强光柱——.fx-ring 用 ::after 加第二环（::before 金环基线不动） */
+.fx-ring.up::after { content: ''; position: absolute; left: -17px; top: -17px; width: 34px; height: 34px;
+  border-radius: 50%; border: 2px solid #4a8fd4;
+  box-shadow: 0 0 10px rgba(74,143,212,.55);
+  animation: ringGrow2 .5s .12s cubic-bezier(.15,.7,.3,1) forwards; }
+@keyframes ringGrow2 { 0% { transform: scale(.35); opacity: 0; } 18% { opacity: .9; } 100% { transform: scale(2.7); opacity: 0; } }
+.fx-pillar.up {
+  background: linear-gradient(180deg, rgba(120,180,255,.07), rgba(96,160,246,.24) 30%, rgba(96,160,246,.34) 60%, rgba(160,210,255,.12) 85%, transparent);
+  animation: pillarGlow2 .7s ease-out forwards; }
+@keyframes pillarGlow2 {
+  0%   { opacity: 0; transform: scaleY(.15); }
+  38%  { opacity: 1; transform: scaleY(1.05); }
+  100% { opacity: 0; transform: scaleY(1); } }
+/* （.fx-ring.up/.fx-pillar.up 豁免零新增——基础类三通道 display:none 已覆盖） */
+
+/* SS 档：半屏横扫光带——登场卡所在横向条带全宽左→右紫色斜光扫过（clipper 裁剪防桌面侧栏溢出） */
+.fx-spotclip { position: absolute; left: 0; right: 0; z-index: 29; overflow: hidden; pointer-events: none; }
+.fx-spotclip i { display: block; height: 100%; width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(154,111,212,.10) 28%, rgba(190,150,255,.30) 50%, rgba(154,111,212,.10) 72%, transparent);
+  transform: translateX(-105%) skewX(-14deg);
+  animation: spotSweep .8s cubic-bezier(.25,.7,.35,1) forwards; }
+@keyframes spotSweep { 0% { transform: translateX(-105%) skewX(-14deg); } 100% { transform: translateX(105%) skewX(-14deg); opacity: 0; } }
+html.reduce-fx .fx-spotclip, html.lite-fx .fx-spotclip { display: none; }
+@media (prefers-reduced-motion: reduce) { .fx-spotclip { display: none; } }
+
+/* SSS 档：全屏亮相——暗化+放射光线+光爆+大卡放大+8 粒子（1.2s 一次性；z 57 落 fx-cast 56 与 toast 58 之间）
+   色系与 r-SSS 卡框 #f0c75e 同源；keyframe 全 transform/opacity 零 blur 零 infinite */
+.fx-grand { position: fixed; inset: 0; z-index: 57; pointer-events: none;
+  display: flex; align-items: center; justify-content: center; }
+.fx-grand .gd { position: absolute; inset: 0; background: rgba(3,7,16,.55); animation: grandDim 1.2s ease forwards; }
+@keyframes grandDim { 0% { opacity: 0; } 14% { opacity: 1; } 82% { opacity: 1; } 100% { opacity: 0; } }
+.fx-grand .gr { position: absolute; width: 240vmin; height: 240vmin; border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(240,199,94,.10) 0 6deg, transparent 6deg 18deg);
+  -webkit-mask: radial-gradient(circle, rgba(0,0,0,.9) 0 26%, transparent 64%);
+  mask: radial-gradient(circle, rgba(0,0,0,.9) 0 26%, transparent 64%);
+  animation: grandRays 1.2s ease-out forwards; }
+@keyframes grandRays { 0% { transform: scale(.25) rotate(0deg); opacity: 0; } 22% { opacity: 1; } 100% { transform: scale(1.18) rotate(28deg); opacity: 0; } }
+.fx-grand .gf { position: absolute; width: 60vmin; height: 60vmin; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,244,200,.85) 0, rgba(240,199,94,.45) 22%, rgba(240,199,94,.12) 46%, transparent 68%);
+  animation: grandFlash .55s ease-out forwards; }
+@keyframes grandFlash { 0% { opacity: 0; transform: scale(.3); } 30% { opacity: 1; } 100% { opacity: 0; transform: scale(1.5); } }
+.fx-grand .gc { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 10px;
+  animation: grandCard 1.2s cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes grandCard { 0% { transform: scale(.45) translateY(26px); opacity: 0; } 16% { transform: scale(1.14) translateY(0); opacity: 1; } 28% { transform: scale(1); } 78% { transform: scale(1); opacity: 1; } 100% { transform: scale(1) translateY(-16px); opacity: 0; } }
+.fx-grand .gc img { width: min(180px, 44vw); aspect-ratio: .704; object-fit: cover; object-position: center 12%;
+  border-radius: 12px; border: 3px solid #f0c75e;
+  box-shadow: 0 0 34px rgba(240,199,94,.55), 0 0 90px rgba(240,199,94,.28), 0 14px 40px rgba(0,0,0,.6); }
+.fx-grand .gc b { max-width: 80vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 15px; letter-spacing: 2px; color: #f6ecd2; padding: 4px 18px; border-radius: 999px;
+  background: rgba(10,16,32,.88); border: 1px solid rgba(240,199,94,.55); box-shadow: 0 0 18px rgba(240,199,94,.35); }
+.fx-grand .gs { position: absolute; left: 50%; top: 50%; }
+.fx-grand .gs i { position: absolute; left: -2.5px; top: -2.5px; width: 5px; height: 5px; border-radius: 50%;
+  background: #ffe9a8; box-shadow: 0 0 8px rgba(255,233,168,.9);
+  animation: grandSpark .72s .22s cubic-bezier(.15,.7,.3,1) forwards; }
+@keyframes grandSpark { 0% { transform: translate(0,0) scale(.4); opacity: 0; } 25% { opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.15); opacity: 0; } }
+html.reduce-fx .fx-grand, html.lite-fx .fx-grand { display: none; }
+@media (prefers-reduced-motion: reduce) { .fx-grand { display: none; } }
 /* round5 C3：弱核设备（hardwareConcurrency≤4，boot 时 JS 加类）停常驻循环——
    常驻循环现状盘点：glowDrift(scene.css)+swordIdle+bladeFlow 共 3；lite-fx 下 swordIdle/bladeFlow 停 */
 html.lite-fx .card.selected:not(.attacked)::after { animation: none; }
