@@ -1,9 +1,9 @@
 // 伟大航路闯关（round11 岛屿大地图）+ 牌组工坊 UI
 // 进度/牌组存 localStorage；开战写 gld_duel_pending → duel.html 开局；胜利由 duel-ui 回写通关/星级。
 'use strict';
-import DATA from './data/duel-cards.js?v=569a0e3';
-import POOL_DATA from './data/duel-pool.js?v=569a0e3';
-import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=569a0e3';
+import DATA from './data/duel-cards.js?v=d1f05d2';
+import POOL_DATA from './data/duel-pool.js?v=d1f05d2';
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=d1f05d2';
 
 const cardsById = {};
 // round18 L3：DUE 旧线 32 张无 rarity——运行时按等级派生（与 duel-ui 同映射，改时两处同步）
