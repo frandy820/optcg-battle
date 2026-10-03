@@ -926,10 +926,20 @@ html.lite-fx .fx-pillar { display: none; }
 /* SS 档：半屏横扫光带——登场卡所在横向条带全宽左→右紫色斜光扫过（clipper 裁剪防桌面侧栏溢出） */
 .fx-spotclip { position: absolute; left: 0; right: 0; z-index: 29; overflow: hidden; pointer-events: none; }
 .fx-spotclip i { display: block; height: 100%; width: 100%;
-  background: linear-gradient(90deg, transparent, rgba(154,111,212,.14) 28%, rgba(190,150,255,.42) 50%, rgba(154,111,212,.14) 72%, transparent); /* R19-R2：峰值/两肩上调，防叠暖金底后紫感流失 */
+  /* R19-R3：紫感返工——半透明紫叠暖金桌面必粉化（混色后 B-R 差被冲掉），三改：
+     ①基带深紫高浓度（.55/.88，#6234be/#844ae1 高饱和）②亮芯收窄到 46-54% 且用亮紫非白
+     ③端点渐隐拉长（22%/78% 起坡）。亮端禁白=紫相靠深紫承载 */
+  background:
+    linear-gradient(90deg, transparent 46%, rgba(216,190,255,.5) 50%, transparent 54%),
+    linear-gradient(90deg, transparent, rgba(98,52,190,.55) 22%, rgba(132,74,225,.88) 50%, rgba(98,52,190,.55) 78%, transparent);
   transform: translateX(-105%) skewX(-14deg);
   animation: spotSweep .8s cubic-bezier(.25,.7,.35,1) forwards; }
-@keyframes spotSweep { 0% { transform: translateX(-105%) skewX(-14deg); } 100% { transform: translateX(105%) skewX(-14deg); opacity: 0; } }
+/* R19-R3：opacity 曲线改末段渐隐——旧版 100%{opacity:0} 未钉 0% 值致全程线性衰减，
+   扫过中段有效透明度只剩 ~.5，紫被二次冲淡（VLM 判「灰白扫光」定量根因） */
+@keyframes spotSweep {
+  0% { transform: translateX(-105%) skewX(-14deg); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateX(105%) skewX(-14deg); opacity: 0; } }
 html.reduce-fx .fx-spotclip, html.lite-fx .fx-spotclip { display: none; }
 @media (prefers-reduced-motion: reduce) { .fx-spotclip { display: none; } }
 
