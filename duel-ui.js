@@ -1,14 +1,14 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=ae07ccb';
-import { DUEL_AI } from './duel/ai.js?v=ae07ccb';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=ae07ccb';
-import POOL_DATA from './data/duel-pool.js?v=ae07ccb'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=ae07ccb'; // round16 B：下一关直达（构关+解锁判定）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=ae07ccb';
-import { FXM } from './fx-manager.js?v=ae07ccb'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=ae07ccb'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=7b99a4d';
+import { DUEL_AI } from './duel/ai.js?v=7b99a4d';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=7b99a4d';
+import POOL_DATA from './data/duel-pool.js?v=7b99a4d'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=7b99a4d'; // round16 B：下一关直达（构关+解锁判定）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=7b99a4d';
+import { FXM } from './fx-manager.js?v=7b99a4d'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=7b99a4d'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 // round18 L3：DUE 旧线 32 张无 rarity——按等级运行时派生（Lv1-2 A/3-4 B/5 S/6 SS/7+ SSS；招式伏笔 B），
@@ -224,7 +224,12 @@ function act(pi, a) {
       fxAtkPend = null;
     } else if (!g.pending) fxAtkPend = null;
     const nu = g.players[pi].board.find(u => !board0.includes(u.uid));
-    if (nu) { fxSummon = { uid: nu.uid, t: Date.now() }; SND.play('summon'); } // 登场动画+琶音
+    if (nu) {
+      const nd = cardsById[nu.cardId] || {};
+      // R19：快照带稀有度+图+名（fxPlay 分档路由用；unitCard 同默认 cardsById 命中）
+      fxSummon = { uid: nu.uid, t: Date.now(), r: nd.rarity || 'B', art: nd.art, nm: nd.name || '' };
+      SND.play('summon'); // 登场动画+琶音
+    }
     if (a.t === 'attack' || a.t === 'bossAttack') {
       const isBoss = a.t === 'bossAttack';
       const au = isBoss ? null : (g.players[pi].board.find(u => u.uid === a.uid) || g.players[pi].grave.find(u => u.uid === a.uid));
@@ -336,7 +341,7 @@ function spawnSlash(pt, small) {
 }
 // round17 E：落场涟漪——新单位落位处金色单环扩散（0.5s 一次性，与 summonIn/琶音同拍；
 // reduce-fx/lite-fx 早退——CSS display:none 本就不可见，不 register 才不把 dur 喂进 lastDur 拖慢 AI 步进）
-function spawnRing(el) {
+function spawnRing(el, up) {
   if (document.documentElement.classList.contains('reduce-fx')
     || document.documentElement.classList.contains('lite-fx')) return;
   const host = document.getElementById('table');
@@ -344,14 +349,14 @@ function spawnRing(el) {
   const hr = host.getBoundingClientRect();
   const c = rectCenter(el.getBoundingClientRect());
   const r = document.createElement('div');
-  r.className = 'fx-ring';
+  r.className = 'fx-ring' + (up ? ' up' : '');
   r.style.left = (c.x - hr.left) + 'px';
   r.style.top = (c.y - hr.top) + 'px';
-  FXM.register({ el: r, dur: 500, onDone: () => r.remove() });
+  FXM.register({ el: r, dur: up ? 640 : 500, onDone: () => r.remove() }); // up=S 档错相双环（120ms delay）
   host.appendChild(r);
 }
 // round18 L4：登场光柱——新单位落位处天顶向下的梯形光带（spawnRing 伴生同拍；早退同款防拖 AI 步进）
-function spawnPillar(el) {
+function spawnPillar(el, up) {
   if (document.documentElement.classList.contains('reduce-fx')
     || document.documentElement.classList.contains('lite-fx')) return;
   const host = document.getElementById('table');
@@ -359,13 +364,54 @@ function spawnPillar(el) {
   const hr = host.getBoundingClientRect();
   const r = el.getBoundingClientRect();
   const p = document.createElement('div');
-  p.className = 'fx-pillar';
+  p.className = 'fx-pillar' + (up ? ' up' : '');
   p.style.left = (r.left - hr.left) + 'px';
   p.style.top = '0px';
   p.style.width = r.width + 'px';
   p.style.height = (r.bottom - hr.top + r.height * .4) + 'px'; // 落到卡位中心稍下（地面向上淡出）
-  FXM.register({ el: p, dur: 620, onDone: () => p.remove() });
+  FXM.register({ el: p, dur: up ? 700 : 620, onDone: () => p.remove() }); // up=S 档蓝色增强（1.05 过冲）
   host.appendChild(p);
+}
+// R19 SS 档：半屏横扫光带——登场卡所在横向条带全宽左→右扫过（0.8s；clipper 裁条带防桌面侧栏溢出）
+function spawnSpotlight(el) {
+  if (g.tutorial) return;
+  if (document.documentElement.classList.contains('reduce-fx')
+    || document.documentElement.classList.contains('lite-fx')) return;
+  const host = document.getElementById('table');
+  if (!host || !el) return;
+  const hr = host.getBoundingClientRect(), r = el.getBoundingClientRect();
+  const clip = document.createElement('div');
+  clip.className = 'fx-spotclip';
+  clip.style.top = Math.max(0, r.top - hr.top - 24) + 'px';
+  clip.style.height = Math.min(hr.height, r.height + 48) + 'px';
+  clip.innerHTML = '<i></i>';
+  const band = clip.firstChild;
+  band.addEventListener('animationend', ev => { if (ev.target === band) clip.remove(); }, { once: true });
+  setTimeout(() => clip.remove(), 1300); // 兜底（后台标签 animationend 不发）
+  FXM.register({ id: 'spot', el: clip, dur: 800, onDone: () => clip.remove() }); // AI 步距 980ms
+  host.appendChild(clip);
+}
+// R19 SSS 档：全屏亮相——暗化+放射光线+光爆+大卡放大+8 粒子（1.2s；register 1200 拉 AI 步距至 1380ms）
+function spawnGrandEntry(snap) {
+  if (g.tutorial || !snap.art) return;
+  if (document.documentElement.classList.contains('reduce-fx')
+    || document.documentElement.classList.contains('lite-fx')) return;
+  const box = document.createElement('div');
+  box.className = 'fx-grand';
+  const sparks = [0, 45, 90, 135, 180, 225, 270, 315].map(a => { // 8 枚封顶，变距防机械感
+    const d = 74 + (a % 90) * .6, rad = a * Math.PI / 180;
+    return `<i style="--tx:${Math.round(Math.cos(rad) * d)}px;--ty:${Math.round(Math.sin(rad) * d)}px"></i>`;
+  }).join('');
+  box.innerHTML = '<div class="gd"></div><div class="gr"></div><div class="gf"></div>'
+    + `<div class="gc"><img src="art/${snap.art}.webp" alt=""><b>${snap.nm}</b></div>`
+    + `<div class="gs">${sparks}</div>`;
+  const card = box.querySelector('.gc');
+  // animationend 挂最长的 .gc 并校验 target——容器裸听会被 0.55s 光爆的冒泡提前清场（fx-cast 无此坑因子节点无动画）
+  card.addEventListener('animationend', ev => { if (ev.target === card) box.remove(); }, { once: true });
+  setTimeout(() => box.remove(), 1700); // 兜底
+  FXM.register({ id: 'grand', el: box, dur: 1200, onDone: () => box.remove() }); // 快进+同名替换+AI 步距
+  SND.play('cast', 120); // 光爆伴上扫（gld_sound 独立键默认静音）
+  document.body.appendChild(box);
 }
 // 全桌震动（玩家链专属，M1 至 1000ms；AI 短链不震）
 function fxQuake() {
@@ -531,7 +577,14 @@ function fxPlay() {
   if (fxSummon) {
     if (now - fxSummon.t < 450) {
       const el = document.querySelector(`[data-uid="${fxSummon.uid}"]`);
-      if (el) { el.classList.add('fx-summon'); spawnRing(el); spawnPillar(el); } // round17 E 涟漪 + round18 L4 登场光柱
+      if (el) {
+        el.classList.add('fx-summon'); // 五档共用的卡面弹入（0.38s 不变）
+        const rr = fxSummon.r; // R19 分级递进：A/B 基线 → S 双环增强 → SS +光带 → SSS 全屏亮相
+        if (rr === 'SSS') spawnGrandEntry(fxSummon);
+        else if (rr === 'SS') { spawnRing(el); spawnPillar(el); spawnSpotlight(el); }
+        else if (rr === 'S') { spawnRing(el, true); spawnPillar(el, true); }
+        else { spawnRing(el); spawnPillar(el); }
+      }
     } else fxSummon = null;
   }
 }
