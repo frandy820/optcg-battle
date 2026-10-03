@@ -926,7 +926,7 @@ html.lite-fx .fx-pillar { display: none; }
 /* SS 档：半屏横扫光带——登场卡所在横向条带全宽左→右紫色斜光扫过（clipper 裁剪防桌面侧栏溢出） */
 .fx-spotclip { position: absolute; left: 0; right: 0; z-index: 29; overflow: hidden; pointer-events: none; }
 .fx-spotclip i { display: block; height: 100%; width: 100%;
-  background: linear-gradient(90deg, transparent, rgba(154,111,212,.10) 28%, rgba(190,150,255,.30) 50%, rgba(154,111,212,.10) 72%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(154,111,212,.14) 28%, rgba(190,150,255,.42) 50%, rgba(154,111,212,.14) 72%, transparent); /* R19-R2：峰值/两肩上调，防叠暖金底后紫感流失 */
   transform: translateX(-105%) skewX(-14deg);
   animation: spotSweep .8s cubic-bezier(.25,.7,.35,1) forwards; }
 @keyframes spotSweep { 0% { transform: translateX(-105%) skewX(-14deg); } 100% { transform: translateX(105%) skewX(-14deg); opacity: 0; } }
@@ -939,12 +939,27 @@ html.reduce-fx .fx-spotclip, html.lite-fx .fx-spotclip { display: none; }
   display: flex; align-items: center; justify-content: center; }
 .fx-grand .gd { position: absolute; inset: 0; background: rgba(3,7,16,.55); animation: grandDim 1.2s ease forwards; }
 @keyframes grandDim { 0% { opacity: 0; } 14% { opacity: 1; } 82% { opacity: 1; } 100% { opacity: 0; } }
-.fx-grand .gr { position: absolute; width: 240vmin; height: 240vmin; border-radius: 50%;
-  background: repeating-conic-gradient(from 0deg, rgba(240,199,94,.10) 0 6deg, transparent 6deg 18deg);
-  -webkit-mask: radial-gradient(circle, rgba(0,0,0,.9) 0 26%, transparent 64%);
-  mask: radial-gradient(circle, rgba(0,0,0,.9) 0 26%, transparent 64%);
-  animation: grandRays 1.2s ease-out forwards; }
-@keyframes grandRays { 0% { transform: scale(.25) rotate(0deg); opacity: 0; } 22% { opacity: 1; } 100% { transform: scale(1.18) rotate(28deg); opacity: 0; } }
+/* R19-R2：放射感返工——均匀 conic 背光盘（审图判「背光板」）改 12 条独立放射线：
+   参差长度（40/58/72vmin 三档轮换）+7° 相位偏移+错相 --fd 迸发=方向性爆发感 */
+.fx-grand .gr { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+.fx-grand .gr i { position: absolute; left: -2.5px; bottom: 0; width: 5px; height: var(--len, 56vmin); opacity: 0;
+  transform-origin: 50% 100%; transform: rotate(var(--a, 0deg)) scaleY(.12);
+  background: linear-gradient(to top, rgba(240,199,94,0) 0%, rgba(240,199,94,.38) 26%, rgba(255,244,200,.85) 62%, transparent 100%);
+  animation: rayBurst 1.05s var(--fd, 0ms) cubic-bezier(.2,.75,.35,1) forwards; }
+@keyframes rayBurst {
+  0% { transform: rotate(var(--a, 0deg)) scaleY(.12); opacity: 0; }
+  26% { opacity: 1; }
+  100% { transform: rotate(var(--a, 0deg)) scaleY(1.12); opacity: 0; } }
+/* R19-R2：光心 8 臂星芒（短臂近心爆发 0.7s，与长线 1.05s 分层；中心挖空让位光爆 gf） */
+.fx-grand .gx { position: absolute; width: 92vmin; height: 92vmin; border-radius: 50%; /* VLM 复审：64vmin 被大卡全遮臂不外露，92vmin 亮臂环带伸出卡外 */
+  background: repeating-conic-gradient(from 22.5deg, rgba(255,244,200,.55) 0 4deg, transparent 4deg 45deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 20%, #000 42% 58%, transparent 76%);
+  mask: radial-gradient(circle, transparent 0 20%, #000 42% 58%, transparent 76%);
+  animation: gxBurst .7s cubic-bezier(.2,.8,.35,1) forwards; }
+@keyframes gxBurst {
+  0% { opacity: 0; transform: scale(.25); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.45); } }
 .fx-grand .gf { position: absolute; width: 60vmin; height: 60vmin; border-radius: 50%;
   background: radial-gradient(circle, rgba(255,244,200,.85) 0, rgba(240,199,94,.45) 22%, rgba(240,199,94,.12) 46%, transparent 68%);
   animation: grandFlash .55s ease-out forwards; }
