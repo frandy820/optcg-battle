@@ -1,14 +1,14 @@
 // 伟大航路决斗 — 决斗桌 UI（Phase 2）
 // 与 AI 共用 duel/engine.js 同一 applyAction 入口；非法操作提示原因（规则 §四/§七.5）。
 'use strict';
-import { DUEL } from './duel/engine.js?v=7b99a4d';
-import { DUEL_AI } from './duel/ai.js?v=7b99a4d';
-import DUEL_CARDS_DATA from './data/duel-cards.js?v=7b99a4d';
-import POOL_DATA from './data/duel-pool.js?v=7b99a4d'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
-import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=7b99a4d'; // round16 B：下一关直达（构关+解锁判定）
-import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=7b99a4d';
-import { FXM } from './fx-manager.js?v=7b99a4d'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
-import { SND } from './gld-audio.js?v=7b99a4d'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
+import { DUEL } from './duel/engine.js?v=569a0e3';
+import { DUEL_AI } from './duel/ai.js?v=569a0e3';
+import DUEL_CARDS_DATA from './data/duel-cards.js?v=569a0e3';
+import POOL_DATA from './data/duel-pool.js?v=569a0e3'; // round6 R6-D：GLD 转译卡池（阵营对战牌组/全卡池工坊）
+import { ISLANDS, DUEL_STAGES } from './data/duel-stages.js?v=569a0e3'; // round16 B：下一关直达（构关+解锁判定）
+import { TUTORIALS, newTutorialGame, tutorialAiStep } from './tutorial.js?v=569a0e3';
+import { FXM } from './fx-manager.js?v=569a0e3'; // 演出快进终态管理器（round5 C1：任意点击=当前演出跳终态）
+import { SND } from './gld-audio.js?v=569a0e3'; // 八音合成（round5 C7：默认静音 gld_sound 独立键，与动效开关零联动）
 
 const cardsById = {};
 // round18 L3：DUE 旧线 32 张无 rarity——按等级运行时派生（Lv1-2 A/3-4 B/5 S/6 SS/7+ SSS；招式伏笔 B），
@@ -402,7 +402,10 @@ function spawnGrandEntry(snap) {
     const d = 74 + (a % 90) * .6, rad = a * Math.PI / 180;
     return `<i style="--tx:${Math.round(Math.cos(rad) * d)}px;--ty:${Math.round(Math.sin(rad) * d)}px"></i>`;
   }).join('');
-  box.innerHTML = '<div class="gd"></div><div class="gr"></div><div class="gf"></div>'
+  // R19-R2：12 条参差放射线（30° 均布+7° 相位偏移，长度 40/58/72vmin 三档轮换+错相 40ms 迸发）
+  const rays = Array.from({ length: 12 }, (_, k) =>
+    `<i style="--a:${k * 30 + 7}deg;--len:${[40, 58, 72][k % 3]}vmin;--fd:${(k % 4) * 40}ms"></i>`).join('');
+  box.innerHTML = '<div class="gd"></div><div class="gr">' + rays + '</div><div class="gf"></div><div class="gx"></div>'
     + `<div class="gc"><img src="art/${snap.art}.webp" alt=""><b>${snap.nm}</b></div>`
     + `<div class="gs">${sparks}</div>`;
   const card = box.querySelector('.gc');
